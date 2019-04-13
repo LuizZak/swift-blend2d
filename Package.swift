@@ -24,7 +24,7 @@ let package = Package(
                 .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS]))
             ],
             linkerSettings: [
-                .linkedFramework("rt", .when(platforms: [.linux]))
+                .linkedLibrary("rt", .when(platforms: [.linux]))
             ]),
         .target(
             name: "blend2d",
