@@ -1,8 +1,8 @@
 # Check git satus and make sure we don't modify the working tree with update changes by mistake
-# if [[ -n $(git status) ]]; then
-#     echo "Current git repo's state is not commited! Please commit and try again."
-#     exit 1
-# fi
+if [[ -n $(git status) ]]; then
+    echo "Current git repo's state is not commited! Please commit and try again."
+    exit 1
+fi
 
 if [[ -d "temp" ]]; then
     rm -rf temp
