@@ -20,13 +20,13 @@
 
 //! \endcond
 
-#include "../core.h"
+#include "./core.h"
 
-#include "../arm/armassembler.h"
-#include "../arm/armbuilder.h"
-#include "../arm/armcompiler.h"
-#include "../arm/armemitter.h"
-#include "../arm/arminstdb.h"
-#include "../arm/armoperand.h"
+#include "./arm/armassembler.h"
+#include "./arm/armbuilder.h"
+#include "./arm/armcompiler.h"
+#include "./arm/armemitter.h"
+#include "./arm/arminstdb.h"
+#include "./arm/armoperand.h"
 
 #endif // _ASMJIT_ARM_H

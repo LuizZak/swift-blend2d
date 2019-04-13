@@ -12,6 +12,6 @@
 #endif
 
 #include "./blend2d.h"
-#include "../blapi-impl.h"
+#include "./blend2d/blapi-impl.h"
 
 #endif // BLEND2D_IMPL_H
