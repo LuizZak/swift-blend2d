@@ -22,6 +22,9 @@ let package = Package(
             cxxSettings: [
                 .define("ASMJIT_BUILD_X86", .when(platforms: [.macOS, .linux])),
                 .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS]))
+            ],
+            linkerSettings: [
+                .linkedFramework("rt", .when(platforms: [.linux]))
             ]),
         .target(
             name: "blend2d",
