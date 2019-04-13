@@ -31,7 +31,7 @@ let package = Package(
             dependencies: ["asmjit"]),
         .testTarget(
             name: "SwiftBlend2DTests",
-            dependencies: ["SwiftBlend2D"]),
+            dependencies: ["SwiftBlend2D", "blend2d", "asmjit"]),
     ],
     cxxLanguageStandard: .cxx1z
 )
