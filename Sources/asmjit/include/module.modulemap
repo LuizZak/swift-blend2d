@@ -1,0 +1,7 @@
+module asmjit {
+    header "asmjit/asmjit.h"
+    header "asmjit/x86.h"
+    header "asmjit/arm.h"
+    link "asmjit"
+    export *
+}
