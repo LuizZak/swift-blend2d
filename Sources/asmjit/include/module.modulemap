@@ -1,5 +1,4 @@
 module asmjit {
     header "asmjit/asmjit.h"
-    link "asmjit"
     export *
 }

@@ -1,5 +1,5 @@
 module blend2d {
     header "blend2d.h"
-    link "blend2d"
+    link "asmjit"
     export *
 }
