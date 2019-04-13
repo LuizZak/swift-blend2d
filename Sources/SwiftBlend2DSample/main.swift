@@ -1,7 +1,7 @@
 import blend2d
 import SwiftBlend2D
 
-func newMain() throws {
+func main() throws {
     let img = BLImage(width: 480, height: 480, format: BL_FORMAT_PRGB32)
     
     // Attach a rendering context into `img`.
@@ -33,9 +33,9 @@ func newMain() throws {
     try img.writeToFile("bl-getting-started-1.bmp", codec: codec)
 }
 
-func main() {
-    //let _img = BLImage(width: 480, height: 480, format: BL_FORMAT_PRGB32)
-    
+// C bindings are also available
+
+func mainWithCBindings() {
     var img = BLImageCore()//img(480, 480, BL_FORMAT_PRGB32);
     
     blImageInit(&img)
@@ -75,4 +75,4 @@ func main() {
     blImageWriteToFile(&img, "bl-getting-started-1.bmp", &codec)
 }
 
-try newMain()
+try main()
