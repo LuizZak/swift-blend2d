@@ -6,13 +6,13 @@ This may change at any moment.
 |-----|-----|-----|
 `BLApproximationOptions` | ❌ Unstarted | |
 `BLArc` | ❌ Unstarted | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
-`BLArray` | Partial | Array container (template) [C++ API]|
+`BLArray` | 🕒 Partial | Array container (template) [C++ API]|
 `BLArrayView` | ❌ Unstarted | |
 `BLBox` | ❌ Unstarted | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ❌ Unstarted | Box specified as [x0, y0, x1, y1] using int as a storage type |
 `BLCircle` | ❌ Unstarted | Circle specified as [cx, cy, r] using double as a storage type |
 `BLConicalGradientValues` | ❌ Unstarted | Conical gradient values packed into a structure |
-`BLContext` | Partial | Rendering context [C++ API]|
+`BLContext` | 🕒 Partial | Rendering context [C++ API]|
 `BLContextCookie` | ❌ Unstarted | |
 `BLContextCreateOptions` | ❌ Unstarted | Information that can be used to customize the rendering context |
 `BLContextHints` | ❌ Unstarted | Rendering context hints |
@@ -46,8 +46,8 @@ This may change at any moment.
 `BLGlyphRunIterator` | ❌ Unstarted | |
 `BLGradient` | ❌ Unstarted | Gradient [C++ API]|
 `BLGradientStop` | ❌ Unstarted | |
-`BLImage` | Partial | 2D raster image [C++ API]|
-`BLImageCodec` | Partial | |
+`BLImage` | 🕒 Partial | 2D raster image [C++ API]|
+`BLImageCodec` | 🕒 Partial | |
 `BLImageData` | ❌ Unstarted | Data that describes a raster image. Used by BLImage |
 `BLImageDecoder` | ❌ Unstarted | Image decoder [C++ API]|
 `BLImageEncoder` | ❌ Unstarted | Image encoder [C++ API]|
@@ -57,7 +57,7 @@ This may change at any moment.
 `BLLine` | ❌ Unstarted | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ❌ Unstarted | Linear gradient values packed into a structure |
 `BLMatrix2D` | ❌ Unstarted | |
-`BLPath` | Partial | 2D vector path [C++ API]|
+`BLPath` | 🕒 Partial | 2D vector path [C++ API]|
 `BLPathView` | ❌ Unstarted | |
 `BLPattern` | ❌ Unstarted | Pattern [C++ API]|
 `BLPixelConverter` | ❌ Unstarted | |
