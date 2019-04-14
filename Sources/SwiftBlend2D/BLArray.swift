@@ -1,6 +1,6 @@
 import blend2d
 
-class BLArray {
+final class BLArray {
     var object = BLArrayCore()
     var ownership: PointerOwnership
     

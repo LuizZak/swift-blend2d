@@ -1,6 +1,6 @@
 import blend2d
 
-public class BLImageCodec: BLBaseClass<BLImageCodecCore> {
+public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     public override init() {
         super.init()
     }

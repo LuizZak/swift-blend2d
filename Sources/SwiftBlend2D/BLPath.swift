@@ -1,6 +1,6 @@
 import blend2d
 
-public class BLPath: BLBaseClass<BLPathCore> {
+public final class BLPath: BLBaseClass<BLPathCore> {
     var capacity: Int {
         return blPathGetCapacity(&object)
     }

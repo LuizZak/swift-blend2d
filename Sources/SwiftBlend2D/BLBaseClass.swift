@@ -5,8 +5,8 @@ import blend2d
 /// manually without inheriting from this class.
 public class BLBaseClass<T: CoreStructure> {
     /// The actual structure that this class backs.
-    var object: T
-    var ownership: PointerOwnership
+    final var object: T
+    final var ownership: PointerOwnership
     
     init() {
         object = T()

@@ -1,6 +1,6 @@
 import blend2d
 
-public class BLImage: BLBaseClass<BLImageCore> {
+public final class BLImage: BLBaseClass<BLImageCore> {
     /// Maximum width of an image.
     static var maximumWidth: Int {
         return Int(BL_RUNTIME_MAX_IMAGE_SIZE.rawValue)

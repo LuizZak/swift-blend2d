@@ -14,7 +14,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// - Parameters:
     ///   - image: The image to draw on. If the image is empty (with default
     /// constructor BLImage.init()), the initialization fails.
-    ///   - options: Options to use when creating the new context
+    ///   - options: Options to use when creating the new context.
     public init?(image: BLImage, options: CreateOptions? = nil) {
         if var options = options?.toBLContextCreateOptions() {
             super.init {
