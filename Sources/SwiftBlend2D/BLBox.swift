@@ -24,6 +24,10 @@ public extension BLBox {
         return contains(point.x, point.y)
     }
     
+    func contains(_ point: BLPointI) -> Bool {
+        return contains(Double(point.x), Double(point.y))
+    }
+    
     mutating func reset() {
         self.x0 = 0
         self.y0 = 0
