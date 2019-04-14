@@ -7,14 +7,18 @@ public class BLContext: BLBaseClass<BLContextCore> {
         super.init()
     }
     
-    public init(image: BLImage, options: BLContextCreateOptions? = nil) {
+    public init?(image: BLImage, options: BLContextCreateOptions? = nil) {
         if var options = options {
             super.init {
-                blContextInitAs($0, &image.object, &options)
+                try? handleErrorResults(
+                    blContextInitAs($0, &image.object, &options)
+                )
             }
         } else {
             super.init {
-                blContextInitAs($0, &image.object, nil)
+                try? handleErrorResults(
+                    blContextInitAs($0, &image.object, nil)
+                )
             }
         }
     }

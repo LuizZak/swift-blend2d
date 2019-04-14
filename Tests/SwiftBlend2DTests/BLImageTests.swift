@@ -25,7 +25,7 @@ class BLImageTests: XCTestCase {
     
     func testWriteToData() throws {
         let image = BLImage(width: 1, height: 1, format: BL_FORMAT_PRGB32)
-        let context = BLContext(image: image)
+        let context = BLContext(image: image)!
         context.setFillStyleRgba32(0xFFFF00FF)
         context.fillAll()
         context.end()

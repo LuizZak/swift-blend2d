@@ -14,9 +14,17 @@ public class BLBaseClass<T: CoreStructure> {
         ownership = .owner
     }
     
-    init(initializer: (UnsafeMutablePointer<T>?) -> BLResult) {
+    init(initializer: (UnsafeMutablePointer<T>?) throws -> BLResult) rethrows {
         object = T()
-        _ = initializer(&object)
+        try _ = initializer(&object)
+        ownership = .owner
+    }
+    
+    init?(initializer: (UnsafeMutablePointer<T>?) -> BLResult?) {
+        object = T()
+        if initializer(&object) == nil {
+            return nil
+        }
         ownership = .owner
     }
     

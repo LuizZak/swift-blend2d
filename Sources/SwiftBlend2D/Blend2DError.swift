@@ -222,10 +222,13 @@ public enum Blend2DError: String, Error {
     case invalidGlyph
 }
 
-func handleErrorResults(_ operation: @autoclosure () -> BLResult) throws {
-    switch operation() {
+@discardableResult
+func handleErrorResults(_ operation: @autoclosure () -> BLResult) throws -> BLResult {
+    let value = operation()
+    
+    switch value {
     case BL_SUCCESS.rawValue:
-        return
+        return value
         
     case BL_ERROR_OUT_OF_MEMORY.rawValue:
         throw Blend2DError.outOfMemory
@@ -374,6 +377,6 @@ func handleErrorResults(_ operation: @autoclosure () -> BLResult) throws {
         
     // TODO: Throw an unknownError
     default:
-        return
+        return value
     }
 }

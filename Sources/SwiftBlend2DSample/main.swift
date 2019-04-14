@@ -5,7 +5,7 @@ func main() throws {
     let img = BLImage(width: 480, height: 480, format: BL_FORMAT_PRGB32)
     
     // Attach a rendering context into `img`.
-    let ctx = BLContext(image: img)
+    let ctx = BLContext(image: img)!
     
     // Clear the image.
     ctx.setCompOp(BL_COMP_OP_SRC_COPY)
