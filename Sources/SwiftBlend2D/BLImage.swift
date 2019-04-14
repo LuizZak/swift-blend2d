@@ -54,6 +54,26 @@ public class BLImage: BLBaseClass<BLImageCore> {
             blImageWriteToData(&object, &buffer.object, &codec.object)
         )
     }
+    
+    func readFromData(_ data: [UInt8], codecs: [BLImageCodec]) throws {
+        let array = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        for item in data {
+            array.append(item)
+        }
+        
+        try readFromData(array, codecs: codecs)
+    }
+    
+    func readFromData(_ buffer: BLArray, codecs: [BLImageCodec]) throws {
+        let codecsArray = BLArray(type: BL_IMPL_TYPE_ARRAY_VAR)
+        for codec in codecs {
+            codecsArray.append(&codec.object)
+        }
+        
+        try handleErrorResults(
+            blImageReadFromData(&object, buffer.unsafePointer().baseAddress, buffer.count, &codecsArray.object)
+        )
+    }
 }
 
 extension BLImageCore: CoreStructure {

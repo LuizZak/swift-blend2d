@@ -147,7 +147,7 @@ import blend2d
 ///     Font program terminated because the execution reached the limit.
 /// - invalidGlyph:
 ///     Invalid glyph identifier.
-public enum Blend2DError: Error {
+public enum Blend2DError: String, Error {
     case outOfMemory
     case invalidValue
     case invalidState

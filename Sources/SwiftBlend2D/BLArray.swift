@@ -28,6 +28,12 @@ class BLArray {
         }
     }
     
+    func unsafePointer() -> UnsafeRawBufferPointer {
+        let pointer = blArrayGetData(&object)
+        
+        return UnsafeRawBufferPointer(start: pointer!, count: count)
+    }
+    
     func readStructureUnsafe<T>(type: T.Type) -> [T] {
         guard let pointer = blArrayGetData(&object)?.bindMemory(to: T.self, capacity: count) else {
             return []

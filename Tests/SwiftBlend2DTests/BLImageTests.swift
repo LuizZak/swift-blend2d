@@ -49,6 +49,25 @@ class BLImageTests: XCTestCase {
             ]
         )
     }
+    
+    func testReadFromData() throws {
+        let image = BLImage()
+        let data: [UInt8] = [
+            // BMP header
+            66, 77, 74, 0, 0, 0, 0, 0, 0, 0, 70,
+            // BIP header
+            0, 0, 0, 56, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0, 0, 0,
+            0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 255, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255,
+            // Image data
+            255, 0, 255, 255
+        ]
+        
+        try image.readFromData(data, codecs: BLImageCodec.builtInCodecs)
+        
+        XCTAssertEqual(image.width, 1)
+        XCTAssertEqual(image.height, 1)
+    }
 }
 
 extension BLImageTests {
