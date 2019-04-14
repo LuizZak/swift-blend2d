@@ -10,6 +10,13 @@ public class BLImage: BLBaseClass<BLImageCore> {
         return Int(BL_RUNTIME_MAX_IMAGE_SIZE.rawValue)
     }
     
+    public var width: Int {
+        return Int(object.impl.pointee.size.w)
+    }
+    public var height: Int {
+        return Int(object.impl.pointee.size.h)
+    }
+    
     public override init() {
         super.init()
     }
