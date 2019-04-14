@@ -1,5 +1,7 @@
 This is a brief status report of what is and isn't ported yet. Contributions to help create Swift wrapper structures are welcome.
 
+Some of the C structures (like `BLLine`, `BLBox`, `BLMatrix2D` etc.) are already visible in Swift but lack many operators that are implemented only in C++. It'd be nice to port such operators to Swift using public extensions.
+
 This may change at any moment.
 
 | Structure | Status | Notes |
@@ -54,7 +56,7 @@ This may change at any moment.
 `BLImageInfo` | ❌ Unstarted | Image information provided by image codecs |
 `BLImageScaleOptions` | ❌ Unstarted | Options that can used to customize image scaling |
 `BLInternalCastImpl` | ❌ Unstarted | |
-`BLLine` | ☑️ No work required | Line specified as [x0, y0, x1, y1] using double as a storage type |
+`BLLine` | ❌ Unstarted | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ❌ Unstarted | Linear gradient values packed into a structure |
 `BLMatrix2D` | ❌ Unstarted | |
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
