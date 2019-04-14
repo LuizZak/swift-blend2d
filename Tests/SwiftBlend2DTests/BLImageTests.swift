@@ -6,13 +6,40 @@ class BLImageTests: XCTestCase {
     func testInitDefault() {
         let image = BLImage()
         
-        assertIsDefaultPointer(image.image)
+        assertIsDefaultPointer(image.object)
     }
     
     func testInitWithSize() {
         let image = BLImage(width: 32, height: 32, format: BL_FORMAT_PRGB32)
         
-        assertIsNonDefaultPointer(image.image)
+        assertIsNonDefaultPointer(image.object)
+    }
+    
+    func testWriteToData() throws {
+        let image = BLImage(width: 1, height: 1, format: BL_FORMAT_PRGB32)
+        let context = BLContext(image: image)
+        context.setFillStyleRgba32(0xFFFF00FF)
+        context.fillAll()
+        context.end()
+        
+        let array = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let codec = BLImageCodec(builtInCodec: .bmp)
+        
+        try image.writeToData(array, codec: codec)
+        
+        let data = array.readUInt8()
+        XCTAssertEqual(
+            data, [
+                // BMP header
+                66, 77, 74, 0, 0, 0, 0, 0, 0, 0, 70,
+                // BIP header
+                0, 0, 0, 56, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0, 0, 0,
+                0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 255, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255,
+                // Image data
+                255, 0, 255, 255
+            ]
+        )
     }
 }
 

@@ -1,41 +1,70 @@
 import blend2d
 
-public class BLContext {
-    var context = BLContextCore()
+public class BLContext: BLBaseClass<BLContextCore> {
+    private var _ended: Bool = false
     
-    public init() {
-        blContextInit(&context)
+    public override init() {
+        super.init()
     }
     
     public init(image: BLImage, options: BLContextCreateOptions? = nil) {
         if var options = options {
-            blContextInitAs(&context, &image.image, &options)
+            super.init {
+                blContextInitAs($0, &image.object, &options)
+            }
         } else {
-            blContextInitAs(&context, &image.image, nil)
+            super.init {
+                blContextInitAs($0, &image.object, nil)
+            }
         }
     }
     
-    deinit {
-        blContextReset(&context)
-    }
-    
     public func setCompOp(_ op: BLCompOp) {
-        blContextSetCompOp(&context, op.rawValue)
+        ensureNotEnded()
+        
+        blContextSetCompOp(&object, op.rawValue)
     }
     
+    /// Fills everything.
     public func fillAll() {
-        blContextFillAll(&context)
+        ensureNotEnded()
+        
+        blContextFillAll(&object)
     }
     
     public func setFillStyleRgba32(_ value: UInt32) {
-        blContextSetFillStyleRgba32(&context, value)
+        ensureNotEnded()
+        
+        blContextSetFillStyleRgba32(&self.object, value)
     }
     
     public func fillPath(_ path: BLPath) {
-        blContextFillPathD(&context, &path.path)
+        ensureNotEnded()
+        
+        blContextFillPathD(&object, &path.object)
     }
     
+    /// Waits for completion of all render commands and detaches the rendering
+    /// context from the rendering target. After `end()` completes the rendering
+    /// context implementation would be released and replaced by a built-in null
+    /// instance (no context).
+    ///
+    /// - note: After a call to `end`, no more invocations should be performed
+    /// on this context instance.
     public func end() {
-        blContextEnd(&context)
+        blContextEnd(&object)
+        
+        _ended = true
     }
+    
+    private func ensureNotEnded() {
+        if _ended {
+            fatalError("Cannot manipulate BLContext after it has ended via end()")
+        }
+    }
+}
+
+extension BLContextCore: CoreStructure {
+    public static var initializer = blContextInit
+    public static var deinitializer = blContextReset
 }

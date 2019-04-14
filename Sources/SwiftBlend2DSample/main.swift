@@ -26,9 +26,7 @@ func main() throws {
     ctx.end()
     
     // Let's use some built-in codecs provided by Blend2D.
-    let codec = BLImageCodec()
-    
-    try codec.findByName(BLImageCodec.buildInCodecs, name: "BMP")
+    let codec = BLImageCodec(builtInCodec: .bmp)
     
     try img.writeToFile("bl-getting-started-1.bmp", codec: codec)
 }

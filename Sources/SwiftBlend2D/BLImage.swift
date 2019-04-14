@@ -1,23 +1,52 @@
 import blend2d
 
-public class BLImage {
-    var image = BLImageCore()
-    
-    public init() {
-        blImageInit(&image)
+public class BLImage: BLBaseClass<BLImageCore> {
+    /// Maximum width of an image.
+    static var maximumWidth: Int {
+        return Int(BL_RUNTIME_MAX_IMAGE_SIZE.rawValue)
+    }
+    /// Maximum height of an image.
+    static var maximumHeight: Int {
+        return Int(BL_RUNTIME_MAX_IMAGE_SIZE.rawValue)
     }
     
+    public override init() {
+        super.init()
+    }
+    
+    /// Initializes a new image with the given dimensions and format.
+    ///
+    /// - Parameters:
+    ///   - width: Width of image. Must be greater than zero and less than BLImage.maximumWidth.
+    ///   - height: Height of image. Must be greater than zero and less than BLImage.maximumHeight.
+    ///   - format: A valid image format to use for the image.
     public init(width: Int, height: Int, format: BLFormat) {
-        blImageInitAs(&image, Int32(width), Int32(height), format.rawValue)
+        precondition(width > 0 && width < BLImage.maximumWidth)
+        precondition(height > 0 && height < BLImage.maximumHeight)
+        
+        super.init {
+            blImageInitAs($0, Int32(width), Int32(height), format.rawValue)
+        }
     }
     
-    deinit {
-        blImageReset(&image)
+    public func equals(to other: BLImage) -> Bool {
+        return blImageEquals(&object, &other.object)
     }
     
     public func writeToFile(_ path: String, codec: BLImageCodec) throws {
         try handleErrorResults(
-            blImageWriteToFile(&image, path, &codec.codec)
+            blImageWriteToFile(&object, path, &codec.object)
         )
     }
+    
+    func writeToData(_ buffer: BLArray, codec: BLImageCodec) throws {
+        try handleErrorResults(
+            blImageWriteToData(&object, &buffer.object, &codec.object)
+        )
+    }
+}
+
+extension BLImageCore: CoreStructure {
+    public static var initializer = blImageInit
+    public static var deinitializer = blImageReset
 }

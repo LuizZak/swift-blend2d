@@ -1,25 +1,54 @@
 import blend2d
 
-public class BLImageCodec {
-    var codec = BLImageCodecCore()
-    
-    public init() {
-        blImageCodecInit(&codec)
+public class BLImageCodec: BLBaseClass<BLImageCodecCore> {
+    public override init() {
+        super.init()
     }
     
-    deinit {
-        blImageCodecReset(&codec)
+    public init(builtInCodec: BuiltInImageCodec) {
+        let codecCore = BLImageCodec._builtInCodecs.first {
+            String(cString: $0.impl!.pointee.name) == builtInCodec.rawValue
+        }
+        
+        if let codecCore = codecCore {
+            super.init(borrowing: codecCore)
+        } else {
+            fatalError("Expected to find a valid built-in codec named '\(builtInCodec.rawValue)'")
+        }
     }
     
-    public func findByName(_ codecs: UnsafePointer<BLArrayCore>, name: String) throws {
-        try handleErrorResults(
-            blImageCodecFindByName(&codec, codecs, name)
-        )
+    override init(borrowing object: BLImageCodecCore) {
+        super.init(borrowing: object)
     }
 }
 
+extension BLImageCodec {
+    static var _builtInCodecs: [BLImageCodecCore] = {
+        guard let codecs = blImageCodecBuiltInCodecs() else {
+            fatalError("Failed to load built in codecs.")
+        }
+        
+        let array = BLArray(borrowing: codecs.pointee)
+        
+        return array.readStructureUnsafe(type: BLImageCodecCore.self)
+    }()
+}
+
 public extension BLImageCodec {
-    static var buildInCodecs: UnsafeMutablePointer<BLArrayCore> {
-        return blImageCodecBuiltInCodecs()
+    static var builtInCodecs: [BLImageCodec] = {
+        return _builtInCodecs.map { object in
+            BLImageCodec(borrowing: object)
+        }
+    }()
+    
+    enum BuiltInImageCodec: String, CaseIterable {
+        case bmp = "BMP"
+        case jpeg = "JPEG"
+        case png = "PNG"
     }
+}
+
+extension BLImageCodecCore: CoreStructure {
+    public static var initializer = blImageCodecInit
+    public static var deinitializer = blImageCodecReset
 }

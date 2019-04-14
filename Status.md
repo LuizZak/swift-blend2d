@@ -6,7 +6,7 @@ This may change at any moment.
 |-----|-----|-----|
 `BLApproximationOptions` | ❌ Unstarted | |
 `BLArc` | ❌ Unstarted | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
-`BLArray` | ❌ Unstarted | Array container (template) [C++ API]|
+`BLArray` | Partial | Array container (template) [C++ API]|
 `BLArrayView` | ❌ Unstarted | |
 `BLBox` | ❌ Unstarted | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ❌ Unstarted | Box specified as [x0, y0, x1, y1] using int as a storage type |
