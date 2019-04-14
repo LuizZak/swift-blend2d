@@ -54,7 +54,7 @@ This may change at any moment.
 `BLImageInfo` | ❌ Unstarted | Image information provided by image codecs |
 `BLImageScaleOptions` | ❌ Unstarted | Options that can used to customize image scaling |
 `BLInternalCastImpl` | ❌ Unstarted | |
-`BLLine` | ❌ Unstarted | Line specified as [x0, y0, x1, y1] using double as a storage type |
+`BLLine` | ☑️ No work required | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ❌ Unstarted | Linear gradient values packed into a structure |
 `BLMatrix2D` | ❌ Unstarted | |
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
