@@ -18,6 +18,7 @@ class BLImageTests: XCTestCase {
     func testSize() {
         let image = BLImage(width: 32, height: 48, format: BL_FORMAT_PRGB32)
         
+        XCTAssertEqual(image.size, BLSizeI(w: 32, h: 48))
         XCTAssertEqual(image.width, 32)
         XCTAssertEqual(image.height, 48)
     }

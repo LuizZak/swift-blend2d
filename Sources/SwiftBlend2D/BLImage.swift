@@ -16,6 +16,9 @@ public class BLImage: BLBaseClass<BLImageCore> {
     public var height: Int {
         return Int(object.impl.pointee.size.h)
     }
+    public var size: BLSizeI {
+        return object.impl.pointee.size
+    }
     
     public override init() {
         super.init()
