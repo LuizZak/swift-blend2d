@@ -39,6 +39,16 @@ class BLBaseClassTests: XCTestCase {
         }
     }
     
+    func testDeinitializeWithBorrowedObject() {
+        let sut = BLBaseClass<MockStructure>(borrowing: MockStructure())
+        
+        withExtendedLifetime(sut) {
+            sut.deinitialize()
+            
+            XCTAssertNil(MockStructure.latestDeinitializer)
+        }
+    }
+    
     func testDeinitializeOnLeaveScope() {
         autoreleasepool {
             _ = BLBaseClass<MockStructure>()
