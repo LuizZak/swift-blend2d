@@ -10,7 +10,7 @@ This may change at any moment.
 `BLArc` | ❌ Unstarted | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
 `BLArray` | 🕒 Partial | Array container (template) [C++ API]|
 `BLArrayView` | ❌ Unstarted | |
-`BLBox` | ❌ Unstarted | Box specified as [x0, y0, x1, y1] using double as a storage type |
+`BLBox` | ✅ Done | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ❌ Unstarted | Box specified as [x0, y0, x1, y1] using int as a storage type |
 `BLCircle` | ❌ Unstarted | Circle specified as [cx, cy, r] using double as a storage type |
 `BLConicalGradientValues` | ❌ Unstarted | Conical gradient values packed into a structure |
