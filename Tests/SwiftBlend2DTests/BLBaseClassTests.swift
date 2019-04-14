@@ -50,11 +50,13 @@ class BLBaseClassTests: XCTestCase {
     }
     
     func testDeinitializeOnLeaveScope() {
+        #if canImport(ObjectiveC)
         autoreleasepool {
             _ = BLBaseClass<MockStructure>()
         }
         
         XCTAssertNotNil(MockStructure.latestDeinitializer)
+        #endif
     }
     
     func testBorrowInitializer() {
@@ -64,11 +66,13 @@ class BLBaseClassTests: XCTestCase {
     }
     
     func testDontDeinitializeBorrowedObjects() {
+        #if canImport(ObjectiveC)
         autoreleasepool {
             _ = BLBaseClass<MockStructure>(borrowing: MockStructure())
         }
         
         XCTAssertNil(MockStructure.latestDeinitializer)
+        #endif
     }
 }
 
