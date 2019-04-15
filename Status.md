@@ -69,8 +69,8 @@ This may change at any moment.
 `BLRadialGradientValues` | ❌ Unstarted | Radial gradient values packed into a structure |
 `BLRandom` | ❌ Unstarted | |
 `BLRange` | ❌ Unstarted | |
-`BLRect` | ❌ Unstarted | Rectangle specified as [x, y, w, h] using double as a storage type |
-`BLRectI` | ❌ Unstarted | Rectangle specified as [x, y, w, h] using int as a storage type |
+`BLRect` | ✅ Done | Rectangle specified as [x, y, w, h] using double as a storage type |
+`BLRectI` | ✅ Done | Rectangle specified as [x, y, w, h] using int as a storage type |
 `BLRegion` | ❌ Unstarted | |
 `BLRgba128` | ❌ Unstarted | 128-bit RGBA color stored as 4 32-bit floating point values in [RGBA] order |
 `BLRgba32` | ❌ Unstarted | 32-bit RGBA color (8-bit per component) stored as 0xAARRGGBB |
