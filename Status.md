@@ -64,8 +64,8 @@ This may change at any moment.
 `BLPattern` | ❌ Unstarted | Pattern [C++ API]|
 `BLPixelConverter` | ❌ Unstarted | |
 `BLPixelConverterOptions` | ❌ Unstarted | Pixel conversion options |
-`BLPoint` | ❌ Unstarted | Point specified as [x, y] using double as a storage type |
-`BLPointI` | ❌ Unstarted | Point specified as [x, y] using int as a storage type |
+`BLPoint` | ✅ Done | Point specified as [x, y] using double as a storage type |
+`BLPointI` | ✅ Done | Point specified as [x, y] using int as a storage type |
 `BLRadialGradientValues` | ❌ Unstarted | Radial gradient values packed into a structure |
 `BLRandom` | ❌ Unstarted | |
 `BLRange` | ❌ Unstarted | |
@@ -79,8 +79,8 @@ This may change at any moment.
 `BLRuntimeBuildInfo` | ❌ Unstarted | Blend2D build information |
 `BLRuntimeCpuInfo` | ❌ Unstarted | CPU information queried by the runtime |
 `BLRuntimeMemoryInfo` | ❌ Unstarted | |
-`BLSize` | ❌ Unstarted | Size specified as [w, h] using double as a storage type |
-`BLSizeI` | ❌ Unstarted | Size specified as [w, h] using int as a storage type |
+`BLSize` | ✅ Done | Size specified as [w, h] using double as a storage type |
+`BLSizeI` | ✅ Done | Size specified as [w, h] using int as a storage type |
 `BLString` | ❌ Unstarted | |
 `BLStrokeOptions` | ❌ Unstarted | |
 `BLStrokeOptionsCore` | ❌ Unstarted | |
