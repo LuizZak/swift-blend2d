@@ -12,7 +12,7 @@ This may change at any moment.
 `BLArrayView` | ❌ Unstarted | |
 `BLBox` | ✅ Done | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ✅ Done | Box specified as [x0, y0, x1, y1] using int as a storage type |
-`BLCircle` | ❌ Unstarted | Circle specified as [cx, cy, r] using double as a storage type |
+`BLCircle` | ✅ Done | Circle specified as [cx, cy, r] using double as a storage type |
 `BLConicalGradientValues` | ❌ Unstarted | Conical gradient values packed into a structure |
 `BLContext` | 🕒 Partial | Rendering context [C++ API]|
 `BLContextCookie` | ❌ Unstarted | |
