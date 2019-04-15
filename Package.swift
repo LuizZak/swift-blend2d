@@ -21,17 +21,23 @@ let package = Package(
             dependencies: [],
             cxxSettings: [
                 .define("ASMJIT_BUILD_X86", .when(platforms: [.macOS, .linux])),
-                .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS]))
+                .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS])),
+                .define("ASMJIT_BUILD_EMBED")
             ],
             linkerSettings: [
-                .linkedLibrary("rt", .when(platforms: [.linux]))
+                .linkedLibrary("rt", .when(platforms: [.linux])),
+                .linkedLibrary("pthread")
             ]),
         .target(
             name: "blend2d",
-            dependencies: ["asmjit"]),
+            dependencies: ["asmjit"],
+            cxxSettings: [
+                .define("BL_BUILD_OPT_SSE2")
+            ]
+        ),
         .testTarget(
             name: "SwiftBlend2DTests",
             dependencies: ["SwiftBlend2D", "blend2d", "asmjit"]),
     ],
-    cxxLanguageStandard: .cxx1z
+    cxxLanguageStandard: .cxx11
 )
