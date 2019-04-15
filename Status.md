@@ -20,7 +20,7 @@ This may change at any moment.
 `BLContextHints` | ❌ Unstarted | Rendering context hints |
 `BLContextState` | ❌ Unstarted | |
 `BLCreateForeignInfo` | ❌ Unstarted | |
-`BLEllipse` | ❌ Unstarted | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
+`BLEllipse` | ✅ Done | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
 `BLExternalImplPreface` | ❌ Unstarted | |
 `BLFile` | ❌ Unstarted | |
 `BLFont` | ❌ Unstarted | Font [C++ API]|
