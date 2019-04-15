@@ -45,11 +45,11 @@ class BLBoxTests: XCTestCase {
     func testContainsPointI() {
         let box = BLBox(x0: 0, y0: 0, x1: 10, y1: 10)
         
-        XCTAssert(box.contains(BLPoint(x: 0, y: 0)))
-        XCTAssert(box.contains(BLPoint(x: 5, y: 5)))
-        XCTAssertFalse(box.contains(BLPoint(x: 10, y: 10)))
-        XCTAssertFalse(box.contains(BLPoint(x: -5, y: 5)))
-        XCTAssertFalse(box.contains(BLPoint(x: 5, y: -5)))
+        XCTAssert(box.contains(BLPointI(x: 0, y: 0)))
+        XCTAssert(box.contains(BLPointI(x: 5, y: 5)))
+        XCTAssertFalse(box.contains(BLPointI(x: 10, y: 10)))
+        XCTAssertFalse(box.contains(BLPointI(x: -5, y: 5)))
+        XCTAssertFalse(box.contains(BLPointI(x: 5, y: -5)))
     }
     
     func testInitWithWidthAndHeight() {
