@@ -7,7 +7,7 @@ This may change at any moment.
 | Structure | Status | Notes |
 |-----|-----|-----|
 `BLApproximationOptions` | ❌ Unstarted | |
-`BLArc` | ❌ Unstarted | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
+`BLArc` | ✅ Done | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
 `BLArray` | 🕒 Partial | Array container (template) [C++ API]|
 `BLArrayView` | ❌ Unstarted | |
 `BLBox` | ✅ Done | Box specified as [x0, y0, x1, y1] using double as a storage type |
