@@ -49,3 +49,8 @@ fi
 rm -rf temp
 
 echo "Success!"
+
+if [[ -n $(git status --porcelain) ]]; then
+    echo "New unstaged changes:"
+    git status --porcelain
+fi
