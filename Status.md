@@ -15,7 +15,7 @@ This may change at any moment.
 `BLCircle` | ✅ Done | Circle specified as [cx, cy, r] using double as a storage type |
 `BLConicalGradientValues` | ❌ Unstarted | Conical gradient values packed into a structure |
 `BLContext` | 🕒 Partial | Rendering context [C++ API]|
-`BLContextCookie` | ❌ Unstarted | |
+`BLContextCookie` | ✅ Done | |
 `BLContextCreateOptions` | ❌ Unstarted | Information that can be used to customize the rendering context |
 `BLContextHints` | ❌ Unstarted | Rendering context hints |
 `BLContextState` | ❌ Unstarted | |
