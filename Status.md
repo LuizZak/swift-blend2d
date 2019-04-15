@@ -75,7 +75,7 @@ This may change at any moment.
 `BLRgba128` | ❌ Unstarted | 128-bit RGBA color stored as 4 32-bit floating point values in [RGBA] order |
 `BLRgba32` | ❌ Unstarted | 32-bit RGBA color (8-bit per component) stored as 0xAARRGGBB |
 `BLRgba64` | ❌ Unstarted | 64-bit RGBA color (16-bit per component) stored as 0xAAAARRRRGGGGBBBB |
-`BLRoundRect` | ❌ Unstarted | Rounded rectangle specified as [x, y, w, h, rx, ry] using double as a storage type |
+`BLRoundRect` | ✅ Done | Rounded rectangle specified as [x, y, w, h, rx, ry] using double as a storage type |
 `BLRuntimeBuildInfo` | ❌ Unstarted | Blend2D build information |
 `BLRuntimeCpuInfo` | ❌ Unstarted | CPU information queried by the runtime |
 `BLRuntimeMemoryInfo` | ❌ Unstarted | |
