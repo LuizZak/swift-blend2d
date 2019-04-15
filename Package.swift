@@ -20,8 +20,9 @@ let package = Package(
             name: "asmjit",
             dependencies: [],
             cxxSettings: [
-                .define("ASMJIT_BUILD_X86", .when(platforms: [.macOS, .linux])),g
-                .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS]))
+                .define("ASMJIT_BUILD_X86", .when(platforms: [.macOS, .linux])),
+                .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS])),
+                .define("ASMJIT_BUILD_EMBED")
             ],
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux]))
