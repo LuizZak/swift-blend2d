@@ -68,7 +68,7 @@ This may change at any moment.
 `BLPointI` | ✅ Done | Point specified as [x, y] using int as a storage type |
 `BLRadialGradientValues` | ❌ Unstarted | Radial gradient values packed into a structure |
 `BLRandom` | ❌ Unstarted | |
-`BLRange` | ❌ Unstarted | |
+`BLRange` | ✅ Done | |
 `BLRect` | ✅ Done | Rectangle specified as [x, y, w, h] using double as a storage type |
 `BLRectI` | ✅ Done | Rectangle specified as [x, y, w, h] using int as a storage type |
 `BLRegion` | ❌ Unstarted | |
