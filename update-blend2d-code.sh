@@ -46,6 +46,8 @@ if [[ ! $? -eq 0 ]]; then
     exit 1
 fi
 
+cd ..
+
 rm -rf temp
 
 echo "Success!"
