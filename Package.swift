@@ -25,7 +25,8 @@ let package = Package(
                 .define("ASMJIT_BUILD_EMBED")
             ],
             linkerSettings: [
-                .linkedLibrary("rt", .when(platforms: [.linux]))
+                .linkedLibrary("rt", .when(platforms: [.linux])),
+                .linkedLibrary("pthread")
             ]),
         .target(
             name: "blend2d",
