@@ -228,6 +228,7 @@ extension BLStringTests {
     static let __allTests__BLStringTests = [
         ("testAppendString", testAppendString),
         ("testCreateWithStringLiteral", testCreateWithStringLiteral),
+        ("testEquals", testEquals),
         ("testInit", testInit),
         ("testInitWithString", testInitWithString),
     ]

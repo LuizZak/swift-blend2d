@@ -32,4 +32,10 @@ class BLStringTests: XCTestCase {
         XCTAssertEqual(string.size, 3)
         XCTAssertEqual(string.toString(), "abc")
     }
+    
+    func testEquals() {
+        XCTAssertEqual("" as BLString, "" as BLString)
+        XCTAssertEqual("abc" as BLString, "abc" as BLString)
+        XCTAssertNotEqual("abc" as BLString, "def" as BLString)
+    }
 }
