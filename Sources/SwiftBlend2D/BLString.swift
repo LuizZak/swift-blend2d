@@ -1,6 +1,7 @@
 import blend2d
 
 public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiteral {
+    /// Size, in bytes, of the data of this BLString instance.
     public var size: Int {
         return blStringGetSize(&object)
     }
@@ -19,14 +20,8 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
         }
     }
     
-    public init(stringLiteral value: String) {
-        super.init { object -> BLResult in
-            blStringInit(object)
-            
-            return value.withCString { pointer in
-                blStringAssignData(object, pointer, value.utf8CString.count - 1)
-            }
-        }
+    public convenience init(stringLiteral value: String) {
+        self.init(string: value)
     }
     
     public func toString() -> String {
