@@ -31,10 +31,120 @@ public class BLContext: BLBaseClass<BLContextCore> {
         }
     }
     
+    public func userToMeta() {
+        ensureNotEnded()
+        
+        // TODO: Figure out what this does and doc comment this method.
+        blContextUserToMeta(&object)
+    }
+    
+    public func setRenderingQualityHint(_ value: BLRenderingQuality) {
+        ensureNotEnded()
+        
+        blContextSetHint(&object, BL_CONTEXT_HINT_RENDERING_QUALITY.rawValue, value.rawValue)
+    }
+    
+    public func setGradientQualityHint(_ value: BLGradientQuality) {
+        ensureNotEnded()
+        
+        blContextSetHint(&object, BL_CONTEXT_HINT_GRADIENT_QUALITY.rawValue, value.rawValue)
+    }
+    
+    public func setPatternQualityHint(_ value: BLPatternQuality) {
+        ensureNotEnded()
+        
+        blContextSetHint(&object, BL_CONTEXT_HINT_PATTERN_QUALITY.rawValue, value.rawValue)
+    }
+    
+    public func setFlattenMode(_ value: BLFlattenMode) {
+        ensureNotEnded()
+        
+        blContextSetFlattenMode(&object, value.rawValue)
+    }
+    
+    public func setFlattenTolerance(_ value: Double) {
+        ensureNotEnded()
+        
+        blContextSetFlattenTolerance(&object, value)
+    }
+    
+    public func setApproximationOptions(_ value: BLApproximationOptions) {
+        ensureNotEnded()
+        
+        var value = value
+        blContextSetApproximationOptions(&object, &value)
+    }
+    
     public func setCompOp(_ op: BLCompOp) {
         ensureNotEnded()
         
         blContextSetCompOp(&object, op.rawValue)
+    }
+    
+    public func setGlobalAlpha(_ value: Double) {
+        ensureNotEnded()
+        
+        blContextSetGlobalAlpha(&object, value)
+    }
+    
+    public func setFillRule(_ value: BLFillRule) {
+        ensureNotEnded()
+        
+        blContextSetFillRule(&object, value.rawValue)
+    }
+    
+    public func setFillAlpha(_ value: Double) {
+        ensureNotEnded()
+        
+        blContextSetFillAlpha(&object, value)
+    }
+    
+    // TODO: Implement blContextGetFillStyle
+    func getFillStyle() {
+        ensureNotEnded()
+    }
+    
+    // TODO: Implement blContextSetFillStyle
+    func setFillStyle(/* ... */) {
+        ensureNotEnded()
+    }
+    
+    /// Returns the RGBA32 fill style for this context.
+    /// Returns nil, in case the current fill style mode is not compatible with
+    /// RGBA32.
+    public func getFillStyleRgba32() -> UInt32? {
+        ensureNotEnded()
+        
+        var value: UInt32 = 0
+        if blContextGetFillStyleRgba32(&object, &value) != BL_SUCCESS.rawValue {
+            return nil
+        }
+        return value
+    }
+    
+    public func setFillStyleRgba32(_ value: UInt32) {
+        ensureNotEnded()
+        
+        blContextSetFillStyleRgba32(&object, value)
+    }
+    
+    /// Returns the RGBA64 fill style for this context.
+    /// Returns nil, in case the current fill style mode is not compatible with
+    /// RGBA64.
+    public func getFillStyleRgba64() -> UInt64? {
+        ensureNotEnded()
+        
+        var value: UInt64 = 0
+        if blContextGetFillStyleRgba64(&object, &value) != BL_SUCCESS.rawValue {
+            return nil
+        }
+        return value
+    }
+    
+    public func setFillStyleRgba64(_ value: UInt64) {
+        ensureNotEnded()
+        
+        blContextSetFillStyleRgba64(&object, value)
     }
     
     /// Fills everything.
@@ -44,16 +154,16 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextFillAll(&object)
     }
     
-    public func setFillStyleRgba32(_ value: UInt32) {
-        ensureNotEnded()
-        
-        blContextSetFillStyleRgba32(&self.object, value)
-    }
-    
     public func fillPath(_ path: BLPath) {
         ensureNotEnded()
         
         blContextFillPathD(&object, &path.object)
+    }
+    
+    public func flush(flags: BLContextFlushFlags) {
+        ensureNotEnded()
+        
+        blContextFlush(&object, flags.rawValue)
     }
     
     /// Waits for completion of all render commands and detaches the rendering
@@ -64,6 +174,8 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// - note: After a call to `end`, no more invocations should be performed
     /// on this context instance.
     public func end() {
+        ensureNotEnded()
+        
         blContextEnd(&object)
         
         _ended = true
@@ -73,6 +185,24 @@ public class BLContext: BLBaseClass<BLContextCore> {
         if _ended {
             fatalError("Cannot manipulate BLContext after it has ended via end()")
         }
+    }
+}
+
+// MARK: - State saving/restoration
+public extension BLContext {
+    func save() -> BLContextCookie {
+        ensureNotEnded()
+        
+        var cookie = BLContextCookie()
+        blContextSave(&object, &cookie)
+        return cookie
+    }
+    
+    func restore(from cookie: BLContextCookie) -> BLResult {
+        ensureNotEnded()
+        
+        var cookie = cookie
+        return blContextRestore(&object, &cookie)
     }
 }
 

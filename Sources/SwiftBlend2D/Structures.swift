@@ -123,3 +123,32 @@ public extension BLGeometryType {
     /// BLRegion (or BLRegionCore).
     static let region = BL_GEOMETRY_TYPE_REGION
 }
+
+public extension BLContextFlushFlags {
+    /// Wait for completion (block).
+    static let sync = BL_CONTEXT_FLUSH_SYNC
+}
+
+public extension BLRenderingQuality {
+    /// Render using anti-aliasing.
+    static let antialias = BL_RENDERING_QUALITY_ANTIALIAS
+}
+
+public extension BLPatternQuality {
+    /// Nearest neighbor.
+    static let nearestNeighbor = BL_PATTERN_QUALITY_NEAREST
+    /// Bilinear.
+    static let bilinear = BL_PATTERN_QUALITY_BILINEAR
+}
+
+public extension BLGradientQuality {
+    /// Nearest neighbor.
+    static let nearest = BL_GRADIENT_QUALITY_NEAREST
+}
+
+public extension BLFlattenMode {
+    /// Use default mode (decided by Blend2D).
+    static let `default` = BL_FLATTEN_MODE_DEFAULT
+    /// Recursive subdivision flattening.
+    static let recursive = BL_FLATTEN_MODE_RECURSIVE
+}
