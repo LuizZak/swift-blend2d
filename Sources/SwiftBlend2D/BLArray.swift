@@ -34,7 +34,7 @@ final class BLArray {
         return UnsafeRawBufferPointer(start: pointer!, count: count)
     }
     
-    func readStructureUnsafe<T>(type: T.Type) -> [T] {
+    func asArrayOfUnsafe<T>(type: T.Type) -> [T] {
         guard let pointer = blArrayGetData(&object)?.bindMemory(to: T.self, capacity: count) else {
             return []
         }
@@ -43,8 +43,11 @@ final class BLArray {
         return Array(AnyIterator(buffer.makeIterator()))
     }
     
-    func readUInt8() -> [UInt8] {
-        return readStructureUnsafe(type: UInt8.self)
+    func asArrayOfUInt8() -> [UInt8] {
+        return asArrayOfUnsafe(type: UInt8.self)
+    }
+    func asArrayOfDouble() -> [Double] {
+        return asArrayOfUnsafe(type: Double.self)
     }
     
     func shrink() {
@@ -83,7 +86,25 @@ final class BLArray {
         blArrayAppendItem(&object, item)
     }
     
-    func append(contentsOf pointer: UnsafeRawPointer, count: Int) {
-        blArrayAppendView(&object, pointer, count)
+    func append(contentsOf pointer: UnsafeRawPointer, byteCount: Int) {
+        blArrayAppendView(&object, pointer, byteCount)
+    }
+    
+    func clear() {
+        blArrayClear(&object)
+    }
+    
+    func replaceContentsUnsafe<T>(_ contents: [T]) {
+        let elementSize = MemoryLayout<T>.size
+        
+        clear()
+        
+        contents.withUnsafeBytes { pointer in
+            guard let pointer = pointer.baseAddress else {
+                return
+            }
+            
+            append(contentsOf: pointer, byteCount: elementSize * contents.count)
+        }
     }
 }

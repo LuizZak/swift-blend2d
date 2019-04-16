@@ -35,7 +35,7 @@ class BLImageTests: XCTestCase {
         
         try image.writeToData(array, codec: codec)
         
-        let data = array.readUInt8()
+        let data = array.asArrayOfUInt8()
         XCTAssertEqual(
             data, [
                 // BMP header

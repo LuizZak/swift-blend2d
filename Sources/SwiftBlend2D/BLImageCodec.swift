@@ -30,7 +30,7 @@ extension BLImageCodec {
         
         let array = BLArray(borrowing: codecs.pointee)
         
-        return array.readStructureUnsafe(type: BLImageCodecCore.self)
+        return array.asArrayOfUnsafe(type: BLImageCodecCore.self)
     }()
 }
 
