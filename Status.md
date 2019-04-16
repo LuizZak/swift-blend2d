@@ -81,7 +81,7 @@ This may change at any moment.
 `BLRuntimeMemoryInfo` | ❌ Unstarted | |
 `BLSize` | ✅ Done | Size specified as [w, h] using double as a storage type |
 `BLSizeI` | ✅ Done | Size specified as [w, h] using int as a storage type |
-`BLString` | ❌ Unstarted | |
+`BLString` | 🕒 Partial | |
 `BLStrokeOptions` | ❌ Unstarted | |
 `BLStrokeOptionsCore` | ❌ Unstarted | |
 `BLTextMetrics` | ❌ Unstarted | Text metrics |
