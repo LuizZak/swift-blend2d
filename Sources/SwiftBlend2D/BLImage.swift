@@ -48,6 +48,9 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         return blImageEquals(&object, &other.object)
     }
     
+    /// Scales this image to a given size, with a given scale filter.
+    ///
+    /// Throws in case one of the input values is invalid.
     public func scale(size: BLSizeI, filter: BLImageScaleFilter, options: BLImageScaleOptions? = nil) throws {
         var size = size
         var options = options
