@@ -223,7 +223,7 @@ public enum Blend2DError: String, Error {
 }
 
 @discardableResult
-func handleErrorResults(_ operation: @autoclosure () -> BLResult) throws -> BLResult {
+func resultToError(_ operation: @autoclosure () -> BLResult) throws -> BLResult {
     let value = operation()
     
     switch value {

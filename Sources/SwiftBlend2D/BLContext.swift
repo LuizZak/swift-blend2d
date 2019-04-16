@@ -18,13 +18,13 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public init?(image: BLImage, options: CreateOptions? = nil) {
         if var options = options?.toBLContextCreateOptions() {
             super.init {
-                try? handleErrorResults(
+                try? resultToError(
                     blContextInitAs($0, &image.object, &options)
                 )
             }
         } else {
             super.init {
-                try? handleErrorResults(
+                try? resultToError(
                     blContextInitAs($0, &image.object, nil)
                 )
             }

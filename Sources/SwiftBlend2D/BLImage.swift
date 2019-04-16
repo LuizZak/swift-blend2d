@@ -20,6 +20,11 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         return object.impl.pointee.size
     }
     
+    /// The image format.
+    public var format: BLFormat {
+        return BLFormat(rawValue: BLFormat.RawValue(object.impl.pointee.format))
+    }
+    
     public override init() {
         super.init()
     }
@@ -43,19 +48,28 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         return blImageEquals(&object, &other.object)
     }
     
+    public func scale(size: BLSizeI, filter: BLImageScaleFilter, options: BLImageScaleOptions? = nil) throws {
+        var size = size
+        var options = options
+        
+        try resultToError(
+            blImageScale(&object, &object, &size, filter.rawValue, makeNullablePointer(&options))
+        )
+    }
+    
     public func writeToFile(_ path: String, codec: BLImageCodec) throws {
-        try handleErrorResults(
+        try resultToError(
             blImageWriteToFile(&object, path, &codec.object)
         )
     }
     
     func writeToData(_ buffer: BLArray, codec: BLImageCodec) throws {
-        try handleErrorResults(
+        try resultToError(
             blImageWriteToData(&object, &buffer.object, &codec.object)
         )
     }
     
-    func readFromData(_ data: [UInt8], codecs: [BLImageCodec]) throws {
+    public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]) throws {
         let array = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
         for item in data {
             array.append(item)
@@ -70,7 +84,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
             codecsArray.append(&codec.object)
         }
         
-        try handleErrorResults(
+        try resultToError(
             blImageReadFromData(&object, buffer.unsafePointer().baseAddress, buffer.count, &codecsArray.object)
         )
     }
