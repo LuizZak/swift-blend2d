@@ -135,13 +135,20 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         }
     }
     
-    public func addReversedPath(_ other: BLPath, range: BLRange? = nil, reverseMode: BLPathReverseMode = .complete) {
+    public func addReversedPath(_ other: BLPath,
+                                range: BLRange? = nil,
+                                reverseMode: BLPathReverseMode = .complete) {
+        
         withUnsafeNullablePointer(to: range) {
             blPathAddReversedPath(&object, &other.object, $0, reverseMode.rawValue)
         }
     }
     
-    public func addStrokedPath(_ other: BLPath, range: BLRange? = nil, options: BLStrokeOptions = BLStrokeOptions(), approximationOptions: BLApproximationOptions? = nil) {
+    public func addStrokedPath(_ other: BLPath,
+                               range: BLRange? = nil,
+                               options: BLStrokeOptions = BLStrokeOptions(),
+                               approximationOptions: BLApproximationOptions? = nil) {
+        
         withUnsafeNullablePointer(to: range) { range in
             withUnsafeNullablePointer(to: approximationOptions) { approx in
                 blPathAddStrokedPath(&object, &other.object, range, &options.object, approx)

@@ -1,7 +1,7 @@
 import blend2d
 
 public extension BLPointI {
-    /// A zero-valued BLPoint with coordinates (0, 0)
+    /// A zero-valued BLPointI with coordinates (0, 0)
     static let zero = BLPointI(x: 0, y: 0)
 }
 
