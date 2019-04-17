@@ -1,7 +1,11 @@
 import blend2d
 
+// TODO: This class seems to be running into some memory corruption issues. Should
+// probably check that.
+
 public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiteral {
-    /// Size, in bytes, of the data of this BLString instance.
+    /// Size, in bytes, of the data of this BLString instance (minus trailing
+    /// null-terminator).
     public var size: Int {
         return blStringGetSize(&object)
     }
@@ -29,13 +33,16 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
             return ""
         }
         
-        return data.withMemoryRebound(to: UInt8.self, capacity: size, String.init)
+        return String(cString: data)
     }
     
     public static func += (lhs: BLString, rhs: String) {
         _ = rhs.withCString { pointer in
-            blStringInsertData(&lhs.object, lhs.size, pointer, rhs.utf8CString.count - 1)
+            blStringInsertData(&lhs.object, lhs.size, pointer, rhs.utf8CString.count)
         }
+    }
+    public static func += (lhs: BLString, rhs: BLString) {
+        blStringInsertString(&lhs.object, lhs.size, &rhs.object)
     }
 }
 

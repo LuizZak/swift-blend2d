@@ -229,6 +229,7 @@ extension BLStringTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLStringTests = [
+        ("testAppendBLString", testAppendBLString),
         ("testAppendString", testAppendString),
         ("testCreateWithStringLiteral", testCreateWithStringLiteral),
         ("testEquals", testEquals),
