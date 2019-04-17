@@ -22,6 +22,19 @@ final class BLArray {
         ownership = .borrowed
     }
     
+    init(array: [Double]) {
+        blArrayInit(&object, BL_IMPL_TYPE_ARRAY_F64.rawValue)
+        ownership = .owner
+        
+        array.withUnsafeBytes { pointer in
+            guard let pointer = pointer.baseAddress else {
+                return
+            }
+            
+            append(contentsOf: pointer, byteCount: array.count * MemoryLayout<Double>.size)
+        }
+    }
+    
     deinit {
         if ownership == .owner {
             blArrayReset(&object)
