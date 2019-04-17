@@ -468,7 +468,7 @@ public extension BLContext {
         /// If the number is `1` or greater it means to initialize the context
         /// for asynchronous rendering - in this case `threadCount` specifies
         /// how many threads can execute in parallel.
-        public var threadCount: Int
+        public var threadCount: Int = 0
     }
 }
 
