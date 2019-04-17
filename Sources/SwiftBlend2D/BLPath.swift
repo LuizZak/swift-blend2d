@@ -114,50 +114,64 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     }
     
     public func addPath(_ other: BLPath, range: BLRange? = nil) {
-        var range = range
-        blPathAddPath(&object, &other.object, makeNullablePointer(&range))
+        withUnsafeNullablePointer(to: range) {
+            blPathAddPath(&object, &other.object, $0)
+        }
     }
     
     public func addTranslatedPath(_ other: BLPath, offset: BLPoint, range: BLRange? = nil) {
         var offset = offset
-        var range = range
-        blPathAddTranslatedPath(&object, &other.object, makeNullablePointer(&range), &offset)
+        
+        withUnsafeNullablePointer(to: range) {
+            blPathAddTranslatedPath(&object, &other.object, $0, &offset)
+        }
     }
     
     public func addTransformedPath(_ other: BLPath, matrix: BLMatrix2D, range: BLRange? = nil) {
         var matrix = matrix
-        var range = range
-        blPathAddTransformedPath(&object, &other.object, makeNullablePointer(&range), &matrix)
+        
+        withUnsafeNullablePointer(to: range) {
+            blPathAddTransformedPath(&object, &other.object, $0, &matrix)
+        }
     }
     
     public func addReversedPath(_ other: BLPath, range: BLRange? = nil, reverseMode: BLPathReverseMode = .complete) {
-        var range = range
-        blPathAddReversedPath(&object, &other.object, makeNullablePointer(&range), reverseMode.rawValue)
+        withUnsafeNullablePointer(to: range) {
+            blPathAddReversedPath(&object, &other.object, $0, reverseMode.rawValue)
+        }
     }
     
     public func addStrokedPath(_ other: BLPath, range: BLRange? = nil, options: BLStrokeOptions = BLStrokeOptions(), approximationOptions: BLApproximationOptions? = nil) {
-        var range = range
-        var approximationOptions = approximationOptions
-        blPathAddStrokedPath(&object, &other.object, makeNullablePointer(&range), &options.object, makeNullablePointer(&approximationOptions))
+        withUnsafeNullablePointer(to: range) { range in
+            withUnsafeNullablePointer(to: approximationOptions) { approx in
+                blPathAddStrokedPath(&object, &other.object, range, &options.object, approx)
+            }
+        }
     }
     
     public func translate(by offset: BLPoint, range: BLRange? = nil) {
         var offset = offset
-        var range = range
-        blPathTranslate(&object, makeNullablePointer(&range), &offset)
+        
+        withUnsafeNullablePointer(to: range) {
+            blPathTranslate(&object, $0, &offset)
+        }
     }
     
     public func transform(_ matrix: BLMatrix2D, range: BLRange? = nil) {
         var matrix = matrix
-        var range = range
-        blPathTransform(&object, makeNullablePointer(&range), &matrix)
+        
+        withUnsafeNullablePointer(to: range) {
+            blPathTransform(&object, $0, &matrix)
+        }
     }
     
     // TODO: Add support for flags once Blend2D does so.
     func fitTo(rectangle: BLRect, range: BLRange? = nil) {
         var rectangle = rectangle
-        var range = range
-        blPathFitTo(&object, makeNullablePointer(&range), &rectangle, 0)
+        
+        withUnsafeNullablePointer(to: range) {
+            blPathFitTo(&object, $0, &rectangle, 0)
+        }
     }
     
     /// Gets the range of a figure at a given index on this path.

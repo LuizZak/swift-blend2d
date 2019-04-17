@@ -53,10 +53,11 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// Throws in case one of the input values is invalid.
     public func scale(size: BLSizeI, filter: BLImageScaleFilter, options: BLImageScaleOptions? = nil) throws {
         var size = size
-        var options = options
         
         try resultToError(
-            blImageScale(&object, &object, &size, filter.rawValue, makeNullablePointer(&options))
+            withUnsafeNullablePointer(to: options) {
+                blImageScale(&object, &object, &size, filter.rawValue, $0)
+            }
         )
     }
     

@@ -16,11 +16,13 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// constructor BLImage.init()), the initialization fails.
     ///   - options: Options to use when creating the new context.
     public init?(image: BLImage, options: CreateOptions? = nil) {
-        var options = options?.toBLContextCreateOptions()
+        let options = options?.toBLContextCreateOptions()
         
-        super.init {
+        super.init { objectPtr in
             try? resultToError(
-                blContextInitAs($0, &image.object, makeNullablePointer(&options))
+                withUnsafeNullablePointer(to: options) {
+                    blContextInitAs(objectPtr, &image.object, $0)
+                }
             )
         }
     }
@@ -31,9 +33,11 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// access to the image data. This means that no other renderer can use it
     /// during rendering.
     public func begin(image: BLImage, options: CreateOptions? = nil) {
-        var options = options?.toBLContextCreateOptions()
+        let options = options?.toBLContextCreateOptions()
         
-        blContextBegin(&object, &image.object, makeNullablePointer(&options))
+        withUnsafeNullablePointer(to: options) {
+            blContextBegin(&object, &image.object, $0)
+        }
     }
     
     /// Waits for completion of all render commands and detaches the rendering
@@ -357,30 +361,34 @@ public class BLContext: BLBaseClass<BLContextCore> {
     
     public func blitImage(_ image: BLImage, at point: BLPointI, imageArea: BLRectI? = nil) {
         var point = point
-        var imageArea = imageArea
         
-        blContextBlitImageI(&object, &point, &image.object, makeNullablePointer(&imageArea))
+        withUnsafeNullablePointer(to: imageArea) {
+            blContextBlitImageI(&object, &point, &image.object, $0)
+        }
     }
     
     public func blitImage(_ image: BLImage, at point: BLPoint, imageArea: BLRectI? = nil) {
         var point = point
-        var imageArea = imageArea
         
-        blContextBlitImageD(&object, &point, &image.object, makeNullablePointer(&imageArea))
+        withUnsafeNullablePointer(to: imageArea) {
+            blContextBlitImageD(&object, &point, &image.object, $0)
+        }
     }
     
     public func blitScaledImage(_ image: BLImage, rectangle: BLRectI, imageArea: BLRectI? = nil) {
         var rectangle = rectangle
-        var imageArea = imageArea
         
-        blContextBlitScaledImageI(&object, &rectangle, &image.object, makeNullablePointer(&imageArea))
+        withUnsafeNullablePointer(to: imageArea) {
+            blContextBlitScaledImageI(&object, &rectangle, &image.object, $0)
+        }
     }
     
     public func blitScaledImage(_ image: BLImage, rectangle: BLRect, imageArea: BLRectI? = nil) {
         var rectangle = rectangle
-        var imageArea = imageArea
         
-        blContextBlitScaledImageD(&object, &rectangle, &image.object, makeNullablePointer(&imageArea))
+        withUnsafeNullablePointer(to: imageArea) {
+            blContextBlitScaledImageD(&object, &rectangle, &image.object, $0)
+        }
     }
     
     public func fillPath(_ path: BLPath) {
