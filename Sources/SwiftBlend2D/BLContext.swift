@@ -323,40 +323,37 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextStrokeGeometry(&object, geometryType.rawValue, geometryData)
     }
     
-    // TODO: Await fix from main blend2d repo for missing implementation to
-    // corresponding C function declarations
+    public func strokeText(_ text: String, at point: BLPointI, font: BLFontCore) {
+        var cString = text.utf8CString
+        var point = point
+        var font = font
+        
+        blContextStrokeTextI(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
+    }
     
-//    public func strokeText(_ text: String, at point: BLPointI, font: BLFontCore) {
-//        var cString = text.utf8CString
-//        var point = point
-//        var font = font
-//
-//        blContextStrokeTextI(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
-//    }
-//
-//    public func strokeText(_ text: String, at point: BLPoint, font: BLFontCore) {
-//        var cString = text.utf8CString
-//        var point = point
-//        var font = font
-//
-//        blContextStrokeTextD(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
-//    }
-//
-//    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFontCore) {
-//        var glyphRun = glyphRun
-//        var point = point
-//        var font = font
-//
-//        blContextStrokeGlyphRunI(&object, &point, &font, &glyphRun)
-//    }
-//
-//    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFontCore) {
-//        var glyphRun = glyphRun
-//        var point = point
-//        var font = font
-//
-//        blContextStrokeGlyphRunD(&object, &point, &font, &glyphRun)
-//    }
+    public func strokeText(_ text: String, at point: BLPoint, font: BLFontCore) {
+        var cString = text.utf8CString
+        var point = point
+        var font = font
+        
+        blContextStrokeTextD(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
+    }
+    
+    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFontCore) {
+        var glyphRun = glyphRun
+        var point = point
+        var font = font
+        
+        blContextStrokeGlyphRunI(&object, &point, &font, &glyphRun)
+    }
+    
+    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFontCore) {
+        var glyphRun = glyphRun
+        var point = point
+        var font = font
+        
+        blContextStrokeGlyphRunD(&object, &point, &font, &glyphRun)
+    }
     
     public func blitImage(_ image: BLImage, at point: BLPointI, imageArea: BLRectI? = nil) {
         var point = point
