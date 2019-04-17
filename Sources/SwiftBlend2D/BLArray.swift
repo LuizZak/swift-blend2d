@@ -23,7 +23,7 @@ final class BLArray {
     }
     
     init(array: [Double]) {
-        blArrayInit(&object, BL_IMPL_TYPE_ARRAY_F64.rawValue)
+        blArrayInit(&object, BLImplType.arrayOfFloat64.rawValue)
         ownership = .owner
         
         array.withUnsafeBytes { pointer in

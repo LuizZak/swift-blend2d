@@ -200,3 +200,128 @@ public extension BLImageScaleFilter {
     /// Filter using a user-function, must be passed through `BLImageScaleOptions`.
     static let user = BL_IMAGE_SCALE_FILTER_USER
 }
+
+internal extension BLImplType {
+    /// Type is `Null`.
+    static let null = BL_IMPL_TYPE_NULL
+    
+    /// Type is `BLBitArray`.
+    static let bitArray = BL_IMPL_TYPE_BIT_ARRAY
+    
+    /// Type is `BLString`.
+    static let string = BL_IMPL_TYPE_STRING
+    
+    /// Type is `BLArray<T>` where `T` is `BLVariant` or other ref-counted type.
+    static let arrayOfVar = BL_IMPL_TYPE_ARRAY_VAR
+    
+    /// Type is `BLArray<T>` where `T` matches 8-bit signed integral type.
+    static let arrayOfInt8 = BL_IMPL_TYPE_ARRAY_I8
+    
+    /// Type is `BLArray<T>` where `T` matches 8-bit unsigned integral type.
+    static let arrayOfUInt8 = BL_IMPL_TYPE_ARRAY_U8
+    
+    /// Type is `BLArray<T>` where `T` matches 16-bit signed integral type.
+    static let arrayOfInt16 = BL_IMPL_TYPE_ARRAY_I16
+    
+    /// Type is `BLArray<T>` where `T` matches 16-bit unsigned integral type.
+    static let arrayOfUInt16 = BL_IMPL_TYPE_ARRAY_U16
+    
+    /// Type is `BLArray<T>` where `T` matches 32-bit signed integral type.
+    static let arrayOfInt32 = BL_IMPL_TYPE_ARRAY_I32
+    
+    /// Type is `BLArray<T>` where `T` matches 32-bit unsigned integral type.
+    static let arrayOfUInt32 = BL_IMPL_TYPE_ARRAY_U32
+    
+    /// Type is `BLArray<T>` where `T` matches 64-bit signed integral type.
+    static let arrayOfInt64 = BL_IMPL_TYPE_ARRAY_I64
+    
+    /// Type is `BLArray<T>` where `T` matches 64-bit unsigned integral type.
+    static let arrayOfUInt64 = BL_IMPL_TYPE_ARRAY_U64
+    
+    /// Type is `BLArray<T>` where `T` matches 32-bit floating point type.
+    static let arrayOfFloat32 = BL_IMPL_TYPE_ARRAY_F32
+    
+    /// Type is `BLArray<T>` where `T` matches 64-bit floating point type.
+    static let arrayOfFloat64 = BL_IMPL_TYPE_ARRAY_F64
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 1.
+    static let arrayOfStruct_1 = BL_IMPL_TYPE_ARRAY_STRUCT_1
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 2.
+    static let arrayOfStruct_2 = BL_IMPL_TYPE_ARRAY_STRUCT_2
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 3.
+    static let arrayOfStruct_3 = BL_IMPL_TYPE_ARRAY_STRUCT_3
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 4.
+    static let arrayOfStruct_4 = BL_IMPL_TYPE_ARRAY_STRUCT_4
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 6.
+    static let arrayOfStruct_6 = BL_IMPL_TYPE_ARRAY_STRUCT_6
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 8.
+    static let arrayOfStruct_8 = BL_IMPL_TYPE_ARRAY_STRUCT_8
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 10.
+    static let arrayOfStruct_10 = BL_IMPL_TYPE_ARRAY_STRUCT_10
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 12.
+    static let arrayOfStruct_12 = BL_IMPL_TYPE_ARRAY_STRUCT_12
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 16.
+    static let arrayOfStruct_16 = BL_IMPL_TYPE_ARRAY_STRUCT_16
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 20.
+    static let arrayOfStruct_20 = BL_IMPL_TYPE_ARRAY_STRUCT_20
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 24.
+    static let arrayOfStruct_24 = BL_IMPL_TYPE_ARRAY_STRUCT_24
+    
+    /// Type is `BLArray<T>` where `T` is a struct of size 32.
+    static let arrayOfStruct_32 = BL_IMPL_TYPE_ARRAY_STRUCT_32
+    
+    /// Type is `BLPath`.
+    static let path2D = BL_IMPL_TYPE_PATH2D
+    
+    /// Type is `BLRegion`.
+    static let region = BL_IMPL_TYPE_REGION
+    
+    /// Type is `BLImage`.
+    static let image = BL_IMPL_TYPE_IMAGE
+    
+    /// Type is `BLImageCodec`.
+    static let imageCodec = BL_IMPL_TYPE_IMAGE_CODEC
+    
+    /// Type is `BLImageDecoder`.
+    static let imageDecoder = BL_IMPL_TYPE_IMAGE_DECODER
+    
+    /// Type is `BLImageEncoder`.
+    static let imageEncoder = BL_IMPL_TYPE_IMAGE_ENCODER
+    
+    /// Type is `BLGradient`.
+    static let gradient = BL_IMPL_TYPE_GRADIENT
+    
+    /// Type is `BLPattern`.
+    static let pattern = BL_IMPL_TYPE_PATTERN
+    
+    /// Type is `BLContext`.
+    static let context = BL_IMPL_TYPE_CONTEXT
+    
+    /// Type is `BLFont`.
+    static let font = BL_IMPL_TYPE_FONT
+    
+    /// Type is `BLFontFace`.
+    static let fontFace = BL_IMPL_TYPE_FONT_FACE
+    
+    /// Type is `BLFontData`.
+    static let fontData = BL_IMPL_TYPE_FONT_DATA
+    
+    /// Type is `BLFontLoader`.
+    static let fontLoader = BL_IMPL_TYPE_FONT_LOADER
+    
+    /// Type is `BLFontFeatureOptions`.
+    static let fontFeatureOptions = BL_IMPL_TYPE_FONT_FEATURE_OPTIONS
+    
+    /// Type is `BLFontVariationOptions`.
+    static let fontVariationOptions = BL_IMPL_TYPE_FONT_VARIATION_OPTIONS
+}
