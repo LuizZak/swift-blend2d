@@ -21,6 +21,8 @@ extension BLArrayTests {
         ("testInit", testInit),
         ("testReserveCapacity", testReserveCapacity),
         ("testShrink", testShrink),
+        ("testWithTemporaryArrayViewForDouble", testWithTemporaryArrayViewForDouble),
+        ("testWithTemporaryArrayViewForDoubleWithEmptyArray", testWithTemporaryArrayViewForDoubleWithEmptyArray),
     ]
 }
 

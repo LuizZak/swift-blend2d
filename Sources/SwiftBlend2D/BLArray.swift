@@ -31,7 +31,7 @@ final class BLArray {
                 return
             }
             
-            append(contentsOf: pointer, byteCount: array.count * MemoryLayout<Double>.size)
+            append(contentsOf: pointer, lengthInBytes: array.count * MemoryLayout<Double>.size)
         }
     }
     
@@ -99,25 +99,43 @@ final class BLArray {
         blArrayAppendItem(&object, item)
     }
     
-    func append(contentsOf pointer: UnsafeRawPointer, byteCount: Int) {
-        blArrayAppendView(&object, pointer, byteCount)
+    func append(contentsOf pointer: UnsafeRawPointer, lengthInBytes: Int) {
+        blArrayAppendView(&object, pointer, lengthInBytes)
     }
     
     func clear() {
         blArrayClear(&object)
     }
     
-    func replaceContentsUnsafe<T>(_ contents: [T]) {
-        let elementSize = MemoryLayout<T>.size
-        
+    func replaceContents(_ array: [Double]) {
         clear()
         
-        contents.withUnsafeBytes { pointer in
-            guard let pointer = pointer.baseAddress else {
-                return
+        BLArray.withTemporaryArrayView(for: array) { pointer, size in
+            if let pointer = pointer {
+                append(contentsOf: pointer, lengthInBytes: size)
             }
+        }
+    }
+}
+
+extension BLArray {
+    /// Executes a closure passing in a context for a temporary BLArrayView-
+    /// compatible pointer+count arguments that can be provided for Blend2D
+    /// methods that accept a pair of (void*, size_t) values for representing
+    /// Blend2D arrays of `Double` elements.
+    ///
+    /// Returns the result from the closure invocation, or any error thrown by
+    /// the closure during the execution of this method.
+    ///
+    /// The pointer value is short-lived and should not be stored or used beyond
+    /// the duration of the closure's execution.
+    static func withTemporaryArrayView<T>(for array: [Double],
+                                          _ closure: (_ pointer: UnsafeRawPointer?, _ arraySizeInBytes: Int) throws -> T) rethrows -> T {
+        
+        return try array.withUnsafeBytes { pointer in
+            let pointer = pointer.baseAddress
             
-            append(contentsOf: pointer, byteCount: elementSize * contents.count)
+            return try closure(pointer, array.count * MemoryLayout<Double>.size)
         }
     }
 }

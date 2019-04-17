@@ -37,4 +37,18 @@ class BLArrayTests: XCTestCase {
         XCTAssertEqual(sut.count, 3)
         XCTAssert(sut.capacity <= 32)
     }
+    
+    func testWithTemporaryArrayViewForDouble() {
+        BLArray.withTemporaryArrayView(for: [0, 1, 2]) { pointer, size in
+            XCTAssertNotNil(pointer)
+            XCTAssertEqual(size, 24) // = MemoryLayout<Double>.size * array.count
+        }
+    }
+    
+    func testWithTemporaryArrayViewForDoubleWithEmptyArray() {
+        BLArray.withTemporaryArrayView(for: []) { pointer, size in
+            XCTAssertNotNil(pointer)
+            XCTAssertEqual(size, 0) // = MemoryLayout<Double>.size * array.count
+        }
+    }
 }
