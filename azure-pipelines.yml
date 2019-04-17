@@ -11,7 +11,6 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - bash: 'sudo xcode-select -s /Applications/Xcode_10.2.app/Contents/Developer'
   - bash: 'swift test'
 
 - job: Linux
