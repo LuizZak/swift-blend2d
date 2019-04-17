@@ -35,7 +35,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     ///
     /// - Parameter data: A data blob containing a binary image format.
     /// - SeeAlso: `BuiltInImageCodec`
-    public init?(fromData data: Data) {
+    public init?(bestCandidateFor data: Data) {
         super.init(object: BLImageCodecCore(), ownership: .borrowed)
         
         blImageCodecInit(&object)

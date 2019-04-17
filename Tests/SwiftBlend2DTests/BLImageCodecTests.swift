@@ -10,15 +10,18 @@ class BLImageCodecTests: XCTestCase {
         #if canImport(Foundation)
         for fixture in initFromDataTestFixtures {
             let data = Data(fixture.data)
-            guard let codec = BLImageCodec(fromData: data) else {
-                XCTFail("Expected data for fixture to result in codec '\(fixture.expectedCodec)', but resulted in a nil image codec instead.")
-                return
-            }
+            let codec = BLImageCodec(bestCandidateFor: data)
             
             XCTAssertEqual(
-                codec.name,
+                codec?.name,
                 fixture.expectedCodec,
-                "Expected data for fixture to result in codec '\(fixture.expectedCodec)', but resulted in image codec '\(codec.name)' instead.")
+                """
+                Expected data for fixture to result in \
+                \(fixture.expectedCodec.map { "image codec '\($0)'" } ?? "no codec")\
+                , but resulted in \
+                \((codec?.name).map { "image codec '\($0)'" } ?? "no codec")\
+                instead.
+                """)
         }
         #endif
     }
@@ -30,7 +33,11 @@ class BLImageCodecTests: XCTestCase {
     }
 }
 
-private let initFromDataTestFixtures: [(expectedCodec: String, data: [UInt8])] = [
+private let initFromDataTestFixtures: [(expectedCodec: String?, data: [UInt8])] = [
+    (
+        nil,
+        []
+    ),
     (
         "BMP",
         [
