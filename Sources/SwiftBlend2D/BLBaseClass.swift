@@ -28,6 +28,11 @@ public class BLBaseClass<T: CoreStructure> {
         ownership = .owner
     }
     
+    init(object: T, ownership: PointerOwnership) {
+        self.object = object
+        self.ownership = ownership
+    }
+    
     /// Initializes a new base class borrowing the backing structure from an
     /// existing structure.
     ///

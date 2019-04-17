@@ -119,6 +119,7 @@ extension BLImageCodecTests {
     static let __allTests__BLImageCodecTests = [
         ("testBuiltInCodecs", testBuiltInCodecs),
         ("testBuiltInCodecsCountMatchesInternalImageCodecs", testBuiltInCodecsCountMatchesInternalImageCodecs),
+        ("testInitFromData", testInitFromData),
     ]
 }
 
