@@ -195,8 +195,9 @@ public class BLContext: BLBaseClass<BLContextCore> {
         return value
     }
     
-    public func setStrokeStyle(/* ... */) {
-        blContextSetStrokeStyle(&object, &object)
+    // TODO: Implement blContextSetStrokeStyle
+    func setStrokeStyle(/* ... */) {
+        // blContextSetStrokeStyle(&object, ...)
     }
     
     public func setStrokeStyleRgba32(_ rgba32: UInt32) {
