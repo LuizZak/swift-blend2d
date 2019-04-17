@@ -4,17 +4,17 @@ import blend2d
 
 class BLLineTests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLLine(startX: 0, startY: 1, endX: 2, endY: 3),
-                       BLLine(startX: 0, startY: 1, endX: 2, endY: 3))
+        XCTAssertEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 3),
+                       BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
         
-        XCTAssertNotEqual(BLLine(startX: 1, startY: 1, endX: 2, endY: 3),
-                          BLLine(startX: 0, startY: 1, endX: 2, endY: 3))
-        XCTAssertNotEqual(BLLine(startX: 0, startY: 2, endX: 2, endY: 3),
-                          BLLine(startX: 0, startY: 1, endX: 2, endY: 3))
-        XCTAssertNotEqual(BLLine(startX: 0, startY: 1, endX: 3, endY: 3),
-                          BLLine(startX: 0, startY: 1, endX: 2, endY: 3))
-        XCTAssertNotEqual(BLLine(startX: 0, startY: 1, endX: 2, endY: 4),
-                          BLLine(startX: 0, startY: 1, endX: 2, endY: 3))
+        XCTAssertNotEqual(BLLine(x0: 1, y0: 1, x1: 2, y1: 3),
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
+        XCTAssertNotEqual(BLLine(x0: 0, y0: 2, x1: 2, y1: 3),
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
+        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 3, y1: 3),
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
+        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 4),
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
     }
     
     func testInitWithPoints() {
@@ -27,7 +27,7 @@ class BLLineTests: XCTestCase {
     }
     
     func testInitWithCoordinates() {
-        let line = BLLine(startX: 0, startY: 1, endX: 2, endY: 3)
+        let line = BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
         
         XCTAssertEqual(line.x0, 0)
         XCTAssertEqual(line.y0, 1)

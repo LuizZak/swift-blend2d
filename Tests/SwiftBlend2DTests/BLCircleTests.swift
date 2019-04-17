@@ -4,19 +4,19 @@ import blend2d
 
 class BLCircleTests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLCircle(cx: 1, cy: 2, radius: 3),
-                       BLCircle(cx: 1, cy: 2, radius: 3))
+        XCTAssertEqual(BLCircle(cx: 1, cy: 2, r: 3),
+                       BLCircle(cx: 1, cy: 2, r: 3))
         
-        XCTAssertNotEqual(BLCircle(cx: 9, cy: 2, radius: 3),
-                          BLCircle(cx: 1, cy: 2, radius: 3))
-        XCTAssertNotEqual(BLCircle(cx: 1, cy: 9, radius: 3),
-                          BLCircle(cx: 1, cy: 2, radius: 3))
-        XCTAssertNotEqual(BLCircle(cx: 1, cy: 2, radius: 9),
-                          BLCircle(cx: 1, cy: 2, radius: 3))
+        XCTAssertNotEqual(BLCircle(cx: 9, cy: 2, r: 3),
+                          BLCircle(cx: 1, cy: 2, r: 3))
+        XCTAssertNotEqual(BLCircle(cx: 1, cy: 9, r: 3),
+                          BLCircle(cx: 1, cy: 2, r: 3))
+        XCTAssertNotEqual(BLCircle(cx: 1, cy: 2, r: 9),
+                          BLCircle(cx: 1, cy: 2, r: 3))
     }
     
     func testInitWithCoordinates() {
-        let circle = BLCircle(cx: 1, cy: 2, radius: 3)
+        let circle = BLCircle(cx: 1, cy: 2, r: 3)
         
         XCTAssertEqual(circle.cx, 1)
         XCTAssertEqual(circle.cy, 2)

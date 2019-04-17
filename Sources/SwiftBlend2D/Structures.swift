@@ -281,7 +281,7 @@ internal extension BLImplType {
     static let arrayOfStruct_32 = BL_IMPL_TYPE_ARRAY_STRUCT_32
     
     /// Type is `BLPath`.
-    static let path2D = BL_IMPL_TYPE_PATH2D
+    static let path = BL_IMPL_TYPE_PATH
     
     /// Type is `BLRegion`.
     static let region = BL_IMPL_TYPE_REGION

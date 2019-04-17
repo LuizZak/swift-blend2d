@@ -27,6 +27,8 @@ import blend2d
 ///     Operation interrupted         [EINTR].
 /// - tryAgain:
 ///     Try again                     [EAGAIN].
+/// - timedOut:
+///     Timed out                     [ETIMEDOUT].
 /// - brokenPipe:
 ///     Broken pipe                   [EPIPE].
 /// - invalidSeek:
@@ -75,6 +77,8 @@ import blend2d
 ///     Too many open files by OS     [ENFILE].
 /// - tooManyLinks:
 ///     Too many symbolic links on FS [EMLINK].
+/// - tooManyThreads:
+///     Too many threads              [EAGAIN].
 /// - fileEmpty:
 ///     File is empty (not specific to any OS error).
 /// - openFailed:
@@ -160,6 +164,7 @@ public enum Blend2DError: String, Error {
     case busy
     case interrupted
     case tryAgain
+    case timedOut
     case brokenPipe
     case invalidSeek
     case symlinkLoop
@@ -184,6 +189,7 @@ public enum Blend2DError: String, Error {
     case tooManyOpenFiles
     case tooManyOpenFilesByOs
     case tooManyLinks
+    case tooManyThreads
     case fileEmpty
     case openFailed
     case notRootDevice
@@ -254,6 +260,8 @@ func resultToError(_ operation: @autoclosure () -> BLResult) throws -> BLResult 
         throw Blend2DError.interrupted
     case BL_ERROR_TRY_AGAIN.rawValue:
         throw Blend2DError.tryAgain
+    case BL_ERROR_TIMED_OUT.rawValue:
+        throw Blend2DError.timedOut
     case BL_ERROR_BROKEN_PIPE.rawValue:
         throw Blend2DError.brokenPipe
     case BL_ERROR_INVALID_SEEK.rawValue:
@@ -302,6 +310,8 @@ func resultToError(_ operation: @autoclosure () -> BLResult) throws -> BLResult 
         throw Blend2DError.tooManyOpenFilesByOs
     case BL_ERROR_TOO_MANY_LINKS.rawValue:
         throw Blend2DError.tooManyLinks
+    case BL_ERROR_TOO_MANY_THREADS.rawValue:
+        throw Blend2DError.tooManyThreads
     case BL_ERROR_FILE_EMPTY.rawValue:
         throw Blend2DError.fileEmpty
     case BL_ERROR_OPEN_FAILED.rawValue:
