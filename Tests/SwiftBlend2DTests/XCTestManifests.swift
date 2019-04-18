@@ -230,7 +230,9 @@ extension BLStringTests {
     // to regenerate.
     static let __allTests__BLStringTests = [
         ("testAppendBLString", testAppendBLString),
+        ("testAppendBLStringToEmptyString", testAppendBLStringToEmptyString),
         ("testAppendString", testAppendString),
+        ("testAppendStringToEmptyString", testAppendStringToEmptyString),
         ("testCreateWithStringLiteral", testCreateWithStringLiteral),
         ("testEquals", testEquals),
         ("testInit", testInit),

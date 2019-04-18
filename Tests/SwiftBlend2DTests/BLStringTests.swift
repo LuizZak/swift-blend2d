@@ -22,8 +22,16 @@ class BLStringTests: XCTestCase {
         
         string += "defgh" as String
         
-        // TODO: Fix this (probably a memory corruption issue)
-//        XCTAssertEqual(string.size, 8)
+        XCTAssertEqual(string.size, 8)
+        XCTAssertEqual(string.toString(), "abcdefgh")
+    }
+    
+    func testAppendStringToEmptyString() {
+        let string = BLString(string: "")
+        
+        string += "abcdefgh" as String
+        
+        XCTAssertEqual(string.size, 8)
         XCTAssertEqual(string.toString(), "abcdefgh")
     }
     
@@ -31,6 +39,15 @@ class BLStringTests: XCTestCase {
         let string = BLString(string: "abc")
         
         string += "defgh" as BLString
+        
+        XCTAssertEqual(string.size, 8)
+        XCTAssertEqual(string.toString(), "abcdefgh")
+    }
+    
+    func testAppendBLStringToEmptyString() {
+        let string = BLString(string: "")
+        
+        string += "abcdefgh" as BLString
         
         XCTAssertEqual(string.size, 8)
         XCTAssertEqual(string.toString(), "abcdefgh")

@@ -1,17 +1,19 @@
 import blend2d
 
-// TODO: This class seems to be running into some memory corruption issues. Should
-// probably check that.
-
 public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiteral {
-    /// Size, in bytes, of the data of this BLString instance (minus trailing
-    /// null-terminator).
+    /// Size, in bytes, of the data of this BLString instance, minus trailing
+    /// null-terminator character.
     public var size: Int {
-        return blStringGetSize(&object)
+        return blStringGetSize(&object) - 1
     }
     
     public override init() {
-        super.init()
+        super.init { object -> BLResult in
+            blStringInit(object)
+            
+            // Insert a starting null-terminator by default
+            return blStringInsertChar(object, 0, 0, 1)
+        }
     }
     
     public init(string: String) {
@@ -19,7 +21,13 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
             blStringInit(object)
             
             return string.withCString { pointer in
-                blStringAssignData(object, pointer, string.utf8CString.count - 1)
+                // Here, we don't subtract the null-terminator to allow it to be
+                // naturally inserted into the initial string data.
+                //
+                // On subsequent operations this null-terminator is manually
+                // pushed to the end of the string data every time a mutating
+                // operation occures
+                blStringAssignData(object, pointer, string.utf8CString.count)
             }
         }
     }
@@ -38,11 +46,20 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
     
     public static func += (lhs: BLString, rhs: String) {
         _ = rhs.withCString { pointer in
-            blStringInsertData(&lhs.object, lhs.size, pointer, rhs.utf8CString.count)
+            let rhsSizeMinusNullTerminator = rhs.utf8CString.count - 1
+            
+            blStringInsertData(&lhs.object,
+                               lhs.size,
+                               pointer,
+                               rhsSizeMinusNullTerminator)
         }
     }
     public static func += (lhs: BLString, rhs: BLString) {
-        blStringInsertString(&lhs.object, lhs.size, &rhs.object)
+        guard let data = blStringGetData(&rhs.object) else {
+            return
+        }
+        
+        blStringInsertData(&lhs.object, lhs.size, data, rhs.size)
     }
 }
 
