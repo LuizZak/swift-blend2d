@@ -16,7 +16,7 @@ This may change at any moment.
 `BLConicalGradientValues` | ❌ Unstarted | Conical gradient values packed into a structure |
 `BLContext` | 🕒 Partial | Rendering context [C++ API]|
 `BLContextCookie` | ✅ Done | |
-`BLContextCreateOptions` | ❌ Unstarted | Information that can be used to customize the rendering context |
+`BLContextCreateInfo` | ✅ Done | Information that can be used to customize the rendering context |
 `BLContextHints` | ❌ Unstarted | Rendering context hints |
 `BLContextState` | ❌ Unstarted | |
 `BLCreateForeignInfo` | ❌ Unstarted | |
