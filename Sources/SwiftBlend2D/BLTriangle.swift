@@ -1,6 +1,7 @@
 import blend2d
 
 public extension BLTriangle {
+    @inlinable
     init(p0: BLPoint, p1: BLPoint, p2: BLPoint) {
         self.init(x0: p0.x, y0: p0.y,
                   x1: p1.x, y1: p1.y,
@@ -9,6 +10,7 @@ public extension BLTriangle {
 }
 
 extension BLTriangle: Equatable {
+    @inlinable
     public static func ==(lhs: BLTriangle, rhs: BLTriangle) -> Bool {
         return lhs.x0 == rhs.x0
             && lhs.y0 == rhs.y0

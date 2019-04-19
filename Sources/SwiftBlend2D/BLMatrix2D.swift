@@ -28,12 +28,12 @@ public extension BLMatrix2D {
     }
     /// Creates a new matrix initialized to translation.
     @inlinable
-    static func makeTranslation(p: BLPointI) -> BLMatrix2D {
+    static func makeTranslation(_ p: BLPointI) -> BLMatrix2D {
         return BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: Double(p.x), m21: Double(p.y))
     }
     /// Creates a new matrix initialized to translation.
     @inlinable
-    static func makeTranslation(p: BLPoint) -> BLMatrix2D {
+    static func makeTranslation(_ p: BLPoint) -> BLMatrix2D {
         return BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: p.x, m21: p.y)
     }
     
@@ -49,12 +49,12 @@ public extension BLMatrix2D {
     }
     /// Creates a new matrix initialized to scaling.
     @inlinable
-    static func makeScaling(p: BLPointI) -> BLMatrix2D {
+    static func makeScaling(_ p: BLPointI) -> BLMatrix2D {
         return BLMatrix2D(m00: Double(p.x), m01: 0.0, m10: 0.0, m11: Double(p.y), m20: 0.0, m21: 0.0)
     }
     /// Creates a new matrix initialized to scaling.
     @inlinable
-    static func makeScaling(p: BLPoint) -> BLMatrix2D {
+    static func makeScaling(_ p: BLPoint) -> BLMatrix2D {
         return BLMatrix2D(m00: p.x, m01: 0.0, m10: 0.0, m11: p.y, m20: 0.0, m21: 0.0)
     }
     
@@ -76,9 +76,9 @@ public extension BLMatrix2D {
     
     /// Creates a new matrix initialized to rotation.
     @inlinable
-    static func makeRotation(angle: Double, p: BLPoint) -> BLMatrix2D {
+    static func makeRotation(angle: Double, point: BLPoint) -> BLMatrix2D {
         var result = BLMatrix2D()
-        result.resetToRotation(angle: angle, x: p.x, y: p.y)
+        result.resetToRotation(angle: angle, x: point.x, y: point.y)
         return result
     }
     
@@ -103,8 +103,8 @@ public extension BLMatrix2D {
     }
     
     @inlinable
-    static func makeSinCos(sin: Double, cos: Double, t: BLPoint) -> BLMatrix2D {
-        return makeSinCos(sin: sin, cos: cos, tx: t.x, ty: t.y)
+    static func makeSinCos(sin: Double, cos: Double, translation: BLPoint) -> BLMatrix2D {
+        return makeSinCos(sin: sin, cos: cos, tx: translation.x, ty: translation.y)
     }
 }
 
@@ -208,7 +208,7 @@ public extension BLMatrix2D {
     mutating func resetToRotation(angle: Double, x: Double, y: Double) {
         blMatrix2DSetRotation(&self, angle, x, y)
     }
-    /// Resets matrix to rotation around a point `point`.
+    /// Resets matrix to rotation around a given `point`.
     @inlinable
     mutating func resetToRotation(angle: Double, point: BLPoint) {
         blMatrix2DSetRotation(&self, angle, point.x, point.y)
@@ -290,12 +290,12 @@ public extension BLMatrix2D {
     }
     
     @inlinable
-    mutating func rotate(angle: Double, _ p: BLPointI) -> BLResult {
-        return rotate(angle: angle, x: Double(p.x), y: Double(p.y))
+    mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
+        return rotate(angle: angle, x: Double(point.x), y: Double(point.y))
     }
     @inlinable
-    mutating func rotate(angle: Double, _ p: BLPoint) -> BLResult {
-        return rotate(angle: angle, x: p.x, y: p.y)
+    mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
+        return rotate(angle: angle, x: point.x, y: point.y)
     }
     
     @inlinable
