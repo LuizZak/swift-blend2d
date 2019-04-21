@@ -58,7 +58,7 @@ This may change at any moment.
 `BLInternalCastImpl` | ❌ Unstarted | |
 `BLLine` | ✅ Done | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ❌ Unstarted | Linear gradient values packed into a structure |
-`BLMatrix2D` | ❌ Unstarted | |
+`BLMatrix2D` | 🕒 Partial | Missing Swift tests |
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
 `BLPathView` | ❌ Unstarted | |
 `BLPattern` | ❌ Unstarted | Pattern [C++ API]|
