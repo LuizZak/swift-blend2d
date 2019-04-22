@@ -1,3 +1,6 @@
+#if canImport(Foundation)
+import Foundation
+#endif
 import blend2d
 
 public final class BLImage: BLBaseClass<BLImageCore> {
@@ -67,6 +70,14 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         )
     }
     
+    #if canImport(Foundation)
+    public func writeToData(data: inout Data, codec: BLImageCodec) throws {
+        let buffer = BLArray(type: .arrayOfUInt8)
+        try writeToData(buffer, codec: codec)
+        data.append(buffer.unsafePointer().bindMemory(to: UInt8.self))
+    }
+    #endif
+    
     func writeToData(_ buffer: BLArray, codec: BLImageCodec) throws {
         try resultToError(
             blImageWriteToData(&object, &buffer.object, &codec.object)
@@ -74,7 +85,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
     
     public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]) throws {
-        let array = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let array = BLArray(type: .arrayOfUInt8)
         for item in data {
             array.append(item)
         }
@@ -83,7 +94,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
     
     func readFromData(_ buffer: BLArray, codecs: [BLImageCodec]) throws {
-        let codecsArray = BLArray(type: BL_IMPL_TYPE_ARRAY_VAR)
+        let codecsArray = BLArray(type: .arrayOfVar)
         for codec in codecs {
             codecsArray.append(&codec.object)
         }
