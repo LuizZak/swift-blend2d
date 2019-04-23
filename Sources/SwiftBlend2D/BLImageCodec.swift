@@ -4,8 +4,24 @@ import Foundation
 #endif
 
 public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
+    /// Returns image codec name (i.e, "PNG", "JPEG", etc...).
     public var name: String {
         return String(cString: object.impl.pointee.name)
+    }
+    
+    /// Returns the image codec vendor (i.e. "Blend2D" for all built-in codecs).
+    public var vendor: String {
+        return String(cString: object.impl.pointee.vendor)
+    }
+    
+    /// Returns a mime-type associated with the image codec's format.
+    public var mimeType: String {
+        return String(cString: object.impl.pointee.mimeType)
+    }
+    
+    /// Returns image codec flags, see `BLImageCodecFeatures`.
+    public var features: BLImageCodecFeatures {
+        return BLImageCodecFeatures(rawValue: object.impl.pointee.features)
     }
     
     public override init() {
@@ -58,6 +74,34 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     override init(borrowing object: BLImageCodecCore) {
         super.init(borrowing: object)
     }
+    
+    #if canImport(Foundation)
+    
+    public func inspectData(_ data: Data) -> Int {
+        return data.withUnsafeBytes { pointer in
+            inspectData(pointer)
+        }
+    }
+    
+    #endif
+    
+    func inspectData(_ pointer: UnsafeRawBufferPointer) -> Int {
+        guard let dataAddress = pointer.baseAddress else {
+            return 0
+        }
+        
+        return Int(blImageCodecInspectData(&object, dataAddress, pointer.count))
+    }
+    
+    func createDecoder(dst: BLImageDecoderCore) -> BLResult {
+        var dst = dst
+        return blImageCodecCreateDecoder(&object, &dst)
+    }
+    
+    func createEncoder(dst: BLImageEncoderCore) -> BLResult {
+        var dst = dst
+        return blImageCodecCreateEncoder(&object, &dst)
+    }
 }
 
 extension BLImageCodec {
@@ -83,6 +127,12 @@ public extension BLImageCodec {
         case bmp = "BMP"
         case jpeg = "JPEG"
         case png = "PNG"
+    }
+}
+
+extension BLImageCodec: Equatable {
+    public static func ==(lhs: BLImageCodec, rhs: BLImageCodec) -> Bool {
+        return lhs.object.impl == rhs.object.impl
     }
 }
 
