@@ -345,6 +345,38 @@ public extension BLImageCodecFeatures {
     static let xmp = BL_IMAGE_CODEC_FEATURE_XMP
 }
 
+public extension BLFileOpenFlags {
+    /// Open file for reading (O_RDONLY).
+    static let openRead = BL_FILE_OPEN_READ
+    /// Open file for writing (O_WRONLY).
+    static let openWrite = BL_FILE_OPEN_WRITE
+    /// Open file for reading & writing (O_RDWR).
+    static let openRw = BL_FILE_OPEN_RW
+    /// Create the file if it doesn't exist (O_CREAT).
+    static let openCreate = BL_FILE_OPEN_CREATE
+    /// Always create the file, fail if it already exists (O_EXCL).
+    static let openCreateOnly = BL_FILE_OPEN_CREATE_ONLY
+    /// Truncate the file (O_TRUNC).
+    static let openTruncate = BL_FILE_OPEN_TRUNCATE
+    /// Enables FILE_SHARE_READ option (Windows).
+    static let openShareRead = BL_FILE_OPEN_SHARE_READ
+    /// Enables FILE_SHARE_WRITE option (Windows).
+    static let openShareWrite = BL_FILE_OPEN_SHARE_WRITE
+    /// Enables both FILE_SHARE_READ and FILE_SHARE_WRITE options (Windows).
+    static let openShareRw = BL_FILE_OPEN_SHARE_RW
+    /// Enables FILE_SHARE_DELETE option (Windows).
+    static let openShareDelete = BL_FILE_OPEN_SHARE_DELETE
+}
+
+public extension BLFileSeek {
+    /// Seek from the beginning of the file (SEEK_SET).
+    static let set = BL_FILE_SEEK_SET
+    /// Seek from the current position (SEEK_CUR).
+    static let cur = BL_FILE_SEEK_CUR
+    /// Seek from the end of the file (SEEK_END).
+    static let end = BL_FILE_SEEK_END
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }
