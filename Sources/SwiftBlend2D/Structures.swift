@@ -344,3 +344,14 @@ public extension BLImageCodecFeatures {
     /// Image codec supports XMP metadata.
     static let xmp = BL_IMAGE_CODEC_FEATURE_XMP
 }
+
+extension BLImageCodecFeatures: OptionSet { }
+extension BLPathFlags: OptionSet { }
+extension BLContextCreateFlags: OptionSet { }
+extension BLContextFlushFlags: OptionSet { }
+extension BLGlyphRunFlags: OptionSet { }
+extension BLGlyphItemFlags: OptionSet { }
+extension BLFontFaceFlags: OptionSet { }
+extension BLFontFaceDiagFlags: OptionSet { }
+extension BLFormatFlags: OptionSet { }
+extension BLFileOpenFlags: OptionSet { }
