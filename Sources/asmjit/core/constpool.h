@@ -7,6 +7,7 @@
 #ifndef _ASMJIT_CORE_CONSTPOOL_H
 #define _ASMJIT_CORE_CONSTPOOL_H
 
+#include "../core/support.h"
 #include "../core/zone.h"
 #include "../core/zonetree.h"
 

@@ -11,6 +11,7 @@
 
 #include "../core/builder.h"
 #include "../core/logging.h"
+#include "../core/support.h"
 
 ASMJIT_BEGIN_NAMESPACE
 
