@@ -23,7 +23,7 @@ This may change at any moment.
 `BLEllipse` | ✅ Done | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
 `BLExternalImplPreface` | ❌ Unstarted | |
 `BLFile` | ❌ Unstarted | |
-`BLFont` | ❌ Unstarted | Font [C++ API]|
+`BLFont` | 🕒 Partial | Font [C++ API]|
 `BLFontData` | ❌ Unstarted | Font data [C++ API]|
 `BLFontDesignMetrics` | ❌ Unstarted | |
 `BLFontFace` | ❌ Unstarted | Font face [C++ API]|
