@@ -44,6 +44,6 @@ public final class BLStrokeOptions: BLBaseClass<BLStrokeOptionsCore> {
 }
 
 extension BLStrokeOptionsCore: CoreStructure {
-    public static var initializer = blStrokeOptionsInit
-    public static var deinitializer = blStrokeOptionsReset
+    public static let initializer = blStrokeOptionsInit
+    public static let deinitializer = blStrokeOptionsReset
 }

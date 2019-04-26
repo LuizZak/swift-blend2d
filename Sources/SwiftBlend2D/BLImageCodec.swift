@@ -137,6 +137,6 @@ extension BLImageCodec: Equatable {
 }
 
 extension BLImageCodecCore: CoreStructure {
-    public static var initializer = blImageCodecInit
-    public static var deinitializer = blImageCodecReset
+    public static let initializer = blImageCodecInit
+    public static let deinitializer = blImageCodecReset
 }

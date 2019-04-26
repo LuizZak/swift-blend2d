@@ -46,7 +46,7 @@ This may change at any moment.
 `BLGlyphPlacement` | ❌ Unstarted | |
 `BLGlyphRun` | ❌ Unstarted | |
 `BLGlyphRunIterator` | ❌ Unstarted | |
-`BLGradient` | ❌ Unstarted | Gradient [C++ API]|
+`BLGradient` | 🕒 Partial | Gradient [C++ API]|
 `BLGradientStop` | ❌ Unstarted | |
 `BLImage` | 🕒 Partial | 2D raster image [C++ API]|
 `BLImageCodec` | 🕒 Partial | |

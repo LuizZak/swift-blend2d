@@ -70,6 +70,6 @@ extension BLString: Equatable {
 }
 
 extension BLStringCore: CoreStructure {
-    public static var initializer = blStringInit
-    public static var deinitializer = blStringReset
+    public static let initializer = blStringInit
+    public static let deinitializer = blStringReset
 }

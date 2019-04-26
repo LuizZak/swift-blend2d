@@ -106,6 +106,6 @@ public final class BLImage: BLBaseClass<BLImageCore> {
 }
 
 extension BLImageCore: CoreStructure {
-    public static var initializer = blImageInit
-    public static var deinitializer = blImageReset
+    public static let initializer = blImageInit
+    public static let deinitializer = blImageReset
 }

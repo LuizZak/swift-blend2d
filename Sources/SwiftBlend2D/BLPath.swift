@@ -234,6 +234,6 @@ public final class BLPath: BLBaseClass<BLPathCore> {
 }
 
 extension BLPathCore: CoreStructure {
-    public static var initializer = blPathInit
-    public static var deinitializer = blPathReset
+    public static let initializer = blPathInit
+    public static let deinitializer = blPathReset
 }

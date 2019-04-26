@@ -107,6 +107,6 @@ extension BLFont: Equatable {
 }
 
 extension BLFontCore: CoreStructure {
-    public static var initializer = blFontInit
-    public static var deinitializer = blFontReset
+    public static let initializer = blFontInit
+    public static let deinitializer = blFontReset
 }
