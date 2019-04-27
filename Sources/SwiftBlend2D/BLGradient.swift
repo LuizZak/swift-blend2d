@@ -44,6 +44,8 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
             blGradientSetValue(&object, index, newValue)
         }
     }
+    
+    // TODO: Handle error results for init and create methods bellow
 
     public init(type: BLGradientType, values: [Double], extendMode: BLExtendMode, stops: [BLGradientStop], matrix: BLMatrix2D? = nil) {
         super.init { object -> BLResult in
