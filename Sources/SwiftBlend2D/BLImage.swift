@@ -35,12 +35,14 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// Initializes a new image with the given dimensions and format.
     ///
     /// - Parameters:
-    ///   - width: Width of image. Must be greater than zero and less than BLImage.maximumWidth.
-    ///   - height: Height of image. Must be greater than zero and less than BLImage.maximumHeight.
+    ///   - width: Width of image. Must be greater than zero and less than or
+    /// equal to BLImage.maximumWidth.
+    ///   - height: Height of image. Must be greater than zero and less than or
+    /// equal to BLImage.maximumHeight.
     ///   - format: A valid image format to use for the image.
     public init(width: Int, height: Int, format: BLFormat) {
-        precondition(width > 0 && width < BLImage.maximumWidth)
-        precondition(height > 0 && height < BLImage.maximumHeight)
+        precondition(width > 0 && width <= BLImage.maximumWidth)
+        precondition(height > 0 && height <= BLImage.maximumHeight)
         
         super.init {
             blImageInitAs($0, Int32(width), Int32(height), format.rawValue)
