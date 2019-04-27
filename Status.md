@@ -47,7 +47,7 @@ This may change at any moment.
 `BLGlyphRun` | ❌ Unstarted | |
 `BLGlyphRunIterator` | ❌ Unstarted | |
 `BLGradient` | 🕒 Partial | Gradient [C++ API]|
-`BLGradientStop` | ❌ Unstarted | |
+`BLGradientStop` | ✅ Done | |
 `BLImage` | 🕒 Partial | 2D raster image [C++ API]|
 `BLImageCodec` | 🕒 Partial | |
 `BLImageData` | ❌ Unstarted | Data that describes a raster image. Used by BLImage |
@@ -72,9 +72,9 @@ This may change at any moment.
 `BLRect` | ✅ Done | Rectangle specified as [x, y, w, h] using double as a storage type |
 `BLRectI` | ✅ Done | Rectangle specified as [x, y, w, h] using int as a storage type |
 `BLRegion` | ❌ Unstarted | |
-`BLRgba128` | ❌ Unstarted | 128-bit RGBA color stored as 4 32-bit floating point values in [RGBA] order |
-`BLRgba32` | ❌ Unstarted | 32-bit RGBA color (8-bit per component) stored as 0xAARRGGBB |
-`BLRgba64` | ❌ Unstarted | 64-bit RGBA color (16-bit per component) stored as 0xAAAARRRRGGGGBBBB |
+`BLRgba128` | ✅ Done | 128-bit RGBA color stored as 4 32-bit floating point values in [RGBA] order |
+`BLRgba32` | ✅ Done | 32-bit RGBA color (8-bit per component) stored as 0xAARRGGBB |
+`BLRgba64` | ✅ Done | 64-bit RGBA color (16-bit per component) stored as 0xAAAARRRRGGGGBBBB |
 `BLRoundRect` | ✅ Done | Rounded rectangle specified as [x, y, w, h, rx, ry] using double as a storage type |
 `BLRuntimeBuildInfo` | ❌ Unstarted | Blend2D build information |
 `BLRuntimeCpuInfo` | ❌ Unstarted | CPU information queried by the runtime |
