@@ -346,26 +346,73 @@ public extension BLImageCodecFeatures {
 }
 
 public extension BLFileOpenFlags {
-    /// Open file for reading (O_RDONLY).
+    /// Opens the file for reading.
+    ///
+    /// The following system flags are used when opening the file:
+    ///   * `O_RDONLY` (Posix)
+    ///   * `GENERIC_READ` (Windows)
     static let openRead = BL_FILE_OPEN_READ
-    /// Open file for writing (O_WRONLY).
+    
+    /// Opens the file for writing:
+    ///
+    /// The following system flags are used when opening the file:
+    ///   * `O_WRONLY` (Posix)
+    ///   * `GENERIC_WRITE` (Windows)
     static let openWrite = BL_FILE_OPEN_WRITE
-    /// Open file for reading & writing (O_RDWR).
+    
+    /// Opens the file for reading & writing.
+    ///
+    /// The following system flags are used when opening the file:
+    ///   * `O_RDWR` (Posix)
+    ///   * `GENERIC_READ | GENERIC_WRITE` (Windows)
     static let openRw = BL_FILE_OPEN_RW
-    /// Create the file if it doesn't exist (O_CREAT).
+    
+    /// Creates the file if it doesn't exist or opens it if it does.
+    ///
+    /// The following system flags are used when opening the file:
+    ///   * `O_CREAT` (Posix)
+    ///   * `CREATE_ALWAYS` or `OPEN_ALWAYS` depending on other flags (Windows)
     static let openCreate = BL_FILE_OPEN_CREATE
-    /// Always create the file, fail if it already exists (O_EXCL).
-    static let openCreateOnly = BL_FILE_OPEN_CREATE_ONLY
-    /// Truncate the file (O_TRUNC).
+    
+    /// Opens the file for deleting or renaming (Windows).
+    ///
+    /// Adds `DELETE` flag when opening the file to `ACCESS_MASK`.
+    static let openDelete = BL_FILE_OPEN_DELETE
+    
+    /// Truncates the file.
+    ///
+    /// The following system flags are used when opening the file:
+    ///   * `O_TRUNC` (Posix)
+    ///   * `TRUNCATE_EXISTING` (Windows)
     static let openTruncate = BL_FILE_OPEN_TRUNCATE
-    /// Enables FILE_SHARE_READ option (Windows).
-    static let openShareRead = BL_FILE_OPEN_SHARE_READ
-    /// Enables FILE_SHARE_WRITE option (Windows).
-    static let openShareWrite = BL_FILE_OPEN_SHARE_WRITE
-    /// Enables both FILE_SHARE_READ and FILE_SHARE_WRITE options (Windows).
-    static let openShareRw = BL_FILE_OPEN_SHARE_RW
-    /// Enables FILE_SHARE_DELETE option (Windows).
-    static let openShareDelete = BL_FILE_OPEN_SHARE_DELETE
+    
+    /// Opens the file for reading in exclusive mode (Windows).
+    ///
+    /// Exclusive mode means to not specify the `FILE_SHARE_READ` option.
+    static let openReadExclusive = BL_FILE_OPEN_READ_EXCLUSIVE
+    
+    /// Opens the file for writing in exclusive mode (Windows).
+    ///
+    /// Exclusive mode means to not specify the `FILE_SHARE_WRITE` option.
+    static let openWriteExclusive = BL_FILE_OPEN_WRITE_EXCLUSIVE
+    
+    /// Opens the file for both reading and writing (Windows).
+    ///
+    /// This is a combination of both `BL_FILE_OPEN_READ_EXCLUSIVE` and
+    /// `BL_FILE_OPEN_WRITE_EXCLUSIVE`.
+    static let openRwExclusive = BL_FILE_OPEN_RW_EXCLUSIVE
+    
+    /// Creates the file in exclusive mode - fails if the file already exists.
+    ///
+    /// The following system flags are used when opening the file:
+    ///   * `O_EXCL` (Posix)
+    ///   * `CREATE_NEW` (Windows)
+    static let openCreateExclusive = BL_FILE_OPEN_CREATE_EXCLUSIVE
+    
+    /// Opens the file for deleting or renaming in exclusive mode (Windows).
+    ///
+    /// Exclusive mode means to not specify the `FILE_SHARE_DELETE` option.
+    static let openDeleteExclusive = BL_FILE_OPEN_DELETE_EXCLUSIVE
 }
 
 public extension BLFileSeek {
