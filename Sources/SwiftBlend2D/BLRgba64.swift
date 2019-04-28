@@ -18,7 +18,9 @@ public extension BLRgba64 {
         self.init(.init(value: (UInt64(a) << 48) | (UInt64(r) << 32) | (UInt64(g) << 16) | UInt64(b)))
     }
     
-    @inlinable
+    // Note: Not @inlinable for now because this currently crashes the Swift
+    // compiler: https://bugs.swift.org/browse/SR-10571
+//    @inlinable
     init(rgba32: BLRgba32) {
         self.init(r: rgba32.r | (rgba32.r << 8),
                   g: rgba32.g | (rgba32.g << 8),

@@ -22,7 +22,7 @@ This may change at any moment.
 `BLCreateForeignInfo` | ❌ Unstarted | |
 `BLEllipse` | ✅ Done | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
 `BLExternalImplPreface` | ❌ Unstarted | |
-`BLFile` | ❌ Unstarted | |
+`BLFile` | ✅ Done | |
 `BLFont` | 🕒 Partial | Font [C++ API]|
 `BLFontData` | ❌ Unstarted | Font data [C++ API]|
 `BLFontDesignMetrics` | ❌ Unstarted | |
@@ -37,7 +37,7 @@ This may change at any moment.
 `BLFontUnicodeCoverage` | ❌ Unstarted | |
 `BLFontVariation` | ❌ Unstarted | |
 `BLFormatInfo` | ❌ Unstarted | |
-`BLGlyphBuffer` | ❌ Unstarted | |
+`BLGlyphBuffer` | ✅ Done | |
 `BLGlyphBufferData` | ❌ Unstarted | Glyph buffer [C Data]|
 `BLGlyphInfo` | ❌ Unstarted | |
 `BLGlyphItem` | ❌ Unstarted | |
