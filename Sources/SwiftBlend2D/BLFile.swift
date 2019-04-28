@@ -48,25 +48,35 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         return positionOut
     }
     
+    @discardableResult
+    public func write(data: [UInt8]) throws -> Int {
+        return try data.withUnsafeBytes { pointer in
+            try write(buffer: pointer)
+        }
+    }
+    
     #if canImport(Foundation)
     
-    public func write(data: Data) throws -> Int {
+    @discardableResult
+    public func write<T: ContiguousBytes>(data: T) throws -> Int {
         return try data.withUnsafeBytes { pointer in
-            guard let rawPointer = pointer.baseAddress else {
-                return 0
-            }
-            
-            var bytesWritten = 0
-            
-            try resultToError(
-                blFileWrite(&object, rawPointer, pointer.count, &bytesWritten)
-            )
-            
-            return bytesWritten
+            try write(buffer: pointer)
         }
     }
     
     #endif
+    
+    func write(buffer: UnsafeRawBufferPointer) throws -> Int {
+        var bytesWritten = 0
+        
+        if let rawPointer = buffer.baseAddress {
+            try resultToError(
+                blFileWrite(&object, rawPointer, buffer.count, &bytesWritten)
+            )
+        }
+        
+        return bytesWritten
+    }
     
     public func truncate(maxSize: Int64) throws {
         try resultToError(
