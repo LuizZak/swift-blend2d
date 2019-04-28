@@ -424,6 +424,76 @@ public extension BLFileSeek {
     static let end = BL_FILE_SEEK_END
 }
 
+public extension BLMatrix2DOp {
+    /// Reset matrix to identity (argument ignored, should be nullptr).
+    static let reset = BL_MATRIX2D_OP_RESET
+    /// Assign (copy) the other matrix.
+    static let assign = BL_MATRIX2D_OP_ASSIGN
+    
+    /// Translate the matrix by [x, y].
+    static let translate = BL_MATRIX2D_OP_TRANSLATE
+    /// Scale the matrix by [x, y].
+    static let scale = BL_MATRIX2D_OP_SCALE
+    /// Skew the matrix by [x, y].
+    static let skew = BL_MATRIX2D_OP_SKEW
+    /// Rotate the matrix by the given angle about [0, 0].
+    static let rotate = BL_MATRIX2D_OP_ROTATE
+    /// Rotate the matrix by the given angle about [x, y].
+    static let rotatePt = BL_MATRIX2D_OP_ROTATE_PT
+    /// Transform this matrix by other `BLMatrix2D`.
+    static let transform = BL_MATRIX2D_OP_TRANSFORM
+    
+    /// Post-translate the matrix by [x, y].
+    static let postTranslate = BL_MATRIX2D_OP_POST_TRANSLATE
+    /// Post-scale the matrix by [x, y].
+    static let postScale = BL_MATRIX2D_OP_POST_SCALE
+    /// Post-skew the matrix by [x, y].
+    static let postSkew = BL_MATRIX2D_OP_POST_SKEW
+    /// Post-rotate the matrix about [0, 0].
+    static let postRotate = BL_MATRIX2D_OP_POST_ROTATE
+    /// Post-rotate the matrix about a reference BLPoint.
+    static let postRotatePt = BL_MATRIX2D_OP_POST_ROTATE_PT
+    /// Post-transform this matrix by other `BLMatrix2D`.
+    static let postTransform = BL_MATRIX2D_OP_POST_TRANSFORM
+}
+
+public extension BLGradientType {
+    /// Linear gradient type.
+    static let linear = BL_GRADIENT_TYPE_LINEAR
+    /// Radial gradient type.
+    static let radial = BL_GRADIENT_TYPE_RADIAL
+    /// Conical gradient type.
+    static let conical = BL_GRADIENT_TYPE_CONICAL
+}
+
+public extension BLExtendMode {
+    /// Pad extend [default].
+    static let pad = BL_EXTEND_MODE_PAD
+    /// Repeat extend.
+    static let `repeat` = BL_EXTEND_MODE_REPEAT
+    /// Reflect extend.
+    static let reflect = BL_EXTEND_MODE_REFLECT
+    
+    /// Alias to `BL_EXTEND_MODE_PAD`.
+    static let padXPadY = BL_EXTEND_MODE_PAD_X_PAD_Y
+    /// Alias to `BL_EXTEND_MODE_REPEAT`.
+    static let repeatXRepeatY = BL_EXTEND_MODE_REPEAT_X_REPEAT_Y
+    /// Alias to `BL_EXTEND_MODE_REFLECT`.
+    static let reflectXReflectY = BL_EXTEND_MODE_REFLECT_X_REFLECT_Y
+    /// Pad X and repeat Y.
+    static let padXRepeatY = BL_EXTEND_MODE_PAD_X_REPEAT_Y
+    /// Pad X and reflect Y.
+    static let padXReflectY = BL_EXTEND_MODE_PAD_X_REFLECT_Y
+    /// Repeat X and pad Y.
+    static let repeatXPadY = BL_EXTEND_MODE_REPEAT_X_PAD_Y
+    /// Repeat X and reflect Y.
+    static let repeatXReflectY = BL_EXTEND_MODE_REPEAT_X_REFLECT_Y
+    /// Reflect X and pad Y.
+    static let reflectXPadY = BL_EXTEND_MODE_REFLECT_X_PAD_Y
+    /// Reflect X and repeat Y.
+    static let reflectXRepeatY = BL_EXTEND_MODE_REFLECT_X_REPEAT_Y
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }

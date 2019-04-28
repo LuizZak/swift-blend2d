@@ -133,10 +133,13 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
         return blGradientIndexOfStop(&object, offset)
     }
 
-    // TODO: Figure out what the void* parameter is here
-//    func applyMatrixOp(opType: UInt32, const void* opData) {
-//        blGradientApplyMatrixOp(opType: UInt32, const void* opData)
-//    }
+    // TODO: Find a better way to express matrix operations + operation data,
+    // probably using an enum to couple the two.
+    func applyMatrixOperation(_ opType: BLMatrix2DOp, opData: BLGradientMatrixOperationData) -> BLResult {
+        return opData.withUnsafePointerToContents { pointer in
+            blGradientApplyMatrixOp(&object, opType.rawValue, pointer)
+        }
+    }
 
     static func == (lhs: BLGradient, rhs: BLGradient) -> Bool {
         return blGradientEquals(&lhs.object, &rhs.object)
@@ -147,4 +150,31 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
 extension BLGradientCore: CoreStructure {
     public static let initializer = blGradientInit
     public static let deinitializer = blGradientReset
+}
+
+// TODO: Will probably remove later- see TODO in BLGradient.applyMatrixOperation
+protocol BLGradientMatrixOperationData {
+    /// Requests that this `BLGradientMatrixOperationData` instance produce a
+    /// pointer that callers can use when invoking `blGradientApplyMatrixOp`
+    /// function with the appropriate operation type.
+    ///
+    /// The closure is invoked with a `nil` pointer, in case the value cannot
+    /// produce a pointer to its contents (such as empty arrays)
+    func withUnsafePointerToContents<T>(_ closure: (UnsafeRawPointer?) throws -> T) rethrows -> T
+}
+
+extension Array: BLGradientMatrixOperationData where Element == Double {
+    func withUnsafePointerToContents<T>(_ closure: (UnsafeRawPointer?) throws -> T) rethrows -> T {
+        return try withUnsafeBytes { pointer in
+            try closure(pointer.baseAddress)
+        }
+    }
+}
+
+extension BLMatrix2D: BLGradientMatrixOperationData {
+    func withUnsafePointerToContents<T>(_ closure: (UnsafeRawPointer?) throws -> T) rethrows -> T {
+        return try withUnsafePointer(to: self) { pointer in
+            try closure(UnsafeRawPointer(pointer))
+        }
+    }
 }
