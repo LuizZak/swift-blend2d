@@ -31,11 +31,11 @@ public final class BLFile: BLBaseClass<BLFileCore> {
     }
     
     public func open(fileAt path: String, flags: BLFileOpenFlags) throws {
-        let pathUtf8 = Array(path.utf8CString)
-        
-        try resultToError(
-            blFileOpen(&object, pathUtf8, flags.rawValue)
-        )
+        try path.withCString { pointer -> Void in
+            try resultToError(
+                blFileOpen(&object, pointer, flags.rawValue)
+            )
+        }
     }
     
     @discardableResult
