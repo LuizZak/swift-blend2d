@@ -6,7 +6,7 @@ This may change at any moment.
 
 | Structure | Status | Notes |
 |-----|-----|-----|
-`BLApproximationOptions` | ❌ Unstarted | |
+`BLApproximationOptions` | ✅ Done | |
 `BLArc` | ✅ Done | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
 `BLArray` | 🕒 Partial | Array container (template) [C++ API]|
 `BLArrayView` | ❌ Unstarted | |
