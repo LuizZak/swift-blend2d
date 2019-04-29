@@ -18,7 +18,7 @@ This may change at any moment.
 `BLContextCookie` | ✅ Done | |
 `BLContextCreateInfo` | ✅ Done | Information that can be used to customize the rendering context |
 `BLContextHints` | ❌ Unstarted | Rendering context hints |
-`BLContextState` | ❌ Unstarted | |
+`BLContextState` | ✅ Done | `(No work needed)` |
 `BLCreateForeignInfo` | ❌ Unstarted | |
 `BLEllipse` | ✅ Done | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
 `BLExternalImplPreface` | ❌ Unstarted | |
@@ -50,7 +50,7 @@ This may change at any moment.
 `BLGradientStop` | ✅ Done | |
 `BLImage` | 🕒 Partial | 2D raster image [C++ API]|
 `BLImageCodec` | 🕒 Partial | |
-`BLImageData` | ❌ Unstarted | Data that describes a raster image. Used by BLImage |
+`BLImageData` | ✅ Done | Data that describes a raster image. Used by BLImage |
 `BLImageDecoder` | ❌ Unstarted | Image decoder [C++ API]|
 `BLImageEncoder` | ❌ Unstarted | Image encoder [C++ API]|
 `BLImageInfo` | ❌ Unstarted | Image information provided by image codecs |
