@@ -9,19 +9,19 @@ This may change at any moment.
 `BLApproximationOptions` | ✅ Done | |
 `BLArc` | ✅ Done | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
 `BLArray` | 🕒 Partial | Array container (template) [C++ API]|
-`BLArrayView` | ❌ Unstarted | |
+`BLArrayView` | ℹ️ Not portable | `(Appears to be a C++-exclusive API)` |
 `BLBox` | ✅ Done | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ✅ Done | Box specified as [x0, y0, x1, y1] using int as a storage type |
 `BLCircle` | ✅ Done | Circle specified as [cx, cy, r] using double as a storage type |
-`BLConicalGradientValues` | ❌ Unstarted | Conical gradient values packed into a structure |
+`BLConicalGradientValues` | ℹ️ No work required | Conical gradient values packed into a structure |
 `BLContext` | 🕒 Partial | Rendering context [C++ API]|
 `BLContextCookie` | ✅ Done | |
 `BLContextCreateInfo` | ✅ Done | Information that can be used to customize the rendering context |
-`BLContextHints` | ❌ Unstarted | Rendering context hints |
-`BLContextState` | ✅ Done | `(No work needed)` |
-`BLCreateForeignInfo` | ❌ Unstarted | |
+`BLContextHints` | ✅ Done | Rendering context hints |
+`BLContextState` | ℹ️ No work required | |
+`BLCreateForeignInfo` | ℹ️ No work required | |
 `BLEllipse` | ✅ Done | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
-`BLExternalImplPreface` | ❌ Unstarted | |
+`BLExternalImplPreface` | ℹ️ No work required | |
 `BLFile` | ✅ Done | |
 `BLFont` | 🕒 Partial | Font [C++ API]|
 `BLFontData` | ❌ Unstarted | Font data [C++ API]|
