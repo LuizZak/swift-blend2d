@@ -6,11 +6,11 @@ import blend2d
 public final class BLImage: BLBaseClass<BLImageCore> {
     /// Maximum width of an image.
     static var maximumWidth: Int {
-        return Int(BL_RUNTIME_MAX_IMAGE_SIZE.rawValue)
+        return Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     /// Maximum height of an image.
     static var maximumHeight: Int {
-        return Int(BL_RUNTIME_MAX_IMAGE_SIZE.rawValue)
+        return Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     
     public var width: Int {

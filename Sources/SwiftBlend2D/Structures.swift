@@ -494,6 +494,15 @@ public extension BLExtendMode {
     static let reflectXRepeatY = BL_EXTEND_MODE_REFLECT_X_REPEAT_Y
 }
 
+public extension BLRuntimeInfoType {
+    /// Blend2D build information.
+    static let build = BL_RUNTIME_INFO_TYPE_BUILD
+    /// System information (includes CPU architecture, features, cores, etc...).
+    static let memory = BL_RUNTIME_INFO_TYPE_MEMORY
+    /// Runtime information regarding memory used, reserved, etc...
+    static let system = BL_RUNTIME_INFO_TYPE_SYSTEM
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }
