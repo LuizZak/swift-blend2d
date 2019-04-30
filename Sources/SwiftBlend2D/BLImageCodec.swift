@@ -61,10 +61,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
                 return nil
             }
             
-            var array = BLArrayCore()
-            blImageCodecArrayInitBuiltInCodecs(&array)
-            
-            return blImageCodecFindByData(&object, pointer, data.count, &array)
+            return blImageCodecFindByData(&object, pointer, data.count, nil)
         }
         
         if result != BL_SUCCESS.rawValue {

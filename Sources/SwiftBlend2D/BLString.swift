@@ -45,7 +45,7 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
     }
     
     public static func += (lhs: BLString, rhs: String) {
-        _ = rhs.withCString { pointer in
+        rhs.withCString { pointer in
             let rhsSizeMinusNullTerminator = rhs.utf8CString.count - 1
             
             blStringInsertData(&lhs.object,
