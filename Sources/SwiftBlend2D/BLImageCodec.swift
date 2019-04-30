@@ -61,7 +61,10 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
                 return nil
             }
             
-            return blImageCodecFindByData(&object, blImageCodecBuiltInCodecs(), pointer, data.count)
+            var array = BLArrayCore()
+            blImageCodecArrayInitBuiltInCodecs(&array)
+            
+            return blImageCodecFindByData(&object, pointer, data.count, &array)
         }
         
         if result != BL_SUCCESS.rawValue {
@@ -106,11 +109,9 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
 
 extension BLImageCodec {
     static var _builtInCodecs: [BLImageCodecCore] = {
-        guard let codecs = blImageCodecBuiltInCodecs() else {
-            fatalError("Failed to load built in codecs.")
-        }
+        let array = BLArray(type: .arrayOfVar)
         
-        let array = BLArray(borrowing: codecs.pointee)
+        blImageCodecArrayInitBuiltInCodecs(&array.object)
         
         return array.asArrayOfUnsafe(type: BLImageCodecCore.self)
     }()

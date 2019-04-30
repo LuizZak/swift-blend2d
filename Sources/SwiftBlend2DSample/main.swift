@@ -64,11 +64,13 @@ func mainWithCBindings() {
     blContextEnd(&ctx)
     
     // Let's use some built-in codecs provided by Blend2D.
+    var array = BLArrayCore()
+    blImageCodecArrayInitBuiltInCodecs(&array)
+    
     var codec = BLImageCodecCore()
     
     blImageCodecInit(&codec)
-    
-    blImageCodecFindByName(&codec, blImageCodecBuiltInCodecs(), "BMP")
+    blImageCodecFindByName(&codec, "BMP", 3, &array)
     
     blImageWriteToFile(&img, "bl-getting-started-1.bmp", &codec)
 }
