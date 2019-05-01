@@ -167,14 +167,14 @@ BL_INLINE T blBitRorImpl(const T& x, unsigned n) noexcept {
 // MSVC is unable to emit `rol|ror` instruction when `n` is not constant so we
 // have to help it a bit. This, however, prevents us from using `constexpr`.
 #if defined(_MSC_VER)
-template<> BL_INLINE uint8_t blBitRolImpl(const uint8_t& x, unsigned n) noexcept { return uint8_t(_rotl8(x, n)); }
-template<> BL_INLINE uint8_t blBitRorImpl(const uint8_t& x, unsigned n) noexcept { return uint8_t(_rotr8(x, n)); }
-template<> BL_INLINE uint16_t blBitRolImpl(const uint16_t& x, unsigned n) noexcept { return uint16_t(_rotl16(x, n)); }
-template<> BL_INLINE uint16_t blBitRorImpl(const uint16_t& x, unsigned n) noexcept { return uint16_t(_rotr16(x, n)); }
-template<> BL_INLINE uint32_t blBitRolImpl(const uint32_t& x, unsigned n) noexcept { return uint32_t(_rotl(x, n)); }
-template<> BL_INLINE uint32_t blBitRorImpl(const uint32_t& x, unsigned n) noexcept { return uint32_t(_rotr(x, n)); }
-template<> BL_INLINE uint64_t blBitRolImpl(const uint64_t& x, unsigned n) noexcept { return uint64_t(_rotl64(x, n)); }
-template<> BL_INLINE uint64_t blBitRorImpl(const uint64_t& x, unsigned n) noexcept { return uint64_t(_rotr64(x, n)); }
+template<> BL_INLINE uint8_t blBitRolImpl(const uint8_t& x, unsigned n) noexcept { return uint8_t(_rotl8(x, uint8_t(n))); }
+template<> BL_INLINE uint8_t blBitRorImpl(const uint8_t& x, unsigned n) noexcept { return uint8_t(_rotr8(x, uint8_t(n))); }
+template<> BL_INLINE uint16_t blBitRolImpl(const uint16_t& x, unsigned n) noexcept { return uint16_t(_rotl16(x, uint8_t(n))); }
+template<> BL_INLINE uint16_t blBitRorImpl(const uint16_t& x, unsigned n) noexcept { return uint16_t(_rotr16(x, uint8_t(n))); }
+template<> BL_INLINE uint32_t blBitRolImpl(const uint32_t& x, unsigned n) noexcept { return uint32_t(_rotl(x, int(n))); }
+template<> BL_INLINE uint32_t blBitRorImpl(const uint32_t& x, unsigned n) noexcept { return uint32_t(_rotr(x, int(n))); }
+template<> BL_INLINE uint64_t blBitRolImpl(const uint64_t& x, unsigned n) noexcept { return uint64_t(_rotl64(x, int(n))); }
+template<> BL_INLINE uint64_t blBitRorImpl(const uint64_t& x, unsigned n) noexcept { return uint64_t(_rotr64(x, int(n))); }
 #endif
 
 template<typename X, typename Y>
@@ -216,14 +216,14 @@ constexpr T blBitMask(Arg x, Args... args) noexcept { return T(blBitMask<T>(x) |
 template<typename T, typename B>
 constexpr T blBitMaskFromBool(const B& x) noexcept { return blNegate(T(x)); }
 
-//! Get whether `x` has `n`th bit set.
+//! Gets whether `x` has `n`th bit set.
 template<typename T, typename I>
 constexpr bool blBitTest(const T& x, const I& i) noexcept {
   typedef typename std::make_unsigned<T>::type U;
   return (U(x) & (U(1) << i)) != 0;
 }
 
-//! Get whether bits specified by `y` are all set in `x`.
+//! Gets whether bits specified by `y` are all set in `x`.
 template<typename X, typename Y>
 constexpr bool blBitMatch(const X& x, const Y& y) noexcept { return (x & y) == y; }
 
@@ -358,7 +358,7 @@ static constexpr bool blIsAligned(const X& base, const Y& alignment) noexcept {
   return ((U)base % (U)alignment) == 0;
 }
 
-//! Get whether the `x` is a power of two (only one bit is set).
+//! Gets whether the `x` is a power of two (only one bit is set).
 template<typename T>
 static constexpr bool blIsPowerOf2(const T& x) noexcept {
   typedef typename std::make_unsigned<T>::type U;
@@ -377,7 +377,7 @@ static constexpr T blAlignUpPowerOf2(const T& x) noexcept {
   return (T)(blFillTrailingBits(U(x) - 1u) + 1u);
 }
 
-//! Get zero or a positive difference between `base` and `base` aligned to `alignment`.
+//! Returns zero or a positive difference between `base` and `base` aligned to `alignment`.
 template<typename X, typename Y>
 static constexpr X blAlignUpDiff(const X& base, const Y& alignment) noexcept {
   typedef typename BLInternal::StdInt<sizeof(X), 1>::Type U;

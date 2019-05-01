@@ -12,6 +12,8 @@
 #include "./blrgba.h"
 #include "./blvariant.h"
 
+BL_DIAGNOSTIC_PUSH(BL_DIAGNOSTIC_NO_SHADOW)
+
 //! \addtogroup blend2d_api_styles
 //! \{
 
@@ -333,7 +335,7 @@ public:
   BL_INLINE BLResult assign(BLGradient&& other) noexcept { return blGradientAssignMove(this, &other); }
   BL_INLINE BLResult assign(const BLGradient& other) noexcept { return blGradientAssignWeak(this, &other); }
 
-  //! Get whether the gradient is a built-in null instance.
+  //! Gets whether the gradient is a built-in null instance.
   BL_INLINE bool isNone() const noexcept { return (impl->implTraits & BL_IMPL_TRAIT_NULL) != 0; }
 
   BL_INLINE bool equals(const BLGradient& other) const noexcept { return blGradientEquals(this, &other); }
@@ -522,5 +524,7 @@ public:
 #endif
 
 //! \}
+
+BL_DIAGNOSTIC_POP
 
 #endif // BLEND2D_BLGRADIENT_H

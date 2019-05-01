@@ -9,6 +9,8 @@
 
 #include "./blapi.h"
 
+BL_DIAGNOSTIC_PUSH(BL_DIAGNOSTIC_NO_SHADOW)
+
 //! \addtogroup blend2d_api_styles
 //! \{
 
@@ -37,7 +39,6 @@ struct BLRgba32 {
 
   // --------------------------------------------------------------------------
   #ifdef __cplusplus
-
   BL_INLINE BLRgba32() noexcept = default;
   constexpr BLRgba32(const BLRgba32&) noexcept = default;
   constexpr explicit BLRgba32(uint32_t rgba32) noexcept : value(rgba32) {}
@@ -58,16 +59,15 @@ struct BLRgba32 {
 
   BL_INLINE bool equals(const BLRgba32& other) const noexcept { return blEquals(this->value, other.value); }
 
-  //! Get whether the color is fully-opaque (alpha equals 0xFFFF).
+  //! Gets whether the color is fully-opaque (alpha equals 0xFFFF).
   constexpr bool isOpaque() const noexcept { return this->value >= 0xFF000000u; }
-  //! Get whether the color is fully-transparent (alpha equals 0).
+  //! Gets whether the color is fully-transparent (alpha equals 0).
   constexpr bool isTransparent() const noexcept { return this->value <= 0x00FFFFFFu; }
 
   BL_INLINE bool operator==(const BLRgba32& other) const noexcept { return  equals(other); }
   BL_INLINE bool operator!=(const BLRgba32& other) const noexcept { return !equals(other); }
 
   constexpr explicit operator bool() const noexcept { return this->value != 0; }
-
   #endif
   // --------------------------------------------------------------------------
 };
@@ -97,7 +97,6 @@ struct BLRgba64 {
 
   // --------------------------------------------------------------------------
   #ifdef __cplusplus
-
   BL_INLINE BLRgba64() noexcept = default;
   constexpr BLRgba64(const BLRgba64&) noexcept = default;
   constexpr explicit BLRgba64(uint64_t rgba64) noexcept : value(rgba64) {}
@@ -124,16 +123,15 @@ struct BLRgba64 {
 
   BL_INLINE bool equals(const BLRgba64& other) const noexcept { return blEquals(this->value, other.value); }
 
-  //! Get whether the color is fully-opaque (alpha equals 0xFFFF).
+  //! Gets whether the color is fully-opaque (alpha equals 0xFFFF).
   constexpr bool isOpaque() const noexcept { return this->value >= 0xFFFF000000000000u; }
-  //! Get whether the color is fully-transparent (alpha equals 0).
+  //! Gets whether the color is fully-transparent (alpha equals 0).
   constexpr bool isTransparent() const noexcept { return this->value <= 0x0000FFFFFFFFFFFFu; }
 
   BL_INLINE bool operator==(const BLRgba64& other) const noexcept { return  equals(other); }
   BL_INLINE bool operator!=(const BLRgba64& other) const noexcept { return !equals(other); }
 
   constexpr explicit operator bool() const noexcept { return this->value != 0; }
-
   #endif
   // --------------------------------------------------------------------------
 };
@@ -151,7 +149,6 @@ struct BLRgba128 {
 
   // --------------------------------------------------------------------------
   #ifdef __cplusplus
-
   BL_INLINE BLRgba128() noexcept = default;
   constexpr BLRgba128(const BLRgba128&) noexcept = default;
 
@@ -186,9 +183,9 @@ struct BLRgba128 {
            blEquals(this->a, other.a) ;
   }
 
-  //! Get whether the color is fully-opaque (alpha equals 1.0).
+  //! Gets whether the color is fully-opaque (alpha equals 1.0).
   constexpr bool isOpaque() const noexcept { return this->a >= 1.0; }
-  //! Get whether the color is fully-transparent (alpha equals 0.0).
+  //! Gets whether the color is fully-transparent (alpha equals 0.0).
   constexpr bool isTransparent() const noexcept { return this->a == 0.0; }
 
   BL_INLINE bool operator==(const BLRgba128& other) const noexcept { return  equals(other); }
@@ -225,5 +222,7 @@ static_assert(sizeof(BLRgba128) == 16, "'BLRgba128' struct must be exactly 16 by
 #endif
 
 //! \}
+
+BL_DIAGNOSTIC_POP
 
 #endif // BLEND2D_BLRGBA_H

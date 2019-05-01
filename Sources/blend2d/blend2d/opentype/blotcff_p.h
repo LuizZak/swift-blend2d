@@ -200,22 +200,22 @@ struct CFFData {
     uint8_t offsetSize;
     uint16_t bias;
 
-    BL_INLINE void reset(const DataRange& dataRange, uint32_t headerSize, uint32_t offsetSize, uint32_t entryCount, uint16_t bias) noexcept {
-      this->dataRange = dataRange;
-      this->entryCount = entryCount;
-      this->headerSize = uint8_t(headerSize);
-      this->offsetSize = uint8_t(offsetSize);
-      this->bias = bias;
+    BL_INLINE void reset(const DataRange& dataRange_, uint32_t headerSize_, uint32_t offsetSize_, uint32_t entryCount_, uint16_t bias_) noexcept {
+      this->dataRange = dataRange_;
+      this->entryCount = entryCount_;
+      this->headerSize = uint8_t(headerSize_);
+      this->offsetSize = uint8_t(offsetSize_);
+      this->bias = bias_;
     }
 
-    //! Get an offset to the offsets data (array of offsets).
+    //! Returns the offset to the offsets data (array of offsets).
     BL_INLINE uint32_t offsetsOffset() const noexcept { return headerSize; }
-    //! get a size of offset data (array of offsets) in bytes.
+    //! Returns the size of offset data (array of offsets) in bytes.
     BL_INLINE uint32_t offsetsSize() const noexcept { return (entryCount + 1) * offsetSize; }
 
-    //! Get an offset to the payload data.
+    //! Returns the offset to the payload data.
     BL_INLINE uint32_t payloadOffset() const noexcept { return offsetsOffset() + offsetsSize(); }
-    //! Get a payload size in bytes.
+    //! Returns the payload size in bytes.
     BL_INLINE uint32_t payloadSize() const noexcept { return dataRange.size - payloadOffset(); }
   };
 
