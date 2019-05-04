@@ -2,7 +2,7 @@ import XCTest
 import blend2d
 import SwiftBlend2D
 
-class StructuresTests: XCTestCase {
+class EnumsTestsTests: XCTestCase {
     
     func testOptionSetConformance() {
         isOptionSet(BLImageCodecFeatures.self)

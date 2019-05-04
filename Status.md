@@ -1,6 +1,6 @@
 This is a brief status report of what is and isn't ported yet. Contributions to help create Swift wrapper structures are welcome.
 
-Some of the C structures (like `BLLine`, `BLBox`, `BLMatrix2D` etc.) are already visible in Swift but lack many operators that are implemented only in C++. It'd be nice to port such operators to Swift using public extensions.
+Some of the C structures (like `BLLine`, `BLBox`, `BLMatrix2D` etc.) are already visible to Swift but lack many operators that are implemented only in C++. It'd be nice to port such operators to Swift using public extensions of the original data types.
 
 This may change at any moment.
 
@@ -58,7 +58,7 @@ This may change at any moment.
 `BLInternalCastImpl` | ❌ Unstarted | |
 `BLLine` | ✅ Done | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ❌ Unstarted | Linear gradient values packed into a structure |
-`BLMatrix2D` | 🕒 Partial | Missing Swift tests |
+`BLMatrix2D` | 🕒 Partial | `(Missing Swift tests)` |
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
 `BLPathView` | ❌ Unstarted | |
 `BLPattern` | ❌ Unstarted | Pattern [C++ API]|
@@ -71,7 +71,7 @@ This may change at any moment.
 `BLRange` | ✅ Done | |
 `BLRect` | ✅ Done | Rectangle specified as [x, y, w, h] using double as a storage type |
 `BLRectI` | ✅ Done | Rectangle specified as [x, y, w, h] using int as a storage type |
-`BLRegion` | ❌ Unstarted | |
+`BLRegion` | 🕒 Partial | `(Missing Swift tests)` |
 `BLRgba128` | ✅ Done | 128-bit RGBA color stored as 4 32-bit floating point values in [RGBA] order |
 `BLRgba32` | ✅ Done | 32-bit RGBA color (8-bit per component) stored as 0xAARRGGBB |
 `BLRgba64` | ✅ Done | 64-bit RGBA color (16-bit per component) stored as 0xAAAARRRRGGGGBBBB |
@@ -82,7 +82,7 @@ This may change at any moment.
 `BLSize` | ✅ Done | Size specified as [w, h] using double as a storage type |
 `BLSizeI` | ✅ Done | Size specified as [w, h] using int as a storage type |
 `BLString` | 🕒 Partial | |
-`BLStrokeOptions` | 🕒 Partial | (Missing Swift tests) |
+`BLStrokeOptions` | 🕒 Partial | `(Missing Swift tests)` |
 `BLTextMetrics` | ❌ Unstarted | Text metrics |
 `BLTriangle` | ✅ Done | Triangle data speciied as [x0, y0, x1, y1, x2, y2] using double as a storage type |
 `BLVariant` | ❌ Unstarted | |

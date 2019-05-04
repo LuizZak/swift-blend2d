@@ -503,6 +503,43 @@ public extension BLRuntimeInfoType {
     static let system = BL_RUNTIME_INFO_TYPE_SYSTEM
 }
 
+public extension BLBooleanOp {
+    /// Result = B.
+    static let copy = BL_BOOLEAN_OP_COPY
+    /// Result = A & B.
+    static let and = BL_BOOLEAN_OP_AND
+    /// Result = A | B.
+    static let or = BL_BOOLEAN_OP_OR
+    /// Result = A ^ B.
+    static let xor = BL_BOOLEAN_OP_XOR
+    /// Result = A - B.
+    static let sub = BL_BOOLEAN_OP_SUB
+}
+
+public extension BLRegionType {
+    /// Region is empty (has no rectangles).
+    static let empty = BL_REGION_TYPE_EMPTY
+    /// Region has one rectangle (rectangular).
+    static let rect = BL_REGION_TYPE_RECT
+    /// Region has more YX sorted rectangles.
+    static let complex = BL_REGION_TYPE_COMPLEX
+}
+
+public extension BLMatrix2DType {
+    /// Identity matrix.
+    static let identity = BL_MATRIX2D_TYPE_IDENTITY
+    /// Has translation part (the rest is like identity).
+    static let translate = BL_MATRIX2D_TYPE_TRANSLATE
+    /// Has translation and scaling parts.
+    static let scale = BL_MATRIX2D_TYPE_SCALE
+    /// Has translation and scaling parts, however scaling swaps X/Y.
+    static let swap = BL_MATRIX2D_TYPE_SWAP
+    /// Generic affine matrix.
+    static let affine = BL_MATRIX2D_TYPE_AFFINE
+    /// Invalid/degenerate matrix not useful for transformations.
+    static let invalid = BL_MATRIX2D_TYPE_INVALID
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }
