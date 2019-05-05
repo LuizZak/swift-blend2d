@@ -540,6 +540,21 @@ public extension BLMatrix2DType {
     static let invalid = BL_MATRIX2D_TYPE_INVALID
 }
 
+public extension BLImplTraits {
+    /// The data this container holds is mutable if `refCount == 1`.
+    static let mutable = BL_IMPL_TRAIT_MUTABLE
+    /// The data this container holds is always immutable.
+    static let immutable = BL_IMPL_TRAIT_IMMUTABLE
+    /// Set if the impl uses an external data (data is not part of impl).
+    static let external = BL_IMPL_TRAIT_EXTERNAL
+    /// Set if the impl was not allocated by `blRuntimeAllocImpl()`.
+    static let foreign = BL_IMPL_TRAIT_FOREIGN
+    /// Set if the impl provides a virtual function table (first member).
+    static let virt = BL_IMPL_TRAIT_VIRT
+    /// Set if the impl is a built-in null instance (default constructed).
+    static let null = BL_IMPL_TRAIT_NULL
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }

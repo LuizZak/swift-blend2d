@@ -24,12 +24,12 @@ This may change at any moment.
 `BLExternalImplPreface` | ℹ️ No work required | |
 `BLFile` | ✅ Done | |
 `BLFont` | 🕒 Partial | Font [C++ API]|
-`BLFontData` | ❌ Unstarted | Font data [C++ API]|
+`BLFontData` | 🕒 Partial | Font data [C++ API] `(Missing Swift tests)` |
 `BLFontDesignMetrics` | ❌ Unstarted | |
 `BLFontFace` | ❌ Unstarted | Font face [C++ API]|
 `BLFontFaceInfo` | ❌ Unstarted | Information of BLFontFace |
 `BLFontFeature` | ❌ Unstarted | |
-`BLFontLoader` | ❌ Unstarted | Font loader [C++ API]|
+`BLFontLoader` | 🕒 Partial | `(Missing Swift tests)` |
 `BLFontMatrix` | ❌ Unstarted | |
 `BLFontMetrics` | ❌ Unstarted | Scaled BLFontDesignMetrics based on font size and other properties |
 `BLFontPanose` | ❌ Unstarted | Font PANOSE classification |
