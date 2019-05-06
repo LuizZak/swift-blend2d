@@ -26,7 +26,7 @@ This may change at any moment.
 `BLFont` | 🕒 Partial | Font [C++ API]|
 `BLFontData` | 🕒 Partial | Font data [C++ API] `(Missing Swift tests)` |
 `BLFontDesignMetrics` | ❌ Unstarted | |
-`BLFontFace` | ❌ Unstarted | Font face [C++ API]|
+`BLFontFace` | 🕒 Partial | Font face [C++ API] `(Missing Swift tests)` |
 `BLFontFaceInfo` | ❌ Unstarted | Information of BLFontFace |
 `BLFontFeature` | ❌ Unstarted | |
 `BLFontLoader` | 🕒 Partial | `(Missing Swift tests)` |

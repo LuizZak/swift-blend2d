@@ -36,6 +36,10 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
         self.init(string: value)
     }
     
+    internal override init(borrowing: BLStringCore) {
+        super.init(borrowing: borrowing)
+    }
+    
     public func toString() -> String {
         guard let data = blStringGetData(&object) else {
             return ""
@@ -72,4 +76,22 @@ extension BLString: Equatable {
 extension BLStringCore: CoreStructure {
     public static let initializer = blStringInit
     public static let deinitializer = blStringReset
+}
+
+internal extension BLStringCore {
+    var asBLString: BLString {
+        return BLString(borrowing: self)
+    }
+    
+    var asString: String {
+        return asBLString.toString()
+    }
+    
+    var view: BLStringView {
+        return impl.pointee.view
+    }
+    
+    var size: Int {
+        return impl.pointee.size
+    }
 }

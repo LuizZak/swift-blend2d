@@ -19,6 +19,27 @@ public class BLFont: BLBaseClass<BLFontCore> {
         return metrics
     }
     
+    /// Gets face-type the font.
+    public var faceType: BLFontFaceType {
+        return face.faceType
+    }
+    /// Gets font-flags the font.
+    public var faceFlags: BLFontFaceFlags {
+        return face.faceFlags
+    }
+    /// Gets the size of the font (as float).
+    public var size: Float {
+        return object.impl.pointee.metrics.size
+    }
+    /// Gets the "units per em" (UPEM) of the font's associated font-face.
+    public var unitsPerEm: Int32 {
+        return face.unitsPerEm
+    }
+    
+    public var face: BLFontFace {
+        return BLFontFace(borrowing: object.impl.pointee.face)
+    }
+    
     public func createFromFace(_ face: BLFontFaceCore, size: Float) {
         var face = face
         blFontCreateFromFace(&object, &face, size)

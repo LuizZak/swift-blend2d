@@ -565,3 +565,4 @@ extension BLFontFaceFlags: OptionSet { }
 extension BLFontFaceDiagFlags: OptionSet { }
 extension BLFormatFlags: OptionSet { }
 extension BLFileOpenFlags: OptionSet { }
+extension BLFileReadFlags: OptionSet { }

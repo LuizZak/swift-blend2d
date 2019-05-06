@@ -15,6 +15,7 @@ class EnumsTestsTests: XCTestCase {
         isOptionSet(BLFontFaceDiagFlags.self)
         isOptionSet(BLFormatFlags.self)
         isOptionSet(BLFileOpenFlags.self)
+        isOptionSet(BLFileReadFlags.self)
     }
     
     // If this invocation fails, T does not conform to OptionSet.

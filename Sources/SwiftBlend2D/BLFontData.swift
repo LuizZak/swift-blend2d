@@ -18,7 +18,6 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
         ownership = .borrowed
     }
     
-    
     public func listTags() throws -> [BLTag] {
         let array = BLArray(type: .arrayOfUInt32)
         

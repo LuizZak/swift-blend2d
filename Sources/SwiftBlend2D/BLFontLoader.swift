@@ -30,6 +30,10 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
         super.init()
     }
     
+    override init(borrowing object: BLFontLoaderCore) {
+        super.init(borrowing: object)
+    }
+    
     public init(fromFilePath path: String, readFlags: BLFileReadFlags) throws {
         try super.init { pointer in
             blFontLoaderInit(pointer)
