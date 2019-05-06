@@ -1,6 +1,8 @@
 import blend2d
 
 public class BLFontFace: BLBaseClass<BLFontFaceCore> {
+    // MARK: - Initializers
+    
     /// Create Functionality
     /// Creates a new `BLFontFace` from file specified by `fileName`.
     ///
@@ -37,7 +39,8 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         super.init(borrowing: object)
     }
 
-    /// \name Font Data & Loader
+    // MARK: Font Data & Loader
+    
     /// Gets `BLFontData` associated with this font-face.
     public var data: BLFontData {
         return BLFontData(borrowing: object.impl.pointee.data.impl)
@@ -47,7 +50,8 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         return BLFontLoader(borrowing: object.impl.pointee.loader)
     }
     
-    /// \name Properties
+    // MARK: Properties
+    
     /// Returns font weight (returns default weight in case this is a variable font).
     public var weight: UInt16 {
         return object.impl.pointee.weight
@@ -101,7 +105,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var fullName: String {
         return object.impl.pointee.fullName.asString
     }
-    /// Gets size of string returned by `fullName()`.
+    /// Gets size of string returned by `fullName`, in bytes.
     public var fullNameSize: Int {
         return object.impl.pointee.fullName.size
     }
@@ -110,7 +114,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var familyName: String {
         return object.impl.pointee.familyName.asString
     }
-    /// Gets size of string returned by `familyName()`.
+    /// Gets size of string returned by `familyName`, in bytes.
     public var familyNameSize: Int {
         return object.impl.pointee.familyName.size
     }
@@ -118,7 +122,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var subfamilyName: String {
         return object.impl.pointee.subfamilyName.asString
     }
-    /// Gets size of string returned by `subfamilyName()`.
+    /// Gets size of string returned by `subfamilyName`, in bytes.
     public var subfamilyNameSize: Int {
         return object.impl.pointee.subfamilyName.size
     }
@@ -126,7 +130,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var postScriptName: String {
         return object.impl.pointee.postScriptName.asString
     }
-    /// Gets size of string returned by `postScriptName()`.
+    /// Gets size of string returned by `postScriptName`, in bytes.
     public var postScriptNameSize: Int {
         return object.impl.pointee.postScriptName.size
     }
