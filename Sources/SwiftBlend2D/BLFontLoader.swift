@@ -46,16 +46,16 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
         }
     }
     
-    //! Returns `BLFontData` instance that matches the given `faceIndex`.
-    //!
-    //! Please note that this function never fails. If the `faceIndex` is out
-    //! of bounds then a default constructed instance of `BLFontData` will be
-    //! returned.
-    //!
-    //! Alternatively you can use `BLFontData::createFromLoader()`, which would
-    //! call virtual function `BLFontLoaderVirt::dataByFaceIndex()` behind the
-    //! scenes and return the appropriate error if `faceIndex` is invalid or if
-    //! the loader is not initialized.
+    /// Returns `BLFontData` instance that matches the given `faceIndex`.
+    ///
+    /// Please note that this function never fails. If the `faceIndex` is out
+    /// of bounds then a default constructed instance of `BLFontData` will be
+    /// returned.
+    ///
+    /// Alternatively you can use `BLFontData::createFromLoader()`, which would
+    /// call virtual function `BLFontLoaderVirt::dataByFaceIndex()` behind the
+    /// scenes and return the appropriate error if `faceIndex` is invalid or if
+    /// the loader is not initialized.
     public func dataByFaceIndex(_ faceIndex: UInt32) throws -> BLFontData {
         guard let data = object.impl.pointee.virt.pointee.dataByFaceIndex(object.impl, faceIndex) else {
             // TODO: Transform into a throwable error here
