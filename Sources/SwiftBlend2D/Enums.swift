@@ -398,8 +398,8 @@ public extension BLFileOpenFlags {
     
     /// Opens the file for both reading and writing (Windows).
     ///
-    /// This is a combination of both `BL_FILE_OPEN_READ_EXCLUSIVE` and
-    /// `BL_FILE_OPEN_WRITE_EXCLUSIVE`.
+    /// This is a combination of both `BLFileOpenFlags.openReadExclusive` and
+    /// `BLFileOpenFlags.openWriteExclusive`.
     static let openRwExclusive = BL_FILE_OPEN_RW_EXCLUSIVE
     
     /// Creates the file in exclusive mode - fails if the file already exists.
@@ -474,11 +474,11 @@ public extension BLExtendMode {
     /// Reflect extend.
     static let reflect = BL_EXTEND_MODE_REFLECT
     
-    /// Alias to `BL_EXTEND_MODE_PAD`.
+    /// Alias to `BLExtendMode.pad`.
     static let padXPadY = BL_EXTEND_MODE_PAD_X_PAD_Y
-    /// Alias to `BL_EXTEND_MODE_REPEAT`.
+    /// Alias to `BLExtendMode.repeat`.
     static let repeatXRepeatY = BL_EXTEND_MODE_REPEAT_X_REPEAT_Y
-    /// Alias to `BL_EXTEND_MODE_REFLECT`.
+    /// Alias to `BLExtendMode.reflect`.
     static let reflectXReflectY = BL_EXTEND_MODE_REFLECT_X_REFLECT_Y
     /// Pad X and repeat Y.
     static let padXRepeatY = BL_EXTEND_MODE_PAD_X_REPEAT_Y
@@ -553,6 +553,21 @@ public extension BLImplTraits {
     static let virt = BL_IMPL_TRAIT_VIRT
     /// Set if the impl is a built-in null instance (default constructed).
     static let null = BL_IMPL_TRAIT_NULL
+}
+
+public extension BLGradientValue {
+    /// x0 - start 'x' for Linear/Radial and center 'x' for Conical.
+    static let commonX0 = BL_GRADIENT_VALUE_COMMON_X0
+    /// y0 - start 'y' for Linear/Radial and center 'y' for Conical.
+    static let commonY0 = BL_GRADIENT_VALUE_COMMON_Y0
+    /// x1 - end 'x' for Linear/Radial.
+    static let commonX1 = BL_GRADIENT_VALUE_COMMON_X1
+    /// y1 - end 'y' for Linear/Radial.
+    static let commonY1 = BL_GRADIENT_VALUE_COMMON_Y1
+    /// Radial gradient r0 radius.
+    static let radialR0 = BL_GRADIENT_VALUE_RADIAL_R0
+    /// Conical gradient angle.
+    static let conicalAngle = BL_GRADIENT_VALUE_CONICAL_ANGLE
 }
 
 extension BLImageCodecFeatures: OptionSet { }
