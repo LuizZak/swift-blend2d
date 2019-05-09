@@ -57,7 +57,7 @@ This may change at any moment.
 `BLImageScaleOptions` | ❌ Unstarted | Options that can used to customize image scaling |
 `BLInternalCastImpl` | ❌ Unstarted | |
 `BLLine` | ✅ Done | Line specified as [x0, y0, x1, y1] using double as a storage type |
-`BLLinearGradientValues` | ❌ Unstarted | Linear gradient values packed into a structure |
+`BLLinearGradientValues` | ℹ️ No work required | Linear gradient values packed into a structure |
 `BLMatrix2D` | 🕒 Partial | `(Missing Swift tests)` |
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
 `BLPathView` | ❌ Unstarted | |
@@ -66,7 +66,7 @@ This may change at any moment.
 `BLPixelConverterOptions` | ❌ Unstarted | Pixel conversion options |
 `BLPoint` | ✅ Done | Point specified as [x, y] using double as a storage type |
 `BLPointI` | ✅ Done | Point specified as [x, y] using int as a storage type |
-`BLRadialGradientValues` | ❌ Unstarted | Radial gradient values packed into a structure |
+`BLRadialGradientValues` | ℹ️ No work required | Radial gradient values packed into a structure |
 `BLRandom` | ❌ Unstarted | |
 `BLRange` | ✅ Done | |
 `BLRect` | ✅ Done | Rectangle specified as [x, y, w, h] using double as a storage type |
