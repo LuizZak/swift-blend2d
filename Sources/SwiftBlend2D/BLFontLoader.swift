@@ -30,8 +30,8 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
         super.init()
     }
     
-    override init(borrowing object: BLFontLoaderCore) {
-        super.init(borrowing: object)
+    override init(weakAssign object: BLFontLoaderCore) {
+        super.init(weakAssign: object)
     }
     
     public init(fromFilePath path: String, readFlags: BLFileReadFlags) throws {
@@ -62,7 +62,7 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
             fatalError("No data for face index \(faceIndex)")
         }
         
-        return BLFontData(borrowing: data)
+        return BLFontData(weakAssign: data)
     }
     
     // TODO: Re-enable this back again once we figure out what destroyFunc and

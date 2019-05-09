@@ -34,7 +34,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
         }
         
         if let codecCore = codecCore {
-            super.init(borrowing: codecCore)
+            super.init(weakAssign: codecCore)
         } else {
             fatalError("Expected to find a valid built-in codec named '\(builtInCodec.rawValue)'")
         }
@@ -69,8 +69,8 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     
     #endif
     
-    override init(borrowing object: BLImageCodecCore) {
-        super.init(borrowing: object)
+    override init(weakAssign object: BLImageCodecCore) {
+        super.init(weakAssign: object)
     }
     
     #if canImport(Foundation)
@@ -115,7 +115,7 @@ extension BLImageCodec {
 public extension BLImageCodec {
     static var builtInCodecs: [BLImageCodec] = {
         return _builtInCodecs.map { object in
-            BLImageCodec(borrowing: object)
+            BLImageCodec(weakAssign: object)
         }
     }()
     

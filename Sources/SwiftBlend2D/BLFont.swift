@@ -37,7 +37,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
     
     public var face: BLFontFace {
-        return BLFontFace(borrowing: object.impl.pointee.face)
+        return BLFontFace(weakAssign: object.impl.pointee.face)
     }
     
     public func createFromFace(_ face: BLFontFaceCore, size: Float) {

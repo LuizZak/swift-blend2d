@@ -36,8 +36,8 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
         self.init(string: value)
     }
     
-    internal override init(borrowing: BLStringCore) {
-        super.init(borrowing: borrowing)
+    internal override init(weakAssign: BLStringCore) {
+        super.init(weakAssign: weakAssign)
     }
     
     public func toString() -> String {
@@ -81,7 +81,7 @@ extension BLStringCore: CoreStructure {
 
 internal extension BLStringCore {
     var asBLString: BLString {
-        return BLString(borrowing: self)
+        return BLString(weakAssign: self)
     }
     
     var asString: String {

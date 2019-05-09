@@ -31,9 +31,9 @@ public final class BLStrokeOptions: BLBaseClass<BLStrokeOptionsCore> {
     }
     
     public var dashArray: [Double] {
-        get { return BLArray(borrowing: object.dashArray).asArrayOfDouble() }
+        get { return BLArray(weakAssign: object.dashArray).asArrayOfDouble() }
         set {
-            let array = BLArray(borrowing: object.dashArray)
+            let array = BLArray(weakAssign: object.dashArray)
             array.replaceContents(newValue)
         }
     }

@@ -35,19 +35,19 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         }
     }
     
-    public override init(borrowing object: BLFontFaceCore) {
-        super.init(borrowing: object)
+    public override init(weakAssign object: BLFontFaceCore) {
+        super.init(weakAssign: object)
     }
 
     // MARK: Font Data & Loader
     
     /// Gets `BLFontData` associated with this font-face.
     public var data: BLFontData {
-        return BLFontData(borrowing: object.impl.pointee.data.impl)
+        return BLFontData(weakAssign: object.impl.pointee.data.impl)
     }
     /// Gets `BLFontLoader` associated with this font-face.
     public var loader: BLFontLoader {
-        return BLFontLoader(borrowing: object.impl.pointee.loader)
+        return BLFontLoader(weakAssign: object.impl.pointee.loader)
     }
     
     // MARK: Properties

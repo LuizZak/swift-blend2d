@@ -52,14 +52,14 @@ class BLArrayTests: XCTestCase {
         }
     }
     
-    func testBorrow() {
+    func testWeakAssign() {
         let array = BLArray(type: .arrayOfInt32)
         // Append an item to force creation of a new backing array structure
         array.append(1 as Int32)
         
         do {
-            let borrowed = BLArray(borrowing: array.object)
-            withExtendedLifetime(borrowed) {
+            let weak = BLArray(weakAssign: array.object)
+            withExtendedLifetime(weak) {
                 XCTAssertEqual(array.object.impl.pointee.refCount, 2)
             }
         }

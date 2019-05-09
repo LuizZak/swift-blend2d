@@ -18,7 +18,7 @@ extension BLArrayTests {
     // to regenerate.
     static let __allTests__BLArrayTests = [
         ("testAppendU8", testAppendU8),
-        ("testBorrow", testBorrow),
+        ("testWeakAssign", testWeakAssign),
         ("testInit", testInit),
         ("testReserveCapacity", testReserveCapacity),
         ("testShrink", testShrink),
@@ -32,12 +32,12 @@ extension BLBaseClassTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLBaseClassTests = [
-        ("testBorrowInitializer", testBorrowInitializer),
+        ("testWeakAssignInitializer", testWeakAssignInitializer),
         ("testDefaultInitialize", testDefaultInitialize),
         ("testDeinitialize", testDeinitialize),
-        ("testDeinitializeBorrowedObjects", testDeinitializeBorrowedObjects),
+        ("testDeinitializeWeaklyAssignedObjects", testDeinitializeWeaklyAssignedObjects),
         ("testDeinitializeOnLeaveScope", testDeinitializeOnLeaveScope),
-        ("testDeinitializeWithBorrowedObject", testDeinitializeWithBorrowedObject),
+        ("testDeinitializeWithWeaklyAssignedObject", testDeinitializeWithWeaklyAssignedObject),
         ("testInitializeWithClosure", testInitializeWithClosure),
     ]
 }

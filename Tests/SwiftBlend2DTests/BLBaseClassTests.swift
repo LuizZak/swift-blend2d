@@ -38,8 +38,8 @@ class BLBaseClassTests: XCTestCase {
         }
     }
     
-    func testDeinitializeWithBorrowedObject() {
-        let sut = BLBaseClass<MockStructure>(borrowing: MockStructure())
+    func testDeinitializeWithWeaklyAssignedObject() {
+        let sut = BLBaseClass<MockStructure>(weakAssign: MockStructure())
         
         withExtendedLifetime(sut) {
             sut.deinitialize()
@@ -56,17 +56,17 @@ class BLBaseClassTests: XCTestCase {
         XCTAssertNotNil(MockStructure.latestDeinitializer)
     }
     
-    func testBorrowInitializer() {
-        let sut = BLBaseClass<MockStructure>(borrowing: MockStructure())
+    func testWeakAssignInitializer() {
+        let sut = BLBaseClass<MockStructure>(weakAssign: MockStructure())
         
         withUnsafePointer(to: &sut.object) { pointer in
             XCTAssertNotNil(MockStructure.latestAssignWeak)
         }
     }
     
-    func testDeinitializeBorrowedObjects() {
+    func testDeinitializeWeaklyAssignedObjects() {
         do {
-            _ = BLBaseClass<MockStructure>(borrowing: MockStructure())
+            _ = BLBaseClass<MockStructure>(weakAssign: MockStructure())
         }
         
         XCTAssertNotNil(MockStructure.latestDeinitializer)

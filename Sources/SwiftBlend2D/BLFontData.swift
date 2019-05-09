@@ -13,8 +13,8 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
         }
     }
     
-    internal init(borrowing impl: UnsafeMutablePointer<BLFontDataImpl>) {
-        super.init(borrowing: BLFontDataCore(impl: impl))
+    internal init(weakAssign impl: UnsafeMutablePointer<BLFontDataImpl>) {
+        super.init(weakAssign: BLFontDataCore(impl: impl))
     }
     
     public func listTags() throws -> [BLTag] {

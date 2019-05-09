@@ -15,7 +15,7 @@ final class BLArray {
         blArrayInit(&object, type.rawValue)
     }
     
-    init(borrowing object: BLArrayCore) {
+    init(weakAssign object: BLArrayCore) {
         blArrayInit(&self.object, UInt32(object.impl.pointee.implType))
         
         withUnsafePointer(to: object) { pointer -> Void in

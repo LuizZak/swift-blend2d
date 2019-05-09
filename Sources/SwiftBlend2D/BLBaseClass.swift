@@ -24,11 +24,12 @@ public class BLBaseClass<T: CoreStructure> {
         }
     }
     
-    /// Initializes a new base class borrowing the backing structure from an
-    /// existing structure.
+    /// Initializes a new base class by performing a weak assignment of an existing
+    /// backing structure.
     ///
-    /// `T.assignWeak` is invoked to perform the borrow of the underlying values.
-    init(borrowing object: T) {
+    /// `T.assignWeak` is invoked to perform the weak assignment operation of
+    /// the underlying object.
+    init(weakAssign object: T) {
         self.object = object
         _ = T.initializer(&self.object)
         
