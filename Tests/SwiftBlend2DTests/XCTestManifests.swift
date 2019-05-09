@@ -18,6 +18,7 @@ extension BLArrayTests {
     // to regenerate.
     static let __allTests__BLArrayTests = [
         ("testAppendU8", testAppendU8),
+        ("testBorrow", testBorrow),
         ("testInit", testInit),
         ("testReserveCapacity", testReserveCapacity),
         ("testShrink", testShrink),
@@ -34,9 +35,9 @@ extension BLBaseClassTests {
         ("testBorrowInitializer", testBorrowInitializer),
         ("testDefaultInitialize", testDefaultInitialize),
         ("testDeinitialize", testDeinitialize),
+        ("testDeinitializeBorrowedObjects", testDeinitializeBorrowedObjects),
         ("testDeinitializeOnLeaveScope", testDeinitializeOnLeaveScope),
         ("testDeinitializeWithBorrowedObject", testDeinitializeWithBorrowedObject),
-        ("testDontDeinitializeBorrowedObjects", testDontDeinitializeBorrowedObjects),
         ("testInitializeWithClosure", testInitializeWithClosure),
     ]
 }

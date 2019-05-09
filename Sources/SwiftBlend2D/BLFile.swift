@@ -88,4 +88,5 @@ public final class BLFile: BLBaseClass<BLFileCore> {
 extension BLFileCore: CoreStructure {
     public static let initializer = blFileInit
     public static let deinitializer = blFileReset
+    public static var assignWeak = emptyAssignWeak(type: BLFileCore.self)
 }

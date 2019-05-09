@@ -43,4 +43,5 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
 extension BLFontDataCore: CoreStructure {
     public static var initializer = blFontDataInit
     public static var deinitializer = blFontDataReset
+    public static var assignWeak = blFontDataAssignWeak
 }

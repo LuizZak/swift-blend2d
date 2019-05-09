@@ -51,4 +51,19 @@ class BLArrayTests: XCTestCase {
             XCTAssertEqual(size, 0) // = MemoryLayout<Double>.size * array.count
         }
     }
+    
+    func testBorrow() {
+        let array = BLArray(type: .arrayOfInt32)
+        // Append an item to force creation of a new backing array structure
+        array.append(1 as Int32)
+        
+        do {
+            let borrowed = BLArray(borrowing: array.object)
+            withExtendedLifetime(borrowed) {
+                XCTAssertEqual(array.object.impl.pointee.refCount, 2)
+            }
+        }
+        
+        XCTAssertEqual(array.object.impl.pointee.refCount, 1)
+    }
 }

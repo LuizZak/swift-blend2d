@@ -36,12 +36,15 @@ public class BLBaseClass<T: CoreStructure> {
     /// Initializes a new base class borrowing the backing structure from an
     /// existing structure.
     ///
-    /// This is an unsafe operation (as the backing structure might be reset
-    /// while this object is alive), and should not be performed for structures
-    /// that are not long-lived.
+    /// `T.assignWeak` is invoked to perform the borrow of the underlying values.
     init(borrowing object: T) {
         self.object = object
         ownership = .borrowed
+        _ = T.initializer(&self.object)
+        
+        withUnsafePointer(to: object) { pointer -> Void in
+            _ = T.assignWeak(&self.object, pointer)
+        }
     }
     
     deinit {
@@ -49,11 +52,8 @@ public class BLBaseClass<T: CoreStructure> {
     }
     
     /// Deinitializes the underlying structure.
-    /// Is a no-op in case this class is not the owner of the backing structure.
     func deinitialize() {
-        if ownership == .owner {
-            _ = T.deinitializer(&object)
-        }
+        _ = T.deinitializer(&object)
     }
 }
 
@@ -66,6 +66,17 @@ public class BLBaseClass<T: CoreStructure> {
 public protocol CoreStructure {
     static var initializer: (UnsafeMutablePointer<Self>?) -> BLResult { get }
     static var deinitializer: (UnsafeMutablePointer<Self>?) -> BLResult { get }
+    static var assignWeak: (UnsafeMutablePointer<Self>?, UnsafePointer<Self>?) -> BLResult { get }
     
     init()
+}
+
+/// Returns an empty 'assign-weak' function that does nothing, and returns
+/// `BL_SUCCESS` every time.
+///
+/// Used to create empty function stubs for implementing the `CoreStructure.assignWeak`
+/// conformance for types that do not have matching weak assignment functions in
+/// Blend2D.
+func emptyAssignWeak<T>(type: T.Type) -> (UnsafeMutablePointer<T>?, UnsafePointer<T>?) -> BLResult {
+    return { _, _ in BL_SUCCESS.rawValue }
 }

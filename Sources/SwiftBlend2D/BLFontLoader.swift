@@ -91,4 +91,5 @@ extension BLFontLoader: Equatable {
 extension BLFontLoaderCore: CoreStructure {
     public static var initializer = blFontLoaderInit
     public static var deinitializer = blFontLoaderReset
+    public static var assignWeak = blFontLoaderAssignWeak
 }

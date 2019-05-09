@@ -18,8 +18,12 @@ final class BLArray {
     }
     
     init(borrowing object: BLArrayCore) {
-        self.object = object
+        blArrayInit(&self.object, UInt32(object.impl.pointee.implType))
         ownership = .borrowed
+        
+        withUnsafePointer(to: object) { pointer -> Void in
+            blArrayAssignWeak(&self.object, pointer)
+        }
     }
     
     init(array: [Double]) {
@@ -36,9 +40,7 @@ final class BLArray {
     }
     
     deinit {
-        if ownership == .owner {
-            blArrayReset(&object)
-        }
+        blArrayReset(&object)
     }
     
     func unsafePointer() -> UnsafeRawBufferPointer {
@@ -93,6 +95,22 @@ final class BLArray {
     
     func append(_ item: UInt16) {
         blArrayAppendU16(&object, item)
+    }
+    
+    func append(_ item: UInt32) {
+        blArrayAppendU32(&object, item)
+    }
+    
+    func append(_ item: Int8) {
+        blArrayAppendU8(&object, UInt8(bitPattern: item))
+    }
+    
+    func append(_ item: Int16) {
+        blArrayAppendU16(&object, UInt16(bitPattern: item))
+    }
+    
+    func append(_ item: Int32) {
+        blArrayAppendU32(&object, UInt32(bitPattern: item))
     }
     
     func append(_ item: UnsafeRawPointer) {

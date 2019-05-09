@@ -143,4 +143,5 @@ extension BLFont: Equatable {
 extension BLFontCore: CoreStructure {
     public static let initializer = blFontInit
     public static let deinitializer = blFontReset
+    public static var assignWeak = blFontAssignWeak
 }

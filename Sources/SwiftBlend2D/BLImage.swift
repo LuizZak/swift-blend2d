@@ -116,4 +116,5 @@ public final class BLImage: BLBaseClass<BLImageCore> {
 extension BLImageCore: CoreStructure {
     public static let initializer = blImageInit
     public static let deinitializer = blImageReset
+    public static var assignWeak = blImageAssignWeak
 }

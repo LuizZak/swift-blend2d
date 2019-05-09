@@ -236,4 +236,5 @@ public final class BLPath: BLBaseClass<BLPathCore> {
 extension BLPathCore: CoreStructure {
     public static let initializer = blPathInit
     public static let deinitializer = blPathReset
+    public static var assignWeak = blPathAssignWeak
 }

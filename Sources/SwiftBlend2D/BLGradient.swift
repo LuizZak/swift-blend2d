@@ -373,6 +373,7 @@ internal extension BLGradient {
 extension BLGradientCore: CoreStructure {
     public static let initializer = blGradientInit
     public static let deinitializer = blGradientReset
+    public static var assignWeak = blGradientAssignWeak
 }
 
 // TODO: Will probably remove later- see TODO in BLGradient.applyMatrixOperation

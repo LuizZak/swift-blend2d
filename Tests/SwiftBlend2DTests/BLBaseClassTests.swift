@@ -45,34 +45,33 @@ class BLBaseClassTests: XCTestCase {
         withExtendedLifetime(sut) {
             sut.deinitialize()
             
-            XCTAssertNil(MockStructure.latestDeinitializer)
+            XCTAssertNotNil(MockStructure.latestDeinitializer)
         }
     }
     
     func testDeinitializeOnLeaveScope() {
-        #if canImport(ObjectiveC)
-        autoreleasepool {
+        do {
             _ = BLBaseClass<MockStructure>()
         }
         
         XCTAssertNotNil(MockStructure.latestDeinitializer)
-        #endif
     }
     
     func testBorrowInitializer() {
         let sut = BLBaseClass<MockStructure>(borrowing: MockStructure())
         
         XCTAssertEqual(sut.ownership, .borrowed)
+        withUnsafePointer(to: &sut.object) { pointer in
+            XCTAssertNotNil(MockStructure.latestAssignWeak)
+        }
     }
     
-    func testDontDeinitializeBorrowedObjects() {
-        #if canImport(ObjectiveC)
-        autoreleasepool {
+    func testDeinitializeBorrowedObjects() {
+        do {
             _ = BLBaseClass<MockStructure>(borrowing: MockStructure())
         }
         
-        XCTAssertNil(MockStructure.latestDeinitializer)
-        #endif
+        XCTAssertNotNil(MockStructure.latestDeinitializer)
     }
 }
 
@@ -83,6 +82,7 @@ private func makePointer<T>(_ object: UnsafeMutablePointer<T>) -> UnsafeMutableP
 private struct MockStructure: CoreStructure {
     static var latestInitializer: UnsafeMutablePointer<MockStructure>?
     static var latestDeinitializer: UnsafeMutablePointer<MockStructure>?
+    static var latestAssignWeak: (UnsafeMutablePointer<MockStructure>?, UnsafePointer<MockStructure>?)?
     
     static var initializer: (UnsafeMutablePointer<MockStructure>?) -> BLResult = {
         latestInitializer = $0
@@ -91,6 +91,11 @@ private struct MockStructure: CoreStructure {
     
     static var deinitializer: (UnsafeMutablePointer<MockStructure>?) -> BLResult = {
         latestDeinitializer = $0
+        return BL_SUCCESS.rawValue
+    }
+    
+    static var assignWeak: (UnsafeMutablePointer<MockStructure>?, UnsafePointer<MockStructure>?) -> BLResult = {
+        latestAssignWeak = ($0, $1)
         return BL_SUCCESS.rawValue
     }
 }

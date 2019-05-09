@@ -76,6 +76,7 @@ extension BLString: Equatable {
 extension BLStringCore: CoreStructure {
     public static let initializer = blStringInit
     public static let deinitializer = blStringReset
+    public static var assignWeak = blStringAssignWeak
 }
 
 internal extension BLStringCore {
