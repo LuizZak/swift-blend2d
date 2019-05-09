@@ -15,7 +15,6 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
     
     internal init(borrowing impl: UnsafeMutablePointer<BLFontDataImpl>) {
         super.init(borrowing: BLFontDataCore(impl: impl))
-        ownership = .borrowed
     }
     
     public func listTags() throws -> [BLTag] {

@@ -6,18 +6,15 @@ import blend2d
 public class BLBaseClass<T: CoreStructure> {
     /// The actual structure that this class backs.
     final var object: T
-    final var ownership: PointerOwnership
     
     init() {
         object = T()
         _ = T.initializer(&object)
-        ownership = .owner
     }
     
     init(initializer: (UnsafeMutablePointer<T>?) throws -> BLResult) rethrows {
         object = T()
         try _ = initializer(&object)
-        ownership = .owner
     }
     
     init?(initializer: (UnsafeMutablePointer<T>?) -> BLResult?) {
@@ -25,12 +22,6 @@ public class BLBaseClass<T: CoreStructure> {
         if initializer(&object) == nil {
             return nil
         }
-        ownership = .owner
-    }
-    
-    init(object: T, ownership: PointerOwnership) {
-        self.object = object
-        self.ownership = ownership
     }
     
     /// Initializes a new base class borrowing the backing structure from an
@@ -39,7 +30,6 @@ public class BLBaseClass<T: CoreStructure> {
     /// `T.assignWeak` is invoked to perform the borrow of the underlying values.
     init(borrowing object: T) {
         self.object = object
-        ownership = .borrowed
         _ = T.initializer(&self.object)
         
         withUnsafePointer(to: object) { pointer -> Void in

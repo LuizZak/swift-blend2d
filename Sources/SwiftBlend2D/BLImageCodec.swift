@@ -52,9 +52,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     /// - Parameter data: A data blob containing a binary image format.
     /// - SeeAlso: `BuiltInImageCodec`
     public init?(bestCandidateFor data: Data) {
-        super.init(object: BLImageCodecCore(), ownership: .borrowed)
-        
-        blImageCodecInit(&object)
+        super.init(initializer: blImageCodecInit)
         
         let result: BLResult? = data.withUnsafeBytes { pointer in
             guard let pointer = pointer.baseAddress else {

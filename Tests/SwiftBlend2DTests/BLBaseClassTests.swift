@@ -13,7 +13,6 @@ class BLBaseClassTests: XCTestCase {
     func testDefaultInitialize() {
         let sut = BLBaseClass<MockStructure>()
         
-        XCTAssertEqual(sut.ownership, .owner)
         XCTAssertNotNil(MockStructure.latestInitializer)
         XCTAssertEqual(MockStructure.latestInitializer, makePointer(&sut.object))
     }
@@ -60,7 +59,6 @@ class BLBaseClassTests: XCTestCase {
     func testBorrowInitializer() {
         let sut = BLBaseClass<MockStructure>(borrowing: MockStructure())
         
-        XCTAssertEqual(sut.ownership, .borrowed)
         withUnsafePointer(to: &sut.object) { pointer in
             XCTAssertNotNil(MockStructure.latestAssignWeak)
         }

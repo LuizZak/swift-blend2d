@@ -2,7 +2,6 @@ import blend2d
 
 final class BLArray {
     var object = BLArrayCore()
-    var ownership: PointerOwnership
     
     var count: Int {
         return blArrayGetSize(&object)
@@ -14,12 +13,10 @@ final class BLArray {
     
     init(type: BLImplType) {
         blArrayInit(&object, type.rawValue)
-        ownership = .owner
     }
     
     init(borrowing object: BLArrayCore) {
         blArrayInit(&self.object, UInt32(object.impl.pointee.implType))
-        ownership = .borrowed
         
         withUnsafePointer(to: object) { pointer -> Void in
             blArrayAssignWeak(&self.object, pointer)
@@ -28,7 +25,6 @@ final class BLArray {
     
     init(array: [Double]) {
         blArrayInit(&object, BLImplType.arrayOfFloat64.rawValue)
-        ownership = .owner
         
         array.withUnsafeBytes { pointer in
             guard let pointer = pointer.baseAddress else {
