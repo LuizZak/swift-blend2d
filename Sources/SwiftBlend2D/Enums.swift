@@ -570,6 +570,32 @@ public extension BLGradientValue {
     static let conicalAngle = BL_GRADIENT_VALUE_CONICAL_ANGLE
 }
 
+public extension BLFormatFlags {
+    /// Pixel format provides RGB components.
+    static let rgb = BL_FORMAT_FLAG_RGB
+    /// Pixel format provides only alpha component.
+    static let alpha = BL_FORMAT_FLAG_ALPHA
+    /// A combination of `BL_FORMAT_FLAG_RGB | BL_FORMAT_FLAG_ALPHA`.
+    static let rgba = BL_FORMAT_FLAG_RGBA
+    /// Pixel format provides LUM component (and not RGB components).
+    static let lum = BL_FORMAT_FLAG_LUM
+    /// A combination of `BL_FORMAT_FLAG_LUM | BL_FORMAT_FLAG_ALPHA`.
+    static let luma = BL_FORMAT_FLAG_LUMA
+    /// Indexed pixel format the requres a palette (I/O only).
+    static let indexed = BL_FORMAT_FLAG_INDEXED
+    /// RGB components are premultiplied by alpha component.
+    static let premultiplied = BL_FORMAT_FLAG_PREMULTIPLIED
+    /// Pixel format doesn't use native byte-order (I/O only).
+    static let byteSwap = BL_FORMAT_FLAG_BYTE_SWAP
+    
+    // The following flags are only informative. They are part of `blFormatInfo[]`,
+    // but doesn't have to be passed to `BLPixelConverter` as they can be easily
+    // calculated.
+    
+    /// Pixel components are byte aligned (all 8bpp).
+    static let byteAligned = BL_FORMAT_FLAG_BYTE_ALIGNED
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }

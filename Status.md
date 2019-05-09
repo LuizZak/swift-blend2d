@@ -25,25 +25,25 @@ This may change at any moment.
 `BLFile` | ✅ Done | |
 `BLFont` | 🕒 Partial | Font [C++ API]|
 `BLFontData` | 🕒 Partial | Font data [C++ API] `(Missing Swift tests)` |
-`BLFontDesignMetrics` | ❌ Unstarted | |
+`BLFontDesignMetrics` | ℹ️ No work required | |
 `BLFontFace` | 🕒 Partial | Font face [C++ API] `(Missing Swift tests)` |
-`BLFontFaceInfo` | ❌ Unstarted | Information of BLFontFace |
-`BLFontFeature` | ❌ Unstarted | |
+`BLFontFaceInfo` | ℹ️ No work required | Information of BLFontFace `(Would be nice to convert enum fields into Swift enums, however)` |
+`BLFontFeature` | ℹ️ No work required | |
 `BLFontLoader` | 🕒 Partial | `(Missing Swift tests)` |
-`BLFontMatrix` | ❌ Unstarted | |
-`BLFontMetrics` | ❌ Unstarted | Scaled BLFontDesignMetrics based on font size and other properties |
-`BLFontPanose` | ❌ Unstarted | Font PANOSE classification |
+`BLFontMatrix` | ℹ️ No work required | |
+`BLFontMetrics` | ℹ️ No work required | Scaled BLFontDesignMetrics based on font size and other properties |
+`BLFontPanose` | ℹ️ No work required | Font PANOSE classification |
 `BLFontTable` | ❌ Unstarted | A read only data that represents a font table or its sub-table |
-`BLFontUnicodeCoverage` | ❌ Unstarted | |
-`BLFontVariation` | ❌ Unstarted | |
-`BLFormatInfo` | ❌ Unstarted | |
+`BLFontUnicodeCoverage` | ✅ Done | |
+`BLFontVariation` | ℹ️ No work required | |
+`BLFormatInfo` | ✅ Done | |
 `BLGlyphBuffer` | ✅ Done | |
 `BLGlyphBufferData` | ❌ Unstarted | Glyph buffer [C Data]|
-`BLGlyphInfo` | ❌ Unstarted | |
+`BLGlyphInfo` | ℹ️ No work required | |
 `BLGlyphItem` | ❌ Unstarted | |
-`BLGlyphMappingState` | ❌ Unstarted | Character to glyph mapping state |
-`BLGlyphOutlineSinkInfo` | ❌ Unstarted | Information passed to a BLPathSinkFunc sink by BLFont::getGlyphOutlines()|
-`BLGlyphPlacement` | ❌ Unstarted | |
+`BLGlyphMappingState` | ℹ️ No work required | Character to glyph mapping state |
+`BLGlyphOutlineSinkInfo` | ℹ️ No work required | Information passed to a BLPathSinkFunc sink by BLFont::getGlyphOutlines()|
+`BLGlyphPlacement` | ℹ️ No work required | |
 `BLGlyphRun` | ❌ Unstarted | |
 `BLGlyphRunIterator` | ❌ Unstarted | |
 `BLGradient` | 🕒 Partial | Gradient [C++ API]|
