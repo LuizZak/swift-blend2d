@@ -13,6 +13,8 @@ public final class BLArray<Element: BLArrayElement> {
     }
     
     public subscript(index: Int) -> Element {
+        precondition(index >= 0 && index < count)
+        
         return unsafePointer()[index]
     }
     
