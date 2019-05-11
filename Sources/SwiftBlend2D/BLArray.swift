@@ -217,9 +217,3 @@ extension UInt: BLArrayElement {
             : UInt64.arrayImplementationType
     }
 }
-extension BLBaseClass: BLArrayElement {
-    @inlinable
-    public static var arrayImplementationType: BLImplType {
-        return .arrayOfVar
-    }
-}
