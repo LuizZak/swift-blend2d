@@ -11,6 +11,10 @@ final class BLArray {
         return blArrayGetCapacity(&object)
     }
     
+    /// Initializes a new array object.
+    ///
+    /// - Parameter type: A valid implementation type for array instances. Must
+    /// be one of `BLImplType.arrayOf*` values.
     init(type: BLImplType) {
         blArrayInit(&object, type.rawValue)
     }

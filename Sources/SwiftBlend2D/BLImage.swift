@@ -4,12 +4,19 @@ import Foundation
 import blend2d
 
 public final class BLImage: BLBaseClass<BLImageCore> {
+    public static var none: BLImage {
+        let image = BLImage()
+        blVariantInit(&image.object)
+        
+        return image
+    }
+    
     /// Maximum width of an image.
-    static var maximumWidth: Int {
+    public static var maximumWidth: Int {
         return Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     /// Maximum height of an image.
-    static var maximumHeight: Int {
+    public static var maximumHeight: Int {
         return Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     
@@ -47,6 +54,10 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         super.init {
             blImageInitAs($0, Int32(width), Int32(height), format.rawValue)
         }
+    }
+    
+    override init(weakAssign object: BLImageCore) {
+        super.init(weakAssign: object)
     }
     
     public func equals(to other: BLImage) -> Bool {

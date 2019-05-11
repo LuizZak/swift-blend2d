@@ -60,8 +60,8 @@ This may change at any moment.
 `BLLinearGradientValues` | ℹ️ No work required | Linear gradient values packed into a structure |
 `BLMatrix2D` | 🕒 Partial | `(Missing Swift tests)` |
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
-`BLPathView` | ❌ Unstarted | |
-`BLPattern` | ❌ Unstarted | Pattern [C++ API]|
+`BLPathView` | ℹ️ No work required | |
+`BLPattern` | 🕒 Partial | Pattern [C++ API] `(Missing Swift tests)` |
 `BLPixelConverter` | ❌ Unstarted | |
 `BLPixelConverterOptions` | ❌ Unstarted | Pixel conversion options |
 `BLPoint` | ✅ Done | Point specified as [x, y] using double as a storage type |
