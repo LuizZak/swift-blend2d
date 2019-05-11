@@ -4,13 +4,13 @@ import blend2d
 
 class BLArrayTests: XCTestCase {
     func testInit() {
-        let sut = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let sut = BLArray<UInt8>()
         
         XCTAssertEqual(sut.count, 0)
     }
     
     func testAppendU8() {
-        let sut = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let sut = BLArray<UInt8>()
         
         sut.append(0 as UInt8)
         
@@ -18,7 +18,7 @@ class BLArrayTests: XCTestCase {
     }
     
     func testReserveCapacity() {
-        let sut = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let sut = BLArray<UInt8>()
         
         sut.reserveCapacity(16)
         
@@ -26,7 +26,7 @@ class BLArrayTests: XCTestCase {
     }
     
     func testShrink() {
-        let sut = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let sut = BLArray<UInt8>()
         sut.reserveCapacity(128)
         sut.append(0 as UInt8)
         sut.append(1 as UInt8)
@@ -39,31 +39,45 @@ class BLArrayTests: XCTestCase {
     }
     
     func testWithTemporaryArrayViewForDouble() {
-        BLArray.withTemporaryArrayView(for: [0, 1, 2]) { pointer, size in
+        BLArray.withTemporaryArrayView(for: [0, 1, 2] as [Double]) { pointer, size in
             XCTAssertNotNil(pointer)
             XCTAssertEqual(size, 24) // = MemoryLayout<Double>.size * array.count
         }
     }
     
     func testWithTemporaryArrayViewForDoubleWithEmptyArray() {
-        BLArray.withTemporaryArrayView(for: []) { pointer, size in
+        BLArray.withTemporaryArrayView(for: [] as [Double]) { pointer, size in
             XCTAssertNotNil(pointer)
             XCTAssertEqual(size, 0) // = MemoryLayout<Double>.size * array.count
         }
     }
     
     func testWeakAssign() {
-        let array = BLArray(type: .arrayOfInt32)
+        let array = BLArray<Int32>()
         // Append an item to force creation of a new backing array structure
         array.append(1 as Int32)
         
         do {
-            let weak = BLArray(weakAssign: array.object)
+            let weak = BLArray<Int32>(weakAssign: array.object)
             withExtendedLifetime(weak) {
                 XCTAssertEqual(array.object.impl.pointee.refCount, 2)
             }
         }
         
         XCTAssertEqual(array.object.impl.pointee.refCount, 1)
+    }
+    
+    func testInitWithArray() {
+        let array = BLArray<Int>(array: [1, 2, 3])
+        
+        XCTAssertEqual(array.count, 3)
+    }
+    
+    func testSubscript() {
+        let array = BLArray<Int>(array: [1, 2, 3])
+        
+        XCTAssertEqual(array[0], 1)
+        XCTAssertEqual(array[1], 2)
+        XCTAssertEqual(array[2], 3)
     }
 }

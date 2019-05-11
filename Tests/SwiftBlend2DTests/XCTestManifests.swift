@@ -19,8 +19,10 @@ extension BLArrayTests {
     static let __allTests__BLArrayTests = [
         ("testAppendU8", testAppendU8),
         ("testInit", testInit),
+        ("testInitWithArray", testInitWithArray),
         ("testReserveCapacity", testReserveCapacity),
         ("testShrink", testShrink),
+        ("testSubscript", testSubscript),
         ("testWeakAssign", testWeakAssign),
         ("testWithTemporaryArrayViewForDouble", testWithTemporaryArrayViewForDouble),
         ("testWithTemporaryArrayViewForDoubleWithEmptyArray", testWithTemporaryArrayViewForDoubleWithEmptyArray),

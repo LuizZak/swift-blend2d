@@ -30,12 +30,12 @@ class BLImageTests: XCTestCase {
         context.fillAll()
         context.end()
         
-        let array = BLArray(type: BL_IMPL_TYPE_ARRAY_U8)
+        let array = BLArray<UInt8>()
         let codec = BLImageCodec(builtInCodec: .bmp)
         
         try image.writeToData(array, codec: codec)
         
-        let data = array.asArrayOfUInt8()
+        let data = array.asArray()
         XCTAssertEqual(
             data, [
                 // BMP header

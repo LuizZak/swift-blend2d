@@ -91,20 +91,20 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     
     #if canImport(Foundation)
     public func writeToData(data: inout Data, codec: BLImageCodec) throws {
-        let buffer = BLArray(type: .arrayOfUInt8)
+        let buffer = BLArray<UInt8>()
         try writeToData(buffer, codec: codec)
-        data.append(buffer.unsafePointer().bindMemory(to: UInt8.self))
+        data.append(buffer.unsafePointer())
     }
     #endif
     
-    func writeToData(_ buffer: BLArray, codec: BLImageCodec) throws {
+    func writeToData<T>(_ buffer: BLArray<T>, codec: BLImageCodec) throws {
         try resultToError(
             blImageWriteToData(&object, &buffer.object, &codec.object)
         )
     }
     
     public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]) throws {
-        let array = BLArray(type: .arrayOfUInt8)
+        let array = BLArray<UInt8>()
         for item in data {
             array.append(item)
         }
@@ -112,10 +112,10 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         try readFromData(array, codecs: codecs)
     }
     
-    func readFromData(_ buffer: BLArray, codecs: [BLImageCodec]) throws {
-        let codecsArray = BLArray(type: .arrayOfVar)
+    func readFromData(_ buffer: BLArray<UInt8>, codecs: [BLImageCodec]) throws {
+        let codecsArray = BLArray<BLImageCodecCore>()
         for codec in codecs {
-            codecsArray.append(&codec.object)
+            codecsArray.append(codec.object)
         }
         
         try resultToError(

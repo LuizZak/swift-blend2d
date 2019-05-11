@@ -18,13 +18,13 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
     }
     
     public func listTags() throws -> [BLTag] {
-        let array = BLArray(type: .arrayOfUInt32)
+        let array = BLArray<UInt32>()
         
         try resultToError(
             object.impl.pointee.virt.pointee.listTags(object.impl, &array.object)
         )
         
-        return array.asArrayOfUnsafe(type: BLTag.self)
+        return array.unsafeAsArray(of: BLTag.self)
     }
     
     public func queryTable(fontTable: inout BLFontTable, tag: BLTag) -> Int {

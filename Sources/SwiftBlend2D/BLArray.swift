@@ -1,41 +1,42 @@
 import blend2d
 
-final class BLArray {
+public final class BLArray<Element: BLArrayElement> {
+    @usableFromInline
     var object = BLArrayCore()
     
-    var count: Int {
+    public var count: Int {
         return blArrayGetSize(&object)
     }
     
-    var capacity: Int {
+    public var capacity: Int {
         return blArrayGetCapacity(&object)
     }
     
+    public subscript(index: Int) -> Element {
+        return unsafePointer()[index]
+    }
+    
     /// Initializes a new array object.
-    ///
-    /// - Parameter type: A valid implementation type for array instances. Must
-    /// be one of `BLImplType.arrayOf*` values.
-    init(type: BLImplType) {
-        blArrayInit(&object, type.rawValue)
+    public init() {
+        blArrayInit(&object, Element.arrayImplementationType.rawValue)
     }
     
     init(weakAssign object: BLArrayCore) {
-        blArrayInit(&self.object, UInt32(object.impl.pointee.implType))
+        assert(Element.arrayImplementationType.rawValue == object.impl.pointee.implType,
+               "Cannot weak assign arrays of different types")
+        
+        blArrayInit(&self.object, Element.arrayImplementationType.rawValue)
         
         withUnsafePointer(to: object) { pointer -> Void in
             blArrayAssignWeak(&self.object, pointer)
         }
     }
     
-    init(array: [Double]) {
-        blArrayInit(&object, BLImplType.arrayOfFloat64.rawValue)
+    public init(array: [Element]) {
+        blArrayInit(&object, Element.arrayImplementationType.rawValue)
         
-        array.withUnsafeBytes { pointer in
-            guard let pointer = pointer.baseAddress else {
-                return
-            }
-            
-            append(contentsOf: pointer, lengthInBytes: array.count * MemoryLayout<Double>.size)
+        array.withUnsafeBufferPointer { pointer in
+            append(contentsOf: pointer)
         }
     }
     
@@ -43,89 +44,63 @@ final class BLArray {
         blArrayReset(&object)
     }
     
-    func unsafePointer() -> UnsafeRawBufferPointer {
-        let pointer = blArrayGetData(&object)
+    func unsafePointer() -> UnsafeBufferPointer<Element> {
+        let pointer = blArrayGetData(&object)?
+            .bindMemory(to: Element.self, capacity: count)
         
-        return UnsafeRawBufferPointer(start: pointer!, count: count)
+        return UnsafeBufferPointer(start: pointer, count: count)
     }
     
-    func asArrayOfUnsafe<T>(type: T.Type) -> [T] {
-        guard let pointer = blArrayGetData(&object)?.bindMemory(to: T.self, capacity: count) else {
-            return []
-        }
-        
-        let buffer = UnsafeBufferPointer(start: pointer, count: count)
-        return Array(AnyIterator(buffer.makeIterator()))
+    public func asArray() -> [Element] {
+        return unsafeAsArray(of: Element.self)
     }
     
-    func asArrayOfUInt8() -> [UInt8] {
-        return asArrayOfUnsafe(type: UInt8.self)
-    }
-    func asArrayOfDouble() -> [Double] {
-        return asArrayOfUnsafe(type: Double.self)
+    public func unsafeAsArray<T>(of type: T.Type) -> [T] {
+        return unsafePointer().baseAddress?.withMemoryRebound(to: T.self, capacity: count) { pointer -> [T] in
+            let buffer = UnsafeBufferPointer(start: pointer, count: count)
+            return Array(AnyIterator(buffer.makeIterator()))
+        } ?? []
     }
     
-    func shrink() {
+    public func shrink() {
         blArrayShrink(&object)
     }
     
-    func reserveCapacity(_ capacity: Int) {
+    public func reserveCapacity(_ capacity: Int) {
         blArrayReserve(&object, capacity)
     }
     
-    func remove(at index: Int) {
+    public func remove(at index: Int) {
         blArrayRemoveIndex(&object, index)
     }
     
-    func equals(to other: BLArray) -> Bool {
+    public func equals(to other: BLArray) -> Bool {
         return blArrayEquals(&object, &other.object)
     }
     
-    func append(_ item: Double) {
-        blArrayAppendF64(&object, item)
+    @inlinable
+    public func append(_ element: Element) {
+        _ = withUnsafePointer(to: element) { pointer in
+            blArrayAppendItem(&object, pointer)
+        }
     }
     
-    func append(_ item: Float) {
-        blArrayAppendF32(&object, item)
-    }
-    
-    func append(_ item: UInt8) {
-        blArrayAppendU8(&object, item)
-    }
-    
-    func append(_ item: UInt16) {
-        blArrayAppendU16(&object, item)
-    }
-    
-    func append(_ item: UInt32) {
-        blArrayAppendU32(&object, item)
-    }
-    
-    func append(_ item: Int8) {
-        blArrayAppendU8(&object, UInt8(bitPattern: item))
-    }
-    
-    func append(_ item: Int16) {
-        blArrayAppendU16(&object, UInt16(bitPattern: item))
-    }
-    
-    func append(_ item: Int32) {
-        blArrayAppendU32(&object, UInt32(bitPattern: item))
-    }
-    
-    func append(_ item: UnsafeRawPointer) {
-        blArrayAppendItem(&object, item)
-    }
-    
-    func append(contentsOf pointer: UnsafeRawPointer, lengthInBytes: Int) {
+    func append(contentsOf pointer: UnsafePointer<Element>, lengthInBytes: Int) {
         blArrayAppendView(&object, pointer, lengthInBytes)
     }
     
-    func clear() {
+    @inlinable
+    func append(contentsOf pointer: UnsafeBufferPointer<Element>) {
+        if let base = pointer.baseAddress {
+            blArrayAppendView(&object, base, pointer.count)
+        }
+    }
+    
+    public func clear() {
         blArrayClear(&object)
     }
     
-    func replaceContents(_ array: [Double]) {
+    public func replaceContents(_ array: [Element]) {
         clear()
         
         BLArray.withTemporaryArrayView(for: array) { pointer, size in
@@ -136,24 +111,115 @@ final class BLArray {
     }
 }
 
-extension BLArray {
+public extension BLArray {
     /// Executes a closure passing in a context for a temporary BLArrayView-
     /// compatible pointer+count arguments that can be provided for Blend2D
     /// methods that accept a pair of (void*, size_t) values for representing
-    /// Blend2D arrays of `Double` elements.
+    /// Blend2D arrays of `BLArrayElement` elements.
     ///
     /// Returns the result from the closure invocation, or any error thrown by
     /// the closure during the execution of this method.
     ///
     /// The pointer value is short-lived and should not be stored or used beyond
     /// the duration of the closure's execution.
-    static func withTemporaryArrayView<T>(for array: [Double],
-                                          _ closure: (_ pointer: UnsafeRawPointer?, _ arraySizeInBytes: Int) throws -> T) rethrows -> T {
+    @inlinable
+    static func withTemporaryArrayView<T>(
+        for array: [Element],
+        _ closure: (_ pointer: UnsafePointer<Element>?, _ arraySizeInBytes: Int) throws -> T) rethrows -> T {
         
         return try array.withUnsafeBytes { pointer in
-            let pointer = pointer.baseAddress
+            let pointer = pointer.baseAddress?.assumingMemoryBound(to: Element.self)
             
-            return try closure(pointer, array.count * MemoryLayout<Double>.size)
+            return try closure(pointer, array.count * MemoryLayout<Element>.size)
         }
+    }
+}
+
+/// A protocol that is used to parameterize `BLArray` instances.
+public protocol BLArrayElement {
+    /// Returns a `BLImplType` for the array of elements corresponding to `Self`
+    static var arrayImplementationType: BLImplType { get }
+}
+
+extension Float: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfFloat32
+    }
+}
+extension Double: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfFloat64
+    }
+}
+extension UInt8: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfUInt8
+    }
+}
+extension UInt16: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfUInt16
+    }
+}
+extension UInt32: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfUInt32
+    }
+}
+extension UInt64: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfUInt64
+    }
+}
+extension Int8: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfInt8
+    }
+}
+extension Int16: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfInt16
+    }
+}
+extension Int32: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfInt32
+    }
+}
+extension Int64: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfInt64
+    }
+}
+extension Int: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return MemoryLayout<Int>.size == MemoryLayout<Int32>.size
+            ? Int32.arrayImplementationType
+            : Int64.arrayImplementationType
+    }
+}
+extension UInt: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return MemoryLayout<UInt>.size == MemoryLayout<UInt32>.size
+            ? UInt32.arrayImplementationType
+            : UInt64.arrayImplementationType
+    }
+}
+extension BLBaseClass: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLImplType {
+        return .arrayOfVar
     }
 }

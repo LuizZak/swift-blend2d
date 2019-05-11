@@ -104,11 +104,11 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
 
 extension BLImageCodec {
     static var _builtInCodecs: [BLImageCodecCore] = {
-        let array = BLArray(type: .arrayOfVar)
+        let array = BLArray<BLImageCodecCore>()
         
         blImageCodecArrayInitBuiltInCodecs(&array.object)
         
-        return array.asArrayOfUnsafe(type: BLImageCodecCore.self)
+        return array.unsafeAsArray(of: BLImageCodecCore.self)
     }()
 }
 

@@ -54,12 +54,18 @@ public class BLBaseClass<T: CoreStructure> {
 /// In cases an initializer or deinitialzier take more parameters than 'self',
 /// Swift wrapper classes must be created from scratch without inheriting from
 /// 'BLBaseClass'
-public protocol CoreStructure {
+public protocol CoreStructure: BLArrayElement {
     static var initializer: (UnsafeMutablePointer<Self>?) -> BLResult { get }
     static var deinitializer: (UnsafeMutablePointer<Self>?) -> BLResult { get }
     static var assignWeak: (UnsafeMutablePointer<Self>?, UnsafePointer<Self>?) -> BLResult { get }
     
     init()
+}
+
+public extension CoreStructure {
+    static var arrayImplementationType: BLImplType {
+        return .arrayOfVar
+    }
 }
 
 /// Returns an empty 'assign-weak' function that does nothing, and returns

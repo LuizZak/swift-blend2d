@@ -201,7 +201,7 @@ public extension BLImageScaleFilter {
     static let user = BL_IMAGE_SCALE_FILTER_USER
 }
 
-internal extension BLImplType {
+public extension BLImplType {
     /// Type is `Null`.
     static let null = BL_IMPL_TYPE_NULL
     
