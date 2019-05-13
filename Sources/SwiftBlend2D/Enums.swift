@@ -91,7 +91,7 @@ public extension BLGeometryType {
     /// BLEllipse struct.
     static let ellipse = BL_GEOMETRY_TYPE_ELLIPSE
     /// BLRoundRect struct.
-    static let round_rect = BL_GEOMETRY_TYPE_ROUND_RECT
+    static let roundRect = BL_GEOMETRY_TYPE_ROUND_RECT
     /// BLArc struct.
     static let arc = BL_GEOMETRY_TYPE_ARC
     /// BLArc struct representing chord.
@@ -594,6 +594,76 @@ public extension BLFormatFlags {
     
     /// Pixel components are byte aligned (all 8bpp).
     static let byteAligned = BL_FORMAT_FLAG_BYTE_ALIGNED
+}
+
+public extension BLCompOp {
+    /// Source-over [default].
+    static let sourceOver = BL_COMP_OP_SRC_OVER
+    /// Source-copy.
+    static let sourceCopy = BL_COMP_OP_SRC_COPY
+    /// Source-in.
+    static let sourceIn = BL_COMP_OP_SRC_IN
+    /// Source-out.
+    static let sourceOut = BL_COMP_OP_SRC_OUT
+    /// Source-atop.
+    static let sourceAtop = BL_COMP_OP_SRC_ATOP
+    /// Destination-over.
+    static let destinationOver = BL_COMP_OP_DST_OVER
+    /// Destination-copy [nop].
+    static let destinationCopy = BL_COMP_OP_DST_COPY
+    /// Destination-in.
+    static let destinationIn = BL_COMP_OP_DST_IN
+    /// Destination-out.
+    static let destinationOut = BL_COMP_OP_DST_OUT
+    /// Destination-atop.
+    static let destinationAtop = BL_COMP_OP_DST_ATOP
+    /// Xor.
+    static let xor = BL_COMP_OP_XOR
+    /// Clear.
+    static let clear = BL_COMP_OP_CLEAR
+    /// Plus.
+    static let plus = BL_COMP_OP_PLUS
+    /// Minus.
+    static let minus = BL_COMP_OP_MINUS
+    /// Multiply.
+    static let multiply = BL_COMP_OP_MULTIPLY
+    /// Screen.
+    static let screen = BL_COMP_OP_SCREEN
+    /// Overlay.
+    static let overlay = BL_COMP_OP_OVERLAY
+    /// Darken.
+    static let darken = BL_COMP_OP_DARKEN
+    /// Lighten.
+    static let lighten = BL_COMP_OP_LIGHTEN
+    /// Color dodge.
+    static let colorDodge = BL_COMP_OP_COLOR_DODGE
+    /// Color burn.
+    static let colorBurn = BL_COMP_OP_COLOR_BURN
+    /// Linear burn.
+    static let linearBurn = BL_COMP_OP_LINEAR_BURN
+    /// Linear light.
+    static let linearLight = BL_COMP_OP_LINEAR_LIGHT
+    /// Pin light.
+    static let pinLight = BL_COMP_OP_PIN_LIGHT
+    /// Hard-light.
+    static let hardLight = BL_COMP_OP_HARD_LIGHT
+    /// Soft-light.
+    static let softLight = BL_COMP_OP_SOFT_LIGHT
+    /// Difference.
+    static let difference = BL_COMP_OP_DIFFERENCE
+    /// Exclusion.
+    static let exclusion = BL_COMP_OP_EXCLUSION
+}
+
+public extension BLFormat {
+    /// None or invalid pixel format.
+    static let none = BL_FORMAT_NONE
+    /// 32-bit premultiplied ARGB pixel format (8-bit components).
+    static let prgb32 = BL_FORMAT_PRGB32
+    /// 32-bit (X)RGB pixel format (8-bit components, alpha ignored).
+    static let xrgb32 = BL_FORMAT_XRGB32
+    /// 8-bit alpha-only pixel format.
+    static let a8 = BL_FORMAT_A8
 }
 
 extension BLImageCodecFeatures: OptionSet { }

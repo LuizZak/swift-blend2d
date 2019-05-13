@@ -40,9 +40,11 @@ public class BLFont: BLBaseClass<BLFontCore> {
         return BLFontFace(weakAssign: object.impl.pointee.face)
     }
     
-    public func createFromFace(_ face: BLFontFaceCore, size: Float) {
-        var face = face
-        blFontCreateFromFace(&object, &face, size)
+    public init(fromFace face: BLFontFace, size: Float) {
+        super.init { pointer -> BLResult in
+            blFontInit(pointer)
+            return blFontCreateFromFace(pointer, &face.object, size)
+        }
     }
     
     public func shape(_ buf: BLGlyphBuffer) {
@@ -72,6 +74,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
         blFontApplyGPos(&object, &buf.object, index, lookups)
     }
     
+    @inlinable
     public func getTextMetrics(_ buf: BLGlyphBuffer) -> BLTextMetrics {
         var value = BLTextMetrics()
         blFontGetTextMetrics(&object, &buf.object, &value)

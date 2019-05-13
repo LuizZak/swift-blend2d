@@ -101,9 +101,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
         
     }
     
-    // TODO: Implement blContextSetFillStyle
-    func setFillStyle(/* ... */) {
-        
+    public func setFillStyle(_ gradient: BLGradient) {
+        blContextSetFillStyle(&object, &gradient.object)
+    }
+    
+    public func setFillStyle(_ pattern: BLPattern) {
+        blContextSetFillStyle(&object, &pattern.object)
     }
     
     /// Returns the RGBA32 fill style for this context.
@@ -121,6 +124,10 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextSetFillStyleRgba32(&object, value)
     }
     
+    public func setFillStyle(_ value: BLRgba32) {
+        blContextSetFillStyleRgba32(&object, value.value)
+    }
+    
     /// Returns the RGBA64 fill style for this context.
     /// Returns nil, in case the current fill style mode is not compatible with
     /// RGBA64.
@@ -136,39 +143,60 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextSetFillStyleRgba64(&object, value)
     }
     
+    public func setFillStyle(_ value: BLRgba64) {
+        blContextSetFillStyleRgba64(&object, value.value)
+    }
+    
+    //! Sets stroke width to `width`.
     public func setStrokeWidth(_ width: Double) {
         blContextSetStrokeWidth(&object, width)
     }
     
+    //! Sets miter limit to `miterLimit`.
     public func setStrokeMiterLimit(_ miterLimit: Double) {
         blContextSetStrokeMiterLimit(&object, miterLimit)
     }
     
-    public func setStrokeCap(_ position: UInt32, strokeCap: UInt32) {
-        blContextSetStrokeCap(&object, position, strokeCap)
+    //! Sets stroke cap of the specified `type` to `strokeCap`.
+    public func setStrokeCap(_ position: BLStrokeCapPosition, strokeCap: BLStrokeCap) {
+        blContextSetStrokeCap(&object, position.rawValue, strokeCap.rawValue)
     }
     
-    public func setStrokeCaps(_ strokeCap: UInt32) {
-        blContextSetStrokeCaps(&object, strokeCap)
+    //! Sets all stroke caps to `strokeCap`.
+    public func setStrokeCaps(_ strokeCap: BLStrokeCap) {
+        blContextSetStrokeCaps(&object, strokeCap.rawValue)
     }
     
-    public func setStrokeJoin(_ strokeJoin: UInt32) {
-        blContextSetStrokeJoin(&object, strokeJoin)
+    /// Sets stroke start cap to `strokeCap`.
+    public func setStrokeStartCap(_ strokeCap: BLStrokeCap) {
+        setStrokeCap(.start, strokeCap: strokeCap)
+    }
+    /// Sets stroke end cap to `strokeCap`.
+    public func setStrokeEndCap(_ strokeCap: BLStrokeCap) {
+        setStrokeCap(.end, strokeCap: strokeCap)
     }
     
+    public func setStrokeJoin(_ strokeJoin: BLStrokeJoin) {
+        blContextSetStrokeJoin(&object, strokeJoin.rawValue)
+    }
+    
+    /// Sets stroke dash-offset to `dashOffset`.
     public func setStrokeDashOffset(_ dashOffset: Double) {
         blContextSetStrokeDashOffset(&object, dashOffset)
     }
     
+    /// Sets stroke dash-array to `dashArray`.
     public func setStrokeDashArray(_ dashArray: [Double]) {
         let array = BLArray(array: dashArray)
         blContextSetStrokeDashArray(&object, &array.object)
     }
     
-    public func setStrokeTransformOrder(_ transformOrder: UInt32) {
-        blContextSetStrokeTransformOrder(&object, transformOrder)
+    /// Sets stroke transformation order to `transformOrder`.
+    public func setStrokeTransformOrder(_ transformOrder: BLStrokeTransformOrder) {
+        blContextSetStrokeTransformOrder(&object, transformOrder.rawValue)
     }
     
+    /// Sets all stroke `options`.
     public func setStrokeOptions(_ options: BLStrokeOptionsCore) {
         var options = options
         blContextSetStrokeOptions(&object, &options)
@@ -199,9 +227,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
         return value
     }
     
-    // TODO: Implement blContextSetStrokeStyle
-    func setStrokeStyle(/* ... */) {
-        // blContextSetStrokeStyle(&object, ...)
+    public func setStrokeStyle(_ gradient: BLGradient) {
+         blContextSetStrokeStyle(&object, &gradient.object)
+    }
+    
+    public func setStrokeStyle(_ pattern: BLPattern) {
+        blContextSetStrokeStyle(&object, &pattern.object)
     }
     
     public func setStrokeStyleRgba32(_ rgba32: UInt32) {
@@ -249,16 +280,53 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextFillAll(&object)
     }
     
+    @inlinable
+    public func fillRect(x: Int, y: Int, width: Int, height: Int) {
+        fillRect(BLRectI(x: Int32(x), y: Int32(y), w: Int32(width), h: Int32(height)))
+    }
+    
+    @inlinable
+    public func fillRect(x: Double, y: Double, width: Double, height: Double) {
+        fillRect(BLRect(x: x, y: y, w: width, h: height))
+    }
+    
+    @inlinable
     public func fillRect(_ rect: BLRectI) {
         var rect = rect
         
         blContextFillRectI(&object, &rect)
     }
     
+    @inlinable
     public func fillRect(_ rect: BLRect) {
         var rect = rect
         
         blContextFillRectD(&object, &rect)
+    }
+    
+    @inlinable
+    public func fillRoundRect(x: Double, y: Double, width: Double, height: Double, rx: Double, ry: Double) {
+        fillRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: rx, ry: ry))
+    }
+    
+    @inlinable
+    public func fillRoundRect(x: Double, y: Double, width: Double, height: Double, radius: Double) {
+        fillRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radius, ry: radius))
+    }
+    
+    @inlinable
+    public func fillRoundRect(_ rect: BLRoundRect) {
+        fillGeometry(rect)
+    }
+    
+    @inlinable
+    public func fillCircle(x: Double, y: Double, radius: Double) {
+        fillCircle(BLCircle(cx: x, cy: y, r: radius))
+    }
+    
+    @inlinable
+    public func fillCircle(_ circle: BLCircle) {
+        fillGeometry(circle)
     }
     
     public func fillPath(_ path: BLPathCore) {
@@ -267,41 +335,44 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextFillPathD(&object, &path)
     }
     
-    // TODO: Implement blContextFillGeometry
-    func fillGeometry(/* */) {
-        
+    @inlinable
+    public func fillGeometry(_ roundRect: BLRoundRect) {
+        var roundRect = roundRect
+        blContextFillGeometry(&object, BLGeometryType.roundRect.rawValue, &roundRect)
     }
     
-    public func fillText(_ text: String, at point: BLPointI, font: BLFontCore) {
-        var cString = text.utf8CString
-        var point = point
-        var font = font
-        
-        blContextFillTextI(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
+    @inlinable
+    public func fillGeometry(_ circle: BLCircle) {
+        var circle = circle
+        blContextFillGeometry(&object, BLGeometryType.circle.rawValue, &circle)
     }
     
-    public func fillText(_ text: String, at point: BLPoint, font: BLFontCore) {
-        var cString = text.utf8CString
+    public func fillText<S: StringProtocol>(_ text: S, at point: BLPointI, font: BLFont) {
         var point = point
-        var font = font
-        
-        blContextFillTextD(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
+        text.withCString { pointer -> Void in
+            blContextFillTextI(&object, &point, &font.object, pointer, text.utf8.count, BLTextEncoding.utf8.rawValue)
+        }
     }
     
-    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFontCore) {
+    public func fillText<S: StringProtocol>(_ text: S, at point: BLPoint, font: BLFont) {
         var point = point
-        var font = font
+        text.withCString { pointer -> Void in
+            blContextFillTextD(&object, &point, &font.object, pointer, text.utf8.count, BLTextEncoding.utf8.rawValue)
+        }
+    }
+    
+    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) {
+        var point = point
         var glyphRun = glyphRun
         
-        blContextFillGlyphRunI(&object, &point, &font, &glyphRun)
+        blContextFillGlyphRunI(&object, &point, &font.object, &glyphRun)
     }
     
-    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFontCore) {
+    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) {
         var point = point
-        var font = font
         var glyphRun = glyphRun
         
-        blContextFillGlyphRunD(&object, &point, &font, &glyphRun)
+        blContextFillGlyphRunD(&object, &point, &font.object, &glyphRun)
     }
     
     public func strokeRectangle(_ rect: BLRectI) {
@@ -316,10 +387,8 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextStrokeRectD(&object, &rect)
     }
     
-    public func strokePath(_ path: BLPathCore) {
-        var path = path
-        
-        blContextStrokePathD(&object, &path)
+    public func strokePath(_ path: BLPath) {
+        blContextStrokePathD(&object, &path.object)
     }
     
     // TODO: Implement proper strokeGeometry overload
@@ -335,28 +404,25 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextStrokeTextI(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
     }
     
-    public func strokeText(_ text: String, at point: BLPoint, font: BLFontCore) {
+    public func strokeText(_ text: String, at point: BLPoint, font: BLFont) {
         var cString = text.utf8CString
         var point = point
-        var font = font
         
-        blContextStrokeTextD(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
+        blContextStrokeTextD(&object, &point, &font.object, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
     }
     
-    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFontCore) {
+    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) {
         var glyphRun = glyphRun
         var point = point
-        var font = font
         
-        blContextStrokeGlyphRunI(&object, &point, &font, &glyphRun)
+        blContextStrokeGlyphRunI(&object, &point, &font.object, &glyphRun)
     }
     
-    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFontCore) {
+    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) {
         var glyphRun = glyphRun
         var point = point
-        var font = font
         
-        blContextStrokeGlyphRunD(&object, &point, &font, &glyphRun)
+        blContextStrokeGlyphRunD(&object, &point, &font.object, &glyphRun)
     }
     
     public func blitImage(_ image: BLImage, at point: BLPointI, imageArea: BLRectI? = nil) {
@@ -447,6 +513,161 @@ public extension BLContext {
     }
 }
 
+public extension BLContext {
+    @discardableResult
+    func resetMatrix() -> BLResult {
+        return object.impl.pointee.virt.pointee.matrixOp(object.impl, BLMatrix2DOp.reset.rawValue, nil)
+    }
+    @discardableResult
+    func translate(x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.translate, x, y)
+    }
+    @discardableResult
+    func translate(by p: BLPointI) -> BLResult {
+        return _applyMatrixOpV(.translate, p.x, p.y)
+    }
+    @discardableResult
+    func translate(by p: BLPoint) -> BLResult {
+        return _applyMatrixOp(.translate, p)
+    }
+    @discardableResult
+    func scale(xy: Double) -> BLResult {
+        return _applyMatrixOpV(.scale, xy, xy)
+    }
+    @discardableResult
+    func scale(x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.scale, x, y)
+    }
+    @discardableResult
+    func scale(by p: BLPointI) -> BLResult {
+        return _applyMatrixOpV(.scale, p.x, p.y)
+    }
+    @discardableResult
+    func scale(by p: BLPoint) -> BLResult {
+        return _applyMatrixOp(.scale, p)
+    }
+    @discardableResult
+    func skew(x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.skew, x, y)
+    }
+    @discardableResult
+    func skew(by p: BLPoint) -> BLResult {
+        return _applyMatrixOp(.skew, p)
+    }
+    @discardableResult
+    func rotate(angle: Double) -> BLResult {
+        return _applyMatrixOp(.rotate, angle)
+    }
+    @discardableResult
+    func rotate(angle: Double, x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.rotatePt, angle, x, y)
+    }
+    @discardableResult
+    func rotate(angle: Double, point: BLPoint) -> BLResult {
+        return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
+    }
+    @discardableResult
+    func rotate(angle: Double, point: BLPointI) -> BLResult {
+        return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
+    }
+    @discardableResult
+    func transform(_ matrix: BLMatrix2D) -> BLResult {
+        return _applyMatrixOp(.transform, matrix)
+    }
+    @discardableResult
+    func postTranslate(x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.postTranslate, x, y)
+    }
+    @discardableResult
+    func postTranslate(by p: BLPointI) -> BLResult {
+        return _applyMatrixOpV(.postTranslate, p.x, p.y)
+    }
+    @discardableResult
+    func postTranslate(by p: BLPoint) -> BLResult {
+        return _applyMatrixOp(.postTranslate, p)
+    }
+    @discardableResult
+    func postScale(xy: Double) -> BLResult {
+        return _applyMatrixOpV(.postScale, xy, xy)
+    }
+    @discardableResult
+    func postScale(x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.postScale, x, y)
+    }
+    @discardableResult
+    func postScale(by p: BLPointI) -> BLResult {
+        return _applyMatrixOpV(.postScale, p.x, p.y)
+    }
+    @discardableResult
+    func postScale(by p: BLPoint) -> BLResult {
+        return _applyMatrixOp(.postScale, p)
+    }
+    @discardableResult
+    func postSkew(x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.postSkew, x, y)
+    }
+    @discardableResult
+    func postSkew(by p: BLPoint) -> BLResult {
+        return _applyMatrixOp(.postSkew, p)
+    }
+    @discardableResult
+    func postRotate(angle: Double) -> BLResult {
+        return _applyMatrixOp(.postRotate, angle)
+    }
+    @discardableResult
+    func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
+        return _applyMatrixOpV(.postRotatePt, angle, x, y)
+    }
+    @discardableResult
+    func postRotate(angle: Double, point: BLPoint) -> BLResult {
+        return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
+    }
+    @discardableResult
+    func postRotate(angle: Double, point: BLPointI) -> BLResult {
+        return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
+    }
+    @discardableResult
+    func postTransform(_ matrix: BLMatrix2D) -> BLResult {
+        return _applyMatrixOp(.postTransform, matrix)
+    }
+}
+
+internal extension BLContext {
+    /// Applies a matrix operation to the current transformation matrix (internal).
+    func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
+        return withUnsafePointer(to: opData) { pointer in
+            return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer)
+        }
+    }
+    
+    /// Applies a matrix operation to the current transformation matrix (internal).
+    func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
+        return withUnsafePointer(to: opData) { pointer in
+            return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer)
+        }
+    }
+    
+    /// Applies a matrix operation to the current transformation matrix (internal).
+    func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
+        return withUnsafePointer(to: opData) { pointer in
+            return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer)
+        }
+    }
+    
+    /// Applies a matrix operation to the current transformation matrix (internal).
+    func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
+        return args.withUnsafeBytes { pointer in
+            return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer.baseAddress)
+        }
+    }
+    
+    /// Applies a matrix operation to the current transformation matrix (internal).
+    func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
+        return args.map { Double($0) }.withUnsafeBytes { pointer in
+            return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer.baseAddress)
+        }
+    }
+}
 extension BLContextCore: CoreStructure {
     public static let initializer = blContextInit
     public static let deinitializer = blContextReset

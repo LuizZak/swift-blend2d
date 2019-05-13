@@ -1,15 +1,23 @@
 import blend2d
 
 public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
+    public var glyphRun: BLGlyphRun {
+        return object.impl.pointee.glyphRun
+    }
+    
+    public override init() {
+        super.init()
+    }
+    
     public func clear() {
         blGlyphBufferClear(&object)
     }
     
-    public func setText(_ text: String) {
+    public func setText<S: StringProtocol>(_ text: S, length: Int? = nil) {
         text.withCString { pointer -> Void in
             blGlyphBufferSetText(&object,
-                                 UnsafeRawPointer(pointer),
-                                 text.utf8CString.count,
+                                 pointer,
+                                 length ?? text.utf8.count,
                                  BLTextEncoding.utf8.rawValue)
         }
     }

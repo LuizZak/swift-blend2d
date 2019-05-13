@@ -56,6 +56,28 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         }
     }
     
+    /// Initializes a new image from a file on disk.
+    ///
+    /// Optionally allows specifying codecs to try to use when decoding the image
+    /// file. If no codecs are provided, the default image codecs are used, instead.
+    ///
+    /// - Parameters:
+    ///   - filePath: A file path from the current working directory to search
+    /// for the image file.
+    ///   - codecs: A list of codecs to attempt to use for the referenced image
+    /// file. If `nil`, the default image codecs are used, instead.
+    public init(fromFile filePath: String, codecs: [BLImageCodec]? = nil) throws {
+        try super.init { pointer -> BLResult in
+            blImageInit(pointer)
+            
+            return try resultToError(
+                withCodecArray(codecs) { codecs in
+                    blImageReadFromFile(pointer, filePath, codecs)
+                }
+            )
+        }
+    }
+    
     override init(weakAssign object: BLImageCore) {
         super.init(weakAssign: object)
     }
@@ -103,7 +125,15 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         )
     }
     
-    public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]) throws {
+    public func readFromFile(_ fileName: String, codecs: [BLImageCodec]? = nil) throws {
+        try resultToError(
+            withCodecArray(codecs) {
+                blImageReadFromFile(&object, fileName, $0)
+            }
+        )
+    }
+    
+    public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]? = nil) throws {
         let array = BLArray<UInt8>()
         for item in data {
             array.append(item)
@@ -112,15 +142,25 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         try readFromData(array, codecs: codecs)
     }
     
-    func readFromData(_ buffer: BLArray<UInt8>, codecs: [BLImageCodec]) throws {
+    func readFromData(_ buffer: BLArray<UInt8>, codecs: [BLImageCodec]? = nil) throws {
+        try resultToError(
+            withCodecArray(codecs) {
+                blImageReadFromData(&object, buffer.unsafePointer().baseAddress, buffer.count, $0)
+            }
+        )
+    }
+}
+
+private func withCodecArray<T>(_ codecs: [BLImageCodec]?, _ closure: (UnsafePointer<BLArrayCore>?) throws -> T) rethrows -> T {
+    if let codecs = codecs {
         let codecsArray = BLArray<BLImageCodecCore>()
         for codec in codecs {
             codecsArray.append(codec.object)
         }
         
-        try resultToError(
-            blImageReadFromData(&object, buffer.unsafePointer().baseAddress, buffer.count, &codecsArray.object)
-        )
+        return try closure(&codecsArray.object)
+    } else {
+        return try closure(nil)
     }
 }
 

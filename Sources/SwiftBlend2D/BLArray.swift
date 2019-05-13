@@ -19,6 +19,7 @@ public final class BLArray<Element: BLArrayElement> {
     }
     
     /// Initializes a new array object.
+    @inlinable
     public init() {
         blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
     }
@@ -34,6 +35,7 @@ public final class BLArray<Element: BLArrayElement> {
         }
     }
     
+    @inlinable
     public init(array: [Element]) {
         blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
         
@@ -46,6 +48,7 @@ public final class BLArray<Element: BLArrayElement> {
         blArrayReset(&object)
     }
     
+    @usableFromInline
     func unsafePointer() -> UnsafeBufferPointer<Element> {
         let pointer = blArrayGetData(&object)?
             .bindMemory(to: Element.self, capacity: count)
@@ -57,6 +60,7 @@ public final class BLArray<Element: BLArrayElement> {
         return unsafeAsArray(of: Element.self)
     }
     
+    @inlinable
     public func unsafeAsArray<T>(of type: T.Type) -> [T] {
         return unsafePointer().baseAddress?.withMemoryRebound(to: T.self, capacity: count) { pointer -> [T] in
             let buffer = UnsafeBufferPointer(start: pointer, count: count)

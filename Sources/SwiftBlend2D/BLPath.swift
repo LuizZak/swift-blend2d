@@ -39,6 +39,10 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         blPathMoveTo(&object, x, y)
     }
     
+    public func lineTo(x: Double, y: Double) {
+        blPathLineTo(&object, x, y)
+    }
+    
     public func cubicTo(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) {
         blPathCubicTo(&object, x1, y1, x2, y2, x3, y3)
     }
@@ -53,14 +57,6 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     
     public func setVertexAt(index: Int, cmd: UInt32, x: Double, y: Double) {
         blPathSetVertexAt(&object, index, cmd, x, y)
-    }
-    
-    public func moveTo(x0: Double, y0: Double) {
-        blPathMoveTo(&object, x0, y0)
-    }
-    
-    public func lineTo(x1: Double, y1: Double) {
-        blPathLineTo(&object, x1, y1)
     }
     
     public func polyTo(poly: [BLPoint]) {

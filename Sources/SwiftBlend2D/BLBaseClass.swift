@@ -5,6 +5,7 @@ import blend2d
 /// manually without inheriting from this class.
 public class BLBaseClass<T: CoreStructure> {
     /// The actual structure that this class backs.
+    @usableFromInline
     final var object: T
     
     init() {

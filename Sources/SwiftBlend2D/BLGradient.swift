@@ -135,18 +135,38 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
         }
     }
     
+    // MARK: - Initializers
+    
     // TODO: Handle error results for init and create methods bellow
 
-    public init(type: BLGradientType, values: [Double], extendMode: BLExtendMode, stops: [BLGradientStop], matrix: BLMatrix2D? = nil) {
-        super.init { object -> BLResult in
-            var values = values
-            var stops = stops
-            
-            return withUnsafeNullablePointer(to: matrix) { pointer in
-                blGradientInitAs(object, type.rawValue, &values, extendMode.rawValue, &stops, stops.count, pointer)
+    public init(linear: BLLinearGradientValues, extendMode: BLExtendMode = .pad, stops: [BLGradientStop]? = nil, matrix: BLMatrix2D? = nil) {
+        super.init { pointer -> BLResult in
+            var linear = linear
+            return withUnsafeNullablePointer(to: matrix) { matrix in
+                return blGradientInitAs(pointer, BLGradientType.linear.rawValue, &linear, extendMode.rawValue, stops, stops?.count ?? 0, matrix)
             }
         }
     }
+    
+    public init(radial: BLRadialGradientValues, extendMode: BLExtendMode = .pad, stops: [BLGradientStop]? = nil, matrix: BLMatrix2D? = nil) {
+        super.init { pointer -> BLResult in
+            var radial = radial
+            return withUnsafeNullablePointer(to: matrix) { matrix in
+                return blGradientInitAs(pointer, BLGradientType.radial.rawValue, &radial, extendMode.rawValue, stops, stops?.count ?? 0, matrix)
+            }
+        }
+    }
+    
+    public init(conical: BLConicalGradientValues, extendMode: BLExtendMode = .pad, stops: [BLGradientStop]? = nil, matrix: BLMatrix2D? = nil) {
+        super.init { pointer -> BLResult in
+            var conical = conical
+            return withUnsafeNullablePointer(to: matrix) { matrix in
+                return blGradientInitAs(pointer, BLGradientType.conical.rawValue, &conical, extendMode.rawValue, stops, stops?.count ?? 0, matrix)
+            }
+        }
+    }
+    
+    // MARK: - Creation methods
 
     public func create(type: BLGradientType, values: [Double], extendMode: BLExtendMode, stops: [BLGradientStop], matrix: BLMatrix2D? = nil) {
         var values = values
@@ -155,6 +175,8 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
             blGradientCreate(&object, type.rawValue, &values, extendMode.rawValue, &stops, stops.count, pointer)
         }
     }
+    
+    // MARK: - Methods
 
     public func shrink() {
         blGradientShrink(&object)
@@ -192,12 +214,20 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
         blGradientAssignStops(&object, stops, stops.count)
     }
 
-    public func addStopRgba32(offset: Double, argb32: UInt32) {
-        blGradientAddStopRgba32(&object, offset, argb32)
+    public func addStop(_ offset: Double, rgba32: UInt32) {
+        blGradientAddStopRgba32(&object, offset, rgba32)
     }
 
-    public func addStopRgba64(offset: Double, argb64: UInt64) {
-        blGradientAddStopRgba64(&object, offset, argb64)
+    public func addStop(_ offset: Double, rgba64: UInt64) {
+        blGradientAddStopRgba64(&object, offset, rgba64)
+    }
+    
+    public func addStop(_ offset: Double, _ rgba: BLRgba32) {
+        blGradientAddStopRgba32(&object, offset, rgba.value)
+    }
+    
+    public func addStop(_ offset: Double, _ rgba: BLRgba64) {
+        blGradientAddStopRgba64(&object, offset, rgba.value)
     }
 
     public func removeStop(index: Int) {
@@ -244,90 +274,119 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
 }
 
 public extension BLGradient {
+    @discardableResult
     func resetMatrix() -> BLResult {
         return blGradientApplyMatrixOp(&object, BLMatrix2DOp.reset.rawValue, nil)
     }
+    @discardableResult
     func translate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.translate, x, y)
     }
+    @discardableResult
     func translate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.translate, p.x, p.y)
     }
+    @discardableResult
     func translate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.translate, p)
     }
+    @discardableResult
     func scale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.scale, xy, xy)
     }
+    @discardableResult
     func scale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.scale, x, y)
     }
+    @discardableResult
     func scale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.scale, p.x, p.y)
     }
+    @discardableResult
     func scale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.scale, p)
     }
+    @discardableResult
     func skew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.skew, x, y)
     }
+    @discardableResult
     func skew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.skew, p)
     }
+    @discardableResult
     func rotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.rotate, angle)
     }
+    @discardableResult
     func rotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, x, y)
     }
+    @discardableResult
     func rotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
     }
+    @discardableResult
     func rotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
+    @discardableResult
     func transform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.transform, matrix)
     }
+    @discardableResult
     func postTranslate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postTranslate, x, y)
     }
+    @discardableResult
     func postTranslate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postTranslate, p.x, p.y)
     }
+    @discardableResult
     func postTranslate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postTranslate, p)
     }
+    @discardableResult
     func postScale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, xy, xy)
     }
+    @discardableResult
     func postScale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, x, y)
     }
+    @discardableResult
     func postScale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postScale, p.x, p.y)
     }
+    @discardableResult
     func postScale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postScale, p)
     }
+    @discardableResult
     func postSkew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postSkew, x, y)
     }
+    @discardableResult
     func postSkew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postSkew, p)
     }
+    @discardableResult
     func postRotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.postRotate, angle)
     }
+    @discardableResult
     func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, x, y)
     }
+    @discardableResult
     func postRotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
     }
+    @discardableResult
     func postRotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
+    @discardableResult
     func postTransform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.postTransform, matrix)
     }
