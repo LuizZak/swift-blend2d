@@ -1,8 +1,6 @@
 import blend2d
 
-public class BLContext: BLBaseClass<BLContextCore> {
-    private var _ended: Bool = false
-    
+public class BLContext: BLBaseClass<BLContextCore> {    
     public override init() {
         super.init()
     }
@@ -46,8 +44,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// instance (no context).
     public func end() {
         blContextEnd(&object)
-        
-        _ended = true
     }
     
     public func userToMeta() {
