@@ -44,6 +44,8 @@ This should create an image in the current working directory like so:
 
 ![Sample 1](bl-getting-started-1.png)
 
+There are more examples that reproduce each [sample from Blend2D's homepage](https://blend2d.com/doc/getting-started.html) within that file.
+
 #### License
 
 The source code for SwiftBlend2D is distributed under the [MIT license](https://tldrlegal.com/license/mit-license).
