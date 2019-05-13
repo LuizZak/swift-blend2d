@@ -11,9 +11,9 @@ public extension BLHitTest {
 
 public extension BLFillRule {
     /// Non-zero fill-rule.
-    static let zero = BL_FILL_RULE_NON_ZERO
+    static let nonZero = BL_FILL_RULE_NON_ZERO
     /// Even-odd fill-rule.
-    static let odd = BL_FILL_RULE_EVEN_ODD
+    static let evenOdd = BL_FILL_RULE_EVEN_ODD
 }
 
 public extension BLPathReverseMode {
