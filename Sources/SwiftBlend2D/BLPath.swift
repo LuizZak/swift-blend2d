@@ -190,7 +190,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     }
     
     /// Gets the vertex index on this path that is the closest to a given point.
-    public func getClosesVertex(to point: BLPoint, maximumDistance: Double) -> (vertexIndex: Int, distance: Double)? {
+    public func getClosestVertex(to point: BLPoint, maximumDistance: Double) -> (vertexIndex: Int, distance: Double)? {
         var point = point
         var indexOut = 0
         var distanceOut = 0.0
