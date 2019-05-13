@@ -39,6 +39,22 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
             blGradientSetExtendMode(&object, newValue.rawValue)
         }
     }
+
+    /// Gradient values.
+    public var gradientValues: GradientValues {
+        get {
+            switch type {
+            case .linear:
+                return .linear(linear)
+            case .radial:
+                return .radial(radial)
+            case .conical:
+                return .conical(conical)
+            default:
+                return .linear(linear)
+            }
+        }
+    }
     
     /// Linear parameters.
     public var linear: BLLinearGradientValues {
@@ -426,6 +442,14 @@ internal extension BLGradient {
         return args.map { Double($0) }.withUnsafeBytes { pointer in
             blGradientApplyMatrixOp(&object, opType.rawValue, pointer.baseAddress)
         }
+    }
+}
+
+public extension BLGradient {
+    enum GradientValues {
+        case linear(BLLinearGradientValues)
+        case radial(BLRadialGradientValues)
+        case conical(BLConicalGradientValues)
     }
 }
 

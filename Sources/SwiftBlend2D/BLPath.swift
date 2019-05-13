@@ -84,8 +84,14 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     }
     
     // TODO: Map blPathAddGeometry
-    func addGeometry(/* ... */) {
-        
+    func addGeometry(_ geometryType: BLGeometryType,
+                     _ data: UnsafeRawPointer?,
+                     _ matrix: BLMatrix2D?,
+                     _ dir: BLGeometryDirection) -> BLResult {
+
+        return withUnsafeNullablePointer(to: matrix) { matrix in
+            blPathAddGeometry(&object, geometryType.rawValue, data, matrix, dir.rawValue)
+        }
     }
     
     public func addBox(_ box: BLBox, direction: BLGeometryDirection) {
@@ -107,7 +113,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         var rect = rect
         blPathAddRectI(&object, &rect, direction.rawValue)
     }
-    
+
+    /// Adds other `path` sliced by the given `range` to this path.
     public func addPath(_ other: BLPath, range: BLRange? = nil) {
         withUnsafeNullablePointer(to: range) {
             blPathAddPath(&object, &other.object, $0)
@@ -138,7 +145,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             blPathAddReversedPath(&object, &other.object, $0, reverseMode.rawValue)
         }
     }
-    
+
+    /// Adds a stroke of `path` to this path.
     public func addStrokedPath(_ other: BLPath,
                                range: BLRange? = nil,
                                options: BLStrokeOptions = BLStrokeOptions(),
@@ -150,7 +158,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             }
         }
     }
-    
+
+    /// Translates a part of the path specified by the given `range` by `p`.
     public func translate(by offset: BLPoint, range: BLRange? = nil) {
         var offset = offset
         
@@ -158,7 +167,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             blPathTranslate(&object, $0, &offset)
         }
     }
-    
+
+    /// Transforms a part of the path specified by the given `range` by matrix `m`.
     public func transform(_ matrix: BLMatrix2D, range: BLRange? = nil) {
         var matrix = matrix
         
@@ -167,7 +177,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         }
     }
     
-    // TODO: Add support for flags once Blend2D does so.
+    /// Fits a parh of the path specified by the given `range` into the given
+    /// `rect` by taking into account fit flags passed by `fitFlags`.
     func fitTo(rectangle: BLRect, range: BLRange? = nil) {
         var rectangle = rectangle
         
@@ -225,6 +236,133 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     
     public func equals(to other: BLPath) -> Bool {
         return blPathEquals(&object, &other.object)
+    }
+}
+
+public extension BLPath {
+    /// Adds a closed rounded ractangle to the path.
+    @discardableResult
+    func addRoundRect(_ rr: BLRoundRect, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var rr = rr
+        return addGeometry(.roundRect, &rr, m, dir)
+    }
+
+    /// Adds an unclosed arc to the path.
+    @discardableResult
+    func addArc(_ arc: BLArc, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var arc = arc
+        return addGeometry(.arc, &arc, m, dir)
+    }
+
+    /// Adds a closed chord to the path.
+    @discardableResult
+    func addChord(_ chord: BLArc, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var chord = chord
+        return addGeometry(.chord, &chord, m, dir)
+    }
+
+    /// Adds a closed pie to the path.
+    @discardableResult
+    func addPie(_ pie: BLArc, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var pie = pie
+        return addGeometry(.pie, &pie, m, dir)
+    }
+
+    /// Adds an unclosed line to the path.
+    @discardableResult
+    func addLine(_ line: BLLine, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var line = line
+        return addGeometry(.line, &line, m, dir)
+    }
+
+    /// Adds a closed triangle.
+    @discardableResult
+    func addTriangle(_ triangle: BLTriangle, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var triangle = triangle
+        return addGeometry(.triangle, &triangle, m, dir)
+    }
+
+    /// Adds a polyline.
+    @discardableResult
+    func addPolyline(_ poly: [BLPointI], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var poly = poly
+        return addGeometry(.polylineI, &poly, m, dir)
+    }
+
+    /// Adds a polyline.
+    @discardableResult
+    func addPolyline(_ poly: [BLPoint], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var poly = poly
+        return addGeometry(.polylineD, &poly, m, dir)
+    }
+
+    /// Adds a polygon.
+    @discardableResult
+    func addPolygon(_ poly: [BLPointI], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var poly = poly
+        return addGeometry(.polygonI, &poly, m, dir)
+    }
+
+    /// Adds a polygon.
+    @discardableResult
+    func addPolygon(_ poly: [BLPoint], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var poly = poly
+        return addGeometry(.polygonD, &poly, m, dir)
+    }
+
+    /// Adds an array of closed boxes.
+    @discardableResult
+    func addBoxArray(_ array: [BLBoxI], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var array = array
+        return addGeometry(.arrayViewBoxI, &array, m, dir)
+    }
+
+    /// Adds an array of closed boxes.
+    @discardableResult
+    func addBoxArray(_ array: [BLBox], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var array = array
+        return addGeometry(.arrayViewBoxD, &array, m, dir)
+    }
+
+    /// Adds an array of closed rectangles.
+    @discardableResult
+    func addRectArray(_ array: [BLRectI], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var array = array
+        return addGeometry(.arrayViewRectI, &array, m, dir)
+    }
+
+    /// Adds an array of closed rectangles.
+    @discardableResult
+    func addRectArray(_ array: [BLRect], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var array = array
+        return addGeometry(.arrayViewRectD, &array, m, dir)
+    }
+
+    /// Adds a closed region (converted to set of rectangles).
+    @discardableResult
+    func addRegion(_ region: BLRegion, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var region = region
+        return addGeometry(.region, &region, m, dir)
+    }
+
+    /// Adds other `path` translated by `p` and sliced by the given `range` to
+    /// this path.
+    @discardableResult
+    func addPath(_ path: BLPath, _ range: BLRange, _ p: BLPoint) -> BLResult {
+        var p = p
+        return withUnsafeNullablePointer(to: range) {
+            return blPathAddTranslatedPath(&object, &path.object, $0, &p)
+        }
+    }
+
+    /// Adds other `path` transformed by `m` and sliced by the given `range`
+    /// to this path.
+    @discardableResult
+    func addPath(_ path: BLPath, _ m: BLMatrix2D, _ range: BLRange? = nil) -> BLResult {
+        var m = m
+        return withUnsafeNullablePointer(to: range) {
+            return blPathAddTransformedPath(&object, &path.object, $0, &m)
+        }
     }
 }
 

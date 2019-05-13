@@ -79,13 +79,13 @@ public extension BLGeometryType {
     /// No geometry provided.
     static let none = BL_GEOMETRY_TYPE_NONE
     /// BLBoxI struct.
-    static let boxi = BL_GEOMETRY_TYPE_BOXI
+    static let boxI = BL_GEOMETRY_TYPE_BOXI
     /// BLBox struct.
-    static let boxd = BL_GEOMETRY_TYPE_BOXD
+    static let boxD = BL_GEOMETRY_TYPE_BOXD
     /// BLRectI struct.
-    static let recti = BL_GEOMETRY_TYPE_RECTI
+    static let rectI = BL_GEOMETRY_TYPE_RECTI
     /// BLRect struct.
-    static let rectd = BL_GEOMETRY_TYPE_RECTD
+    static let rectD = BL_GEOMETRY_TYPE_RECTD
     /// BLCircle struct.
     static let circle = BL_GEOMETRY_TYPE_CIRCLE
     /// BLEllipse struct.
@@ -103,13 +103,13 @@ public extension BLGeometryType {
     /// BLTriangle struct.
     static let triangle = BL_GEOMETRY_TYPE_TRIANGLE
     /// BLArrayView<BLPointI> representing a polyline.
-    static let polylinei = BL_GEOMETRY_TYPE_POLYLINEI
+    static let polylineI = BL_GEOMETRY_TYPE_POLYLINEI
     /// BLArrayView<BLPoint> representing a polyline.
-    static let polylined = BL_GEOMETRY_TYPE_POLYLINED
+    static let polylineD = BL_GEOMETRY_TYPE_POLYLINED
     /// BLArrayView<BLPointI> representing a polygon.
-    static let polygoni = BL_GEOMETRY_TYPE_POLYGONI
+    static let polygonI = BL_GEOMETRY_TYPE_POLYGONI
     /// BLArrayView<BLPoint> representing a polygon.
-    static let polygond = BL_GEOMETRY_TYPE_POLYGOND
+    static let polygonD = BL_GEOMETRY_TYPE_POLYGOND
     /// BLArrayView<BLBoxI> struct.
     static let arrayViewBoxI = BL_GEOMETRY_TYPE_ARRAY_VIEW_BOXI
     /// BLArrayView<BLBox> struct.
