@@ -60,8 +60,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     }
     
     public func polyTo(poly: [BLPoint]) {
-        var poly = poly
-        blPathPolyTo(&object, &poly, poly.count)
+        blPathPolyTo(&object, poly, poly.count)
     }
     
     public func smoothQuadTo(x2: Double, y2: Double) {
