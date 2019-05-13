@@ -58,17 +58,32 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
     
     /// Linear parameters.
     public var linear: BLLinearGradientValues {
-        return object.impl.pointee.linear
+        get {
+            return object.impl.pointee.linear
+        }
+        set {
+            object.impl.pointee.linear = newValue
+        }
     }
     
     /// Radial parameters.
     public var radial: BLRadialGradientValues {
-        return object.impl.pointee.radial
+        get {
+            return object.impl.pointee.radial
+        }
+        set {
+            object.impl.pointee.radial = newValue
+        }
     }
     
     /// Conical parameters.
     public var conical: BLConicalGradientValues {
-        return object.impl.pointee.conical
+        get {
+            return object.impl.pointee.conical
+        }
+        set {
+            object.impl.pointee.conical = newValue
+        }
     }
     
     /// x0 - start 'x' for Linear/Radial and center 'x' for Conical.
@@ -254,10 +269,9 @@ public final class BLGradient: BLBaseClass<BLGradientCore> {
         blGradientRemoveStopByOffset(&object, offset, all)
     }
 
-    public func removeStops(inRange range: BLRange? = nil) {
-        withUnsafeNullablePointer(to: range) { pointer in
-            blGradientRemoveStops(&object, pointer)
-        }
+    public func removeStops(inRange range: BLRange) {
+        var range = range
+        blGradientRemoveStops(&object, &range)
     }
 
     public func removeStopsFromTo(offsetMin: Double, offsetMax: Double) {

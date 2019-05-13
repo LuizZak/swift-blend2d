@@ -73,6 +73,13 @@ public class BLFont: BLBaseClass<BLFontCore> {
     public func applyGPos(_ buf: BLGlyphBuffer, index: Int, lookups: BLBitWord) {
         blFontApplyGPos(&object, &buf.object, index, lookups)
     }
+
+    @inlinable
+    public func getTextMetrics(_ string: String) -> BLTextMetrics {
+        let buffer = BLGlyphBuffer()
+        buffer.setText(string)
+        return getTextMetrics(buffer)
+    }
     
     @inlinable
     public func getTextMetrics(_ buf: BLGlyphBuffer) -> BLTextMetrics {

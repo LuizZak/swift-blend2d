@@ -373,14 +373,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func fillCircle(_ circle: BLCircle) {
         fillGeometry(circle)
     }
-    
-    @inlinable
-    public func fillPath(_ path: BLPathCore) {
-        var path = path
-        
-        blContextFillPathD(&object, &path)
-    }
-    
+
     @inlinable
     public func fillGeometry(_ roundRect: BLRoundRect) {
         var roundRect = roundRect
@@ -443,18 +436,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
     }
     
     // TODO: Implement proper strokeGeometry overload
-    func strokeGeometry(_ geometryType: BLGeometryType, geometryData: UnsafeRawPointer /* geometryData: ... */) {
-        blContextStrokeGeometry(&object, geometryType.rawValue, geometryData)
+    @inlinable
+    @discardableResult
+    public func strokeGeometry(_ geometryType: BLGeometryType, _ geometryData: UnsafeRawPointer) -> BLResult {
+        return blContextStrokeGeometry(&object, geometryType.rawValue, geometryData)
     }
-    
-    public func strokeText(_ text: String, at point: BLPointI, font: BLFontCore) {
-        var cString = text.utf8CString
-        var point = point
-        var font = font
-        
-        blContextStrokeTextI(&object, &point, &font, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
-    }
-    
+
     public func strokeText(_ text: String, at point: BLPoint, font: BLFont) {
         var cString = text.utf8CString
         var point = point
@@ -522,6 +509,53 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func flush(flags: BLContextFlushFlags) {
         blContextFlush(&object, flags.rawValue)
+    }
+}
+
+public extension BLContext {
+    /// Strokes a rounded rectangle.
+    @discardableResult
+    func strokeRoundRect(_ rr: BLRoundRect) -> BLResult {
+        var rr = rr
+        return strokeGeometry(.roundRect, &rr)
+    }
+    @discardableResult
+    func strokeRoundRect(rect: BLRect, radius: Double) -> BLResult {
+        return strokeRoundRect(BLRoundRect(x: rect.x, y: rect.y, w: rect.w, h: rect.h, rx: radius, ry: radius))
+    }
+    @discardableResult
+    func strokeRoundRect(rect: BLRect, radiusX: Double, radiusY: Double) -> BLResult {
+        return strokeRoundRect(BLRoundRect(x: rect.x, y: rect.y, w: rect.w, h: rect.h, rx: radiusX, ry: radiusY))
+    }
+    @discardableResult
+    func strokeRoundRect(x: Double, y: Double, width: Double, height: Double, radius: Double) -> BLResult {
+        return strokeRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radius, ry: radius))
+    }
+    @discardableResult
+    func strokeRoundRect(x: Double, y: Double, width: Double, height: Double, radiusX: Double, radiusY: Double) -> BLResult {
+        return strokeRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radiusX, ry: radiusY))
+    }
+}
+
+public extension BLContext {
+    /// Strokes a line.
+    @discardableResult
+    @inlinable
+    func strokeLine(_ line: BLLine) -> BLResult {
+        var line = line
+        return strokeGeometry(.line, &line)
+    }
+    /// Strokes a line.
+    @discardableResult
+    @inlinable
+    func strokeLine(_ p0: BLPoint, _ p1: BLPoint) -> BLResult {
+        return strokeLine(BLLine(x0: p0.x, y0: p0.y, x1: p1.x, y1: p1.y))
+    }
+    /// Strokes a line.
+    @discardableResult
+    @inlinable
+    func strokeLine(x0: Double, y0: Double, x1: Double, y1: Double) -> BLResult {
+        return strokeLine(BLLine(x0: x0, y0: y0, x1: x1, y1: y1))
     }
 }
 
