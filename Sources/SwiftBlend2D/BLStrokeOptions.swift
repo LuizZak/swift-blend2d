@@ -41,6 +41,11 @@ public final class BLStrokeOptions: BLBaseClass<BLStrokeOptionsCore> {
     public override init() {
         super.init()
     }
+    
+    public func setCaps(_ cap: BLStrokeCap) {
+        startCap = cap
+        endCap = cap
+    }
 }
 
 extension BLStrokeOptionsCore: CoreStructure {

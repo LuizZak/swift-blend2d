@@ -5,10 +5,12 @@ import blend2d
 ///
 /// Used to provide nullable pointers to C functions that use them as 'nullable
 /// struct references'.
+@inlinable
 func withUnsafeNullablePointer<T, Result>(to value: T?, _ closure: (UnsafePointer<T>?) -> Result) -> Result {
     return _withUnsafeNullablePointer(to: value, closure)
 }
 
+@inlinable
 @discardableResult
 func withUnsafeNullablePointer<T>(to value: T?, _ closure: (UnsafePointer<T>?) -> BLResult) -> BLResult {
     return _withUnsafeNullablePointer(to: value, closure)
@@ -16,7 +18,8 @@ func withUnsafeNullablePointer<T>(to value: T?, _ closure: (UnsafePointer<T>?) -
 
 // Used to allow defining two signatures for withUnsafeNullablePointer, one with
 // `BLResult` being a discardable result
-private func _withUnsafeNullablePointer<T, Result>(to value: T?, _ closure: (UnsafePointer<T>?) -> Result) -> Result {
+@inlinable
+func _withUnsafeNullablePointer<T, Result>(to value: T?, _ closure: (UnsafePointer<T>?) -> Result) -> Result {
     if let value = value {
         return withUnsafePointer(to: value) { pointer in
             closure(pointer)

@@ -666,6 +666,15 @@ public extension BLFormat {
     static let a8 = BL_FORMAT_A8
 }
 
+public extension BLContextHint {
+    /// Rendering quality.
+    static let renderingQuality = BL_CONTEXT_HINT_RENDERING_QUALITY
+    /// Gradient quality.
+    static let gradientQuality = BL_CONTEXT_HINT_GRADIENT_QUALITY
+    /// Pattern quality.
+    static let patternQuality = BL_CONTEXT_HINT_PATTERN_QUALITY
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }

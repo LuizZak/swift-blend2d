@@ -205,7 +205,6 @@ func sample8() throws {
     let font = BLFont(fromFace: face, size: 20.0)
     
     let fm = font.metrics
-    var tm = BLTextMetrics()
     let gb = BLGlyphBuffer()
     
     var p = BLPoint(x: 20, y: 190 + Double(fm.ascent))
@@ -220,7 +219,7 @@ func sample8() throws {
     for line in lines {
         gb.setText(line)
         font.shape(gb)
-        tm = font.getTextMetrics(gb)
+        let tm = font.getTextMetrics(gb)
         
         p.x = (480.0 - (tm.boundingBox.x1 - tm.boundingBox.x0)) / 2.0
         ctx.fillGlyphRun(gb.glyphRun, at: p, font: font)
@@ -232,4 +231,34 @@ func sample8() throws {
     let codec = BLImageCodec(builtInCodec: .bmp)
     
     try img.writeToFile("bl-getting-started-8.bmp", codec: codec)
+}
+
+func tigerSample() throws {
+    let tiger = Tiger()
+    
+    let img = BLImage(width: TigerData.width, height: TigerData.height, format: .prgb32)
+    let ctx = BLContext(image: img)!
+    
+    ctx.setFillStyle(BLRgba32(argb: 0xFF00007F))
+    ctx.fillAll()
+    
+    for tp in tiger.paths {
+        if tp.fill {
+            ctx.setFillStyle(tp.fillColor)
+            ctx.setFillRule(tp.fillRule)
+            ctx.fillPath(tp.blPath)
+        }
+        
+        if tp.stroke {
+            ctx.setStrokeStyle(tp.strokeColor)
+            ctx.setStrokeOptions(tp.blStrokeOptions)
+            ctx.strokePath(tp.blPath)
+        }
+    }
+    
+    ctx.end()
+    
+    let codec = BLImageCodec(builtInCodec: .bmp)
+    
+    try img.writeToFile("tiger.bmp", codec: codec)
 }

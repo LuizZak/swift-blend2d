@@ -8,16 +8,19 @@ public class BLBaseClass<T: CoreStructure> {
     @usableFromInline
     final var object: T
     
+    @usableFromInline
     init() {
         object = T()
         _ = T.initializer(&object)
     }
     
+    @usableFromInline
     init(initializer: (UnsafeMutablePointer<T>?) throws -> BLResult) rethrows {
         object = T()
         try _ = initializer(&object)
     }
     
+    @usableFromInline
     init?(initializer: (UnsafeMutablePointer<T>?) -> BLResult?) {
         object = T()
         if initializer(&object) == nil {
@@ -30,6 +33,7 @@ public class BLBaseClass<T: CoreStructure> {
     ///
     /// `T.assignWeak` is invoked to perform the weak assignment operation of
     /// the underlying object.
+    @usableFromInline
     init(weakAssign object: T) {
         self.object = object
         _ = T.initializer(&self.object)

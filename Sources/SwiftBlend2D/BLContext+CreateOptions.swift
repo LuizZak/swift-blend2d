@@ -100,6 +100,7 @@ public extension BLContext.CreateOptions {
 }
 
 extension BLContext.CreateOptions {
+    @inlinable
     func toBLContextCreateInfo() -> BLContextCreateInfo {
         return BLContextCreateInfo(flags: flags.rawValue,
                                    threadCount: UInt32(threadCount),

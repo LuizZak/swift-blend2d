@@ -228,6 +228,7 @@ public enum Blend2DError: String, Error {
     case invalidGlyph
 }
 
+@usableFromInline
 @discardableResult
 func resultToError(_ operation: @autoclosure () -> BLResult) throws -> BLResult {
     let value = operation()
