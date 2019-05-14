@@ -3,22 +3,29 @@ import blend2d
 public final class BLRegion: BLBaseClass<BLRegionCore> {
     
     /// Returns the type of the region, see `BLRegionType`.
+    @inlinable
     public var type: BLRegionType {
         return BLRegionType(blRegionGetType(&object))
     }
     
     /// Gets whether the region is empty.
+    @inlinable
     public var isEmpty: Bool { return size == 0 }
     /// Gets whether the region is one rectangle.
+    @inlinable
     public var isRectangle: Bool { return size == 1 }
     /// Gets whether the region is complex.
+    @inlinable
     public var isComplex: Bool { return size > 1 }
     
     /// Returns the region size.
+    @inlinable
     public var size: Int { return object.impl.pointee.size }
     /// Returns the region capacity.
+    @inlinable
     public var capacity: Int { return object.impl.pointee.capacity }
     /// Returns the region's bounding box.
+    @inlinable
     public var boundingBox: BLBoxI { return object.impl.pointee.boundingBox }
     
     public override init() {
@@ -68,15 +75,19 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     public func shrink() {
         blRegionShrink(&object)
     }
-    
+
+    @inlinable
     @discardableResult
     public func reserve(capacity: Int) -> BLResult {
         return blRegionReserve(&object, capacity)
     }
-    
+
+    @inlinable
     public func combine(region: BLRegion, operation: BLBooleanOp) -> BLResult {
         return blRegionCombine(&object, &object, &region.object, operation.rawValue)
     }
+
+    @inlinable
     public func combine(box: BLBoxI, operation: BLBooleanOp) -> BLResult {
         var box = box
         return blRegionCombineRB(&object, &object, &box, operation.rawValue)
@@ -86,6 +97,7 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     ///
     /// Possible overflow will be handled by clipping to a maximum region boundary,
     /// so the final region could be smaller than the region before translation.
+    @inlinable
     @discardableResult
     public func translate(_ pt: BLPointI) -> BLResult {
         var pt = pt
@@ -94,6 +106,7 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     
     /// Translates the region by the given point `point` and clip it to the given
     /// `clipBox`.
+    @inlinable
     @discardableResult
     public func translateAndClip(point: BLPointI, clipBox: BLBoxI) -> BLResult {
         var point = point
@@ -102,26 +115,31 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     }
     
     /// Translates the region with `region` and clip it to the given `clipBox`.
+    @inlinable
     @discardableResult
     public func intersectAndClip(region: BLRegion, clipBox: BLBoxI) -> BLResult {
         var clipBox = clipBox
         return blRegionIntersectAndClip(&object, &object, &region.object, &clipBox)
     }
-    
+
+    @inlinable
     @discardableResult
     public func combine(_ a: BLRegion, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
         return blRegionCombine(&object, &a.object, &b.object, operation.rawValue)
     }
+    @inlinable
     @discardableResult
     public func combine(_ a: BLRegion, _ b: BLBoxI, operation: BLBooleanOp) -> BLResult {
         var b = b
         return blRegionCombineRB(&object, &a.object, &b, operation.rawValue)
     }
+    @inlinable
     @discardableResult
     public func combine(_ a: BLBoxI, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
         var a = a
         return blRegionCombineBR(&object, &a, &b.object, operation.rawValue)
     }
+    @inlinable
     @discardableResult
     public func combine(_ a: BLBoxI, _ b: BLBoxI, operation: BLBooleanOp) -> BLResult {
         var a = a
@@ -130,11 +148,13 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     }
     
     /// Tests if a given point `pt` is in region.
+    @inlinable
     public func hitTest(_ pt: BLPointI) -> BLHitTest {
         var pt = pt
         return BLHitTest(blRegionHitTest(&object, &pt))
     }
     /// Tests if a given `box` is in region.
+    @inlinable
     public func hitTest(_ box: BLBoxI) -> BLHitTest {
         var box = box
         return BLHitTest(blRegionHitTestBoxI(&object, &box))

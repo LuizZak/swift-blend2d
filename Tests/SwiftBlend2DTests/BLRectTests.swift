@@ -28,11 +28,21 @@ class BLRectTests: XCTestCase {
     }
 
     func testQuadrants() {
-        let rect = BLRect(x: 2, y: 2, w: 4, h: 4)
+        let rect = BLRect(x: 1, y: 2, w: 3, h: 4)
 
-        XCTAssertEqual(rect.topLeft, BLPoint(x: 2, y: 2))
-        XCTAssertEqual(rect.topRight, BLPoint(x: 6, y: 2))
-        XCTAssertEqual(rect.bottomLeft, BLPoint(x: 2, y: 6))
-        XCTAssertEqual(rect.bottomRight, BLPoint(x: 6, y: 6))
+        XCTAssertEqual(rect.topLeft, BLPoint(x: 1, y: 2))
+        XCTAssertEqual(rect.topRight, BLPoint(x: 4, y: 2))
+        XCTAssertEqual(rect.bottomLeft, BLPoint(x: 1, y: 6))
+        XCTAssertEqual(rect.bottomRight, BLPoint(x: 4, y: 6))
+    }
+
+    func testSize() {
+        var rect = BLRect(x: 1, y: 2, w: 3, h: 4)
+
+        XCTAssertEqual(rect.size, BLSize(w: 3, h: 4))
+
+        rect.size = BLSize(w: 5, h: 6)
+
+        XCTAssertEqual(rect.size, BLSize(w: 5, h: 6))
     }
 }

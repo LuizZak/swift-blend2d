@@ -57,6 +57,7 @@ extension BLBoxITests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLBoxITests = [
+        ("testAsRectangle", testAsRectangle),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testEquals", testEquals),
@@ -72,6 +73,7 @@ extension BLBoxTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLBoxTests = [
+        ("testAsRectangle", testAsRectangle),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testContainsPointI", testContainsPointI),
@@ -89,6 +91,7 @@ extension BLCircleTests {
     // to regenerate.
     static let __allTests__BLCircleTests = [
         ("testEquals", testEquals),
+        ("testExpandBy", testExpandBy),
         ("testInitWithCoordinates", testInitWithCoordinates),
         ("testInitWithPoint", testInitWithPoint),
     ]
@@ -122,6 +125,7 @@ extension BLEllipseTests {
         ("testEquals", testEquals),
         ("testInitWithCoordinates", testInitWithCoordinates),
         ("testInitWithPoint", testInitWithPoint),
+        ("testInset", testInset),
     ]
 }
 
@@ -182,9 +186,15 @@ extension BLLineTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLLineTests = [
+        ("testEnd", testEnd),
         ("testEquals", testEquals),
         ("testInitWithCoordinates", testInitWithCoordinates),
         ("testInitWithPoints", testInitWithPoints),
+        ("testLeftRotated", testLeftRotated),
+        ("testRightRotated", testRightRotated),
+        ("testRotateLeft", testRotateLeft),
+        ("testRotateRight", testRotateRight),
+        ("testStart", testStart),
     ]
 }
 
@@ -203,7 +213,16 @@ extension BLPointITests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLPointITests = [
+        ("testAdd", testAdd),
+        ("testAddAssign", testAddAssign),
+        ("testDivide", testDivide),
+        ("testDivideAssign", testDivideAssign),
         ("testEquals", testEquals),
+        ("testMultiply", testMultiply),
+        ("testMultiplyAssign", testMultiplyAssign),
+        ("testOne", testOne),
+        ("testSubtract", testSubtract),
+        ("testSubtractAssign", testSubtractAssign),
         ("testZero", testZero),
     ]
 }
@@ -213,7 +232,16 @@ extension BLPointTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLPointTests = [
+        ("testAdd", testAdd),
+        ("testAddAssign", testAddAssign),
+        ("testDivide", testDivide),
+        ("testDivideAssign", testDivideAssign),
         ("testEquals", testEquals),
+        ("testMultiply", testMultiply),
+        ("testMultiplyAssign", testMultiplyAssign),
+        ("testOne", testOne),
+        ("testSubtract", testSubtract),
+        ("testSubtractAssign", testSubtractAssign),
         ("testZero", testZero),
     ]
 }
@@ -233,6 +261,9 @@ extension BLRectITests {
     // to regenerate.
     static let __allTests__BLRectITests = [
         ("testEquals", testEquals),
+        ("testInset", testInset),
+        ("testQuadrants", testQuadrants),
+        ("testSize", testSize),
     ]
 }
 
@@ -243,6 +274,8 @@ extension BLRectTests {
     static let __allTests__BLRectTests = [
         ("testEquals", testEquals),
         ("testInset", testInset),
+        ("testQuadrants", testQuadrants),
+        ("testSize", testSize),
     ]
 }
 
@@ -286,6 +319,9 @@ extension BLRoundRectTests {
     static let __allTests__BLRoundRectTests = [
         ("testEquals", testEquals),
         ("testInitWithRectAndPoint", testInitWithRectAndPoint),
+        ("testInset", testInset),
+        ("testQuadrants", testQuadrants),
+        ("testSize", testSize),
     ]
 }
 
@@ -330,7 +366,15 @@ extension BLSizeTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLSizeTests = [
+        ("testAdd", testAdd),
+        ("testAddAssign", testAddAssign),
+        ("testDivide", testDivide),
+        ("testDivideAssign", testDivideAssign),
         ("testEquals", testEquals),
+        ("testMultiply", testMultiply),
+        ("testMultiplyAssign", testMultiplyAssign),
+        ("testSubtract", testSubtract),
+        ("testSubtractAssign", testSubtractAssign),
     ]
 }
 

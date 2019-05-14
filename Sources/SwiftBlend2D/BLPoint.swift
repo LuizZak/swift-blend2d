@@ -3,6 +3,9 @@ import blend2d
 public extension BLPoint {
     /// A zero-valued BLPoint with coordinates (0, 0)
     static let zero = BLPoint(x: 0, y: 0)
+
+    /// A one-valued BLPoint with coordinates (1, 1)
+    static let one = BLPoint(x: 1, y: 1)
     
     @inlinable
     init(_ point: BLPointI) {

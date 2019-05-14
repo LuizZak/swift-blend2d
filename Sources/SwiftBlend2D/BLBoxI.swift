@@ -2,13 +2,18 @@ import blend2d
 
 public extension BLBoxI {
     @inlinable
-    var width: Int {
+    var w: Int {
         return Int(x1 - x0)
     }
     
     @inlinable
-    var height: Int {
+    var h: Int {
         return Int(y1 - y0)
+    }
+
+    @inlinable
+    var asRectangle: BLRectI {
+        return BLRectI(x: x0, y: y0, w: x1 - x0, h: y1 - y0)
     }
     
     @inlinable

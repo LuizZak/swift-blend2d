@@ -64,12 +64,18 @@ class BLBoxTests: XCTestCase {
     func testWidth() {
         let box = BLBox(x0: 5, y0: 5, x1: 10, y1: 10)
         
-        XCTAssertEqual(box.width, 5)
+        XCTAssertEqual(box.w, 5)
     }
     
     func testHeight() {
         let box = BLBox(x0: 5, y0: 5, x1: 10, y1: 10)
         
-        XCTAssertEqual(box.height, 5)
+        XCTAssertEqual(box.h, 5)
+    }
+
+    func testAsRectangle() {
+        let box = BLBox(x0: 1, y0: 2, x1: 3, y1: 4)
+
+        XCTAssertEqual(box.asRectangle, BLRect(x: 1, y: 2, w: 2, h: 2))
     }
 }
