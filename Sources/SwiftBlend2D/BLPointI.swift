@@ -5,6 +5,41 @@ public extension BLPointI {
     static let zero = BLPointI(x: 0, y: 0)
 }
 
+// MARK: - Operators
+public extension BLPointI {
+    static func +(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+        return BLPointI(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+
+    static func -(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+        return BLPointI(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+
+    static func *(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+        return BLPointI(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
+    }
+
+    static func /(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+        return BLPointI(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
+    }
+
+    static func +=(lhs: inout BLPointI, rhs: BLPointI) {
+        lhs = lhs + rhs
+    }
+
+    static func -=(lhs: inout BLPointI, rhs: BLPointI) {
+        lhs = lhs - rhs
+    }
+
+    static func *=(lhs: inout BLPointI, rhs: BLPointI) {
+        lhs = lhs * rhs
+    }
+
+    static func /=(lhs: inout BLPointI, rhs: BLPointI) {
+        lhs = lhs / rhs
+    }
+}
+
 extension BLPointI: Equatable {
     @inlinable
     public static func ==(lhs: BLPointI, rhs: BLPointI) -> Bool {

@@ -34,4 +34,14 @@ class BLEllipseTests: XCTestCase {
         XCTAssertEqual(circle.rx, 3)
         XCTAssertEqual(circle.ry, 4)
     }
+
+    func testInset() {
+        let ellipse = BLEllipse(cx: 0, cy: 0, rx: 10, ry: 10)
+        let result = ellipse.insetBy(x: 2, y: 2)
+
+        XCTAssertEqual(result.cx, 1)
+        XCTAssertEqual(result.cy, 1)
+        XCTAssertEqual(result.rx, 8)
+        XCTAssertEqual(result.ry, 8)
+    }
 }

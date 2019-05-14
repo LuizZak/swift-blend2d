@@ -19,6 +19,8 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         
         return size
     }
+
+    var currentFilePath: String?
     
     public override init() {
         super.init()
@@ -32,18 +34,24 @@ public final class BLFile: BLBaseClass<BLFileCore> {
     
     public func open(fileAt path: String, flags: BLFileOpenFlags) throws {
         try path.withCString { pointer -> Void in
-            try resultToError(
-                blFileOpen(&object, pointer, flags.rawValue)
-            )
+            try mapError {
+                blFileOpen(&self.object, pointer, flags.rawValue)
+            }
+                .addFileErrorMappings(filePath: path)
+                .execute()
         }
+
+        currentFilePath = path
     }
     
     @discardableResult
     public func seek(offset: Int64, type: BLFileSeek) throws -> Int64 {
         var positionOut: Int64 = 0
-        try resultToError(
-            blFileSeek(&object, offset, type.rawValue, &positionOut)
-        )
+        try mapError {
+            blFileSeek(&self.object, offset, type.rawValue, &positionOut)
+        }
+            .addFileErrorMappings(filePath: currentFilePath)
+            .execute()
         
         return positionOut
     }
@@ -70,18 +78,22 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         var bytesWritten = 0
         
         if let rawPointer = buffer.baseAddress {
-            try resultToError(
-                blFileWrite(&object, rawPointer, buffer.count, &bytesWritten)
-            )
+            try mapError {
+                blFileWrite(&self.object, rawPointer, buffer.count, &bytesWritten)
+            }
+                .addFileErrorMappings(filePath: currentFilePath)
+                .execute()
         }
         
         return bytesWritten
     }
     
     public func truncate(maxSize: Int64) throws {
-        try resultToError(
-            blFileTruncate(&object, maxSize)
-        )
+        try mapError {
+            blFileTruncate(&self.object, maxSize)
+        }
+            .addFileErrorMappings(filePath: currentFilePath)
+            .execute()
     }
 }
 

@@ -14,13 +14,13 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     /// as it allows to specify a `faceIndex`, which can be used to load multiple
     /// font faces from TrueType/OpenType collections. The use of `init(fromLoader:faceIndex:)`
     /// is recommended for any serious font handling.
-    public init(fromFile fileName: String, readFlags: BLFileReadFlags = []) throws {
+    public init(fromFile filePath: String, readFlags: BLFileReadFlags = []) throws {
         try super.init { pointer -> BLResult in
             blFontFaceInit(pointer)
-            
-            return try resultToError(
-                blFontFaceCreateFromFile(pointer, fileName, readFlags.rawValue)
-            )
+
+            return try mapError { blFontFaceCreateFromFile(pointer, filePath, readFlags.rawValue) }
+                .addFileErrorMappings(filePath: filePath)
+                .execute()
         }
     }
     
@@ -29,9 +29,9 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         try super.init { pointer -> BLResult in
             blFontFaceInit(pointer)
             
-            return try resultToError(
+            return try mapError {
                 blFontFaceCreateFromLoader(pointer, &loader.object, faceIndex)
-            )
+            }.execute()
         }
     }
     

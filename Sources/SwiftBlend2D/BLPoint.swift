@@ -10,6 +10,42 @@ public extension BLPoint {
     }
 }
 
+// MARK: - Operators
+public extension BLPoint {
+    static func +(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
+        return BLPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+
+    static func -(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
+        return BLPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+
+    static func *(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
+        return BLPoint(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
+    }
+
+    static func /(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
+        return BLPoint(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
+    }
+
+    static func +=(lhs: inout BLPoint, rhs: BLPoint) {
+        lhs = lhs + rhs
+    }
+
+    static func -=(lhs: inout BLPoint, rhs: BLPoint) {
+        lhs = lhs - rhs
+    }
+
+    static func *=(lhs: inout BLPoint, rhs: BLPoint) {
+        lhs = lhs * rhs
+    }
+
+    static func /=(lhs: inout BLPoint, rhs: BLPoint) {
+        lhs = lhs / rhs
+    }
+}
+
+// MARK: - Equatable
 extension BLPoint: Equatable {
     @inlinable
     public static func ==(lhs: BLPoint, rhs: BLPoint) -> Bool {

@@ -70,11 +70,13 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         try super.init { pointer -> BLResult in
             blImageInit(pointer)
             
-            return try resultToError(
+            return try mapError {
                 withCodecArray(codecs) { codecs in
                     blImageReadFromFile(pointer, filePath, codecs)
                 }
-            )
+            }
+                .addFileErrorMappings(filePath: filePath)
+                .execute()
         }
     }
     
@@ -100,9 +102,11 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
     
     public func writeToFile(_ path: String, codec: BLImageCodec) throws {
-        try resultToError(
-            blImageWriteToFile(&object, path, &codec.object)
-        )
+        try mapError {
+            blImageWriteToFile(&self.object, path, &codec.object)
+        }
+            .addFileErrorMappings(filePath: path)
+            .execute()
     }
     
     public func getData() -> BLImageData {
@@ -126,11 +130,13 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
     
     public func readFromFile(_ fileName: String, codecs: [BLImageCodec]? = nil) throws {
-        try resultToError(
+        try mapError {
             withCodecArray(codecs) {
-                blImageReadFromFile(&object, fileName, $0)
+                blImageReadFromFile(&self.object, fileName, $0)
             }
-        )
+        }
+            .addFileErrorMappings(filePath: fileName)
+            .execute()
     }
     
     public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]? = nil) throws {

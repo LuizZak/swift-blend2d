@@ -38,11 +38,13 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
         try super.init { pointer in
             blFontLoaderInit(pointer)
             
-            return try resultToError(
+            return try mapError {
                 path.withCString { cString in
                     blFontLoaderCreateFromFile(pointer, cString, readFlags.rawValue)
                 }
-            )
+            }
+                .addFileErrorMappings(filePath: path)
+                .execute()
         }
     }
     
