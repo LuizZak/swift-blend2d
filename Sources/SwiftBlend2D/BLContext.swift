@@ -852,7 +852,7 @@ public extension BLContext {
     ///   * `BL_ERROR_NO_STATES_TO_RESTORE` - There are no saved states to
     ///     restore.
     ///   * `BL_ERROR_NO_MATCHING_COOKIE` - The cookie did't match any saved
-    //      state.
+    ///      state.
     @inlinable
     @discardableResult
     func restore(from cookie: BLContextCookie) -> BLResult {
