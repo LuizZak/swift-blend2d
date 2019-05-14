@@ -3,19 +3,23 @@ import blend2d
 public class BLContext: BLBaseClass<BLContextCore> {
 
     /// Returns target size in abstract units (pixels in case of `BLImage`).
+    @inlinable
     public var targetSize: BLSize {
         return object.impl.pointee.targetSize
     }
     /// Returns target width in abstract units (pixels in case of `BLImage`).
+    @inlinable
     public var targetWidth: Double {
         return object.impl.pointee.targetSize.w
     }
     /// Returns target height in abstract units (pixels in case of `BLImage`).
+    @inlinable
     public var targetHeight: Double {
         return object.impl.pointee.targetSize.h
     }
 
     /// Returns the type of this context.
+    @inlinable
     public var contextType: BLContextType {
         return BLContextType(object.impl.pointee.contextType)
     }
@@ -35,6 +39,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// `userToMeta()`, which would update meta-matrix and clear user-matrix.
     ///
     /// See `userMatrix` and `userToMeta()`.
+    @inlinable
     public var metaMatrix: BLMatrix2D {
         return object.impl.pointee.state.pointee.metaMatrix
     }
@@ -43,11 +48,13 @@ public class BLContext: BLBaseClass<BLContextCore> {
     ///
     /// User matrix contains all transformations that happened to the rendering
     /// context unless the context was restored or `userToMeta()` was called.
+    @inlinable
     public var userMatrix: BLMatrix2D {
         return object.impl.pointee.state.pointee.userMatrix
     }
 
     /// Returns rendering hints.
+    @inlinable
     public var hints: BLContextHints {
         return object.impl.pointee.state.pointee.hints
     }
@@ -87,12 +94,37 @@ public class BLContext: BLBaseClass<BLContextCore> {
     }
 
     /// Gets or sets the global alpha value.
+    @inlinable
     public var globalAlpha: Double {
         get {
             return object.impl.pointee.state.pointee.globalAlpha
         }
         set {
             _ = object.impl.pointee.virt.pointee.setGlobalAlpha(object.impl, newValue)
+        }
+    }
+
+
+    /// Gets or sets the fill-rule.
+    @inlinable
+    public var fillRule: BLFillRule {
+        get {
+            return BLFillRule(UInt32(object.impl.pointee.state.pointee.fillRule))
+        }
+        set {
+            _ = object.impl.pointee.virt.pointee.setFillRule(object.impl, newValue.rawValue)
+        }
+    }
+
+    /// Gets or sets stroke alpha value.
+    @inlinable
+    public var strokeAlpha: Double {
+        get {
+            assert(BL_CONTEXT_OP_TYPE_STROKE.rawValue == 1)
+            return object.impl.pointee.state.pointee.styleAlpha.1
+        }
+        set {
+            blContextSetStrokeAlpha(&object, newValue)
         }
     }
 
@@ -314,11 +346,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func setStrokeOptions(_ options: BLStrokeOptions) {
         blContextSetStrokeOptions(&object, &options.object)
-    }
-    
-    @inlinable
-    public func setStrokeAlpha(_ alpha: Double) {
-        blContextSetStrokeAlpha(&object, alpha)
     }
     
     // TODO: Implement getStrokeStyle

@@ -260,6 +260,7 @@ extension BLRectITests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLRectITests = [
+        ("testCenter", testCenter),
         ("testEquals", testEquals),
         ("testInset", testInset),
         ("testQuadrants", testQuadrants),
@@ -272,6 +273,7 @@ extension BLRectTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLRectTests = [
+        ("testCenter", testCenter),
         ("testEquals", testEquals),
         ("testInset", testInset),
         ("testQuadrants", testQuadrants),
