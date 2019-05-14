@@ -416,29 +416,11 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextFillGlyphRunD(&object, &point, &font.object, &glyphRun)
     }
     
-    @inlinable
-    public func strokeRectangle(_ rect: BLRectI) {
-        var rect = rect
-        
-        blContextStrokeRectI(&object, &rect)
-    }
-    
-    @inlinable
-    public func strokeRectangle(_ rect: BLRect) {
-        var rect = rect
-        
-        blContextStrokeRectD(&object, &rect)
-    }
-    
-    @inlinable
-    public func strokePath(_ path: BLPath) {
-        blContextStrokePathD(&object, &path.object)
-    }
-    
-    // TODO: Implement proper strokeGeometry overload
+    /// Strokes the passed geometry specified by `geometryType` and `geometryData`
+    /// [Internal].
     @inlinable
     @discardableResult
-    public func strokeGeometry(_ geometryType: BLGeometryType, _ geometryData: UnsafeRawPointer) -> BLResult {
+    func strokeGeometry(_ geometryType: BLGeometryType, _ geometryData: UnsafeRawPointer) -> BLResult {
         return blContextStrokeGeometry(&object, geometryType.rawValue, geometryData)
     }
 
@@ -449,65 +431,318 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextStrokeTextD(&object, &point, &font.object, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
     }
     
+    /// Strokes the passed `glyphRun` by using the given `font`.
+    @discardableResult
     @inlinable
-    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) {
+    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) -> BLResult {
         var glyphRun = glyphRun
         var point = point
         
-        blContextStrokeGlyphRunI(&object, &point, &font.object, &glyphRun)
+        return blContextStrokeGlyphRunI(&object, &point, &font.object, &glyphRun)
     }
     
+    /// Strokes the passed `glyphRun` by using the given `font`.
+    @discardableResult
     @inlinable
-    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) {
+    public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) -> BLResult {
         var glyphRun = glyphRun
         var point = point
         
-        blContextStrokeGlyphRunD(&object, &point, &font.object, &glyphRun)
+        return blContextStrokeGlyphRunD(&object, &point, &font.object, &glyphRun)
+    }
+}
+
+// MARK: - Stroke functions
+public extension BLContext {
+    /// Strokes a box.
+    @discardableResult
+    @inlinable
+    func strokeBox(_ box: BLBox) -> BLResult {
+        var box = box
+        return strokeGeometry(.boxD, &box)
+    }
+    /// Strokes a box.
+    @discardableResult
+    @inlinable
+    func strokeBox(_ box: BLBoxI) -> BLResult {
+        var box = box
+        return strokeGeometry(.boxI, &box)
+    }
+    /// Strokes a box.
+    @discardableResult
+    @inlinable
+    func strokeBox(x0: Double, y0: Double, x1: Double, y1: Double) -> BLResult {
+        return strokeBox(BLBox(x0: x0, y0: y0, x1: x1, y1: y1))
+    }
+    /// Strokes a box.
+    @discardableResult
+    @inlinable
+    func strokeBox(x0: Int, y0: Int, x1: Int, y1: Int) -> BLResult {
+        return strokeBox(BLBoxI(x: x0, y: y0, width: x1, height: y1))
     }
     
+    /// Strokes a rectangle.
+    @discardableResult
     @inlinable
-    public func blitImage(_ image: BLImage, at point: BLPointI, imageArea: BLRectI? = nil) {
+    func strokeRect(_ rect: BLRect) -> BLResult {
+        var rect = rect
+        return blContextStrokeRectD(&object, &rect)
+    }
+    /// Strokes a rectangle.
+    @discardableResult
+    @inlinable
+    func strokeRect(_ rect: BLRectI) -> BLResult {
+        var rect = rect
+        return blContextStrokeRectI(&object, &rect)
+    }
+    /// Strokes a rectangle.
+    @discardableResult
+    @inlinable
+    func strokeRect(x: Double, y: Double, w: Double, h: Double) -> BLResult {
+        return strokeRect(BLRect(x: x, y: y, w: w, h: h))
+    }
+    
+    /// Strokes a circle.
+    @discardableResult
+    @inlinable
+    func strokeCircle(_ circle: BLCircle) -> BLResult {
+        var circle = circle
+        return strokeGeometry(.circle, &circle)
+    }
+    /// Strokes a circle.
+    @discardableResult
+    @inlinable
+    func strokeCircle(x: Double, y: Double, radius: Double) -> BLResult {
+        return strokeCircle(BLCircle(cx: x, cy: y, r: radius))
+    }
+    
+    /// Strokes an ellipse.
+    @discardableResult
+    @inlinable
+    func strokeEllipse(_ ellipse: BLEllipse) -> BLResult {
+        var ellipse = ellipse
+        return strokeGeometry(.ellipse, &ellipse)
+    }
+    /// Strokes an ellipse.
+    @discardableResult
+    @inlinable
+    func strokeEllipse(x: Double, y: Double, radiusX: Double, radiusY: Double) -> BLResult {
+        return strokeEllipse(BLEllipse(cx: x, cy: y, rx: radiusX, ry: radiusY))
+    }
+    
+    /// Strokes an arc.
+    @discardableResult
+    @inlinable
+    func strokeArc(_ arc: BLArc) -> BLResult {
+        var arc = arc
+        return strokeGeometry(.arc, &arc)
+    }
+    /// Strokes an arc.
+    @discardableResult
+    @inlinable
+    func strokeArc(_ cx: Double, _ cy: Double, _ r: Double, _ start: Double, _ sweep: Double) -> BLResult {
+        return strokeArc(BLArc(cx: cx, cy: cy, rx: r, ry: r, start: start, sweep: sweep))
+    }
+    /// Strokes an arc.
+    @discardableResult
+    @inlinable
+    func strokeArc(_ cx: Double, _ cy: Double, _ rx: Double, _ ry: Double, _ start: Double, _ sweep: Double) -> BLResult {
+        return strokeArc(BLArc(cx: cx, cy: cy, rx: rx, ry: ry, start: start, sweep: sweep))
+    }
+    
+    /// Strokes a chord.
+    @discardableResult
+    @inlinable
+    func strokeChord(_ chord: BLArc) -> BLResult {
+        var chord = chord
+        return strokeGeometry(.chord, &chord)
+    }
+    /// Strokes a chord.
+    @discardableResult
+    @inlinable
+    func strokeChord(_ cx: Double, _ cy: Double, _ r: Double, _ start: Double, _ sweep: Double) -> BLResult {
+        return strokeChord(BLArc(cx: cx, cy: cy, rx: r, ry: r, start: start, sweep: sweep))
+    }
+    /// Strokes a chord.
+    @discardableResult
+    @inlinable
+    func strokeChord(_ cx: Double, _ cy: Double, _ rx: Double, _ ry: Double, _ start: Double, _ sweep: Double) -> BLResult {
+        return strokeChord(BLArc(cx: cx, cy: cy, rx: rx, ry: ry, start: start, sweep: sweep))
+    }
+    
+    /// Strokes a pie.
+    @discardableResult
+    @inlinable
+    func strokePie(_ pie: BLArc) -> BLResult {
+        var pie = pie
+        return strokeGeometry(.pie, &pie)
+    }
+    /// Strokes a pie.
+    @discardableResult
+    @inlinable
+    func strokePie(_ cx: Double, _ cy: Double, _ r: Double, _ start: Double, _ sweep: Double) -> BLResult {
+        return strokePie(BLArc(cx: cx, cy: cy, rx: r, ry: r, start: start, sweep: sweep))
+    }
+    /// Strokes a pie.
+    @discardableResult
+    @inlinable
+    func strokePie(_ cx: Double, _ cy: Double, _ rx: Double, _ ry: Double, _ start: Double, _ sweep: Double) -> BLResult {
+        return strokePie(BLArc(cx: cx, cy: cy, rx: rx, ry: ry, start: start, sweep: sweep))
+    }
+    
+    /// Strokes a triangle.
+    @discardableResult
+    @inlinable
+    func strokeTriangle(_ triangle: BLTriangle) -> BLResult {
+        var triangle = triangle
+        return strokeGeometry(.triangle, &triangle)
+    }
+    /// Strokes a triangle.
+    @discardableResult
+    @inlinable
+    func strokeTriangle(_ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ x2: Double, _ y2: Double) -> BLResult {
+        return strokeTriangle(BLTriangle(x0: x0, y0: y0, x1: x1, y1: y1, x2: x2, y2: y2))
+    }
+    
+    /// Strokes a polyline.
+    @discardableResult
+    @inlinable
+    func strokePolyline(_ poly: [BLPoint]) -> BLResult {
+        return poly.withTemporaryView { poly in
+            return strokeGeometry(.polylineD, poly)
+        }
+    }
+    
+    /// Strokes a polyline.
+    @discardableResult
+    @inlinable
+    func strokePolyline(_ poly: [BLPointI]) -> BLResult {
+        return poly.withTemporaryView { poly in
+            return strokeGeometry(.polylineD, poly)
+        }
+    }
+    
+    /// Strokes a polygon.
+    @discardableResult
+    @inlinable
+    func strokePolygon(_ poly: [BLPoint]) -> BLResult {
+        return poly.withTemporaryView { poly in
+            return strokeGeometry(.polygonD, poly)
+        }
+    }
+    
+    /// Strokes a polygon.
+    @discardableResult
+    @inlinable
+    func strokePolygon(_ poly: [BLPointI]) -> BLResult {
+        return poly.withTemporaryView { poly in
+            return strokeGeometry(.polygonI, poly)
+        }
+    }
+    
+    /// Strokes an array of boxes.
+    @discardableResult
+    @inlinable
+    func strokeBoxArray(_ array: [BLBox]) -> BLResult {
+        return array.withTemporaryView { array in
+            return strokeGeometry(.arrayViewBoxD, array)
+        }
+    }
+    
+    /// Strokes an array of boxes.
+    @discardableResult
+    @inlinable
+    func strokeBoxArray(_ array: [BLBoxI]) -> BLResult {
+        return array.withTemporaryView { array in
+            return strokeGeometry(.arrayViewBoxI, array)
+        }
+    }
+    
+    /// Strokes an array of rectangles.
+    @discardableResult
+    @inlinable
+    func strokeRectArray(_ array: [BLRect]) -> BLResult {
+        return array.withTemporaryView { array in
+            return strokeGeometry(.arrayViewRectD, array)
+        }
+    }
+    
+    /// Strokes an array of rectangles.
+    @discardableResult
+    @inlinable
+    func strokeRectArray(_ array: [BLRectI]) -> BLResult {
+        return array.withTemporaryView { array in
+            return strokeGeometry(.arrayViewRectI, array)
+        }
+    }
+    
+    /// Strokes a path.
+    @discardableResult
+    @inlinable
+    func strokePath(_ path: BLPath) -> BLResult {
+        var path = path
+        return strokeGeometry(.path, &path)
+    }
+}
+
+// MARK: - Image blitting
+public extension BLContext {
+    
+    @discardableResult
+    @inlinable
+    func blitImage(_ image: BLImage, at point: BLPointI, imageArea: BLRectI? = nil) -> BLResult {
         var point = point
         
-        withUnsafeNullablePointer(to: imageArea) {
+        return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitImageI(&object, &point, &image.object, $0)
         }
     }
     
+    @discardableResult
     @inlinable
-    public func blitImage(_ image: BLImage, at point: BLPoint, imageArea: BLRectI? = nil) {
+    func blitImage(_ image: BLImage, at point: BLPoint, imageArea: BLRectI? = nil) -> BLResult {
         var point = point
         
-        withUnsafeNullablePointer(to: imageArea) {
+        return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitImageD(&object, &point, &image.object, $0)
         }
     }
     
+    @discardableResult
     @inlinable
-    public func blitScaledImage(_ image: BLImage, rectangle: BLRectI, imageArea: BLRectI? = nil) {
+    func blitScaledImage(_ image: BLImage, rectangle: BLRectI, imageArea: BLRectI? = nil) -> BLResult {
         var rectangle = rectangle
         
-        withUnsafeNullablePointer(to: imageArea) {
+        return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitScaledImageI(&object, &rectangle, &image.object, $0)
         }
     }
     
+    @discardableResult
     @inlinable
-    public func blitScaledImage(_ image: BLImage, rectangle: BLRect, imageArea: BLRectI? = nil) {
+    func blitScaledImage(_ image: BLImage, rectangle: BLRect, imageArea: BLRectI? = nil) -> BLResult {
         var rectangle = rectangle
         
-        withUnsafeNullablePointer(to: imageArea) {
+        return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitScaledImageD(&object, &rectangle, &image.object, $0)
         }
     }
+}
+
+public extension BLContext {
     
+    @discardableResult
     @inlinable
-    public func fillPath(_ path: BLPath) {
-        blContextFillPathD(&object, &path.object)
+    func fillPath(_ path: BLPath) -> BLResult {
+        return blContextFillPathD(&object, &path.object)
     }
     
+}
+
+public extension BLContext {
+    
     @inlinable
-    public func flush(flags: BLContextFlushFlags) {
+    func flush(flags: BLContextFlushFlags) {
         blContextFlush(&object, flags.rawValue)
     }
 }
@@ -515,23 +750,32 @@ public class BLContext: BLBaseClass<BLContextCore> {
 public extension BLContext {
     /// Strokes a rounded rectangle.
     @discardableResult
+    @inlinable
     func strokeRoundRect(_ rr: BLRoundRect) -> BLResult {
         var rr = rr
         return strokeGeometry(.roundRect, &rr)
     }
+    /// Strokes a rounded rectangle.
     @discardableResult
+    @inlinable
     func strokeRoundRect(rect: BLRect, radius: Double) -> BLResult {
         return strokeRoundRect(BLRoundRect(x: rect.x, y: rect.y, w: rect.w, h: rect.h, rx: radius, ry: radius))
     }
+    /// Strokes a rounded rectangle.
     @discardableResult
+    @inlinable
     func strokeRoundRect(rect: BLRect, radiusX: Double, radiusY: Double) -> BLResult {
         return strokeRoundRect(BLRoundRect(x: rect.x, y: rect.y, w: rect.w, h: rect.h, rx: radiusX, ry: radiusY))
     }
+    /// Strokes a rounded rectangle.
     @discardableResult
+    @inlinable
     func strokeRoundRect(x: Double, y: Double, width: Double, height: Double, radius: Double) -> BLResult {
         return strokeRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radius, ry: radius))
     }
+    /// Strokes a rounded rectangle.
     @discardableResult
+    @inlinable
     func strokeRoundRect(x: Double, y: Double, width: Double, height: Double, radiusX: Double, radiusY: Double) -> BLResult {
         return strokeRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radiusX, ry: radiusY))
     }

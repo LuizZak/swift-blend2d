@@ -38,20 +38,6 @@ class BLArrayTests: XCTestCase {
         XCTAssert(sut.capacity <= 32)
     }
     
-    func testWithTemporaryArrayViewForDouble() {
-        BLArray.withTemporaryArrayView(for: [0, 1, 2] as [Double]) { pointer, size in
-            XCTAssertNotNil(pointer)
-            XCTAssertEqual(size, 24) // = MemoryLayout<Double>.size * array.count
-        }
-    }
-    
-    func testWithTemporaryArrayViewForDoubleWithEmptyArray() {
-        BLArray.withTemporaryArrayView(for: [] as [Double]) { pointer, size in
-            XCTAssertNotNil(pointer)
-            XCTAssertEqual(size, 0) // = MemoryLayout<Double>.size * array.count
-        }
-    }
-    
     func testWeakAssign() {
         let array = BLArray<Int32>()
         // Append an item to force creation of a new backing array structure

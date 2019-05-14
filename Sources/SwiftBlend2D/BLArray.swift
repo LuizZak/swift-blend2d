@@ -109,34 +109,10 @@ public final class BLArray<Element: BLArrayElement> {
     public func replaceContents(_ array: [Element]) {
         clear()
         
-        BLArray.withTemporaryArrayView(for: array) { pointer, size in
-            if let pointer = pointer {
-                append(contentsOf: pointer, lengthInBytes: size)
+        array.withTemporaryView { view in
+            if let pointer = view.pointee.data {
+                append(contentsOf: pointer, lengthInBytes: view.pointee.size)
             }
-        }
-    }
-}
-
-public extension BLArray {
-    /// Executes a closure passing in a context for a temporary BLArrayView-
-    /// compatible pointer+count arguments that can be provided for Blend2D
-    /// methods that accept a pair of (void*, size_t) values for representing
-    /// Blend2D arrays of `BLArrayElement` elements.
-    ///
-    /// Returns the result from the closure invocation, or any error thrown by
-    /// the closure during the execution of this method.
-    ///
-    /// The pointer value is short-lived and should not be stored or used beyond
-    /// the duration of the closure's execution.
-    @inlinable
-    static func withTemporaryArrayView<T>(
-        for array: [Element],
-        _ closure: (_ pointer: UnsafePointer<Element>?, _ arraySizeInBytes: Int) throws -> T) rethrows -> T {
-        
-        return try array.withUnsafeBytes { pointer in
-            let pointer = pointer.baseAddress?.assumingMemoryBound(to: Element.self)
-            
-            return try closure(pointer, array.count * MemoryLayout<Element>.size)
         }
     }
 }
