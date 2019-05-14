@@ -798,6 +798,12 @@ public extension BLContext {
     /// Strokes a line.
     @discardableResult
     @inlinable
+    func strokeLine(_ p0: BLPointI, _ p1: BLPointI) -> BLResult {
+        return strokeLine(BLLine(x0: Double(p0.x), y0: Double(p0.y), x1: Double(p1.x), y1: Double(p1.y)))
+    }
+    /// Strokes a line.
+    @discardableResult
+    @inlinable
     func strokeLine(x0: Double, y0: Double, x1: Double, y1: Double) -> BLResult {
         return strokeLine(BLLine(x0: x0, y0: y0, x1: x1, y1: y1))
     }
