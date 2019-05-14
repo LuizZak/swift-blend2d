@@ -17,7 +17,7 @@ let img = BLImage(width: 480, height: 480, format: .prgb32)
 let ctx = BLContext(image: img)!
 
 // Clear the image.
-ctx.setCompOp(.sourceCopy)
+ctx.compOp = .sourceCopy
 ctx.fillAll()
 
 // Fill some path.
@@ -27,7 +27,7 @@ path.moveTo(x: 26, y: 31)
 path.cubicTo(x1: 642, y1: 132, x2: 587, y2: -136, x3: 25, y3: 464)
 path.cubicTo(x1: 882, y1: 404, x2: 144, y2: 267, x3: 27, y3: 31)
 
-ctx.setCompOp(.sourceOver)
+ctx.compOp = .sourceOver
 ctx.setFillStyleRgba32(0xFFFFFFFF)
 ctx.fillPath(path)
 

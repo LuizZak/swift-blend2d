@@ -1,6 +1,101 @@
 import blend2d
 
 public class BLContext: BLBaseClass<BLContextCore> {
+
+    /// Returns target size in abstract units (pixels in case of `BLImage`).
+    public var targetSize: BLSize {
+        return object.impl.pointee.targetSize
+    }
+    /// Returns target width in abstract units (pixels in case of `BLImage`).
+    public var targetWidth: Double {
+        return object.impl.pointee.targetSize.w
+    }
+    /// Returns target height in abstract units (pixels in case of `BLImage`).
+    public var targetHeight: Double {
+        return object.impl.pointee.targetSize.h
+    }
+
+    /// Returns the type of this context.
+    public var contextType: BLContextType {
+        return BLContextType(object.impl.pointee.contextType)
+    }
+
+    /// Returns meta-matrix.
+    ///
+    /// Meta matrix is a core transformation matrix that is normally not changed
+    /// by transformations applied to the context. Instead it acts as a secondary
+    /// matrix used to create the final transformation matrix from meta and user
+    /// matrices.
+    ///
+    /// Meta matrix can be used to scale the whole context for HI-DPI rendering
+    /// or to change the orientation of the image being rendered, however, the
+    /// number of use-cases is unlimited.
+    ///
+    /// To change the meta-matrix you must first change user-matrix and then call
+    /// `userToMeta()`, which would update meta-matrix and clear user-matrix.
+    ///
+    /// See `userMatrix` and `userToMeta()`.
+    public var metaMatrix: BLMatrix2D {
+        return object.impl.pointee.state.pointee.metaMatrix
+    }
+
+    /// Returns user-matrix.
+    ///
+    /// User matrix contains all transformations that happened to the rendering
+    /// context unless the context was restored or `userToMeta()` was called.
+    public var userMatrix: BLMatrix2D {
+        return object.impl.pointee.state.pointee.userMatrix
+    }
+
+    /// Returns rendering hints.
+    public var hints: BLContextHints {
+        return object.impl.pointee.state.pointee.hints
+    }
+
+
+    /// Gets or sets the tolerance used for curve flattening.
+    @inlinable
+    public var flattenTolerance: Double  {
+        get {
+            return object.impl.pointee.state.pointee.approximationOptions.flattenTolerance
+        }
+        set {
+            blContextSetFlattenTolerance(&object, newValue)
+        }
+    }
+
+    /// Gets or sets the flatten mode (how curves are flattened).
+    @inlinable
+    public var flattenMode: BLFlattenMode {
+        get {
+            return BLFlattenMode(UInt32(object.impl.pointee.state.pointee.approximationOptions.flattenMode))
+        }
+        set {
+            blContextSetFlattenMode(&object, newValue.rawValue)
+        }
+    }
+
+    /// Gets or sets the composition operator.
+    @inlinable
+    public var compOp: BLCompOp {
+        get {
+            return BLCompOp(UInt32(object.impl.pointee.state.pointee.compOp))
+        }
+        set {
+            blContextSetCompOp(&object, newValue.rawValue)
+        }
+    }
+
+    /// Gets or sets the global alpha value.
+    public var globalAlpha: Double {
+        get {
+            return object.impl.pointee.state.pointee.globalAlpha
+        }
+        set {
+            _ = object.impl.pointee.virt.pointee.setGlobalAlpha(object.impl, newValue)
+        }
+    }
+
     @inlinable
     public override init() {
         super.init()
@@ -48,9 +143,20 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func end() {
         blContextEnd(&object)
     }
-    
+
+    /// Store the result of combining the current `MetaMatrix` and `UserMatrix`
+    /// to `MetaMatrix` and reset `UserMatrix` to identity as shown below:
+    ///
+    /// ```
+    /// MetaMatrix = MetaMatrix x UserMatrix
+    /// UserMatrix = Identity
+    /// ```
+    ///
+    /// Please note that this operation is irreversible. The only way to restore
+    /// both matrices to the state before the call to `userToMeta()` is to use
+    /// `save()` and `restore()` functions.
+    @inlinable
     public func userToMeta() {
-        // TODO: Figure out what this does and doc comment this method.
         blContextUserToMeta(&object)
     }
     
@@ -68,26 +174,11 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func setPatternQualityHint(_ value: BLPatternQuality) {
         blContextSetHint(&object, BLContextHint.patternQuality.rawValue, value.rawValue)
     }
-    
-    @inlinable
-    public func setFlattenMode(_ value: BLFlattenMode) {
-        blContextSetFlattenMode(&object, value.rawValue)
-    }
-    
-    @inlinable
-    public func setFlattenTolerance(_ value: Double) {
-        blContextSetFlattenTolerance(&object, value)
-    }
-    
+
     @inlinable
     public func setApproximationOptions(_ value: BLApproximationOptions) {
         var value = value
         blContextSetApproximationOptions(&object, &value)
-    }
-    
-    @inlinable
-    public func setCompOp(_ op: BLCompOp) {
-        blContextSetCompOp(&object, op.rawValue)
     }
     
     @inlinable
@@ -811,6 +902,12 @@ public extension BLContext {
 
 // MARK: - State saving/restoration
 public extension BLContext {
+
+    /// Returns the number of saved states in the context (0 means no saved states).
+    var savedStateCount: Int {
+        return object.impl.pointee.state.pointee.savedStateCount
+    }
+
     /// Saves the current rendering context state.
     ///
     /// Blend2D uses optimizations that make `save()` a cheap operation. Only
