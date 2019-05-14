@@ -22,6 +22,16 @@ public extension BLRectI {
     }
 
     @inlinable
+    var center: BLPointI {
+        get {
+            return BLPointI(x: x + w / 2, y: y + h / 2)
+        }
+        set {
+            (x, y) = (newValue.x - w / 2, newValue.y - h / 2)
+        }
+    }
+
+    @inlinable
     var size: BLSizeI {
         get {
             return BLSizeI(w: w, h: h)

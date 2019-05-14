@@ -45,4 +45,14 @@ class BLRectTests: XCTestCase {
 
         XCTAssertEqual(rect.size, BLSize(w: 5, h: 6))
     }
+
+    func testCenter() {
+        var rect = BLRect(x: 1, y: 2, w: 3, h: 4)
+
+        XCTAssertEqual(rect.center, BLPoint(x: 2.5, y: 4))
+
+        rect.center = BLPoint(x: 5, y: 6)
+
+        XCTAssertEqual(rect, BLRect(x: 3.5, y: 4, w: 3, h: 4))
+    }
 }
