@@ -798,8 +798,7 @@ public extension BLContext {
     @discardableResult
     @inlinable
     func strokePath(_ path: BLPath) -> BLResult {
-        var path = path
-        return strokeGeometry(.path, &path)
+        return strokeGeometry(.path, &path.object)
     }
 }
 
