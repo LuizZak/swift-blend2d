@@ -15,6 +15,10 @@ public extension BLPoint {
 
 // MARK: - Operators
 public extension BLPoint {
+    static prefix func -(lhs: BLPoint) -> BLPoint {
+        return BLPoint(x: -lhs.x, y: -lhs.y)
+    }
+    
     static func +(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
         return BLPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }

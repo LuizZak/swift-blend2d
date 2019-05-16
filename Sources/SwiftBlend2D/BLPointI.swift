@@ -10,6 +10,10 @@ public extension BLPointI {
 
 // MARK: - Operators
 public extension BLPointI {
+    static prefix func -(lhs: BLPointI) -> BLPointI {
+        return BLPointI(x: -lhs.x, y: -lhs.y)
+    }
+    
     static func +(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }

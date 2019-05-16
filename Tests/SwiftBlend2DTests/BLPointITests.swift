@@ -22,6 +22,13 @@ class BLPointITests: XCTestCase {
         XCTAssertEqual(one.x, 1)
         XCTAssertEqual(one.y, 1)
     }
+    
+    func testNegate() {
+        let result = -BLPointI(x: 1, y: 2)
+        
+        XCTAssertEqual(result.x, -1)
+        XCTAssertEqual(result.y, -2)
+    }
 
     func testAdd() {
         let result = BLPointI(x: 1, y: 2) + BLPointI(x: 3, y: 4)
