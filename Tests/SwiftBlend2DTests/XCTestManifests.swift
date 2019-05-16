@@ -456,6 +456,7 @@ extension SwiftBlend2DTests {
         ("testSample6", testSample6),
         ("testSample7", testSample7),
         ("testSample8", testSample8),
+        ("testTiger", testTiger),
     ]
 }
 
