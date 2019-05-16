@@ -1,6 +1,7 @@
 import XCTest
 import blend2d
 import SwiftBlend2D
+import TigerSample
 
 // TODO: Rewrite this test suite to use Blend2D's image saving functionality for
 // recording and reading snapshot test results. This will ensure we can run this
@@ -253,6 +254,38 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-8")
+
+        #endif
+    }
+
+    func testTiger() throws {
+        #if canImport(Foundation)
+
+        let tiger = Tiger()
+
+        let img = BLImage(width: TigerData.width, height: TigerData.height, format: .prgb32)
+        let ctx = BLContext(image: img)!
+
+        ctx.setFillStyle(BLRgba32(argb: 0xFF00007F))
+        ctx.fillAll()
+
+        for tp in tiger.paths {
+            if tp.fill {
+                ctx.setFillStyle(tp.fillColor)
+                ctx.setFillRule(tp.fillRule)
+                ctx.fillPath(tp.blPath)
+            }
+
+            if tp.stroke {
+                ctx.setStrokeStyle(tp.strokeColor)
+                ctx.setStrokeOptions(tp.blStrokeOptions)
+                ctx.strokePath(tp.blPath)
+            }
+        }
+
+        ctx.end()
+
+        assertImageMatch(img, "tiger")
 
         #endif
     }

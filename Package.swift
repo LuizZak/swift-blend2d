@@ -14,8 +14,11 @@ let package = Package(
             name: "SwiftBlend2D",
             dependencies: ["blend2d"]),
         .target(
+            name: "TigerSample",
+            dependencies: ["blend2d", "SwiftBlend2D"]),
+        .target(
             name: "SwiftBlend2DSample",
-            dependencies: ["SwiftBlend2D", "blend2d"]),
+            dependencies: ["TigerSample", "SwiftBlend2D", "blend2d"]),
         .target(
             name: "asmjit",
             dependencies: [],
@@ -43,7 +46,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftBlend2DTests",
-            dependencies: ["SwiftBlend2D", "blend2d", "asmjit"]),
+            dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit"]),
     ],
     cxxLanguageStandard: .cxx11
 )

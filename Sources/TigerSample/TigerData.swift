@@ -1,8 +1,8 @@
 import Foundation
 
-enum TigerData {
-    static let width = 612
-    static let height = 792
+public enum TigerData {
+    public static let width = 612
+    public static let height = 792
 
     static let commands: [UnicodeScalar] = [
         "F", "N", "B", "M", "M", "C", "C", "C", "E", "N", "S",

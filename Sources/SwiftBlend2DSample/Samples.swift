@@ -1,4 +1,5 @@
 import SwiftBlend2D
+import TigerSample
 
 func sample1() throws {
     let img = BLImage(width: 480, height: 480, format: .prgb32)
