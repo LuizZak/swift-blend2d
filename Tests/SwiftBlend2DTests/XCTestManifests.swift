@@ -214,6 +214,8 @@ extension BLLinearGradientValuesTests {
     // to regenerate.
     static let __allTests__BLLinearGradientValuesTests = [
         ("testInitWithBox", testInitWithBox),
+        ("testInitWithLine", testInitWithLine),
+        ("testInitWithPoints", testInitWithPoints),
     ]
 }
 
