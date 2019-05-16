@@ -29,11 +29,6 @@ public extension BLRgba64 {
     }
 }
 
-public extension BLRgba64 {
-    static let white = BLRgba64(argb: 0xffffffffffffffff)
-    static let black = BLRgba64(argb: 0xffff000000000000)
-}
-
 extension BLRgba64: Equatable {
     @inlinable
     public static func ==(lhs: BLRgba64, rhs: BLRgba64) -> Bool {
