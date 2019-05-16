@@ -1,11 +1,13 @@
 import blend2d
 
-public final class BLRegion: BLBaseClass<BLRegionCore> {
+public struct BLRegion {
+    @usableFromInline
+    var box: Box<BLRegionCore>
     
     /// Returns the type of the region, see `BLRegionType`.
     @inlinable
     public var type: BLRegionType {
-        return BLRegionType(blRegionGetType(&object))
+        return BLRegionType(blRegionGetType(&box.object))
     }
     
     /// Gets whether the region is empty.
@@ -20,77 +22,102 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     
     /// Returns the region size.
     @inlinable
-    public var size: Int { return object.impl.pointee.size }
+    public var size: Int { return box.object.impl.pointee.size }
     /// Returns the region capacity.
     @inlinable
-    public var capacity: Int { return object.impl.pointee.capacity }
+    public var capacity: Int { return box.object.impl.pointee.capacity }
     /// Returns the region's bounding box.
     @inlinable
-    public var boundingBox: BLBoxI { return object.impl.pointee.boundingBox }
+    public var boundingBox: BLBoxI { return box.object.impl.pointee.boundingBox }
     
-    public override init() {
-        super.init()
+    public init() {
+        box = Box()
     }
     
     public init(box: BLBoxI) {
-        super.init()
-        
-        _ = withUnsafePointer(to: box) { pointer in
-            blRegionAssignBoxI(&object, pointer)
+        self.box = Box { pointer in
+            blRegionInit(pointer)
+            
+            withUnsafePointer(to: box) { box -> Void in
+                blRegionAssignBoxI(pointer, box)
+            }
         }
     }
     
     public init(boxes: [BLBoxI]) {
-        super.init()
-        
-        boxes.withUnsafeBufferPointer { pointer in
-            if let baseAddress = pointer.baseAddress {
-                blRegionAssignBoxIArray(&object, baseAddress, pointer.count)
+        box = Box { pointer in
+            blRegionInit(pointer)
+            
+            boxes.withUnsafeBufferPointer { boxes in
+                if let baseAddress = boxes.baseAddress {
+                    blRegionAssignBoxIArray(pointer, baseAddress, boxes.count)
+                }
             }
         }
     }
     
     public init(rectangle: BLRectI) {
-        super.init()
-        
-        _ = withUnsafePointer(to: rectangle) { pointer in
-            blRegionAssignRectI(&object, pointer)
-        }
-    }
-    
-    public init(rectangles: [BLRectI]) {
-        super.init()
-        
-        rectangles.withUnsafeBufferPointer { pointer in
-            if let baseAddress = pointer.baseAddress {
-                blRegionAssignRectIArray(&object, baseAddress, pointer.count)
+        self.box = Box { pointer in
+            blRegionInit(pointer)
+            
+            withUnsafePointer(to: rectangle) { rectangle -> Void in
+                blRegionAssignRectI(pointer, rectangle)
             }
         }
     }
     
-    public func clear() {
-        blRegionClear(&object)
+    public init(rectangles: [BLRectI]) {
+        box = Box { pointer in
+            blRegionInit(pointer)
+            
+            rectangles.withUnsafeBufferPointer { rectangles in
+                if let baseAddress = rectangles.baseAddress {
+                    blRegionAssignRectIArray(pointer, baseAddress, rectangles.count)
+                }
+            }
+        }
     }
     
-    public func shrink() {
-        blRegionShrink(&object)
+    @inlinable
+    mutating func ensureUnique() {
+        if !isKnownUniquelyReferenced(&box) {
+            box = box.copy()
+        }
+    }
+    
+    public mutating func clear() {
+        ensureUnique()
+        
+        blRegionClear(&box.object)
+    }
+    
+    public mutating func shrink() {
+        ensureUnique()
+        
+        blRegionShrink(&box.object)
     }
 
     @inlinable
     @discardableResult
-    public func reserve(capacity: Int) -> BLResult {
-        return blRegionReserve(&object, capacity)
+    public mutating func reserve(capacity: Int) -> BLResult {
+        ensureUnique()
+        
+        return blRegionReserve(&box.object, capacity)
     }
 
     @inlinable
-    public func combine(region: BLRegion, operation: BLBooleanOp) -> BLResult {
-        return blRegionCombine(&object, &object, &region.object, operation.rawValue)
+    public mutating func combine(region: BLRegion, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        
+        return blRegionCombine(&box.object, &box.object, &region.box.object, operation.rawValue)
     }
 
     @inlinable
-    public func combine(box: BLBoxI, operation: BLBooleanOp) -> BLResult {
+    public mutating func combine(box: BLBoxI, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        
         var box = box
-        return blRegionCombineRB(&object, &object, &box, operation.rawValue)
+        return blRegionCombineRB(&self.box.object, &self.box.object, &box, operation.rawValue)
     }
     
     /// Translates the region by the given point `pt`.
@@ -99,71 +126,88 @@ public final class BLRegion: BLBaseClass<BLRegionCore> {
     /// so the final region could be smaller than the region before translation.
     @inlinable
     @discardableResult
-    public func translate(_ pt: BLPointI) -> BLResult {
+    public mutating func translate(_ pt: BLPointI) -> BLResult {
+        ensureUnique()
+        
         var pt = pt
-        return blRegionTranslate(&object, &object, &pt)
+        return blRegionTranslate(&box.object, &box.object, &pt)
     }
     
     /// Translates the region by the given point `point` and clip it to the given
     /// `clipBox`.
     @inlinable
     @discardableResult
-    public func translateAndClip(point: BLPointI, clipBox: BLBoxI) -> BLResult {
+    public mutating func translateAndClip(point: BLPointI, clipBox: BLBoxI) -> BLResult {
+        ensureUnique()
+        
         var point = point
         var clipBox = clipBox
-        return blRegionTranslateAndClip(&object, &object, &point, &clipBox)
+        return blRegionTranslateAndClip(&box.object, &box.object, &point, &clipBox)
     }
     
     /// Translates the region with `region` and clip it to the given `clipBox`.
     @inlinable
     @discardableResult
-    public func intersectAndClip(region: BLRegion, clipBox: BLBoxI) -> BLResult {
+    public mutating func intersectAndClip(region: BLRegion, clipBox: BLBoxI) -> BLResult {
+        ensureUnique()
+        
         var clipBox = clipBox
-        return blRegionIntersectAndClip(&object, &object, &region.object, &clipBox)
+        return blRegionIntersectAndClip(&box.object, &box.object, &region.box.object, &clipBox)
     }
 
     @inlinable
     @discardableResult
-    public func combine(_ a: BLRegion, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
-        return blRegionCombine(&object, &a.object, &b.object, operation.rawValue)
+    public mutating func combine(_ a: BLRegion, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        
+        return blRegionCombine(&box.object, &a.box.object, &b.box.object, operation.rawValue)
     }
+    
     @inlinable
     @discardableResult
-    public func combine(_ a: BLRegion, _ b: BLBoxI, operation: BLBooleanOp) -> BLResult {
+    public mutating func combine(_ a: BLRegion, _ b: BLBoxI, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        
         var b = b
-        return blRegionCombineRB(&object, &a.object, &b, operation.rawValue)
+        return blRegionCombineRB(&box.object, &a.box.object, &b, operation.rawValue)
     }
+    
     @inlinable
     @discardableResult
-    public func combine(_ a: BLBoxI, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
+    public mutating func combine(_ a: BLBoxI, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        
         var a = a
-        return blRegionCombineBR(&object, &a, &b.object, operation.rawValue)
+        return blRegionCombineBR(&box.object, &a, &b.box.object, operation.rawValue)
     }
+    
     @inlinable
     @discardableResult
-    public func combine(_ a: BLBoxI, _ b: BLBoxI, operation: BLBooleanOp) -> BLResult {
+    public mutating func combine(_ a: BLBoxI, _ b: BLBoxI, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        
         var a = a
         var b = b
-        return blRegionCombineBB(&object, &a, &b, operation.rawValue)
+        return blRegionCombineBB(&box.object, &a, &b, operation.rawValue)
     }
     
     /// Tests if a given point `pt` is in region.
     @inlinable
     public func hitTest(_ pt: BLPointI) -> BLHitTest {
         var pt = pt
-        return BLHitTest(blRegionHitTest(&object, &pt))
+        return BLHitTest(blRegionHitTest(&self.box.object, &pt))
     }
     /// Tests if a given `box` is in region.
     @inlinable
     public func hitTest(_ box: BLBoxI) -> BLHitTest {
         var box = box
-        return BLHitTest(blRegionHitTestBoxI(&object, &box))
+        return BLHitTest(blRegionHitTestBoxI(&self.box.object, &box))
     }
 }
 
 extension BLRegion: Equatable {
     public static func ==(lhs: BLRegion, rhs: BLRegion) -> Bool {
-        return blRegionEquals(&lhs.object, &rhs.object)
+        return blRegionEquals(&lhs.box.object, &rhs.box.object)
     }
 }
 
