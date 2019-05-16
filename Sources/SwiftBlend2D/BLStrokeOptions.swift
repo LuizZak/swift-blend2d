@@ -2,7 +2,7 @@ import blend2d
 
 public struct BLStrokeOptions {
     @usableFromInline
-    var box: Box<BLStrokeOptionsCore>
+    var box: BLBaseClass<BLStrokeOptionsCore>
     
     public var width: Double {
         get { return box.object.width }
@@ -70,7 +70,7 @@ public struct BLStrokeOptions {
     }
     
     public init() {
-        box = Box()
+        box = BLBaseClass()
     }
     
     public mutating func setCaps(_ cap: BLStrokeCap) {
