@@ -116,6 +116,12 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
     
     #if canImport(Foundation)
+    public func toData(codec: BLImageCodec) throws -> Data {
+        var data = Data()
+        try writeToData(data: &data, codec: codec)
+        return data
+    }
+
     public func writeToData(data: inout Data, codec: BLImageCodec) throws {
         let buffer = BLArray<UInt8>()
         try writeToData(buffer, codec: codec)

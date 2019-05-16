@@ -2,9 +2,15 @@ import XCTest
 import blend2d
 import SwiftBlend2D
 
+// TODO: Rewrite this test suite to use Blend2D's image saving functionality for
+// recording and reading snapshot test results. This will ensure we can run this
+// in Linux as well.
+
 class SwiftBlend2DTests: XCTestCase {
     
     func testSample1() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         
         // Attach a rendering context into `img`.
@@ -28,10 +34,14 @@ class SwiftBlend2DTests: XCTestCase {
         // Detach the rendering context from `img`.
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-1.bmp")
+        assertImageMatch(img, "bl-getting-started-1")
+
+        #endif
     }
     
     func testSample2() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -53,10 +63,14 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.fillRoundRect(x: 40.0, y: 40.0, width: 400.0, height: 400.0, radius: 45.5)
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-2.bmp")
+        assertImageMatch(img, "bl-getting-started-2")
+
+        #endif
     }
     
     func testSample3() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -75,10 +89,14 @@ class SwiftBlend2DTests: XCTestCase {
         
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-3.bmp")
+        assertImageMatch(img, "bl-getting-started-3")
+
+        #endif
     }
     
     func testSample4() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -98,10 +116,14 @@ class SwiftBlend2DTests: XCTestCase {
         
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-4.bmp")
+        assertImageMatch(img, "bl-getting-started-4")
+
+        #endif
     }
     
     func testSample5() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -128,10 +150,14 @@ class SwiftBlend2DTests: XCTestCase {
         
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-5.bmp")
+        assertImageMatch(img, "bl-getting-started-5")
+
+        #endif
     }
     
     func testSample6() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -156,10 +182,14 @@ class SwiftBlend2DTests: XCTestCase {
         
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-6.bmp")
+        assertImageMatch(img, "bl-getting-started-6")
+
+        #endif
     }
     
     func testSample7() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -178,10 +208,14 @@ class SwiftBlend2DTests: XCTestCase {
         
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-7.bmp")
+        assertImageMatch(img, "bl-getting-started-7")
+
+        #endif
     }
     
     func testSample8() throws {
+        #if canImport(Foundation)
+
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -218,19 +252,106 @@ class SwiftBlend2DTests: XCTestCase {
         
         ctx.end()
         
-        assertImageMatch(img, "bl-getting-started-8.bmp")
+        assertImageMatch(img, "bl-getting-started-8")
+
+        #endif
     }
 }
 
+#if canImport(Foundation)
+
 extension SwiftBlend2DTests {
     func assertImageMatch(_ image: BLImage,
-                          _ fileName: String,
+                          _ testName: String,
+                          codec: BLImageCodec = BLImageCodec(builtInCodec: .bmp),
+                          record: Bool = false,
                           file: String = #file,
                           line: Int = #line) {
         
-        
-        
+        let snapshotsFolder = pathToSnapshots()
+        let failuresFolder = pathToSnapshotFailures()
+        let recordPath = (snapshotsFolder as NSString).appendingPathComponent("\(testName).\(codec.extensions[0])")
+        let expectedPath = (failuresFolder as NSString).appendingPathComponent("\(testName)_expected.\(codec.extensions[0])")
+        let failurePath = (failuresFolder as NSString).appendingPathComponent("\(testName)_actual.\(codec.extensions[0])")
+
+        var isDirectory: ObjCBool = false
+        if !FileManager.default.fileExists(atPath: snapshotsFolder, isDirectory: &isDirectory) {
+            do {
+                try FileManager.default.createDirectory(atPath: snapshotsFolder, withIntermediateDirectories: false, attributes: nil)
+            } catch {
+                recordFailure(withDescription: "Error attempting to create snapshots directory '\(snapshotsFolder)': \(error)",
+                              inFile: file,
+                              atLine: line,
+                              expected: false)
+                return
+            }
+        } else if !isDirectory.boolValue {
+            recordFailure(withDescription: "Path to save snapshots to '\(snapshotsFolder)' exists but is a file, not a folder.",
+                          inFile: file,
+                          atLine: line,
+                          expected: false)
+            return
+        }
+
+        if record {
+            do {
+                try image.writeToFile(recordPath, codec: codec)
+
+                recordFailure(withDescription: "Successfully recorded snapshot for \(testName)",
+                             inFile: file,
+                             atLine: line,
+                             expected: true)
+            } catch {
+                recordFailure(withDescription: "Error attempting to save snapshot file at '\(recordPath)': \(error)",
+                              inFile: file,
+                              atLine: line,
+                              expected: false)
+                return
+            }
+        } else {
+            do {
+                let recordedData = try Data(contentsOf: URL(fileURLWithPath: recordPath))
+                let actualData = try image.toData(codec: codec)
+
+                if recordedData != actualData {
+                    recordFailure(withDescription: "Snapshot \(testName) did not match recorded data. Please inspect image at \(failurePath) for further information.",
+                                  inFile: file,
+                                  atLine: line,
+                                  expected: true)
+
+                    try FileManager.default.createDirectory(atPath: pathToSnapshotFailures(),
+                                                            withIntermediateDirectories: false,
+                                                            attributes: nil)
+
+                    FileManager.default.createFile(atPath: expectedPath, contents: recordedData, attributes: nil)
+                    FileManager.default.createFile(atPath: failurePath, contents: actualData, attributes: nil)
+                }
+            } catch {
+                recordFailure(withDescription: "Error attempting to read and compare snapshot '\(testName)': \(error)",
+                              inFile: file,
+                              atLine: line,
+                              expected: false)
+            }
+        }
     }
+}
+
+func pathToSnapshots() -> String {
+    let file = #file
+
+    var path: NSString = (file as NSString).deletingLastPathComponent as NSString
+    path = path.appendingPathComponent("Snapshots") as NSString
+
+    return path as String
+}
+
+func pathToSnapshotFailures() -> String {
+    let file = #file
+
+    var path: NSString = (file as NSString).deletingLastPathComponent as NSString
+    path = path.appendingPathComponent("SnapshotFailures"/* This path should be kept in .gitignore */) as NSString
+
+    return path as String
 }
 
 func pathToResources() -> String {
@@ -240,3 +361,5 @@ func pathToResources() -> String {
         .appendingPathComponent("../../Resources") as NSString)
         .standardizingPath
 }
+
+#endif

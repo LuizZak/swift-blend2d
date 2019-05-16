@@ -18,6 +18,11 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     public var mimeType: String {
         return String(cString: object.impl.pointee.mimeType)
     }
+
+    /// Known file extensions used by this image codec separated by "|".
+    public var extensions: [String] {
+        return String(cString: object.impl.pointee.extensions).split(separator: "|").map(String.init)
+    }
     
     /// Returns image codec flags, see `BLImageCodecFeatures`.
     public var features: BLImageCodecFeatures {
