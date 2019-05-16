@@ -77,4 +77,14 @@ class BLBoxITests: XCTestCase {
 
         XCTAssertEqual(box.asRectangle, BLRectI(x: 1, y: 2, w: 2, h: 2))
     }
+    
+    func testCenter() {
+        var box = BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)
+        
+        XCTAssertEqual(box.center, BLPointI(x: 2, y: 3))
+        
+        box.center = BLPointI(x: 5, y: 6)
+        
+        XCTAssertEqual(box, BLBoxI(x0: 4, y0: 5, x1: 6, y1: 7))
+    }
 }

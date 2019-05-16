@@ -37,6 +37,17 @@ public extension BLBox {
     }
     
     @inlinable
+    var center: BLPoint {
+        get {
+            return BLPoint(x: x0 + w / 2, y: y0 + h / 2)
+        }
+        set {
+            (x0, y0, x1, y1) = (newValue.x - w / 2, newValue.y - h / 2,
+                                newValue.x + w / 2, newValue.y + h / 2)
+        }
+    }
+
+    @inlinable
     init(x: Double, y: Double, width: Double, height: Double) {
         self.init(x0: x, y0: y, x1: x + width, y1: y + height)
     }

@@ -1,28 +1,39 @@
 import blend2d
 
 public final class BLPath: BLBaseClass<BLPathCore> {
+    @inlinable
     public var capacity: Int {
         return blPathGetCapacity(&object)
     }
     
+    @inlinable
     public var controlBox: BLBox {
         var box = BLBox()
         blPathGetControlBox(&object, &box)
         return box
     }
     
+    @inlinable
     public var boundingBox: BLBox {
         var box = BLBox()
         blPathGetBoundingBox(&object, &box)
         return box
     }
     
+    /// Returns the geometric center of this path's bounding box
+    @inlinable
+    public var center: BLPoint {
+        return boundingBox.center
+    }
+    
+    @inlinable
     public var size: Int {
         return blPathGetSize(&object)
     }
     
     /// Gets the last vertex of this path.
     /// May return nil, in case no matching vertex could be found.
+    @inlinable
     public var lastVertex: BLPoint? {
         var point = BLPoint()
         if blPathGetLastVertex(&object, &point) != BL_SUCCESS.rawValue {

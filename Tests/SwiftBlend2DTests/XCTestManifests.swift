@@ -58,6 +58,7 @@ extension BLBoxITests {
     // to regenerate.
     static let __allTests__BLBoxITests = [
         ("testAsRectangle", testAsRectangle),
+        ("testCenter", testCenter),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testEquals", testEquals),
@@ -75,6 +76,7 @@ extension BLBoxTests {
     // to regenerate.
     static let __allTests__BLBoxTests = [
         ("testAsRectangle", testAsRectangle),
+        ("testCenter", testCenter),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testContainsPointI", testContainsPointI),
