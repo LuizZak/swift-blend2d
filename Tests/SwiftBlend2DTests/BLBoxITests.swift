@@ -51,6 +51,15 @@ class BLBoxITests: XCTestCase {
         XCTAssertEqual(box.y1, 15)
     }
     
+    func testQuadrants() {
+        let box = BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)
+        
+        XCTAssertEqual(box.topLeft, BLPointI(x: 1, y: 2))
+        XCTAssertEqual(box.topRight, BLPointI(x: 3, y: 2))
+        XCTAssertEqual(box.bottomLeft, BLPointI(x: 1, y: 4))
+        XCTAssertEqual(box.bottomRight, BLPointI(x: 3, y: 4))
+    }
+    
     func testWidth() {
         let box = BLBoxI(x0: 5, y0: 5, x1: 10, y1: 10)
         

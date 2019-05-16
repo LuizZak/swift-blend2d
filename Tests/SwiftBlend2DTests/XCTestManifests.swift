@@ -63,6 +63,7 @@ extension BLBoxITests {
         ("testEquals", testEquals),
         ("testHeight", testHeight),
         ("testInitWithWidthAndHeight", testInitWithWidthAndHeight),
+        ("testQuadrants", testQuadrants),
         ("testReset", testReset),
         ("testWidth", testWidth),
     ]
@@ -80,6 +81,7 @@ extension BLBoxTests {
         ("testEquals", testEquals),
         ("testHeight", testHeight),
         ("testInitWithWidthAndHeight", testInitWithWidthAndHeight),
+        ("testQuadrants", testQuadrants),
         ("testReset", testReset),
         ("testWidth", testWidth),
     ]

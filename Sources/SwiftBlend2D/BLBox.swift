@@ -2,6 +2,26 @@ import blend2d
 
 public extension BLBox {
     @inlinable
+    var topLeft: BLPoint {
+        return BLPoint(x: x0, y: y0)
+    }
+    
+    @inlinable
+    var topRight: BLPoint {
+        return BLPoint(x: x1, y: y0)
+    }
+    
+    @inlinable
+    var bottomLeft: BLPoint {
+        return BLPoint(x: x0, y: y1)
+    }
+    
+    @inlinable
+    var bottomRight: BLPoint {
+        return BLPoint(x: x1, y: y1)
+    }
+    
+    @inlinable
     var w: Double {
         return x1 - x0
     }
