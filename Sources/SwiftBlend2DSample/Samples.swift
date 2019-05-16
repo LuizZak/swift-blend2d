@@ -38,7 +38,7 @@ func sample2() throws {
     ctx.fillAll()
     
     // Coordinates can be specified now or changed later.
-    let linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
+    var linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
     
     // Color stops can be added in any order.
     linear.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
@@ -114,7 +114,7 @@ func sample5() throws {
     ctx.fillAll()
     
     // First shape filld by a radial gradient.
-    let radial = BLGradient(radial: BLRadialGradientValues(x0: 180, y0: 180, x1: 180, y1: 180, r0: 180))
+    var radial = BLGradient(radial: BLRadialGradientValues(x0: 180, y0: 180, x1: 180, y1: 180, r0: 180))
     radial.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
     radial.addStop(1.0, BLRgba32(argb: 0xFFFF6F3F))
     
@@ -123,7 +123,7 @@ func sample5() throws {
     ctx.fillCircle(x: 180, y: 180, radius: 160)
     
     // Second shape filled by a linear gradient.
-    let linear = BLGradient(linear: BLLinearGradientValues(x0: 195, y0: 195, x1: 470, y1: 470))
+    var linear = BLGradient(linear: BLLinearGradientValues(x0: 195, y0: 195, x1: 470, y1: 470))
     linear.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
     linear.addStop(1.0, BLRgba32(argb: 0xFF3F9FFF))
     
@@ -145,7 +145,7 @@ func sample6() throws {
     ctx.compOp = .sourceCopy
     ctx.fillAll()
     
-    let linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
+    var linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
     linear.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
     linear.addStop(1.0, BLRgba32(argb: 0xFF1F7FFF))
     

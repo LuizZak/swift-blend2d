@@ -235,12 +235,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
     
     @inlinable
     public func setFillStyle(_ gradient: BLGradient) {
-        blContextSetFillStyle(&object, &gradient.object)
+        blContextSetFillStyle(&object, &gradient.box.object)
     }
     
     @inlinable
     public func setFillStyle(_ pattern: BLPattern) {
-        blContextSetFillStyle(&object, &pattern.object)
+        blContextSetFillStyle(&object, &pattern.box.object)
     }
     
     /// Returns the RGBA32 fill style for this context.
@@ -345,7 +345,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Sets all stroke `options`.
     @inlinable
     public func setStrokeOptions(_ options: BLStrokeOptions) {
-        blContextSetStrokeOptions(&object, &options.object)
+        blContextSetStrokeOptions(&object, &options.box.object)
     }
     
     // TODO: Implement getStrokeStyle
@@ -381,12 +381,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
     
     @inlinable
     public func setStrokeStyle(_ gradient: BLGradient) {
-         blContextSetStrokeStyle(&object, &gradient.object)
+         blContextSetStrokeStyle(&object, &gradient.box.object)
     }
     
     @inlinable
     public func setStrokeStyle(_ pattern: BLPattern) {
-        blContextSetStrokeStyle(&object, &pattern.object)
+        blContextSetStrokeStyle(&object, &pattern.box.object)
     }
     
     @inlinable

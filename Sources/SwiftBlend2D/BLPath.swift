@@ -154,7 +154,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         
         withUnsafeNullablePointer(to: range) { range in
             withUnsafeNullablePointer(to: approximationOptions) { approx in
-                blPathAddStrokedPath(&object, &other.object, range, &options.object, approx)
+                blPathAddStrokedPath(&object, &other.object, range, &options.box.object, approx)
             }
         }
     }

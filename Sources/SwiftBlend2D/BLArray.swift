@@ -24,6 +24,15 @@ public final class BLArray<Element: BLArrayElement> {
         blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
     }
     
+    @inlinable
+    public init(array: [Element]) {
+        blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
+        
+        array.withUnsafeBufferPointer { pointer in
+            append(contentsOf: pointer)
+        }
+    }
+    
     init(weakAssign object: BLArrayCore) {
         assert(Element.arrayImplementationType.arrayType.rawValue == object.impl.pointee.implType,
                "Cannot weak assign arrays of different types")
@@ -35,13 +44,11 @@ public final class BLArray<Element: BLArrayElement> {
         }
     }
     
-    @inlinable
-    public init(array: [Element]) {
-        blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
+    init(object: BLArrayCore) {
+        assert(Element.arrayImplementationType.arrayType.rawValue == object.impl.pointee.implType,
+               "Cannot weak assign arrays of different types")
         
-        array.withUnsafeBufferPointer { pointer in
-            append(contentsOf: pointer)
-        }
+        self.object = object
     }
     
     deinit {
