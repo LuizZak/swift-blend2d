@@ -2,7 +2,7 @@ import blend2d
 
 public struct BLPattern {
     @usableFromInline
-    var box: Box<BLPatternCore>
+    var box: BLBaseClass<BLPatternCore>
     
     /// Pattern extend mode.
     public var extendMode: BLExtendMode {
@@ -45,12 +45,12 @@ public struct BLPattern {
     }
     
     public init() {
-        box = Box()
+        box = BLBaseClass()
     }
     
     public init(image: BLImage, area: BLRectI? = nil, extendMode: BLExtendMode = .repeat, matrix: BLMatrix2D? = nil) {
-        box = Box { pointer in
-            withUnsafeNullablePointer(to: area) { area in
+        box = BLBaseClass { pointer in
+            return withUnsafeNullablePointer(to: area) { area in
                 withUnsafeNullablePointer(to: matrix) { matrix in
                     blPatternInitAs(pointer, &image.object, area, extendMode.rawValue, matrix)
                 }

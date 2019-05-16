@@ -3,7 +3,7 @@ import blend2d
 /// A color gradient pattern.
 public struct BLGradient: Equatable {
     @usableFromInline
-    var box: Box<BLGradientCore>
+    var box: BLBaseClass<BLGradientCore>
     
     // MARK: Gradient Stops
     
@@ -192,7 +192,7 @@ public struct BLGradient: Equatable {
     
     @inlinable
     public init() {
-        box = Box()
+        box = BLBaseClass()
     }
     
     // TODO: Handle error results for init and create methods bellow
@@ -203,9 +203,10 @@ public struct BLGradient: Equatable {
                 stops: [BLGradientStop]? = nil,
                 matrix: BLMatrix2D? = nil) {
         
-        box = Box { pointer in
+        box = BLBaseClass { pointer in
             var linear = linear
-            withUnsafeNullablePointer(to: matrix) { matrix -> Void in
+            
+            return withUnsafeNullablePointer(to: matrix) { matrix in
                 blGradientInitAs(pointer,
                                  BLGradientType.linear.rawValue,
                                  &linear,
@@ -223,9 +224,10 @@ public struct BLGradient: Equatable {
                 stops: [BLGradientStop]? = nil,
                 matrix: BLMatrix2D? = nil) {
         
-        box = Box { pointer in
+        box = BLBaseClass { pointer in
             var radial = radial
-            withUnsafeNullablePointer(to: matrix) { matrix -> Void in
+            
+            return withUnsafeNullablePointer(to: matrix) { matrix in
                 blGradientInitAs(pointer,
                                  BLGradientType.radial.rawValue,
                                  &radial,
@@ -243,9 +245,10 @@ public struct BLGradient: Equatable {
                 stops: [BLGradientStop]? = nil,
                 matrix: BLMatrix2D? = nil) {
         
-        box = Box { pointer in
+        box = BLBaseClass { pointer -> BLResult in
             var conical = conical
-            withUnsafeNullablePointer(to: matrix) { matrix -> Void in
+            
+            return withUnsafeNullablePointer(to: matrix) { matrix in
                 blGradientInitAs(pointer,
                                  BLGradientType.conical.rawValue,
                                  &conical,

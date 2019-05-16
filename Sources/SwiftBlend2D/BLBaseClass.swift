@@ -51,6 +51,11 @@ public class BLBaseClass<T: CoreStructure> {
     func deinitialize() {
         _ = T.deinitializer(&object)
     }
+    
+    @inlinable
+    func copy() -> BLBaseClass {
+        return BLBaseClass(weakAssign: object)
+    }
 }
 
 /// Returns an empty 'assign-weak' function that does nothing, and returns

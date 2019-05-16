@@ -2,7 +2,7 @@ import blend2d
 
 public struct BLRegion {
     @usableFromInline
-    var box: Box<BLRegionCore>
+    var box: BLBaseClass<BLRegionCore>
     
     /// Returns the type of the region, see `BLRegionType`.
     @inlinable
@@ -31,49 +31,51 @@ public struct BLRegion {
     public var boundingBox: BLBoxI { return box.object.impl.pointee.boundingBox }
     
     public init() {
-        box = Box()
+        box = BLBaseClass()
     }
     
     public init(box: BLBoxI) {
-        self.box = Box { pointer in
+        self.box = BLBaseClass { pointer in
             blRegionInit(pointer)
             
-            withUnsafePointer(to: box) { box -> Void in
+            return withUnsafePointer(to: box) { box in
                 blRegionAssignBoxI(pointer, box)
             }
         }
     }
     
     public init(boxes: [BLBoxI]) {
-        box = Box { pointer in
+        box = BLBaseClass { pointer in
             blRegionInit(pointer)
             
-            boxes.withUnsafeBufferPointer { boxes in
+            return boxes.withUnsafeBufferPointer { boxes in
                 if let baseAddress = boxes.baseAddress {
-                    blRegionAssignBoxIArray(pointer, baseAddress, boxes.count)
+                    return blRegionAssignBoxIArray(pointer, baseAddress, boxes.count)
                 }
+                return BLResult(BL_SUCCESS.rawValue)
             }
         }
     }
     
     public init(rectangle: BLRectI) {
-        self.box = Box { pointer in
+        self.box = BLBaseClass { pointer in
             blRegionInit(pointer)
             
-            withUnsafePointer(to: rectangle) { rectangle -> Void in
+            return withUnsafePointer(to: rectangle) { rectangle in
                 blRegionAssignRectI(pointer, rectangle)
             }
         }
     }
     
     public init(rectangles: [BLRectI]) {
-        box = Box { pointer in
+        box = BLBaseClass { pointer in
             blRegionInit(pointer)
             
-            rectangles.withUnsafeBufferPointer { rectangles in
+            return rectangles.withUnsafeBufferPointer { rectangles in
                 if let baseAddress = rectangles.baseAddress {
-                    blRegionAssignRectIArray(pointer, baseAddress, rectangles.count)
+                    return blRegionAssignRectIArray(pointer, baseAddress, rectangles.count)
                 }
+                return BLResult(BL_SUCCESS.rawValue)
             }
         }
     }
