@@ -95,6 +95,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     }
     
     // TODO: Map blPathAddGeometry
+    @inlinable
     func addGeometry(_ geometryType: BLGeometryType,
                      _ data: UnsafeRawPointer?,
                      _ matrix: BLMatrix2D?,
@@ -104,7 +105,25 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             blPathAddGeometry(&object, geometryType.rawValue, data, matrix, dir.rawValue)
         }
     }
-    
+
+    //! Adds a closed circle to the path.
+    @inlinable
+    @discardableResult
+    public func addCircle(_ circle: BLCircle, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var circle = circle
+
+        return addGeometry(.circle, &circle, m, dir)
+    }
+
+    //! Adds a closed ellipse to the path.
+    @inlinable
+    @discardableResult
+    public func addEllipse(_ ellipse: BLEllipse, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
+        var ellipse = ellipse
+
+        return addGeometry(.ellipse, &ellipse, m, dir)
+    }
+
     public func addBox(_ box: BLBox, direction: BLGeometryDirection) {
         var box = box
         blPathAddBoxD(&object, &box, direction.rawValue)
