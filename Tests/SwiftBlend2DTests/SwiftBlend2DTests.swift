@@ -2,16 +2,11 @@ import XCTest
 import blend2d
 import SwiftBlend2D
 import TigerSample
-
-// TODO: Rewrite this test suite to use Blend2D's image saving functionality for
-// recording and reading snapshot test results. This will ensure we can run this
-// in Linux as well.
+import LibPNG
 
 class SwiftBlend2DTests: XCTestCase {
     
     func testSample1() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         
         // Attach a rendering context into `img`.
@@ -36,13 +31,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-1")
-
-        #endif
     }
     
     func testSample2() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -65,13 +56,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-2")
-
-        #endif
     }
     
     func testSample3() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -91,13 +78,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-3")
-
-        #endif
     }
     
     func testSample4() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -118,13 +101,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-4")
-
-        #endif
     }
     
     func testSample5() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -152,13 +131,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-5")
-
-        #endif
     }
     
     func testSample6() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -184,13 +159,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-6")
-
-        #endif
     }
     
     func testSample7() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -210,13 +181,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-7")
-
-        #endif
     }
     
     func testSample8() throws {
-        #if canImport(Foundation)
-
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
@@ -254,13 +221,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
         
         assertImageMatch(img, "bl-getting-started-8")
-
-        #endif
     }
 
     func testTiger() throws {
-        #if canImport(Foundation)
-
         let tiger = Tiger()
 
         let img = BLImage(width: TigerData.width, height: TigerData.height, format: .prgb32)
@@ -286,31 +249,38 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.end()
 
         assertImageMatch(img, "tiger")
-
-        #endif
     }
 }
 
-#if canImport(Foundation)
+func pngFileFromImage(_ image: BLImage) -> PNGFile {
+    let data = image.getData()
+    
+    assert(data.format == BLFormat.prgb32.rawValue)
+    
+    let bytes =
+        UnsafeBufferPointer<UInt32>(start: data.pixelData.assumingMemoryBound(to: UInt32.self),
+                                    count: data.stride * Int(data.size.h))
+    
+    return PNGFile.fromRgba(bytes, width: image.width, height: image.height)
+}
 
 extension SwiftBlend2DTests {
     func assertImageMatch(_ image: BLImage,
                           _ testName: String,
-                          codec: BLImageCodec = BLImageCodec(builtInCodec: .bmp),
                           record: Bool = false,
                           file: String = #file,
                           line: Int = #line) {
         
         let snapshotsFolder = pathToSnapshots()
         let failuresFolder = pathToSnapshotFailures()
-        let recordPath = (snapshotsFolder as NSString).appendingPathComponent("\(testName).\(codec.extensions[0])")
-        let expectedPath = (failuresFolder as NSString).appendingPathComponent("\(testName)_expected.\(codec.extensions[0])")
-        let failurePath = (failuresFolder as NSString).appendingPathComponent("\(testName)_actual.\(codec.extensions[0])")
+        let recordPath = snapshotsFolder + "/\(testName).png"
+        let expectedPath = failuresFolder + "/\(testName)_expected.png"
+        let failurePath = failuresFolder + "/\(testName)_actual.png"
 
-        var isDirectory: ObjCBool = false
-        if !FileManager.default.fileExists(atPath: snapshotsFolder, isDirectory: &isDirectory) {
+        var isDirectory: Bool = false
+        if !pathExists(snapshotsFolder, isDirectory: &isDirectory) {
             do {
-                try FileManager.default.createDirectory(atPath: snapshotsFolder, withIntermediateDirectories: false, attributes: nil)
+                try createDirectory(atPath: snapshotsFolder)
             } catch {
                 recordFailure(withDescription: "Error attempting to create snapshots directory '\(snapshotsFolder)': \(error)",
                               inFile: file,
@@ -318,7 +288,7 @@ extension SwiftBlend2DTests {
                               expected: false)
                 return
             }
-        } else if !isDirectory.boolValue {
+        } else if !isDirectory {
             recordFailure(withDescription: "Path to save snapshots to '\(snapshotsFolder)' exists but is a file, not a folder.",
                           inFile: file,
                           atLine: line,
@@ -328,7 +298,9 @@ extension SwiftBlend2DTests {
 
         if record {
             do {
-                try image.writeToFile(recordPath, codec: codec)
+                let pngFile = pngFileFromImage(image)
+                
+                try writePngFile(file: pngFile, filename: recordPath)
 
                 recordFailure(withDescription: "Successfully recorded snapshot for \(testName)",
                              inFile: file,
@@ -343,21 +315,19 @@ extension SwiftBlend2DTests {
             }
         } else {
             do {
-                let recordedData = try Data(contentsOf: URL(fileURLWithPath: recordPath))
-                let actualData = try image.toData(codec: codec)
+                let recordedData = try readPngFile(recordPath)
+                let actualData = pngFileFromImage(image)
 
                 if recordedData != actualData {
                     recordFailure(withDescription: "Snapshot \(testName) did not match recorded data. Please inspect image at \(failurePath) for further information.",
                                   inFile: file,
                                   atLine: line,
                                   expected: true)
-
-                    try FileManager.default.createDirectory(atPath: pathToSnapshotFailures(),
-                                                            withIntermediateDirectories: false,
-                                                            attributes: nil)
-
-                    FileManager.default.createFile(atPath: expectedPath, contents: recordedData, attributes: nil)
-                    FileManager.default.createFile(atPath: failurePath, contents: actualData, attributes: nil)
+                    
+                    try createDirectory(atPath: pathToSnapshotFailures())
+                    
+                    try copyFile(source: recordPath, dest: expectedPath)
+                    try writePngFile(file: actualData, filename: failurePath)
                 }
             } catch {
                 recordFailure(withDescription: "Error attempting to read and compare snapshot '\(testName)': \(error)",
@@ -371,28 +341,69 @@ extension SwiftBlend2DTests {
 
 func pathToSnapshots() -> String {
     let file = #file
-
-    var path: NSString = (file as NSString).deletingLastPathComponent as NSString
-    path = path.appendingPathComponent("Snapshots") as NSString
-
-    return path as String
+    
+    return "/" + file.split(separator: "/").dropLast().joined(separator: "/") + "/Snapshots"
 }
 
 func pathToSnapshotFailures() -> String {
     let file = #file
 
-    var path: NSString = (file as NSString).deletingLastPathComponent as NSString
-    path = path.appendingPathComponent("SnapshotFailures"/* This path should be kept in .gitignore */) as NSString
-
-    return path as String
+    return "/" + file.split(separator: "/").dropLast().joined(separator: "/")
+        + "/SnapshotFailures" /* This path should be kept in .gitignore */
 }
 
 func pathToResources() -> String {
     let file = #file
-    return (((file as NSString)
-        .deletingLastPathComponent as NSString)
-        .appendingPathComponent("../../Resources") as NSString)
-        .standardizingPath
+    
+    return "/" + file.split(separator: "/").dropLast(3).joined(separator: "/")
+        + "/Resources"
 }
 
-#endif
+func pathExists(_ path: String, isDirectory: inout Bool) -> Bool {
+    func S_ISDIR(_ m: mode_t) -> Bool {
+        return ((m & S_IFMT) == S_IFDIR)
+    }
+    
+    var sb = stat()
+    
+    if stat(path, &sb) != 0 {
+        return false
+    }
+    
+    isDirectory = S_ISDIR(sb.st_mode)
+    return true
+}
+
+func createDirectory(atPath path: String) throws {
+    if mkdir(path, S_IRWXU) != 0 && errno != EEXIST {
+        throw TestError.couldNotCreatePath
+    }
+}
+
+func copyFile(source: String, dest: String) throws {
+    let f1 = fopen(source, "rb")
+    let f2 = fopen(dest, "wb")
+    
+    if f1 == nil || f2 == nil {
+        throw TestError.couldNotCopyFile
+    }
+    
+    var buffer: [Int8] = Array(repeating: 0, count: 1024)
+    var n: size_t = 0
+    
+    while true {
+        n = fread(&buffer, MemoryLayout<Int8>.size, buffer.count * MemoryLayout<Int8>.size, f1)
+        if n == 0 {
+            return
+        }
+        
+        if fwrite(buffer, MemoryLayout<Int8>.size, n, f2) != n {
+            throw TestError.couldNotCopyFile
+        }
+    }
+}
+
+enum TestError: Error {
+    case couldNotCreatePath
+    case couldNotCopyFile
+}

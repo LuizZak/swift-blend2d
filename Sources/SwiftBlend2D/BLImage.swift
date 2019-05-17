@@ -163,6 +163,12 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
 }
 
+extension BLImage: Equatable {
+    public static func ==(lhs: BLImage, rhs: BLImage) -> Bool {
+        return blImageEquals(&lhs.object, &rhs.object)
+    }
+}
+
 private func withCodecArray<T>(_ codecs: [BLImageCodec]?, _ closure: (UnsafePointer<BLArrayCore>?) throws -> T) rethrows -> T {
     if let codecs = codecs {
         let codecsArray = BLArray<BLImageCodecCore>()
