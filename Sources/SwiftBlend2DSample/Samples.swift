@@ -202,11 +202,9 @@ func sample8() throws {
     ctx.setFillStyle(BLRgba32(argb: 0xFFFFFFFF))
     
     let face = try BLFontFace(fromFile: "Resources/NotoSans-Regular.ttf")
-    
     let font = BLFont(fromFace: face, size: 20.0)
     
     let fm = font.metrics
-    let gb = BLGlyphBuffer()
     
     var p = BLPoint(x: 20, y: 190 + Double(fm.ascent))
     let text = """
@@ -218,7 +216,7 @@ func sample8() throws {
     let lines = text.split(separator: "\n")
     
     for line in lines {
-        gb.setText(line)
+        let gb = BLGlyphBuffer(text: line)
         font.shape(gb)
         let tm = font.getTextMetrics(gb)
         

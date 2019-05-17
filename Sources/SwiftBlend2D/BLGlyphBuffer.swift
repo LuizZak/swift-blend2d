@@ -9,6 +9,11 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         super.init()
     }
     
+    public init<S: StringProtocol>(text: S) {
+        super.init()
+        setText(text)
+    }
+    
     public func clear() {
         blGlyphBufferClear(&object)
     }
