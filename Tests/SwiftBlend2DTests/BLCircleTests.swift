@@ -39,4 +39,20 @@ class BLCircleTests: XCTestCase {
         XCTAssertEqual(expanded.cy, 2)
         XCTAssertEqual(expanded.r, 6)
     }
+    
+    func testCenter() {
+        var circle = BLCircle(cx: 1, cy: 2, r: 3)
+        
+        XCTAssertEqual(circle.center, BLPoint(x: 1, y: 2))
+        
+        circle.center = BLPoint(x: 5, y: 6)
+        
+        XCTAssertEqual(circle, BLCircle(cx: 5, cy: 6, r: 3))
+    }
+    
+    func testBoundingBox() {
+        let circle = BLCircle(cx: 1, cy: 2, r: 3)
+        
+        XCTAssertEqual(circle.boundingBox, BLBox(x0: -2, y0: -1, x1: 4, y1: 5))
+    }
 }
