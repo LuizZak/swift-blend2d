@@ -30,6 +30,7 @@ public struct BLGradient: Equatable {
             return BLGradientType(rawValue: blGradientGetType(&box.object))
         }
         set {
+            ensureUnique()
             blGradientSetType(&box.object, newValue.rawValue)
         }
     }
@@ -40,6 +41,7 @@ public struct BLGradient: Equatable {
             return BLExtendMode(rawValue: blGradientGetExtendMode(&box.object))
         }
         set {
+            ensureUnique()
             blGradientSetExtendMode(&box.object, newValue.rawValue)
         }
     }
