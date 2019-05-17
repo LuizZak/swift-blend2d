@@ -261,6 +261,11 @@ public struct BLGradient: Equatable {
     }
     
     @inlinable
+    init(box: BLBaseClass<BLGradientCore>) {
+        self.box = box
+    }
+    
+    @inlinable
     mutating func ensureUnique() {
         if !isKnownUniquelyReferenced(&box) {
             box = box.copy()

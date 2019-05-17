@@ -675,6 +675,24 @@ public extension BLContextHint {
     static let patternQuality = BL_CONTEXT_HINT_PATTERN_QUALITY
 }
 
+public extension BLContextOpType {
+    /// Fill operation type.
+    static let fill = BL_CONTEXT_OP_TYPE_FILL
+    /// Stroke operation type.
+    static let stroke = BL_CONTEXT_OP_TYPE_STROKE
+}
+
+public extension BLStyleType {
+    /// No style, nothing will be paint.
+    static let none = BL_STYLE_TYPE_NONE
+    /// Solid color style.
+    static let solid = BL_STYLE_TYPE_SOLID
+    /// Pattern style.
+    static let pattern = BL_STYLE_TYPE_PATTERN
+    /// Gradient style.
+    static let gradient = BL_STYLE_TYPE_GRADIENT
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }

@@ -103,8 +103,50 @@ public class BLContext: BLBaseClass<BLContextCore> {
             _ = object.impl.pointee.virt.pointee.setGlobalAlpha(object.impl, newValue)
         }
     }
-
-
+    
+    @inlinable
+    public var fillStyleType: BLStyleType {
+        assert(BLContextOpType.fill.rawValue == 0)
+        return BLStyleType(UInt32(object.impl.pointee.state.pointee.styleType.0))
+    }
+    
+    @inlinable
+    public var strokeStyleType: BLStyleType {
+        assert(BLContextOpType.stroke.rawValue == 1)
+        return BLStyleType(UInt32(object.impl.pointee.state.pointee.styleType.1))
+    }
+    
+    /// Gets an enumeration specifying the fill style and their current associated
+    /// values.
+    @inlinable
+    public var fillStyle: OpStyle {
+        switch fillStyleType {
+        case .none:
+            return .none
+            
+        case .solid:
+            var value: UInt64 = 0
+            blContextGetFillStyleRgba64(&object, &value)
+            
+            return .solid(BLRgba64(argb: value))
+            
+        case .gradient:
+            var gradient: BLGradientCore?
+            blContextGetFillStyle(&object, &gradient)
+            
+            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient!)))
+            
+        case .pattern:
+            var pattern: BLPatternCore?
+            blContextGetFillStyle(&object, &pattern)
+            
+            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern!)))
+            
+        default:
+            return .none
+        }
+    }
+    
     /// Gets or sets the fill-rule.
     @inlinable
     public var fillRule: BLFillRule {
@@ -115,7 +157,50 @@ public class BLContext: BLBaseClass<BLContextCore> {
             _ = object.impl.pointee.virt.pointee.setFillRule(object.impl, newValue.rawValue)
         }
     }
-
+    
+    /// Gets or sets fill alpha value.
+    @inlinable
+    public var fillAlpha: Double {
+        get {
+            assert(BL_CONTEXT_OP_TYPE_STROKE.rawValue == 0)
+            return object.impl.pointee.state.pointee.styleAlpha.0
+        }
+        set {
+            blContextSetFillAlpha(&object, newValue)
+        }
+    }
+    
+    /// Gets an enumeration specifying the stroke style and their current associated
+    /// values.
+    @inlinable
+    public var strokeStyle: OpStyle {
+        switch strokeStyleType {
+        case .none:
+            return .none
+            
+        case .solid:
+            var value: UInt64 = 0
+            blContextGetStrokeStyleRgba64(&object, &value)
+            
+            return .solid(BLRgba64(argb: value))
+            
+        case .gradient:
+            var gradient: BLGradientCore?
+            blContextGetStrokeStyle(&object, &gradient)
+            
+            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient!)))
+            
+        case .pattern:
+            var pattern: BLPatternCore?
+            blContextGetStrokeStyle(&object, &pattern)
+            
+            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern!)))
+            
+        default:
+            return .none
+        }
+    }
+    
     /// Gets or sets stroke alpha value.
     @inlinable
     public var strokeAlpha: Double {
@@ -224,16 +309,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     }
     
     @inlinable
-    public func setFillAlpha(_ value: Double) {
-        blContextSetFillAlpha(&object, value)
-    }
-    
-    // TODO: Implement blContextGetFillStyle
-    func getFillStyle() {
-        
-    }
-    
-    @inlinable
     public func setFillStyle(_ gradient: BLGradient) {
         blContextSetFillStyle(&object, &gradient.box.object)
     }
@@ -241,17 +316,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func setFillStyle(_ pattern: BLPattern) {
         blContextSetFillStyle(&object, &pattern.box.object)
-    }
-    
-    /// Returns the RGBA32 fill style for this context.
-    /// Returns nil, in case the current fill style mode is not compatible with
-    /// RGBA32.
-    public func getFillStyleRgba32() -> UInt32? {
-        var value: UInt32 = 0
-        if blContextGetFillStyleRgba32(&object, &value) != BL_SUCCESS.rawValue {
-            return nil
-        }
-        return value
     }
     
     @inlinable
@@ -262,17 +326,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func setFillStyle(_ value: BLRgba32) {
         blContextSetFillStyleRgba32(&object, value.value)
-    }
-    
-    /// Returns the RGBA64 fill style for this context.
-    /// Returns nil, in case the current fill style mode is not compatible with
-    /// RGBA64.
-    public func getFillStyleRgba64() -> UInt64? {
-        var value: UInt64 = 0
-        if blContextGetFillStyleRgba64(&object, &value) != BL_SUCCESS.rawValue {
-            return nil
-        }
-        return value
     }
     
     @inlinable
@@ -346,27 +399,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func setStrokeOptions(_ options: BLStrokeOptions) {
         blContextSetStrokeOptions(&object, &options.box.object)
-    }
-    
-    // TODO: Implement getStrokeStyle
-    func getStrokeStyle() /* -> ... */ {
-        // blContextGetStrokeStyle(&object, ...)
-    }
-    
-    public func getStrokeStyleRgba32() -> UInt32? {
-        var value: UInt32 = 0
-        if blContextGetStrokeStyleRgba32(&object, &value) != BL_SUCCESS.rawValue {
-            return nil
-        }
-        return value
-    }
-    
-    public func getStrokeStyleRgba64() -> UInt64? {
-        var value: UInt64 = 0
-        if blContextGetStrokeStyleRgba64(&object, &value) != BL_SUCCESS.rawValue {
-            return nil
-        }
-        return value
     }
     
     @inlinable
@@ -985,118 +1017,157 @@ public extension BLContext {
 }
 
 public extension BLContext {
+    enum OpStyle {
+        case none
+        case solid(BLRgba64)
+        case gradient(BLGradient)
+        case pattern(BLPattern)
+    }
+}
+
+public extension BLContext {
+    @inlinable
     @discardableResult
     func resetMatrix() -> BLResult {
         return object.impl.pointee.virt.pointee.matrixOp(object.impl, BLMatrix2DOp.reset.rawValue, nil)
     }
+    @inlinable
     @discardableResult
     func translate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.translate, x, y)
     }
+    @inlinable
     @discardableResult
     func translate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.translate, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     func translate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.translate, p)
     }
+    @inlinable
     @discardableResult
     func scale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.scale, xy, xy)
     }
+    @inlinable
     @discardableResult
     func scale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.scale, x, y)
     }
+    @inlinable
     @discardableResult
     func scale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.scale, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     func scale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.scale, p)
     }
+    @inlinable
     @discardableResult
     func skew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.skew, x, y)
     }
+    @inlinable
     @discardableResult
     func skew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.skew, p)
     }
+    @inlinable
     @discardableResult
     func rotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.rotate, angle)
     }
+    @inlinable
     @discardableResult
     func rotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, x, y)
     }
+    @inlinable
     @discardableResult
     func rotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
     }
+    @inlinable
     @discardableResult
     func rotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
+    @inlinable
     @discardableResult
     func transform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.transform, matrix)
     }
+    @inlinable
     @discardableResult
     func postTranslate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postTranslate, x, y)
     }
+    @inlinable
     @discardableResult
     func postTranslate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postTranslate, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     func postTranslate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postTranslate, p)
     }
+    @inlinable
     @discardableResult
     func postScale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, xy, xy)
     }
+    @inlinable
     @discardableResult
     func postScale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, x, y)
     }
+    @inlinable
     @discardableResult
     func postScale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postScale, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     func postScale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postScale, p)
     }
+    @inlinable
     @discardableResult
     func postSkew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postSkew, x, y)
     }
+    @inlinable
     @discardableResult
     func postSkew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postSkew, p)
     }
+    @inlinable
     @discardableResult
     func postRotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.postRotate, angle)
     }
+    @inlinable
     @discardableResult
     func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, x, y)
     }
+    @inlinable
     @discardableResult
     func postRotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
     }
+    @inlinable
     @discardableResult
     func postRotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
+    
+    @inlinable
     @discardableResult
     func postTransform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.postTransform, matrix)
@@ -1105,6 +1176,7 @@ public extension BLContext {
 
 internal extension BLContext {
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
         return withUnsafePointer(to: opData) { pointer in
             return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer)
@@ -1112,6 +1184,7 @@ internal extension BLContext {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
         return withUnsafePointer(to: opData) { pointer in
             return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer)
@@ -1119,6 +1192,7 @@ internal extension BLContext {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
         return withUnsafePointer(to: opData) { pointer in
             return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer)
@@ -1126,6 +1200,7 @@ internal extension BLContext {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
         return args.withUnsafeBytes { pointer in
             return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer.baseAddress)
@@ -1133,12 +1208,14 @@ internal extension BLContext {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
         return args.map { Double($0) }.withUnsafeBytes { pointer in
             return object.impl.pointee.virt.pointee.matrixOp(object.impl, opType.rawValue, pointer.baseAddress)
         }
     }
 }
+
 extension BLContextCore: CoreStructure {
     public static let initializer = blContextInit
     public static let deinitializer = blContextReset

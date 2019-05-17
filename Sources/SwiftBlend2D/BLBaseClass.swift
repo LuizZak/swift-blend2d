@@ -43,6 +43,20 @@ public class BLBaseClass<T: CoreStructure> {
         }
     }
     
+    /// Initializes a new base class by performing a strong assignment of an
+    /// existing backing structure.
+    ///
+    /// The structure is simply assigned as-is without performing a reference-counting
+    /// operation on Blend2D.
+    ///
+    /// Make sure you have sole ownership of the object passed, as it will be
+    /// reset when this object deinitializes, and over-releasing the object is
+    /// undefined behavior.
+    @usableFromInline
+    init(strongAssign object: T) {
+        self.object = object
+    }
+    
     deinit {
         deinitialize()
     }

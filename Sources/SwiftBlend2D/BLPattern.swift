@@ -59,6 +59,11 @@ public struct BLPattern {
     }
     
     @inlinable
+    init(box: BLBaseClass<BLPatternCore>) {
+        self.box = box
+    }
+    
+    @inlinable
     mutating func ensureUnique() {
         if !isKnownUniquelyReferenced(&box) {
             box = box.copy()
