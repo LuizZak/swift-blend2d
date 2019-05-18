@@ -18,7 +18,7 @@ let package = Package(
             pkgConfig: "libpng",
             providers: [
                 .brew(["libpng"]),
-                .apt(["libpng"])
+                .apt(["libpng-dev"])
             ]),
         .target(
             name: "LibPNG",
