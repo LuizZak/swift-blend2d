@@ -11,6 +11,7 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
+  - bash: 'brew install pkg-config'
   - bash: 'brew install libpng'
   - bash: 'swift test'
 
