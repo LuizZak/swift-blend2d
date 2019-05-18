@@ -27,5 +27,5 @@ jobs:
       sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
     displayName: Set up sudo
   - script: 'sudo apt-get update'
-  - script: 'sudo apt-get install -y libpng-dev=1.6.29'
+  - script: 'sudo apt-get install -y libpng-dev=1.6.29-1'
   - bash: 'swift test'
