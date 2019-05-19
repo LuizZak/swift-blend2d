@@ -16,9 +16,7 @@ jobs:
   - bash: 'swift test'
 
 - job: Linux
-  container:
-    image: swift:5.0-xenial
-    options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+  container: swift:5.0-xenial
   pool:
     vmImage: ubuntu-16.04
   steps:
