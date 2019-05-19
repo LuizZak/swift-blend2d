@@ -382,10 +382,19 @@ func createDirectory(atPath path: String) throws {
 
 func copyFile(source: String, dest: String) throws {
     let f1 = fopen(source, "rb")
-    let f2 = fopen(dest, "wb")
-    
-    if f1 == nil || f2 == nil {
+    if f1 == nil {
         throw TestError.couldNotCopyFile
+    }
+    defer {
+        fclose(f1)
+    }
+    
+    let f2 = fopen(dest, "wb")
+    if f2 == nil {
+        throw TestError.couldNotCopyFile
+    }
+    defer {
+        fclose(f2)
     }
     
     var buffer: [Int8] = Array(repeating: 0, count: 1024)
