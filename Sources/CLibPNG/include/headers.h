@@ -1,1 +1,1 @@
-#import <time.h>
+#include <time.h>
