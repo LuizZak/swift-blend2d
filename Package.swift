@@ -8,17 +8,19 @@ let package = Package(
         .library(
             name: "SwiftBlend2D",
             targets: ["SwiftBlend2D"]),
+        .library(
+            name: "CLibPNG",
+            type: .static,
+            targets: ["CLibPNG"]),
         .executable(
             name: "SwiftBlend2DSample",
             targets: ["SwiftBlend2DSample"])
     ],
     targets: [
-        .systemLibrary(
+        .target(
             name: "CLibPNG",
-            pkgConfig: "libpng",
-            providers: [
-                .brew(["libpng"]),
-                .apt(["libpng-dev"])
+            linkerSettings: [
+                .linkedLibrary("z")
             ]),
         .target(
             name: "LibPNG",
