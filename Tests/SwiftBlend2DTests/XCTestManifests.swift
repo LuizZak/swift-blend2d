@@ -94,6 +94,8 @@ extension BLCircleTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLCircleTests = [
+        ("testBoundingBox", testBoundingBox),
+        ("testCenter", testCenter),
         ("testEquals", testEquals),
         ("testExpandBy", testExpandBy),
         ("testInitWithCoordinates", testInitWithCoordinates),
