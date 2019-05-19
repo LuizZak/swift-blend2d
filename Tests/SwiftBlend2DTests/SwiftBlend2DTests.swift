@@ -339,6 +339,8 @@ extension SwiftBlend2DTests {
     }
 }
 
+// TODO: Make this path shenanigans portable to Windows
+
 func pathToSnapshots() -> String {
     let file = #file
     
