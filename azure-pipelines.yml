@@ -22,10 +22,4 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - script: |
-      /tmp/docker exec -t -u 0 ci-container \
-      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-    displayName: Set up sudo
-  - script: 'sudo apt-get update'
-  - script: 'sudo apt-get install -y libpng16-16 libpng-dev=1.6.36-1'
   - bash: 'swift test'
