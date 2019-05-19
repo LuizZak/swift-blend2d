@@ -8,8 +8,23 @@ let package = Package(
         .library(
             name: "SwiftBlend2D",
             targets: ["SwiftBlend2D"]),
+        .library(
+            name: "CLibPNG",
+            type: .static,
+            targets: ["CLibPNG"]),
+        .executable(
+            name: "SwiftBlend2DSample",
+            targets: ["SwiftBlend2DSample"])
     ],
     targets: [
+        .target(
+            name: "CLibPNG",
+            linkerSettings: [
+                .linkedLibrary("z")
+            ]),
+        .target(
+            name: "LibPNG",
+            dependencies: ["CLibPNG"]),
         .target(
             name: "SwiftBlend2D",
             dependencies: ["blend2d"]),
@@ -45,8 +60,11 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "LibPNGTests",
+            dependencies: ["LibPNG"]),
+        .testTarget(
             name: "SwiftBlend2DTests",
-            dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit"]),
+            dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit", "LibPNG"]),
     ],
     cxxLanguageStandard: .cxx11
 )
