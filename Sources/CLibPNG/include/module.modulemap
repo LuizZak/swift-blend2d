@@ -2,7 +2,7 @@ module CLibPNG {
   header "png.h"
   header "pngconf.h"
   header "pnglibconf.h"
-  link "zlib"
+  link "z"
   link "png"
   export *
 }
