@@ -1,8 +1,6 @@
 module CLibPNG {
   header "headers.h"
   header "png.h"
-  header "pngconf.h"
-  header "pnglibconf.h"
   link "z"
   link "png"
   export *
