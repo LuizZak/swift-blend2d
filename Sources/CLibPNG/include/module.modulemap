@@ -1,4 +1,5 @@
 module CLibPNG {
+  header "headers.h"
   header "png.h"
   header "pngconf.h"
   header "pnglibconf.h"
