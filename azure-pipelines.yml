@@ -20,7 +20,7 @@ jobs:
     image: swift:5.0-bionic
     options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
   pool:
-    vmImage: ubuntu-18.04
+    vmImage: ubuntu-16.04
   steps:
   - script: |
       /tmp/docker exec -t -u 0 ci-container \
