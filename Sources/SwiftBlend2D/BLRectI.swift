@@ -22,6 +22,26 @@ public extension BLRectI {
     }
 
     @inlinable
+    var left: Int {
+        return Int(x)
+    }
+
+    @inlinable
+    var right: Int {
+        return Int(x + w)
+    }
+
+    @inlinable
+    var top: Int {
+        return Int(y)
+    }
+
+    @inlinable
+    var bottom: Int {
+        return Int(y + h)
+    }
+
+    @inlinable
     var center: BLPointI {
         get {
             return BLPointI(x: x + w / 2, y: y + h / 2)
