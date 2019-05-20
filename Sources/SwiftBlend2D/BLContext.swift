@@ -449,30 +449,37 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func restoreClipping() {
         blContextRestoreClipping(&object)
     }
-    
+
+    /// Clears the entire context region.
+    @discardableResult
     @inlinable
-    public func clearAll() {
-        blContextClearAll(&object)
+    public func clearAll() -> BLResult {
+        return blContextClearAll(&object)
     }
-    
+
+    /// Clears a rectangle.
+    @discardableResult
     @inlinable
-    public func clearRect(_ rect: BLRectI) {
+    public func clearRect(_ rect: BLRectI) -> BLResult {
         var rect = rect
         
-        blContextClearRectI(&object, &rect)
+        return blContextClearRectI(&object, &rect)
     }
-    
+
+    /// Clears a rectangle.
+    @discardableResult
     @inlinable
-    public func clearRect(_ rect: BLRect) {
+    public func clearRect(_ rect: BLRect) -> BLResult {
         var rect = rect
         
-        blContextClearRectD(&object, &rect)
+        return blContextClearRectD(&object, &rect)
     }
     
     /// Fills everything.
+    @discardableResult
     @inlinable
-    public func fillAll() {
-        blContextFillAll(&object)
+    public func fillAll() -> BLResult {
+        return blContextFillAll(&object)
     }
 
     /// Fills the passed geometry specified by `geometryType` and `geometryData`
@@ -482,78 +489,104 @@ public class BLContext: BLBaseClass<BLContextCore> {
     func fillGeometry(_ geometryType: BLGeometryType, _ geometryData: UnsafeRawPointer) -> BLResult {
         return blContextFillGeometry(&object, geometryType.rawValue, geometryData)
     }
-    
+
+    /// Fills a rectangle.
+    @discardableResult
     @inlinable
-    public func fillRect(x: Int, y: Int, width: Int, height: Int) {
-        fillRect(BLRectI(x: Int32(x), y: Int32(y), w: Int32(width), h: Int32(height)))
+    public func fillRect(x: Int, y: Int, width: Int, height: Int) -> BLResult {
+        return fillRect(BLRectI(x: Int32(x), y: Int32(y), w: Int32(width), h: Int32(height)))
     }
-    
+
+    /// Fills a rectangle.
+    @discardableResult
     @inlinable
-    public func fillRect(x: Double, y: Double, width: Double, height: Double) {
-        fillRect(BLRect(x: x, y: y, w: width, h: height))
+    public func fillRect(x: Double, y: Double, width: Double, height: Double) -> BLResult {
+        return fillRect(BLRect(x: x, y: y, w: width, h: height))
     }
-    
+
+    /// Fills a rectangle.
+    @discardableResult
     @inlinable
-    public func fillRect(_ rect: BLRectI) {
+    public func fillRect(_ rect: BLRectI) -> BLResult {
         var rect = rect
         
-        blContextFillRectI(&object, &rect)
+        return blContextFillRectI(&object, &rect)
     }
-    
+
+    /// Fills a rectangle.
+    @discardableResult
     @inlinable
-    public func fillRect(_ rect: BLRect) {
+    public func fillRect(_ rect: BLRect) -> BLResult {
         var rect = rect
         
-        blContextFillRectD(&object, &rect)
+        return blContextFillRectD(&object, &rect)
     }
 
+    /// Fills a box.
+    @discardableResult
     @inlinable
-    public func fillBox(x0: Int, y0: Int, x1: Int, y1: Int) {
-        fillBox(BLBoxI(x0: Int32(x0), y0: Int32(y0), x1: Int32(x1), y1: Int32(y1)))
+    public func fillBox(x0: Int, y0: Int, x1: Int, y1: Int) -> BLResult {
+        return fillBox(BLBoxI(x0: Int32(x0), y0: Int32(y0), x1: Int32(x1), y1: Int32(y1)))
     }
 
+    /// Fills a box.
+    @discardableResult
     @inlinable
-    public func fillBox(x0: Double, y0: Double, x1: Double, y1: Double) {
-        fillBox(BLBox(x0: x0, y0: y0, x1: x1, y1: y1))
+    public func fillBox(x0: Double, y0: Double, x1: Double, y1: Double) -> BLResult {
+        return fillBox(BLBox(x0: x0, y0: y0, x1: x1, y1: y1))
     }
 
+    /// Fills a box.
+    @discardableResult
     @inlinable
-    public func fillBox(_ box: BLBoxI) {
+    public func fillBox(_ box: BLBoxI) -> BLResult {
         var box = box
 
-        fillGeometry(.boxI, &box)
+        return fillGeometry(.boxI, &box)
     }
 
+    /// Fills a box.
+    @discardableResult
     @inlinable
-    public func fillBox(_ box: BLBox) {
+    public func fillBox(_ box: BLBox) -> BLResult {
         var box = box
 
-        fillGeometry(.boxD, &box)
+        return fillGeometry(.boxD, &box)
     }
-    
+
+    /// Fills a round rect.
+    @discardableResult
     @inlinable
-    public func fillRoundRect(x: Double, y: Double, width: Double, height: Double, radiusX: Double, radiusY: Double) {
-        fillRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radiusX, ry: radiusY))
+    public func fillRoundRect(x: Double, y: Double, width: Double, height: Double, radiusX: Double, radiusY: Double) -> BLResult {
+        return fillRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radiusX, ry: radiusY))
     }
-    
+
+    /// Fills a round rect.
+    @discardableResult
     @inlinable
-    public func fillRoundRect(x: Double, y: Double, width: Double, height: Double, radius: Double) {
-        fillRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radius, ry: radius))
+    public func fillRoundRect(x: Double, y: Double, width: Double, height: Double, radius: Double) -> BLResult {
+        return fillRoundRect(BLRoundRect(x: x, y: y, w: width, h: height, rx: radius, ry: radius))
     }
-    
+
+    /// Fills a round rect.
+    @discardableResult
     @inlinable
-    public func fillRoundRect(_ rect: BLRoundRect) {
-        fillGeometry(rect)
+    public func fillRoundRect(_ rect: BLRoundRect) -> BLResult {
+        return fillGeometry(rect)
     }
-    
+
+    /// Fills a circle.
+    @discardableResult
     @inlinable
-    public func fillCircle(x: Double, y: Double, radius: Double) {
-        fillCircle(BLCircle(cx: x, cy: y, r: radius))
+    public func fillCircle(x: Double, y: Double, radius: Double) -> BLResult {
+        return fillCircle(BLCircle(cx: x, cy: y, r: radius))
     }
-    
+
+    /// Fills a circle.
+    @discardableResult
     @inlinable
-    public func fillCircle(_ circle: BLCircle) {
-        fillGeometry(circle)
+    public func fillCircle(_ circle: BLCircle) -> BLResult {
+        return fillGeometry(circle)
     }
 
     /// Fills an ellipse.
@@ -643,46 +676,54 @@ public class BLContext: BLBaseClass<BLContextCore> {
         }
     }
 
+    @discardableResult
     @inlinable
-    public func fillGeometry(_ roundRect: BLRoundRect) {
+    public func fillGeometry(_ roundRect: BLRoundRect) -> BLResult {
         var roundRect = roundRect
-        blContextFillGeometry(&object, BLGeometryType.roundRect.rawValue, &roundRect)
+        return blContextFillGeometry(&object, BLGeometryType.roundRect.rawValue, &roundRect)
     }
-    
+
+    @discardableResult
     @inlinable
-    public func fillGeometry(_ circle: BLCircle) {
+    public func fillGeometry(_ circle: BLCircle) -> BLResult {
         var circle = circle
-        blContextFillGeometry(&object, BLGeometryType.circle.rawValue, &circle)
+        return blContextFillGeometry(&object, BLGeometryType.circle.rawValue, &circle)
     }
-    
-    public func fillText<S: StringProtocol>(_ text: S, at point: BLPointI, font: BLFont) {
+
+    @discardableResult
+    @inlinable
+    public func fillText<S: StringProtocol>(_ text: S, at point: BLPointI, font: BLFont) -> BLResult {
         var point = point
-        text.withCString { pointer -> Void in
+        return text.withCString { pointer in
             blContextFillTextI(&object, &point, &font.object, pointer, text.utf8.count, BLTextEncoding.utf8.rawValue)
         }
     }
-    
-    public func fillText<S: StringProtocol>(_ text: S, at point: BLPoint, font: BLFont) {
+
+    @discardableResult
+    @inlinable
+    public func fillText<S: StringProtocol>(_ text: S, at point: BLPoint, font: BLFont) -> BLResult {
         var point = point
-        text.withCString { pointer -> Void in
+        return text.withCString { pointer in
             blContextFillTextD(&object, &point, &font.object, pointer, text.utf8.count, BLTextEncoding.utf8.rawValue)
         }
     }
-    
+
+    @discardableResult
     @inlinable
-    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) {
+    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) -> BLResult {
         var point = point
         var glyphRun = glyphRun
         
-        blContextFillGlyphRunI(&object, &point, &font.object, &glyphRun)
+        return blContextFillGlyphRunI(&object, &point, &font.object, &glyphRun)
     }
-    
+
+    @discardableResult
     @inlinable
-    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) {
+    public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) -> BLResult {
         var point = point
         var glyphRun = glyphRun
         
-        blContextFillGlyphRunD(&object, &point, &font.object, &glyphRun)
+        return blContextFillGlyphRunD(&object, &point, &font.object, &glyphRun)
     }
     
     /// Strokes the passed geometry specified by `geometryType` and `geometryData`
