@@ -1,5 +1,6 @@
 import blend2d
 
+/// Region is a set of rectangles sorted and coalesced by their Y/X coordinates.
 public struct BLRegion {
     @usableFromInline
     var box: BLBaseClass<BLRegionCore>
