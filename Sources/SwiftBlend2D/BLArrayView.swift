@@ -21,7 +21,7 @@ extension Array {
     func withTemporaryView<T>(_ closure: (UnsafePointer<BLArrayView<Element>>) throws -> T) rethrows -> T {
         return try withUnsafeBufferPointer { pointer -> T in
             var view = BLArrayView(data: pointer.baseAddress,
-                                   size: pointer.count * MemoryLayout<Element>.stride)
+                                   size: pointer.count)
             
             return try closure(&view)
         }

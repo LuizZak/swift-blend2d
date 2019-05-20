@@ -250,6 +250,149 @@ class SwiftBlend2DTests: XCTestCase {
 
         assertImageMatch(img, "tiger")
     }
+
+    func testConicalGradient() {
+        let img = BLImage(width: 200, height: 200, format: .prgb32)
+        let ctx = BLContext(image: img)!
+
+        var gradient = BLGradient(conical: BLConicalGradientValues(x0: 100, y0: 100, angle: .pi / 2))
+        gradient.addStop(0, BLRgba32.green)
+        gradient.addStop(1, BLRgba32.yellow)
+
+        ctx.setFillStyle(gradient)
+
+        ctx.fillCircle(x: 100, y: 100, radius: 50)
+
+        ctx.end()
+
+        assertImageMatch(img, "conical-angled")
+    }
+
+    func testStrokeShapes() {
+        let img = BLImage(width: 360, height: 50, format: .prgb32)
+        let ctx = BLContext(image: img)!
+
+        ctx.setFillStyle(BLRgba32.white)
+        ctx.clearAll()
+
+        ctx.setStrokeStyle(BLRgba32.aliceBlue)
+
+        // Line
+        do {
+            ctx.strokeLine(x0: 5, y0: 5, x1: 20, y1: 20)
+        }
+        // Box
+        do {
+            ctx.strokeBox(x0: 25, y0: 5, x1: 45, y1: 35)
+        }
+        // Rect
+        do {
+            ctx.strokeRect(x: 50, y: 5, w: 20, h: 25)
+        }
+        // Arc
+        do {
+            ctx.strokeArc(cx: 90, cy: 10, rx: 15, ry: 15, start: 0, sweep: .pi)
+        }
+        // Pie
+        do {
+            ctx.strokePie(cx: 120, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+        }
+        // Chord
+        do {
+            ctx.strokeChord(cx: 150, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+        }
+        // Circle
+        do {
+            ctx.strokeCircle(x: 180, y: 20, radius: 15)
+        }
+        // Ellipse
+        do {
+            ctx.strokeEllipse(x: 215, y: 20, radiusX: 15, radiusY: 10)
+        }
+        // Triangle
+        do {
+            ctx.strokeTriangle(x0: 235, y0: 5, x1: 250, y1: 15, x2: 245, y2: 25)
+        }
+        // Rounded rectangle
+        do {
+            ctx.strokeRoundRect(x: 255, y: 5, width: 25, height: 20, radiusX: 10, radiusY: 5)
+        }
+        // Stroke polyline
+        do {
+            ctx.strokePolyline([
+                BLPoint(x: 290, y: 5),
+                BLPoint(x: 320, y: 10),
+                BLPoint(x: 310, y: 20),
+            ])
+        }
+        // Stroke polygon
+        do {
+            ctx.strokePolygon([
+                BLPoint(x: 325, y: 5),
+                BLPoint(x: 355, y: 10),
+                BLPoint(x: 335, y: 20),
+            ])
+        }
+
+        ctx.end()
+
+        assertImageMatch(img, "stroke-shapes")
+    }
+
+    func testFillShapes() {
+        let img = BLImage(width: 270, height: 50, format: .prgb32)
+        let ctx = BLContext(image: img)!
+
+        ctx.setFillStyle(BLRgba32.white)
+        ctx.clearAll()
+
+        ctx.setFillStyle(BLRgba32.cornflowerBlue)
+        
+        // Box
+        do {
+            ctx.fillBox(x0: 5, y0: 5, x1: 25, y1: 35)
+        }
+        // Rect
+        do {
+            ctx.fillRect(x: 30, y: 5, width: 20, height: 25)
+        }
+        // Pie
+        do {
+            ctx.fillPie(cx: 70, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+        }
+        // Chord
+        do {
+            ctx.fillChord(cx: 100, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+        }
+        // Circle
+        do {
+            ctx.fillCircle(x: 130, y: 20, radius: 15)
+        }
+        // Ellipse
+        do {
+            ctx.fillEllipse(x: 165, y: 20, radiusX: 15, radiusY: 10)
+        }
+        // Triangle
+        do {
+            ctx.fillTriangle(x0: 185, y0: 5, x1: 200, y1: 15, x2: 195, y2: 25)
+        }
+        // Rounded rectangle
+        do {
+            ctx.fillRoundRect(x: 205, y: 5, width: 25, height: 20, radiusX: 10, radiusY: 5)
+        }
+        // Fill polygon
+        do {
+            ctx.fillPolygon([
+                BLPoint(x: 235, y: 5),
+                BLPoint(x: 265, y: 10),
+                BLPoint(x: 245, y: 20),
+            ])
+        }
+
+        ctx.end()
+
+        assertImageMatch(img, "fill-shapes")
+    }
 }
 
 func pngFileFromImage(_ image: BLImage) -> PNGFile {
@@ -341,24 +484,27 @@ extension SwiftBlend2DTests {
 
 // TODO: Make this path shenanigans portable to Windows
 
+let rootPath: String = "/"
+let pathSeparator: Character = "/"
+
 func pathToSnapshots() -> String {
     let file = #file
-    
-    return "/" + file.split(separator: "/").dropLast().joined(separator: "/") + "/Snapshots"
+
+    return rootPath + file.split(separator: pathSeparator).dropLast().joined(separator: String(pathSeparator)) + "\(pathSeparator)Snapshots"
 }
 
 func pathToSnapshotFailures() -> String {
     let file = #file
 
-    return "/" + file.split(separator: "/").dropLast().joined(separator: "/")
-        + "/SnapshotFailures" /* This path should be kept in .gitignore */
+    return rootPath + file.split(separator: pathSeparator).dropLast().joined(separator: String(pathSeparator))
+        + "\(pathSeparator)SnapshotFailures" /* This path should be kept in .gitignore */
 }
 
 func pathToResources() -> String {
     let file = #file
     
-    return "/" + file.split(separator: "/").dropLast(3).joined(separator: "/")
-        + "/Resources"
+    return rootPath + file.split(separator: pathSeparator).dropLast(3).joined(separator: String(pathSeparator))
+        + "\(pathSeparator)Resources"
 }
 
 func pathExists(_ path: String, isDirectory: inout Bool) -> Bool {
