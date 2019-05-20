@@ -261,7 +261,7 @@ func pngFileFromImage(_ image: BLImage) -> PNGFile {
         UnsafeBufferPointer<UInt32>(start: data.pixelData.assumingMemoryBound(to: UInt32.self),
                                     count: data.stride * Int(data.size.h))
     
-    return PNGFile.fromRgba(bytes, width: image.width, height: image.height)
+    return PNGFile.fromArgb(bytes, width: image.width, height: image.height)
 }
 
 extension SwiftBlend2DTests {
