@@ -13,6 +13,11 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         super.init()
         setText(text)
     }
+
+    public init(glyphIds: [BLGlyphId]) {
+        super.init()
+        setGlyphIds(glyphIds)
+    }
     
     public func clear() {
         blGlyphBufferClear(&object)
