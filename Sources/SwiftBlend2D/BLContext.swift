@@ -654,6 +654,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Fills a triangle.
     @discardableResult
     @inlinable
+    func fillTriangle(p0: BLPoint, p1: BLPoint, p2: BLPoint) -> BLResult {
+        return fillTriangle(BLTriangle(p0: p0, p1: p1, p2: p2))
+    }
+    /// Fills a triangle.
+    @discardableResult
+    @inlinable
     public func fillTriangle(x0: Double, y0: Double, x1: Double, y1: Double, x2: Double, y2: Double) -> BLResult {
         return fillTriangle(BLTriangle(x0: x0, y0: y0, x1: x1, y1: y1, x2: x2, y2: y2))
     }
@@ -906,6 +912,12 @@ public extension BLContext {
     func strokeTriangle(_ triangle: BLTriangle) -> BLResult {
         var triangle = triangle
         return strokeGeometry(.triangle, &triangle)
+    }
+    /// Strokes a triangle.
+    @discardableResult
+    @inlinable
+    func strokeTriangle(p0: BLPoint, p1: BLPoint, p2: BLPoint) -> BLResult {
+        return strokeTriangle(BLTriangle(p0: p0, p1: p1, p2: p2))
     }
     /// Strokes a triangle.
     @discardableResult
