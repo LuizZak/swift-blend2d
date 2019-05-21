@@ -293,6 +293,7 @@ extension BLRectITests {
         ("testEquals", testEquals),
         ("testInset", testInset),
         ("testQuadrants", testQuadrants),
+        ("testSides", testSides),
         ("testSize", testSize),
     ]
 }
@@ -306,6 +307,7 @@ extension BLRectTests {
         ("testEquals", testEquals),
         ("testInset", testInset),
         ("testQuadrants", testQuadrants),
+        ("testSides", testSides),
         ("testSize", testSize),
     ]
 }
@@ -450,6 +452,8 @@ extension SwiftBlend2DTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__SwiftBlend2DTests = [
+        ("testConicalGradient", testConicalGradient),
+        ("testFillShapes", testFillShapes),
         ("testSample1", testSample1),
         ("testSample2", testSample2),
         ("testSample3", testSample3),
@@ -458,6 +462,7 @@ extension SwiftBlend2DTests {
         ("testSample6", testSample6),
         ("testSample7", testSample7),
         ("testSample8", testSample8),
+        ("testStrokeShapes", testStrokeShapes),
         ("testTiger", testTiger),
     ]
 }
