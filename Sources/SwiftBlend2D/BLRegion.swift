@@ -10,6 +10,15 @@ public struct BLRegion {
     public var type: BLRegionType {
         return BLRegionType(blRegionGetType(&box.object))
     }
+
+    /// Returns the list of boxes that form this region
+    public var regionScans: [BLBoxI] {
+        let view =
+            BLArrayView(data: box.object.impl.pointee.view.data,
+                        size: box.object.impl.pointee.view.size)
+
+        return Array(view)
+    }
     
     /// Gets whether the region is empty.
     @inlinable
