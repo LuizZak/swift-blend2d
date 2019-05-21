@@ -39,9 +39,9 @@ class BLRectTests: XCTestCase {
     func testSides() {
         let rect = BLRect(x: 1, y: 2, w: 3, h: 4)
 
-        XCTAssertEqual(rect.top, 1)
+        XCTAssertEqual(rect.top, 2)
         XCTAssertEqual(rect.right, 4)
-        XCTAssertEqual(rect.left, 2)
+        XCTAssertEqual(rect.left, 1)
         XCTAssertEqual(rect.bottom, 6)
     }
 
