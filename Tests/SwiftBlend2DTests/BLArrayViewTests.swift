@@ -17,7 +17,7 @@ class BLArrayViewTests: XCTestCase {
         
         array.withTemporaryView { view in
             XCTAssertNotNil(view.pointee.data)
-            XCTAssertEqual(view.pointee.size, 0) // = MemoryLayout<Double>.stride * array.count
+            XCTAssertEqual(view.pointee.size, 0)
         }
     }
 }
