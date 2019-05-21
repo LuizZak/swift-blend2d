@@ -7,6 +7,23 @@ struct BLArrayView<T> {
     var size: Int
 }
 
+extension BLArrayView: Sequence {
+    @usableFromInline
+    __consuming func makeIterator() -> AnyIterator<T> {
+        var index = 0
+        return AnyIterator {
+            if index >= self.size {
+                return nil
+            }
+            defer {
+                index += 1
+            }
+
+            return self.data?[index]
+        }
+    }
+}
+
 extension Array {
     /// Executes a closure passing in a context for a temporary BLArrayView that
     /// can be provided for Blend2D methods that accept a pair of (void*, size_t)
