@@ -3,7 +3,9 @@ import blend2d
 /// A layout-compatible Swift version of Blend2D's `BLArrayView<T>`
 @usableFromInline
 struct BLArrayView<T> {
+    @usableFromInline
     var data: UnsafePointer<T>?
+    @usableFromInline
     var size: Int
 }
 

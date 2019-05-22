@@ -3,7 +3,8 @@ import blend2d
 public struct BLStrokeOptions {
     @usableFromInline
     var box: BLBaseClass<BLStrokeOptionsCore>
-    
+
+    @inlinable
     public var width: Double {
         get { return box.object.width }
         set {
@@ -11,6 +12,7 @@ public struct BLStrokeOptions {
             box.object.width = newValue
         }
     }
+    @inlinable
     public var miterLimit: Double {
         get { return box.object.miterLimit }
         set {
@@ -18,6 +20,7 @@ public struct BLStrokeOptions {
             box.object.miterLimit = newValue
         }
     }
+    @inlinable
     public var dashOffset: Double {
         get { return box.object.dashOffset }
         set {
@@ -25,6 +28,7 @@ public struct BLStrokeOptions {
             box.object.dashOffset = newValue
         }
     }
+    @inlinable
     public var startCap: BLStrokeCap {
         get { return BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.startCap)) }
         set {
@@ -32,6 +36,7 @@ public struct BLStrokeOptions {
             box.object.startCap = UInt8(newValue.rawValue)
         }
     }
+    @inlinable
     public var endCap: BLStrokeCap {
         get { return BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.endCap)) }
         set {
@@ -39,6 +44,7 @@ public struct BLStrokeOptions {
             box.object.endCap = UInt8(newValue.rawValue)
         }
     }
+    @inlinable
     public var join: BLStrokeJoin {
         get { return BLStrokeJoin(rawValue: BLStrokeJoin.RawValue(box.object.join)) }
         set {
@@ -53,7 +59,8 @@ public struct BLStrokeOptions {
             box.object.transformOrder = UInt8(newValue.rawValue)
         }
     }
-    
+
+    @inlinable
     public var dashArray: [Double] {
         get { return BLArray<Double>(weakAssign: box.object.dashArray).asArray() }
         set {
@@ -78,6 +85,7 @@ public struct BLStrokeOptions {
         endCap = cap
     }
     
+    @inlinable
     mutating func ensureUnique() {
         if isKnownUniquelyReferenced(&box) {
             box = box.copy()

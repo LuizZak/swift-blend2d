@@ -32,7 +32,8 @@ public final class BLArray<Element: BLArrayElement> {
             append(contentsOf: pointer)
         }
     }
-    
+
+    @inlinable
     init(weakAssign object: BLArrayCore) {
         assert(Element.arrayImplementationType.arrayType.rawValue == object.impl.pointee.implType,
                "Cannot weak assign arrays of different types")
@@ -43,7 +44,8 @@ public final class BLArray<Element: BLArrayElement> {
             blArrayAssignWeak(&self.object, pointer)
         }
     }
-    
+
+    @inlinable
     init(object: BLArrayCore) {
         assert(Element.arrayImplementationType.arrayType.rawValue == object.impl.pointee.implType,
                "Cannot weak assign arrays of different types")

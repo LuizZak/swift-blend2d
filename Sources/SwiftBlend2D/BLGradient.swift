@@ -25,6 +25,7 @@ public struct BLGradient: Equatable {
     // MARK: Gradient Options
     
     /// Gradient type.
+    @inlinable
     public var type: BLGradientType {
         get {
             return BLGradientType(rawValue: blGradientGetType(&box.object))
@@ -36,6 +37,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Gradient extend mode.
+    @inlinable
     public var extendMode: BLExtendMode {
         get {
             return BLExtendMode(rawValue: blGradientGetExtendMode(&box.object))
@@ -47,6 +49,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Gradient values.
+    @inlinable
     public var gradientValues: GradientValues {
         get {
             switch type {
@@ -63,6 +66,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Linear parameters.
+    @inlinable
     public var linear: BLLinearGradientValues {
         get {
             return box.object.impl.pointee.linear
@@ -74,6 +78,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Radial parameters.
+    @inlinable
     public var radial: BLRadialGradientValues {
         get {
             return box.object.impl.pointee.radial
@@ -85,6 +90,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Conical parameters.
+    @inlinable
     public var conical: BLConicalGradientValues {
         get {
             return box.object.impl.pointee.conical
@@ -96,6 +102,7 @@ public struct BLGradient: Equatable {
     }
     
     /// x0 - start 'x' for Linear/Radial and center 'x' for Conical.
+    @inlinable
     public var x0: Double {
         get {
             return getValue(atIndex: .commonX0)
@@ -106,6 +113,7 @@ public struct BLGradient: Equatable {
     }
     
     /// y0 - start 'y' for Linear/Radial and center 'y' for Conical.
+    @inlinable
     public var y0: Double {
         get {
             return getValue(atIndex: .commonY0)
@@ -116,6 +124,7 @@ public struct BLGradient: Equatable {
     }
     
     /// x1 - end 'x' for Linear/Radial.
+    @inlinable
     public var x1: Double {
         get {
             return getValue(atIndex: .commonX1)
@@ -126,6 +135,7 @@ public struct BLGradient: Equatable {
     }
     
     /// y1 - end 'y' for Linear/Radial.
+    @inlinable
     public var y1: Double {
         get {
             return getValue(atIndex: .commonY1)
@@ -136,6 +146,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Radial gradient r0 radius.
+    @inlinable
     public var r0: Double {
         get {
             return getValue(atIndex: .radialR0)
@@ -146,6 +157,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Conical gradient angle.
+    @inlinable
     public var angle: Double {
         get {
             return getValue(atIndex: .conicalAngle)

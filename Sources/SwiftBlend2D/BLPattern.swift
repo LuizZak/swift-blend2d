@@ -99,119 +99,148 @@ public struct BLPattern {
 }
 
 public extension BLPattern {
+    @inlinable
     @discardableResult
     mutating func resetMatrix() -> BLResult {
         ensureUnique()
         return blPatternApplyMatrixOp(&box.object, BLMatrix2DOp.reset.rawValue, nil)
     }
+    @inlinable
     @discardableResult
     mutating func translate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.translate, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func translate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.translate, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     mutating func translate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.translate, p)
     }
+    @inlinable
     @discardableResult
     mutating func scale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.scale, xy, xy)
     }
+    @inlinable
     @discardableResult
     mutating func scale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.scale, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func scale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.scale, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     mutating func scale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.scale, p)
     }
+    @inlinable
     @discardableResult
     mutating func skew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.skew, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func skew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.skew, p)
     }
+    @inlinable
     @discardableResult
     mutating func rotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.rotate, angle)
     }
+    @inlinable
     @discardableResult
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
     }
+    @inlinable
     @discardableResult
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
+    @inlinable
     @discardableResult
     mutating func transform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.transform, matrix)
     }
+    @inlinable
     @discardableResult
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postTranslate, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func postTranslate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postTranslate, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     mutating func postTranslate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postTranslate, p)
     }
+    @inlinable
     @discardableResult
     mutating func postScale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, xy, xy)
     }
+    @inlinable
     @discardableResult
     mutating func postScale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func postScale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postScale, p.x, p.y)
     }
+    @inlinable
     @discardableResult
     mutating func postScale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postScale, p)
     }
+    @inlinable
     @discardableResult
     mutating func postSkew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postSkew, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func postSkew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postSkew, p)
     }
+    @inlinable
     @discardableResult
     mutating func postRotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.postRotate, angle)
     }
+    @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, x, y)
     }
+    @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
     }
+    @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
+    @inlinable
     @discardableResult
     mutating func postTransform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.postTransform, matrix)
@@ -220,6 +249,7 @@ public extension BLPattern {
 
 internal extension BLPattern {
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
@@ -228,6 +258,7 @@ internal extension BLPattern {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
@@ -236,6 +267,7 @@ internal extension BLPattern {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
@@ -244,6 +276,7 @@ internal extension BLPattern {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
         ensureUnique()
         return args.withUnsafeBytes { pointer in
@@ -252,6 +285,7 @@ internal extension BLPattern {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
         ensureUnique()
         return args.map { Double($0) }.withUnsafeBytes { pointer in
