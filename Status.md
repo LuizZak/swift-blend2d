@@ -24,9 +24,9 @@ This may change at any moment.
 `BLExternalImplPreface` | ℹ️ No work required | |
 `BLFile` | ✅ Done | |
 `BLFont` | ✅ Done | Font [C++ API]|
-`BLFontData` | 🕒 Partial | Font data [C++ API] `(Missing Swift tests)` |
+`BLFontData` | ✅ Done | Font data [C++ API] `(Missing Swift tests)` |
 `BLFontDesignMetrics` | ℹ️ No work required | |
-`BLFontFace` | 🕒 Partial | Font face [C++ API] `(Missing Swift tests)` |
+`BLFontFace` | ✅ Done | Font face [C++ API] `(Missing Swift tests)` |
 `BLFontFaceInfo` | ℹ️ No work required | Information of BLFontFace `(Would be nice to convert enum fields into Swift enums, however)` |
 `BLFontFeature` | ℹ️ No work required | |
 `BLFontLoader` | 🕒 Partial | `(Missing Swift tests)` |

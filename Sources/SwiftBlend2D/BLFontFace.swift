@@ -1,46 +1,8 @@
 import blend2d
 
 public class BLFontFace: BLBaseClass<BLFontFaceCore> {
-    // MARK: - Initializers
-    
-    /// Create Functionality
-    /// Creates a new `BLFontFace` from file specified by `fileName`.
-    ///
-    /// This is a utility initializer that first creates a `BLFontLoader` and then
-    /// calls `init(fromLoader: loader, faceIndex: 0)`.
-    ///
-    /// NOTE: This function offers a simplified creation of `BLFontFace` directly
-    /// from a file, but doesn't provide as much flexibility as `init(fromLoader:faceIndex:)`
-    /// as it allows to specify a `faceIndex`, which can be used to load multiple
-    /// font faces from TrueType/OpenType collections. The use of `init(fromLoader:faceIndex:)`
-    /// is recommended for any serious font handling.
-    public init(fromFile filePath: String, readFlags: BLFileReadFlags = []) throws {
-        try super.init { pointer -> BLResult in
-            blFontFaceInit(pointer)
-
-            return try mapError { blFontFaceCreateFromFile(pointer, filePath, readFlags.rawValue) }
-                .addFileErrorMappings(filePath: filePath)
-                .execute()
-        }
-    }
-    
-    /// Creates a new `BLFontFace` from `BLFontLoader`.
-    public init(fromLoader loader: BLFontLoader, faceIndex: UInt32) throws {
-        try super.init { pointer -> BLResult in
-            blFontFaceInit(pointer)
-            
-            return try mapError {
-                blFontFaceCreateFromLoader(pointer, &loader.object, faceIndex)
-            }.execute()
-        }
-    }
-    
-    public override init(weakAssign object: BLFontFaceCore) {
-        super.init(weakAssign: object)
-    }
-
     // MARK: Font Data & Loader
-    
+
     /// Gets `BLFontData` associated with this font-face.
     public var data: BLFontData {
         return BLFontData(weakAssign: object.impl.pointee.data.impl)
@@ -49,9 +11,9 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var loader: BLFontLoader {
         return BLFontLoader(weakAssign: object.impl.pointee.loader)
     }
-    
+
     // MARK: Properties
-    
+
     /// Returns font weight (returns default weight in case this is a variable font).
     public var weight: UInt16 {
         return object.impl.pointee.weight
@@ -102,42 +64,26 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         return object.impl.pointee.faceUniqueId
     }
     /// Gets full name as UTF-8 null-terminated string.
-    public var fullName: String {
-        return object.impl.pointee.fullName.asString
+    public var fullName: BLString {
+        return BLString(weakAssign: object.impl.pointee.fullName)
     }
-    /// Gets size of string returned by `fullName`, in bytes.
-    public var fullNameSize: Int {
-        return object.impl.pointee.fullName.size
-    }
-    
+
     /// Gets family name as UTF-8 null-terminated string.
-    public var familyName: String {
-        return object.impl.pointee.familyName.asString
-    }
-    /// Gets size of string returned by `familyName`, in bytes.
-    public var familyNameSize: Int {
-        return object.impl.pointee.familyName.size
+    public var familyName: BLString {
+        return BLString(weakAssign: object.impl.pointee.familyName)
     }
     /// Gets subfamily name as UTF-8 null-terminated string.
-    public var subfamilyName: String {
-        return object.impl.pointee.subfamilyName.asString
-    }
-    /// Gets size of string returned by `subfamilyName`, in bytes.
-    public var subfamilyNameSize: Int {
-        return object.impl.pointee.subfamilyName.size
+    public var subfamilyName: BLString {
+        return BLString(weakAssign: object.impl.pointee.subfamilyName)
     }
     /// Gets manufacturer name as UTF-8 null-terminated string.
-    public var postScriptName: String {
-        return object.impl.pointee.postScriptName.asString
-    }
-    /// Gets size of string returned by `postScriptName`, in bytes.
-    public var postScriptNameSize: Int {
-        return object.impl.pointee.postScriptName.size
+    public var postScriptName: BLString {
+        return BLString(weakAssign: object.impl.pointee.postScriptName)
     }
     /// Returns feature-set of this `BLFontFace`.
-//    public var featureSet: FontFeatureSet {
-//        return object.impl.pointee.featureSet
-//    }
+    //    public var featureSet: FontFeatureSet {
+    //        return object.impl.pointee.featureSet
+    //    }
     /// Returns design metrics of this `BLFontFace`.
     public var designMetrics: BLFontDesignMetrics {
         return object.impl.pointee.designMetrics
@@ -153,6 +99,44 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     /// Returns unicode coverage of this `BLFontFace`.
     public var unicodeCoverage: BLFontUnicodeCoverage {
         return object.impl.pointee.unicodeCoverage
+    }
+
+    // MARK: - Initializers
+    
+    /// Create Functionality
+    /// Creates a new `BLFontFace` from file specified by `fileName`.
+    ///
+    /// This is a utility initializer that first creates a `BLFontLoader` and then
+    /// calls `init(fromLoader: loader, faceIndex: 0)`.
+    ///
+    /// NOTE: This function offers a simplified creation of `BLFontFace` directly
+    /// from a file, but doesn't provide as much flexibility as `init(fromLoader:faceIndex:)`
+    /// as it allows to specify a `faceIndex`, which can be used to load multiple
+    /// font faces from TrueType/OpenType collections. The use of `init(fromLoader:faceIndex:)`
+    /// is recommended for any serious font handling.
+    public init(fromFile filePath: String, readFlags: BLFileReadFlags = []) throws {
+        try super.init { pointer -> BLResult in
+            blFontFaceInit(pointer)
+
+            return try mapError { blFontFaceCreateFromFile(pointer, filePath, readFlags.rawValue) }
+                .addFileErrorMappings(filePath: filePath)
+                .execute()
+        }
+    }
+    
+    /// Creates a new `BLFontFace` from `BLFontLoader`.
+    public init(fromLoader loader: BLFontLoader, faceIndex: UInt32) throws {
+        try super.init { pointer -> BLResult in
+            blFontFaceInit(pointer)
+            
+            return try mapError {
+                blFontFaceCreateFromLoader(pointer, &loader.object, faceIndex)
+            }.execute()
+        }
+    }
+    
+    public override init(weakAssign object: BLFontFaceCore) {
+        super.init(weakAssign: object)
     }
 }
 
