@@ -118,18 +118,22 @@ public struct BLRegion {
     }
 
     @inlinable
+    @discardableResult
     public mutating func combine(region: BLRegion, operation: BLBooleanOp) -> BLResult {
         ensureUnique()
         
-        return blRegionCombine(&box.object, &box.object, &region.box.object, operation.rawValue)
+        var object = box.object
+        return blRegionCombine(&box.object, &object, &region.box.object, operation.rawValue)
     }
 
     @inlinable
+    @discardableResult
     public mutating func combine(box: BLBoxI, operation: BLBooleanOp) -> BLResult {
         ensureUnique()
         
         var box = box
-        return blRegionCombineRB(&self.box.object, &self.box.object, &box, operation.rawValue)
+        var object = self.box.object
+        return blRegionCombineRB(&self.box.object, &object, &box, operation.rawValue)
     }
     
     /// Translates the region by the given point `pt`.
@@ -142,7 +146,8 @@ public struct BLRegion {
         ensureUnique()
         
         var pt = pt
-        return blRegionTranslate(&box.object, &box.object, &pt)
+        var object = box.object
+        return blRegionTranslate(&box.object, &object, &pt)
     }
     
     /// Translates the region by the given point `point` and clip it to the given
@@ -154,7 +159,8 @@ public struct BLRegion {
         
         var point = point
         var clipBox = clipBox
-        return blRegionTranslateAndClip(&box.object, &box.object, &point, &clipBox)
+        var object = box.object
+        return blRegionTranslateAndClip(&box.object, &object, &point, &clipBox)
     }
     
     /// Translates the region with `region` and clip it to the given `clipBox`.
@@ -164,7 +170,8 @@ public struct BLRegion {
         ensureUnique()
         
         var clipBox = clipBox
-        return blRegionIntersectAndClip(&box.object, &box.object, &region.box.object, &clipBox)
+        var object = box.object
+        return blRegionIntersectAndClip(&box.object, &object, &region.box.object, &clipBox)
     }
 
     @inlinable
