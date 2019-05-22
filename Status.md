@@ -8,8 +8,8 @@ This may change at any moment.
 |-----|-----|-----|
 `BLApproximationOptions` | ✅ Done | |
 `BLArc` | ✅ Done | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
-`BLArray` | 🕒 Partial | Array container (template) [C++ API]|
-`BLArrayView` | ℹ️ Not portable | `(Appears to be a C++-exclusive API)` |
+`BLArray` | ✅ Done | Array container (template) [C++ API]|
+`BLArrayView` | ✅ Done | |
 `BLBox` | ✅ Done | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ✅ Done | Box specified as [x0, y0, x1, y1] using int as a storage type |
 `BLCircle` | ✅ Done | Circle specified as [cx, cy, r] using double as a storage type |
@@ -23,7 +23,7 @@ This may change at any moment.
 `BLEllipse` | ✅ Done | Ellipse specified as [cx, cy, rx, ry] using double as a storage type |
 `BLExternalImplPreface` | ℹ️ No work required | |
 `BLFile` | ✅ Done | |
-`BLFont` | 🕒 Partial | Font [C++ API]|
+`BLFont` | ✅ Done | Font [C++ API]|
 `BLFontData` | 🕒 Partial | Font data [C++ API] `(Missing Swift tests)` |
 `BLFontDesignMetrics` | ℹ️ No work required | |
 `BLFontFace` | 🕒 Partial | Font face [C++ API] `(Missing Swift tests)` |

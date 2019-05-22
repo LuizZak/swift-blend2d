@@ -126,6 +126,23 @@ public final class BLArray<Element: BLArrayElement> {
     }
 }
 
+extension BLArray: Sequence {
+    public __consuming func makeIterator() -> AnyIterator<Element> {
+        var index = 0
+
+        return AnyIterator {
+            if index >= self.count {
+                return nil
+            }
+            defer {
+                index += 1
+            }
+
+            return self[index]
+        }
+    }
+}
+
 /// A protocol that is used to parameterize `BLArray` instances.
 public protocol BLArrayElement {
     /// Returns a `BLImplType` for the array of elements corresponding to `Self`
@@ -216,5 +233,17 @@ extension UInt: BLArrayElement {
         return MemoryLayout<UInt>.size == MemoryLayout<UInt32>.size
             ? UInt32.arrayImplementationType
             : UInt64.arrayImplementationType
+    }
+}
+extension BLFontFeature: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLArrayType {
+        return BLArrayType(arrayType: .arrayOfStruct_8)
+    }
+}
+extension BLFontVariation: BLArrayElement {
+    @inlinable
+    public static var arrayImplementationType: BLArrayType {
+        return BLArrayType(arrayType: .arrayOfStruct_8)
     }
 }

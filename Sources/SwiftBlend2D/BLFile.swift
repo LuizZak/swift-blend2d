@@ -3,7 +3,7 @@ import Foundation
 #endif
 import blend2d
 
-/// A thin abstraction over a native OS file IO [C++ API].
+/// A thin abstraction over a native OS file IO.
 ///
 /// A thin wrapper around a native OS file support. The file handle is always
 /// `intptr_t` and it refers to either a file descriptor on POSIX targets and

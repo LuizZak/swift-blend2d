@@ -39,6 +39,28 @@ public class BLFont: BLBaseClass<BLFontCore> {
     public var face: BLFontFace {
         return BLFontFace(weakAssign: object.impl.pointee.face)
     }
+
+    /// Gets font-features of the font.
+    public var features: [BLFontFeature] {
+        return Array(BLArray<BLFontFeature>(weakAssign: object.impl.pointee.features))
+    }
+    /// Gets font-variations used by this font.
+    public var variations: [BLFontVariation] {
+        return Array(BLArray<BLFontVariation>(weakAssign: object.impl.pointee.variations))
+    }
+
+    /// Gets the weight of the font.
+    public var weight: UInt16 {
+        return object.impl.pointee.weight
+    }
+    /// Gets the stretch of the font.
+    public var stretch: UInt8 {
+        return object.impl.pointee.stretch
+    }
+    /// Gets the style of the font.
+    public var style: UInt8 {
+        return object.impl.pointee.style
+    }
     
     public init(fromFace face: BLFontFace, size: Float) {
         super.init { pointer -> BLResult in
