@@ -1,10 +1,12 @@
 import blend2d
 
 public class BLFontData: BLBaseClass<BLFontDataCore> {
+    @inlinable
     public override init() {
         super.init()
     }
-    
+
+    @inlinable
     public init(fromFontLoader loader: BLFontLoader, faceIndex: UInt32) throws {
         try super.init { pointer in
             try resultToError(
@@ -12,7 +14,8 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
             )
         }
     }
-    
+
+    @inlinable
     internal init(weakAssign impl: UnsafeMutablePointer<BLFontDataImpl>) {
         super.init(weakAssign: BLFontDataCore(impl: impl))
     }

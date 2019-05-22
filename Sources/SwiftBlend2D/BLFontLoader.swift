@@ -2,12 +2,14 @@ import blend2d
 
 public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
     /// Gets whether the font-loader is a built-in null instance.
+    @inlinable
     public var isNone: Bool {
         return (UInt32(object.impl.pointee.implTraits) & BLImplTraits.null.rawValue) != 0
     }
     
     /// Gets whether the font-loader is empty (which the same as `isNone` in this
     /// case).
+    @inlinable
     public var isEmpty: Bool {
         return isNone
     }
@@ -17,11 +19,13 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
     /// It doesn't matter if the content is a single font or a collection. In
     /// any case the `faceType` would always return the type of the font-face
     /// that will be created by `BLFontFace(fromLoader:)`.
+    @inlinable
     public var faceType: UInt32 {
         return object.impl.pointee.faceCount
     }
     
     /// Returns loader flags.
+    @inlinable
     public var loaderFlags: BLFontLoaderFlags {
         return BLFontLoaderFlags(object.impl.pointee.loaderFlags)
     }
@@ -85,6 +89,7 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
 }
 
 extension BLFontLoader: Equatable {
+    @inlinable
     public static func ==(lhs: BLFontLoader, rhs: BLFontLoader) -> Bool {
         return blFontLoaderEquals(&lhs.object, &rhs.object)
     }
