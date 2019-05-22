@@ -1,6 +1,7 @@
 import blend2d
 
 public extension BLContextHints {
+    @inlinable
     init(renderingQuality: BLRenderingQuality,
          gradientQuality: BLGradientQuality,
          patternQuality: BLPatternQuality) {
