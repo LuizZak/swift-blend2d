@@ -104,6 +104,20 @@ class BLPointTests: XCTestCase {
         XCTAssertEqual(result.y, 2 / 3)
     }
     
+    func testMultiplyDoubleInverse() {
+        let result = 3 * BLPoint(x: 1, y: 2)
+        
+        XCTAssertEqual(result.x, 3)
+        XCTAssertEqual(result.y, 6)
+    }
+    
+    func testDivideDoubleInverse() {
+        let result = 3 / BLPoint(x: 1, y: 2)
+        
+        XCTAssertEqual(result.x, 3)
+        XCTAssertEqual(result.y, 3 / 2)
+    }
+    
     func testMultiplyAssignDouble() {
         var lhs = BLPoint(x: 1, y: 2)
         lhs *= 3

@@ -69,6 +69,16 @@ public extension BLPointI {
     }
     
     @inlinable
+    static func *(lhs: Int, rhs: BLPointI) -> BLPointI {
+        return BLPointI(x: Int32(lhs) * rhs.x, y: Int32(lhs) * rhs.y)
+    }
+    
+    @inlinable
+    static func /(lhs: Int, rhs: BLPointI) -> BLPointI {
+        return BLPointI(x: Int32(lhs) / rhs.x, y: Int32(lhs) / rhs.y)
+    }
+    
+    @inlinable
     static func *=(lhs: inout BLPointI, rhs: Int) {
         lhs = lhs * rhs
     }
