@@ -6,6 +6,7 @@ public extension BLEllipse {
         self.init(cx: center.x, cy: center.y, rx: radius.x, ry: radius.y)
     }
 
+    @inlinable
     func insetBy(x: Double, y: Double) -> BLEllipse {
         return BLEllipse(cx: self.cx + x / 2, cy: self.cy + y / 2, rx: rx - x, ry: ry - y)
     }
