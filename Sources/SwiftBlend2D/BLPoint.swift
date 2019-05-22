@@ -13,41 +13,73 @@ public extension BLPoint {
     }
 }
 
-// MARK: - Operators
+// MARK: - Operators - BLPoint
 public extension BLPoint {
+    @inlinable
     static prefix func -(lhs: BLPoint) -> BLPoint {
         return BLPoint(x: -lhs.x, y: -lhs.y)
     }
     
+    @inlinable
     static func +(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
         return BLPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }
-
+    
+    @inlinable
     static func -(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
         return BLPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
     }
-
+    
+    @inlinable
     static func *(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
         return BLPoint(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
     }
-
+    
+    @inlinable
     static func /(lhs: BLPoint, rhs: BLPoint) -> BLPoint {
         return BLPoint(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
     }
-
+    
+    @inlinable
     static func +=(lhs: inout BLPoint, rhs: BLPoint) {
         lhs = lhs + rhs
     }
-
+    
+    @inlinable
     static func -=(lhs: inout BLPoint, rhs: BLPoint) {
         lhs = lhs - rhs
     }
-
+    
+    @inlinable
     static func *=(lhs: inout BLPoint, rhs: BLPoint) {
         lhs = lhs * rhs
     }
-
+    
+    @inlinable
     static func /=(lhs: inout BLPoint, rhs: BLPoint) {
+        lhs = lhs / rhs
+    }
+}
+
+// MARK: - Operators - Double
+public extension BLPoint {
+    @inlinable
+    static func *(lhs: BLPoint, rhs: Double) -> BLPoint {
+        return BLPoint(x: lhs.x * rhs, y: lhs.y * rhs)
+    }
+    
+    @inlinable
+    static func /(lhs: BLPoint, rhs: Double) -> BLPoint {
+        return BLPoint(x: lhs.x / rhs, y: lhs.y / rhs)
+    }
+    
+    @inlinable
+    static func *=(lhs: inout BLPoint, rhs: Double) {
+        lhs = lhs * rhs
+    }
+    
+    @inlinable
+    static func /=(lhs: inout BLPoint, rhs: Double) {
         lhs = lhs / rhs
     }
 }
