@@ -35,7 +35,7 @@ This may change at any moment.
 `BLFontPanose` | ℹ️ No work required | Font PANOSE classification |
 `BLFontTable` | ✅ Done | A read only data that represents a font table or its sub-table |
 `BLFontUnicodeCoverage` | ✅ Done | |
-`BLFontVariation` | ℹ️ No work required | |
+`BLFontVariation` | ✅ Done | |
 `BLFormatInfo` | ✅ Done | |
 `BLGlyphBuffer` | ✅ Done | |
 `BLGlyphBufferData` | ❌ Unstarted | Glyph buffer [C Data]|
