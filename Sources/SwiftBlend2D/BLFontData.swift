@@ -39,7 +39,6 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
     public func queryTables(fontTable: inout BLFontTable, tags: [BLTag]) -> Int {
         return object.impl.pointee.virt.pointee.queryTables(object.impl, &fontTable, tags, 1)
     }
-    
 }
 
 extension BLFontDataCore: CoreStructure {

@@ -33,7 +33,7 @@ This may change at any moment.
 `BLFontMatrix` | ℹ️ No work required | |
 `BLFontMetrics` | ℹ️ No work required | Scaled BLFontDesignMetrics based on font size and other properties |
 `BLFontPanose` | ℹ️ No work required | Font PANOSE classification |
-`BLFontTable` | ❌ Unstarted | A read only data that represents a font table or its sub-table |
+`BLFontTable` | ✅ Done | A read only data that represents a font table or its sub-table |
 `BLFontUnicodeCoverage` | ✅ Done | |
 `BLFontVariation` | ℹ️ No work required | |
 `BLFormatInfo` | ✅ Done | |
