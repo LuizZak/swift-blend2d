@@ -38,9 +38,9 @@ This may change at any moment.
 `BLFontVariation` | ✅ Done | |
 `BLFormatInfo` | ✅ Done | |
 `BLGlyphBuffer` | ✅ Done | |
-`BLGlyphBufferData` | ❌ Unstarted | Glyph buffer [C Data]|
+`BLGlyphBufferImpl` | ℹ️ No work required | Glyph buffer [C Data]|
 `BLGlyphInfo` | ℹ️ No work required | |
-`BLGlyphItem` | ❌ Unstarted | |
+`BLGlyphItem` | ✅ Done | |
 `BLGlyphMappingState` | ℹ️ No work required | Character to glyph mapping state |
 `BLGlyphOutlineSinkInfo` | ℹ️ No work required | Information passed to a BLPathSinkFunc sink by BLFont::getGlyphOutlines()|
 `BLGlyphPlacement` | ℹ️ No work required | |
