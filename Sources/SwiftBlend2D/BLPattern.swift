@@ -69,30 +69,35 @@ public struct BLPattern {
             box = box.copy()
         }
     }
-    
+
+    @discardableResult
     mutating func setImage(_ image: BLImage) -> BLResult {
         ensureUnique()
         return blPatternSetImage(&box.object, &image.object, nil)
     }
-    
+
+    @discardableResult
     mutating func setImage(_ image: BLImage, area: BLRectI) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: area) { pointer in
             return blPatternSetImage(&box.object, &image.object, pointer)
         }
     }
-    
+
+    @discardableResult
     mutating func resetImage() -> BLResult {
         return setImage(BLImage.none)
     }
-    
+
+    @discardableResult
     mutating func setArea(_ area: BLRectI?) -> BLResult {
         ensureUnique()
         return withUnsafeNullablePointer(to: area) { pointer in
             return blPatternSetArea(&box.object, pointer)
         }
     }
-    
+
+    @discardableResult
     mutating func resetArea() -> BLResult {
         return setArea(nil)
     }

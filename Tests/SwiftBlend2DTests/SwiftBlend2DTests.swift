@@ -235,7 +235,7 @@ class SwiftBlend2DTests: XCTestCase {
         for tp in tiger.paths {
             if tp.fill {
                 ctx.setFillStyle(tp.fillColor)
-                ctx.setFillRule(tp.fillRule)
+                ctx.fillRule = tp.fillRule
                 ctx.fillPath(tp.blPath)
             }
 

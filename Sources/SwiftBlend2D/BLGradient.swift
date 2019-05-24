@@ -6,18 +6,20 @@ public struct BLGradient: Equatable {
     var box: BLBaseClass<BLGradientCore>
     
     // MARK: Gradient Stops
-    
+    @inlinable
     public var stops: [BLGradientStop] {
         let buffer = UnsafeBufferPointer(start: blGradientGetStops(&box.object),
                                          count: size)
         
         return Array(buffer)
     }
-    
+
+    @inlinable
     public var size: Int {
         return blGradientGetSize(&box.object)
     }
-    
+
+    @inlinable
     public var capacity: Int {
         return blGradientGetCapacity(&box.object)
     }
@@ -168,16 +170,19 @@ public struct BLGradient: Equatable {
     }
     
     // MARK: Transformations
+    @inlinable
     public var hasMatrix: Bool {
         return matrixType != .identity
     }
     
     /// Type of the transformation matrix.
+    @inlinable
     public var matrixType: BLMatrix2DType {
         return BLMatrix2DType(UInt32(box.object.impl.pointee.matrixType))
     }
     
     /// Gradient transformation matrix.
+    @inlinable
     public var matrix: BLMatrix2D {
         get {
             return box.object.impl.pointee.matrix
@@ -190,6 +195,7 @@ public struct BLGradient: Equatable {
     }
     
     /// Gets the gradient values for this gradient.
+    @inlinable
     public var values: [Double] {
         get {
             assert(BL_GRADIENT_VALUE_COUNT.rawValue == 6)
@@ -286,6 +292,7 @@ public struct BLGradient: Equatable {
         }
     }
 
+    @inlinable
     public static func == (lhs: BLGradient, rhs: BLGradient) -> Bool {
         return blGradientEquals(&lhs.box.object, &rhs.box.object)
     }
@@ -293,19 +300,23 @@ public struct BLGradient: Equatable {
 
 public extension BLGradient {
     /// Reset extend mode to `BLExtendMode.pad`.
+    @inlinable
     mutating func resetExtendMode() {
         extendMode = .pad
     }
-    
+
+    @inlinable
     func getValue(atIndex index: BLGradientValue) -> Double {
         return blGradientGetValue(&box.object, Int(index.rawValue))
     }
-    
+
+    @inlinable
     mutating func setValue(_ index: BLGradientValue, _ value: Double) {
         ensureUnique()
         blGradientSetValue(&box.object, Int(index.rawValue), value)
     }
-    
+
+    @inlinable
     mutating func setValues(from index: BLGradientValue, _ values: [Double]) {
         ensureUnique()
         var values = values
@@ -313,68 +324,92 @@ public extension BLGradient {
     }
     
     // MARK: Gradient Stops
-    
+
+    @inlinable
     mutating func resetStops() {
         ensureUnique()
         blGradientResetStops(&box.object)
     }
-    
-    mutating func assignStops(_ stops: [BLGradientStop]) {
+
+    @discardableResult
+    @inlinable
+    mutating func assignStops(_ stops: [BLGradientStop]) -> BLResult {
         ensureUnique()
-        blGradientAssignStops(&box.object, stops, stops.count)
+        return blGradientAssignStops(&box.object, stops, stops.count)
     }
-    
-    mutating func addStop(_ offset: Double, rgba32: UInt32) {
+
+    @discardableResult
+    @inlinable
+    mutating func addStop(_ offset: Double, rgba32: UInt32) -> BLResult {
         ensureUnique()
-        blGradientAddStopRgba32(&box.object, offset, rgba32)
+        return blGradientAddStopRgba32(&box.object, offset, rgba32)
     }
-    
-    mutating func addStop(_ offset: Double, rgba64: UInt64) {
+
+    @discardableResult
+    @inlinable
+    mutating func addStop(_ offset: Double, rgba64: UInt64) -> BLResult {
         ensureUnique()
-        blGradientAddStopRgba64(&box.object, offset, rgba64)
+        return blGradientAddStopRgba64(&box.object, offset, rgba64)
     }
-    
-    mutating func addStop(_ offset: Double, _ rgba: BLRgba32) {
+
+    @discardableResult
+    @inlinable
+    mutating func addStop(_ offset: Double, _ rgba: BLRgba32) -> BLResult {
         ensureUnique()
-        blGradientAddStopRgba32(&box.object, offset, rgba.value)
+        return blGradientAddStopRgba32(&box.object, offset, rgba.value)
     }
-    
-    mutating func addStop(_ offset: Double, _ rgba: BLRgba64) {
+
+    @discardableResult
+    @inlinable
+    mutating func addStop(_ offset: Double, _ rgba: BLRgba64) -> BLResult {
         ensureUnique()
-        blGradientAddStopRgba64(&box.object, offset, rgba.value)
+        return blGradientAddStopRgba64(&box.object, offset, rgba.value)
     }
-    
-    mutating func removeStop(index: Int) {
+
+    @discardableResult
+    @inlinable
+    mutating func removeStop(index: Int) -> BLResult {
         ensureUnique()
-        blGradientRemoveStop(&box.object, index)
+        return blGradientRemoveStop(&box.object, index)
     }
-    
-    mutating func removeStopByOffset(offset: Double, all: UInt32) {
+
+    @discardableResult
+    @inlinable
+    mutating func removeStopByOffset(offset: Double, all: UInt32) -> BLResult {
         ensureUnique()
-        blGradientRemoveStopByOffset(&box.object, offset, all)
+        return blGradientRemoveStopByOffset(&box.object, offset, all)
     }
-    
-    mutating func removeStops(inRange range: BLRange) {
+
+    @discardableResult
+    @inlinable
+    mutating func removeStops(inRange range: BLRange) -> BLResult {
         ensureUnique()
         var range = range
-        blGradientRemoveStops(&box.object, &range)
+        return blGradientRemoveStops(&box.object, &range)
     }
-    
-    mutating func removeStopsFromTo(offsetMin: Double, offsetMax: Double) {
+
+    @discardableResult
+    @inlinable
+    mutating func removeStopsFromTo(offsetMin: Double, offsetMax: Double) -> BLResult {
         ensureUnique()
-        blGradientRemoveStopsFromTo(&box.object, offsetMin, offsetMax)
+        return blGradientRemoveStopsFromTo(&box.object, offsetMin, offsetMax)
     }
-    
-    mutating func replaceStopRgba32(index: Int, offset: Double, rgba32: UInt32) {
+
+    @discardableResult
+    @inlinable
+    mutating func replaceStopRgba32(index: Int, offset: Double, rgba32: UInt32) -> BLResult {
         ensureUnique()
-        blGradientReplaceStopRgba32(&box.object, index, offset, rgba32)
+        return blGradientReplaceStopRgba32(&box.object, index, offset, rgba32)
     }
-    
-    mutating func replaceStopRgba64(index: Int, offset: Double, rgba64: UInt64) {
+
+    @discardableResult
+    @inlinable
+    mutating func replaceStopRgba64(index: Int, offset: Double, rgba64: UInt64) -> BLResult {
         ensureUnique()
-        blGradientReplaceStopRgba64(&box.object, index, offset, rgba64)
+        return blGradientReplaceStopRgba64(&box.object, index, offset, rgba64)
     }
-    
+
+    @inlinable
     func indexOfStop(withOffset offset: Double) -> Int {
         return blGradientIndexOfStop(&box.object, offset)
     }
@@ -382,119 +417,148 @@ public extension BLGradient {
 
 public extension BLGradient {
     @discardableResult
+    @inlinable
     mutating func resetMatrix() -> BLResult {
         ensureUnique()
         return blGradientApplyMatrixOp(&box.object, BLMatrix2DOp.reset.rawValue, nil)
     }
     @discardableResult
+    @inlinable
     mutating func translate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.translate, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func translate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.translate, p.x, p.y)
     }
     @discardableResult
+    @inlinable
     mutating func translate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.translate, p)
     }
     @discardableResult
+    @inlinable
     mutating func scale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.scale, xy, xy)
     }
     @discardableResult
+    @inlinable
     mutating func scale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.scale, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func scale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.scale, p.x, p.y)
     }
     @discardableResult
+    @inlinable
     mutating func scale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.scale, p)
     }
     @discardableResult
+    @inlinable
     mutating func skew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.skew, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func skew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.skew, p)
     }
     @discardableResult
+    @inlinable
     mutating func rotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.rotate, angle)
     }
     @discardableResult
+    @inlinable
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
     }
     @discardableResult
+    @inlinable
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
     @discardableResult
+    @inlinable
     mutating func transform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.transform, matrix)
     }
     @discardableResult
+    @inlinable
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postTranslate, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func postTranslate(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postTranslate, p.x, p.y)
     }
     @discardableResult
+    @inlinable
     mutating func postTranslate(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postTranslate, p)
     }
     @discardableResult
+    @inlinable
     mutating func postScale(xy: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, xy, xy)
     }
     @discardableResult
+    @inlinable
     mutating func postScale(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postScale, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func postScale(by p: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postScale, p.x, p.y)
     }
     @discardableResult
+    @inlinable
     mutating func postScale(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postScale, p)
     }
     @discardableResult
+    @inlinable
     mutating func postSkew(x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postSkew, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func postSkew(by p: BLPoint) -> BLResult {
         return _applyMatrixOp(.postSkew, p)
     }
     @discardableResult
+    @inlinable
     mutating func postRotate(angle: Double) -> BLResult {
         return _applyMatrixOp(.postRotate, angle)
     }
     @discardableResult
+    @inlinable
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, x, y)
     }
     @discardableResult
+    @inlinable
     mutating func postRotate(angle: Double, point: BLPoint) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
     }
     @discardableResult
+    @inlinable
     mutating func postRotate(angle: Double, point: BLPointI) -> BLResult {
         return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
     @discardableResult
+    @inlinable
     mutating func postTransform(_ matrix: BLMatrix2D) -> BLResult {
         return _applyMatrixOp(.postTransform, matrix)
     }
@@ -502,6 +566,7 @@ public extension BLGradient {
 
 internal extension BLGradient {
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
@@ -510,6 +575,7 @@ internal extension BLGradient {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
@@ -518,6 +584,7 @@ internal extension BLGradient {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
@@ -526,6 +593,7 @@ internal extension BLGradient {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
         ensureUnique()
         return args.withUnsafeBytes { pointer in
@@ -534,6 +602,7 @@ internal extension BLGradient {
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
+    @inlinable
     mutating func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
         ensureUnique()
         return args.map { Double($0) }.withUnsafeBytes { pointer in
