@@ -118,6 +118,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         return blPathEllipticArcTo(&object, rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x1, y1)
     }
 
+    @discardableResult
     @inlinable
     func addGeometry(_ geometryType: BLGeometryType,
                      _ data: UnsafeRawPointer?,
