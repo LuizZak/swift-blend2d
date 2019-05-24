@@ -117,8 +117,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     public func ellipticArcTo(rx: Double, ry: Double, xAxisRotation: Double, largeArcFlag: Bool, sweepFlag: Bool, x1: Double, y1: Double) -> BLResult {
         return blPathEllipticArcTo(&object, rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x1, y1)
     }
-    
-    // TODO: Map blPathAddGeometry
+
     @inlinable
     func addGeometry(_ geometryType: BLGeometryType,
                      _ data: UnsafeRawPointer?,
@@ -130,7 +129,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         }
     }
 
-    //! Adds a closed circle to the path.
+    /// Adds a closed circle to the path.
     @inlinable
     @discardableResult
     public func addCircle(_ circle: BLCircle, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
@@ -139,7 +138,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         return addGeometry(.circle, &circle, m, dir)
     }
 
-    //! Adds a closed ellipse to the path.
+    /// Adds a closed ellipse to the path.
     @inlinable
     @discardableResult
     public func addEllipse(_ ellipse: BLEllipse, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
