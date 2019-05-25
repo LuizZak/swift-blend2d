@@ -693,6 +693,18 @@ public extension BLStyleType {
     static let gradient = BL_STYLE_TYPE_GRADIENT
 }
 
+public extension BLByteOrder {
+    /// Little endian byte-order.
+    static let le = BL_BYTE_ORDER_LE
+    /// Big endian byte-order.
+    static let be = BL_BYTE_ORDER_BE
+    
+    /// Native (host) byte-order.
+    static let native = BL_BYTE_ORDER_NATIVE
+    /// Swapped byte-order (BE if host is LE and vice versa).
+    static let swapped = BL_BYTE_ORDER_SWAPPED
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }

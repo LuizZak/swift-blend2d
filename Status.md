@@ -44,8 +44,8 @@ This may change at any moment.
 `BLGlyphMappingState` | ℹ️ No work required | Character to glyph mapping state |
 `BLGlyphOutlineSinkInfo` | ℹ️ No work required | Information passed to a BLPathSinkFunc sink by BLFont::getGlyphOutlines()|
 `BLGlyphPlacement` | ℹ️ No work required | |
-`BLGlyphRun` | ❌ Unstarted | |
-`BLGlyphRunIterator` | ❌ Unstarted | |
+`BLGlyphRun` | 🕒 Partial | `(Missing Swift tests)` |
+`BLGlyphRunIterator` | 🕒 Partial | `(Missing Swift tests)` |
 `BLGradient` | 🕒 Partial | Gradient [C++ API]|
 `BLGradientStop` | ✅ Done | |
 `BLImage` | 🕒 Partial | 2D raster image [C++ API]|
