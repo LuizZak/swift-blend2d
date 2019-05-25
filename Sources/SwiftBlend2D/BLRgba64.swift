@@ -21,7 +21,7 @@ public extension BLRgba64 {
     // Note: Not @inlinable for now because this currently crashes the Swift
     // compiler: https://bugs.swift.org/browse/SR-10571
 //    @inlinable
-    init(rgba32: BLRgba32) {
+    init(_ rgba32: BLRgba32) {
         self.init(r: rgba32.r | (rgba32.r << 8),
                   g: rgba32.g | (rgba32.g << 8),
                   b: rgba32.b | (rgba32.b << 8),

@@ -36,7 +36,7 @@ class BLRgba64Tests: XCTestCase {
     }
     
     func testInitWithRgba32() {
-        let color = BLRgba64(rgba32: BLRgba32(argb: (4 << 24) | (1 << 16) | (2 << 8) | (3)))
+        let color = BLRgba64(BLRgba32(argb: (4 << 24) | (1 << 16) | (2 << 8) | (3)))
         
         // Basically increase resolution by 256 times (from 2-bytes 0xff to
         // 4-bytes 0xffff storage)
