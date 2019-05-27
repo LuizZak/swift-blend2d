@@ -40,9 +40,8 @@ let package = Package(
             cxxSettings: [
                 .define("ASMJIT_BUILD_X86", .when(platforms: [.macOS, .linux])),
                 .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS])),
-                .define("ASMJIT_BUILD_EMBED"),
-                .define("ASMJIT_BUILD_STATIC"),
-                .define("ASMJIT_BUILD_NO_STDCXX")
+                .define("ASMJIT_BUILD_NO_STDCXX"),
+                .define("ASMJIT_STATIC"),
             ],
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
