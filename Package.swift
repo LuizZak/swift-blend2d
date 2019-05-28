@@ -55,7 +55,7 @@ let package = Package(
                 .define("BL_BUILD_OPT_SSE3"),
                 .define("BL_BUILD_OPT_SSE4_1", .when(platforms: [.macOS])),
                 .define("BL_BUILD_OPT_SSE4_2", .when(platforms: [.macOS])),
-                .define("BL_BUILD_NO_STDCXX")
+                .define("BL_BUILD_NO_STDCXX"),
             ]
         ),
         .testTarget(
