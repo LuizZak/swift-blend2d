@@ -350,6 +350,8 @@ public:
   //! Force long form of jmp/jcc instruction.
   inline This& long_() noexcept { return _addInstOptions(Inst::kOptionLongForm); }
 
+  //! \}
+
   //! \name Encoding Options
   //! \{
 

@@ -384,8 +384,7 @@ public extension BLGradient {
     @inlinable
     mutating func removeStops(inRange range: BLRange) -> BLResult {
         ensureUnique()
-        var range = range
-        return blGradientRemoveStops(&box.object, &range)
+        return blGradientRemoveStops(&box.object, range.start, range.end)
     }
 
     @discardableResult
