@@ -53,9 +53,9 @@ This may change at any moment.
 `BLImageData` | ✅ Done | Data that describes a raster image. Used by BLImage |
 `BLImageDecoder` | ❌ Unstarted | Image decoder [C++ API]|
 `BLImageEncoder` | ❌ Unstarted | Image encoder [C++ API]|
-`BLImageInfo` | ❌ Unstarted | Image information provided by image codecs |
+`BLImageInfo` | ℹ️ No work required | Image information provided by image codecs |
 `BLImageScaleOptions` | ❌ Unstarted | Options that can used to customize image scaling |
-`BLInternalCastImpl` | ❌ Unstarted | |
+`BLInternalCastImpl` | ℹ️ No work required | |
 `BLLine` | ✅ Done | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ℹ️ No work required | Linear gradient values packed into a structure |
 `BLMatrix2D` | 🕒 Partial | `(Missing Swift tests)` |
@@ -63,7 +63,7 @@ This may change at any moment.
 `BLPathView` | ℹ️ No work required | |
 `BLPattern` | 🕒 Partial | Pattern [C++ API] `(Missing Swift tests)` |
 `BLPixelConverter` | ❌ Unstarted | |
-`BLPixelConverterOptions` | ❌ Unstarted | Pixel conversion options |
+`BLPixelConverterOptions` | ℹ️ No work required | Pixel conversion options |
 `BLPoint` | ✅ Done | Point specified as [x, y] using double as a storage type |
 `BLPointI` | ✅ Done | Point specified as [x, y] using int as a storage type |
 `BLRadialGradientValues` | ℹ️ No work required | Radial gradient values packed into a structure |
