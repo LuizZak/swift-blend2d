@@ -273,8 +273,8 @@ struct Operand_ {
   //! \name Operator Overloads
   //! \{
 
-  template<typename T> constexpr bool operator==(const T& other) const noexcept { return  isEqual(other); }
-  template<typename T> constexpr bool operator!=(const T& other) const noexcept { return !isEqual(other); }
+  constexpr bool operator==(const Operand_& other) const noexcept { return  isEqual(other); }
+  constexpr bool operator!=(const Operand_& other) const noexcept { return !isEqual(other); }
 
   //! \}
 
@@ -419,8 +419,7 @@ public:
     : Operand_{ kOpNone, 0u, {{ 0u, 0u }}} {}
 
   //! Creates a cloned `other` operand.
-  constexpr Operand(const Operand& other) noexcept
-    : Operand_(other) {}
+  constexpr Operand(const Operand& other) noexcept = default;
 
   //! Creates a cloned `other` operand.
   constexpr explicit Operand(const Operand_& other)
@@ -438,7 +437,8 @@ public:
   //! \name Operator Overloads
   //! \{
 
-  inline Operand& operator=(const Operand_& other) noexcept { copyFrom(other); return *this; }
+  inline Operand& operator=(const Operand& other) noexcept = default;
+  inline Operand& operator=(const Operand_& other) noexcept { return operator=(static_cast<const Operand&>(other)); }
 
   //! \}
 
