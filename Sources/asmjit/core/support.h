@@ -640,8 +640,9 @@ static ASMJIT_INLINE const char* findPackedString(const char* p, uint32_t id) no
 
 //! Compares two instruction names.
 //!
-//! `a` is a null terminated instruction name from arch-specific `nameData[]` table.
-//! `b` is a non-null terminated instruction name passed to `Inst::idByName()`.
+//! `a` is a null terminated instruction name from arch-specific `nameData[]`
+//! table. `b` is a possibly non-null terminated instruction name passed to
+//! `InstAPI::stringToInstId()`.
 static ASMJIT_INLINE int cmpInstName(const char* a, const char* b, size_t size) noexcept {
   for (size_t i = 0; i < size; i++) {
     int c = int(uint8_t(a[i])) - int(uint8_t(b[i]));

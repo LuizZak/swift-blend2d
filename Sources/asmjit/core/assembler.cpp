@@ -48,7 +48,7 @@ Error BaseAssembler::setOffset(size_t offset) {
 // [asmjit::BaseAssembler - Logging]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 static void BaseAssembler_logLabel(BaseAssembler* self, const Label& label) noexcept {
   Logger* logger = self->_code->_logger;
 
@@ -83,7 +83,7 @@ Error BaseAssembler::section(Section* section) {
   if (!_code->isSectionValid(section->id()) || _code->_sections[section->id()] != section)
     return reportError(DebugUtils::errored(kErrorInvalidSection));
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (hasEmitterOption(kOptionLoggingEnabled))
     _code->_logger->logf(".section %s {#%u}\n", section->name(), section->id());
   #endif
@@ -126,7 +126,7 @@ Error BaseAssembler::bind(const Label& label) {
 
   Error err = _code->bindLabel(label, _section->id(), offset());
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (hasEmitterOption(kOptionLoggingEnabled))
     BaseAssembler_logLabel(this, label);
   #endif
@@ -180,7 +180,7 @@ Error BaseAssembler::_emitOpArray(uint32_t instId, const Operand_* operands, siz
   }
 }
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 void BaseAssembler::_emitLog(
   uint32_t instId, uint32_t options, const Operand_& o0, const Operand_& o1, const Operand_& o2, const Operand_& o3,
   uint32_t relSize, uint32_t immSize, uint8_t* afterCursor) {
@@ -278,7 +278,7 @@ Error BaseAssembler::embed(const void* data, uint32_t dataSize) {
 
   writer.emitData(data, dataSize);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (ASMJIT_UNLIKELY(hasEmitterOption(kOptionLoggingEnabled)))
     _code->_logger->logBinary(data, dataSize);
   #endif
@@ -304,7 +304,7 @@ Error BaseAssembler::embedLabel(const Label& label) {
   CodeBufferWriter writer(this);
   ASMJIT_PROPAGATE(writer.ensureSpace(this, dataSize));
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (ASMJIT_UNLIKELY(hasEmitterOption(kOptionLoggingEnabled))) {
     StringTmp<256> sb;
     sb.appendFormat(".%s ", dataSizeByPowerTable[Support::ctz(dataSize)].str);
@@ -366,7 +366,7 @@ Error BaseAssembler::embedLabelDelta(const Label& label, const Label& base, uint
   CodeBufferWriter writer(this);
   ASMJIT_PROPAGATE(writer.ensureSpace(this, dataSize));
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (ASMJIT_UNLIKELY(hasEmitterOption(kOptionLoggingEnabled))) {
     StringTmp<256> sb;
     sb.appendFormat(".%s (", dataSizeByPowerTable[Support::ctz(dataSize)].str);
@@ -425,7 +425,7 @@ Error BaseAssembler::embedConstPool(const Label& label, const ConstPool& pool) {
 
   pool.fill(writer.cursor());
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (ASMJIT_UNLIKELY(hasEmitterOption(kOptionLoggingEnabled)))
     _code->_logger->logBinary(writer.cursor(), size);
   #endif
@@ -444,7 +444,7 @@ Error BaseAssembler::comment(const char* data, size_t size) {
   if (ASMJIT_UNLIKELY(!_code))
     return DebugUtils::errored(kErrorNotInitialized);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (hasEmitterOption(kOptionLoggingEnabled)) {
     Logger* logger = _code->logger();
     logger->log(data, size);

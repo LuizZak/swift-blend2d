@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_COMPILER_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/assembler.h"
 #include "../core/builder.h"
@@ -559,5 +559,5 @@ public:
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER
 #endif // _ASMJIT_CORE_COMPILER_H

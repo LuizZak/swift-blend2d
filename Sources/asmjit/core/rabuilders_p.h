@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_RABUILDERS_P_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/rapass_p.h"
 
@@ -45,7 +45,7 @@ public:
   inline BaseCompiler* cc() const noexcept { return _cc; }
 
   Error run() noexcept {
-    #ifndef ASMJIT_DISABLE_LOGGING
+    #ifndef ASMJIT_NO_LOGGING
     Logger* logger = _pass->debugLogger();
     uint32_t flags = FormatOptions::kFlagPositions;
     RABlock* lastPrintedBlock = nullptr;
@@ -416,5 +416,5 @@ public:
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER
 #endif // _ASMJIT_CORE_RABUILDERS_P_H

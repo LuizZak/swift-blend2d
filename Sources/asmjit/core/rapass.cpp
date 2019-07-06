@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/ralocal_p.h"
 #include "../core/rapass_p.h"
@@ -142,7 +142,7 @@ static void RAPass_resetVirtRegData(RAPass* self) noexcept {
 Error RAPass::runOnFunction(Zone* zone, Logger* logger, FuncNode* func) noexcept {
   _allocator.reset(zone);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   _logger = logger;
   _debugLogger = nullptr;
 
@@ -178,7 +178,7 @@ Error RAPass::runOnFunction(Zone* zone, Logger* logger, FuncNode* func) noexcept
   RAPass_reset(this, nullptr);
   _allocator.reset(nullptr);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   _logger = nullptr;
   _debugLogger = nullptr;
   _loggerFlags = 0;
@@ -208,7 +208,7 @@ Error RAPass::onPerformAllSteps() noexcept {
   ASMJIT_PROPAGATE(buildLiveness());
   ASMJIT_PROPAGATE(assignArgIndexToWorkRegs());
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (logger() && logger()->hasFlag(FormatOptions::kFlagAnnotations))
     ASMJIT_PROPAGATE(annotateCode());
   #endif
@@ -349,6 +349,8 @@ public:
     : _block(other._block),
       _index(other._index) {}
 
+  inline RABlockVisitItem& operator=(const RABlockVisitItem& other) noexcept = default;
+
   inline RABlock* block() const noexcept { return _block; }
   inline uint32_t index() const noexcept { return _index; }
 
@@ -357,7 +359,7 @@ public:
 };
 
 Error RAPass::buildViews() noexcept {
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   Logger* logger = debugLogger();
   #endif
 
@@ -426,7 +428,7 @@ static ASMJIT_INLINE RABlock* intersectBlocks(RABlock* b1, RABlock* b2) noexcept
 
 // Based on "A Simple, Fast Dominance Algorithm".
 Error RAPass::buildDominators() noexcept {
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   Logger* logger = debugLogger();
   #endif
 
@@ -539,7 +541,7 @@ Error RAPass::removeUnreachableBlocks() noexcept {
   if (numAllBlocks == numReachableBlocks)
     return kErrorOk;
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   Logger* logger = debugLogger();
   #endif
   ASMJIT_RA_LOG_FORMAT("[RAPass::RemoveUnreachableBlocks (%u of %u unreachable)]\n", numAllBlocks - numReachableBlocks, numAllBlocks);
@@ -741,7 +743,7 @@ namespace LiveOps {
 }
 
 ASMJIT_FAVOR_SPEED Error RAPass::buildLiveness() noexcept {
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   Logger* logger = debugLogger();
   StringTmp<512> sb;
   #endif
@@ -1098,7 +1100,7 @@ ASMJIT_FAVOR_SPEED Error RAPass::binPack(uint32_t group) noexcept {
   if (workRegCount(group) == 0)
     return kErrorOk;
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   Logger* logger = debugLogger();
   StringTmp<512> sb;
   #endif
@@ -1573,7 +1575,7 @@ Error RAPass::insertPrologEpilog() noexcept {
 // ============================================================================
 
 Error RAPass::rewrite() noexcept {
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   Logger* logger = debugLogger();
   #endif
 
@@ -1673,7 +1675,7 @@ ASMJIT_FAVOR_SPEED Error RAPass::_rewrite(BaseNode* first, BaseNode* stop) noexc
 // [asmjit::RAPass - Logging]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 static void RAPass_dumpRAInst(RAPass* pass, String& sb, const RAInst* raInst) noexcept {
   const RATiedReg* tiedRegs = raInst->tiedRegs();
   uint32_t tiedCount = raInst->tiedCount();
@@ -1826,4 +1828,4 @@ ASMJIT_FAVOR_SIZE Error RAPass::_dumpLiveSpans(String& sb) noexcept {
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER

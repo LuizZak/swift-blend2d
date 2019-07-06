@@ -9,12 +9,42 @@
 
 #include "../core/cpuinfo.h"
 #include "../core/operand.h"
+#include "../core/string.h"
 #include "../core/support.h"
 
 ASMJIT_BEGIN_NAMESPACE
 
 //! \addtogroup asmjit_core
 //! \{
+
+// ============================================================================
+// [asmjit::InstInfo]
+// ============================================================================
+
+// TODO: Finalize instruction info and make more x86::InstDB methods/structs private.
+
+/*
+
+struct InstInfo {
+  //! Architecture agnostic attributes.
+  enum Attributes : uint32_t {
+
+
+  };
+
+  //! Instruction attributes.
+  uint32_t _attributes;
+
+  inline void reset() noexcept { memset(this, 0, sizeof(*this)); }
+
+  inline uint32_t attributes() const noexcept { return _attributes; }
+  inline bool hasAttribute(uint32_t attr) const noexcept { return (_attributes & attr) != 0; }
+};
+
+//! Gets attributes of the given instruction.
+ASMJIT_API Error queryCommonInfo(uint32_t archId, uint32_t instId, InstInfo& out) noexcept;
+
+*/
 
 // ============================================================================
 // [asmjit::InstRWInfo / OpRWInfo]
@@ -97,6 +127,9 @@ struct OpRWInfo {
   static_assert(kWrite == 0x2, "OpRWInfo::kWrite flag must be 0x2");
   static_assert(kRegMem == 0x4, "OpRWInfo::kRegMem flag must be 0x4");
 
+  //! \name Reset
+  //! \{
+
   inline void reset() noexcept { memset(this, 0, sizeof(*this)); }
   inline void reset(uint32_t opFlags, uint32_t regSize, uint32_t physId = BaseReg::kIdBad) noexcept {
     _opFlags = opFlags;
@@ -114,6 +147,11 @@ struct OpRWInfo {
     memset(_reserved, 0, sizeof(_reserved));
   }
 
+  //! \}
+
+  //! \name Operand Flags
+  //! \{
+
   inline uint32_t opFlags() const noexcept { return _opFlags; }
   inline bool hasOpFlag(uint32_t flag) const noexcept { return (_opFlags & flag) != 0; }
 
@@ -128,12 +166,27 @@ struct OpRWInfo {
   inline bool isRm() const noexcept { return hasOpFlag(kRegMem); }
   inline bool isZExt() const noexcept { return hasOpFlag(kZExt); }
 
+  //! \}
+
+  //! \name Physical Register ID
+  //! \{
+
   inline uint32_t physId() const noexcept { return _physId; }
   inline bool hasPhysId() const noexcept { return _physId != BaseReg::kIdBad; }
   inline void setPhysId(uint32_t physId) noexcept { _physId = uint8_t(physId); }
 
+  //! \}
+
+  //! \name Reg/Mem
+  //! \{
+
   inline uint32_t rmSize() const noexcept { return _rmSize; }
   inline void setRmSize(uint32_t rmSize) noexcept { _rmSize = uint8_t(rmSize); }
+
+  //! \}
+
+  //! \name Read & Write Masks
+  //! \{
 
   inline uint64_t readByteMask() const noexcept { return _readByteMask; }
   inline uint64_t writeByteMask() const noexcept { return _writeByteMask; }
@@ -142,6 +195,8 @@ struct OpRWInfo {
   inline void setReadByteMask(uint64_t mask) noexcept { _readByteMask = mask; }
   inline void setWriteByteMask(uint64_t mask) noexcept { _writeByteMask = mask; }
   inline void setExtendByteMask(uint64_t mask) noexcept { _extendByteMask = mask; }
+
+  //! \}
 };
 
 //! Read/Write information of an instruction.
@@ -205,8 +260,11 @@ struct InstRWInfo {
 //! and `Operand[]` array.
 class BaseInst {
 public:
+  //! Instruction id.
   uint32_t _id;
+  //! Instruction options.
   uint32_t _options;
+  //! Extra register used by instruction (either REP register or AVX-512 selector).
   RegOnly _extraReg;
 
   enum Id : uint32_t {
@@ -279,11 +337,16 @@ public:
 
   //! Control type.
   enum ControlType : uint32_t {
-    kControlNone          = 0u,          //!< No control type (doesn't jump).
-    kControlJump          = 1u,          //!< Unconditional jump.
-    kControlBranch        = 2u,          //!< Conditional jump (branch).
-    kControlCall          = 3u,          //!< Function call.
-    kControlReturn        = 4u           //!< Function return.
+    //! No control type (doesn't jump).
+    kControlNone = 0u,
+    //! Unconditional jump.
+    kControlJump = 1u,
+    //! Conditional jump (branch).
+    kControlBranch = 2u,
+    //! Function call.
+    kControlCall = 3u,
+    //! Function return.
+    kControlReturn = 4u
   };
 
   //! \name Construction & Destruction
@@ -306,18 +369,28 @@ public:
 
   //! \}
 
-  //! \name Accessors
+  //! \name Instruction ID
   //! \{
 
   inline uint32_t id() const noexcept { return _id; }
   inline void setId(uint32_t id) noexcept { _id = id; }
   inline void resetId() noexcept { _id = 0; }
 
+  //! \}
+
+  //! \name Instruction Options
+  //! \{
+
   inline uint32_t options() const noexcept { return _options; }
   inline void setOptions(uint32_t options) noexcept { _options = options; }
   inline void addOptions(uint32_t options) noexcept { _options |= options; }
   inline void clearOptions(uint32_t options) noexcept { _options &= ~options; }
   inline void resetOptions() noexcept { _options = 0; }
+
+  //! \}
+
+  //! \name Extra Register
+  //! \{
 
   inline bool hasExtraReg() const noexcept { return _extraReg.isReg(); }
   inline RegOnly& extraReg() noexcept { return _extraReg; }
@@ -327,23 +400,46 @@ public:
   inline void resetExtraReg() noexcept { _extraReg.reset(); }
 
   //! \}
-
-  //! \name Insturction API
-  //! \{
-
-  #ifndef ASMJIT_DISABLE_INST_API
-  //! Validates the given instruction.
-  ASMJIT_API static Error validate(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount) noexcept;
-
-  //! Gets Read/Write information of the given instruction.
-  ASMJIT_API static Error queryRWInfo(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, InstRWInfo& out) noexcept;
-
-  //! Gets CPU features required by the given instruction.
-  ASMJIT_API static Error queryFeatures(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, BaseFeatures& out) noexcept;
-  #endif
-
-  //! \}
 };
+
+// ============================================================================
+// [asmjit::InstAPI]
+// ============================================================================
+
+//! Instruction API.
+namespace InstAPI {
+
+#ifndef ASMJIT_NO_TEXT
+//! Appends the name of the instruction specified by `instId` and `instOptions`
+//! into the `output` string.
+//!
+//! \note Instruction options would only affect instruction prefix & suffix,
+//! other options would be ignored. If `instOptions` is zero then only raw
+//! instruction name (without any additional text) will be appended.
+ASMJIT_API Error instIdToString(uint32_t archId, uint32_t instId, String& output) noexcept;
+
+//! Parses an instruction name in the given string `s`. Length is specified
+//! by `len` argument, which can be `SIZE_MAX` if `s` is known to be null
+//! terminated.
+//!
+//! The output is stored in `instId`.
+ASMJIT_API uint32_t stringToInstId(uint32_t archId, const char* s, size_t len) noexcept;
+#endif // !ASMJIT_NO_TEXT
+
+#ifndef ASMJIT_NO_VALIDATION
+//! Validates the given instruction.
+ASMJIT_API Error validate(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount) noexcept;
+#endif // !ASMJIT_NO_VALIDATION
+
+#ifndef ASMJIT_NO_INTROSPECTION
+//! Gets Read/Write information of the given instruction.
+ASMJIT_API Error queryRWInfo(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, InstRWInfo& out) noexcept;
+
+//! Gets CPU features required by the given instruction.
+ASMJIT_API Error queryFeatures(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, BaseFeatures& out) noexcept;
+#endif // !ASMJIT_NO_INTROSPECTION
+
+} // {InstAPI}
 
 //! \}
 

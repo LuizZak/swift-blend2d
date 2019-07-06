@@ -8,7 +8,7 @@
 #define _ASMJIT_X86_X86LOGGING_P_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 
 #include "../core/logging.h"
 #include "../core/string.h"
@@ -51,5 +51,5 @@ namespace LoggingInternal {
 
 ASMJIT_END_SUB_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_LOGGING
+#endif // !ASMJIT_NO_LOGGING
 #endif // _ASMJIT_X86_X86LOGGING_P_H

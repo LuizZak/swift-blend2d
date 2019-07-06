@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_RADEFS_P_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/compiler.h"
 #include "../core/logging.h"
@@ -26,7 +26,7 @@ ASMJIT_BEGIN_NAMESPACE
 // [Logging]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 # define ASMJIT_RA_LOG_FORMAT(...)  \
   do {                              \
     if (logger)                     \
@@ -344,7 +344,7 @@ public:
   //! \{
 
   inline RALiveCount() noexcept { reset(); }
-  inline RALiveCount(const RALiveCount& other) noexcept { init(other); }
+  inline RALiveCount(const RALiveCount& other) noexcept = default;
 
   inline void init(const RALiveCount& other) noexcept {
     for (uint32_t group = 0; group < BaseReg::kGroupVirt; group++)
@@ -408,6 +408,13 @@ struct LiveInterval {
 
   //! \}
 
+  //! \name Overloaded Operators
+  //! \{
+
+  inline LiveInterval& operator=(const LiveInterval& other) = default;
+
+  //! \}
+
   //! \name Accessors
   //! \{
 
@@ -449,6 +456,13 @@ public:
     LiveInterval::init(interval);
     T::init(data);
   }
+
+  //! \}
+
+  //! \name Overloaded Operators
+  //! \{
+
+  inline RALiveSpan& operator=(const RALiveSpan& other) = default;
 
   //! \}
 };
@@ -1057,5 +1071,5 @@ public:
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER
 #endif // _ASMJIT_CORE_RADEFS_P_H

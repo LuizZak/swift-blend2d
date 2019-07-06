@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_VIRTMEM_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_JIT
+#ifndef ASMJIT_NO_JIT
 
 #include "../core/globals.h"
 

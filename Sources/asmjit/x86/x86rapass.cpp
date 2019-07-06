@@ -7,13 +7,14 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#if defined(ASMJIT_BUILD_X86) && !defined(ASMJIT_DISABLE_COMPILER)
+#if defined(ASMJIT_BUILD_X86) && !defined(ASMJIT_NO_COMPILER)
 
 #include "../core/cpuinfo.h"
 #include "../core/support.h"
 #include "../core/type.h"
 #include "../x86/x86assembler.h"
 #include "../x86/x86compiler.h"
+#include "../x86/x86instapi_p.h"
 #include "../x86/x86instdb_p.h"
 #include "../x86/x86internal_p.h"
 #include "../x86/x86rapass_p.h"
@@ -1032,7 +1033,7 @@ Error X86RAPass::onEmitMove(uint32_t workId, uint32_t dstPhysId, uint32_t srcPhy
 
   const char* comment = nullptr;
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (_loggerFlags & FormatOptions::kFlagAnnotations) {
     _tmpString.assignFormat("<MOVE> %s", workRegById(workId)->name());
     comment = _tmpString.data();
@@ -1050,7 +1051,7 @@ Error X86RAPass::onEmitSwap(uint32_t aWorkId, uint32_t aPhysId, uint32_t bWorkId
   uint32_t sign = is64Bit ? uint32_t(RegTraits<Reg::kTypeGpq>::kSignature)
                           : uint32_t(RegTraits<Reg::kTypeGpd>::kSignature);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (_loggerFlags & FormatOptions::kFlagAnnotations) {
     _tmpString.assignFormat("<SWAP> %s, %s", waReg->name(), wbReg->name());
     cc()->setInlineComment(_tmpString.data());
@@ -1067,7 +1068,7 @@ Error X86RAPass::onEmitLoad(uint32_t workId, uint32_t dstPhysId) noexcept {
 
   const char* comment = nullptr;
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (_loggerFlags & FormatOptions::kFlagAnnotations) {
     _tmpString.assignFormat("<LOAD> %s", workRegById(workId)->name());
     comment = _tmpString.data();
@@ -1084,7 +1085,7 @@ Error X86RAPass::onEmitSave(uint32_t workId, uint32_t srcPhysId) noexcept {
 
   const char* comment = nullptr;
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   if (_loggerFlags & FormatOptions::kFlagAnnotations) {
     _tmpString.assignFormat("<SAVE> %s", workRegById(workId)->name());
     comment = _tmpString.data();
@@ -1150,4 +1151,4 @@ Error X86RAPass::onEmitPreCall(FuncCallNode* call) noexcept {
 
 ASMJIT_END_SUB_NAMESPACE
 
-#endif // ASMJIT_BUILD_X86 && !ASMJIT_DISABLE_COMPILER
+#endif // ASMJIT_BUILD_X86 && !ASMJIT_NO_COMPILER

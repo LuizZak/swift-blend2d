@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_JIT
+#ifndef ASMJIT_NO_JIT
 
 #include "../core/cpuinfo.h"
 #include "../core/jitruntime.h"

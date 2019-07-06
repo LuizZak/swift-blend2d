@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_RAPASS_P_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/raassignment_p.h"
 #include "../core/radefs_p.h"
@@ -259,7 +259,7 @@ public:
 
   //! Parent block.
   RABlock* _block;
-  //! Flags combined from all `_tiedRegs`.
+  //! Instruction flags.
   uint32_t _flags;
   //! Total count of RATiedReg's.
   uint32_t _tiedTotal;
@@ -1027,7 +1027,7 @@ public:
 
   //! \}
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   //! \name Logging
   //! \{
 
@@ -1062,5 +1062,5 @@ inline ZoneAllocator* RABlock::allocator() const noexcept { return _ra->allocato
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER
 #endif // _ASMJIT_CORE_RAPASS_P_H

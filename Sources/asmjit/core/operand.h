@@ -704,6 +704,13 @@ public:
 
   //! \}
 
+  //! \name Overloaded Operators
+  //! \{
+
+  inline BaseReg& operator=(const BaseReg& other) noexcept = default;
+
+  //! \}
+
   //! \name Accessors
   //! \{
 

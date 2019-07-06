@@ -509,8 +509,8 @@ public:
   ASMJIT_INST_0x(cli, Cli)                                             // ANY
   ASMJIT_INST_0x(clts, Clts)                                           // ANY
   ASMJIT_INST_0x(cmc, Cmc)                                             // ANY
-  ASMJIT_INST_2c(cmov, Cmov, Cond::toCmovcc, Gp, Gp)                   // CMOV
-  ASMJIT_INST_2c(cmov, Cmov, Cond::toCmovcc, Gp, Mem)                  // CMOV
+  ASMJIT_INST_2c(cmov, Cmov, Condition::toCmovcc, Gp, Gp)              // CMOV
+  ASMJIT_INST_2c(cmov, Cmov, Condition::toCmovcc, Gp, Mem)             // CMOV
   ASMJIT_INST_2x(cmp, Cmp, Gp, Gp)                                     // ANY
   ASMJIT_INST_2x(cmp, Cmp, Gp, Mem)                                    // ANY
   ASMJIT_INST_2i(cmp, Cmp, Gp, Imm)                                    // ANY
@@ -555,9 +555,9 @@ public:
   ASMJIT_INST_0x(invd, Invd)                                           // ANY
   ASMJIT_INST_1x(invlpg, Invlpg, Mem)                                  // ANY
   ASMJIT_INST_2x(invpcid, Invpcid, Gp, Mem)                            // ANY
-  ASMJIT_INST_1c(j, J, Cond::toJcc, Label)                             // ANY
-  ASMJIT_INST_1c(j, J, Cond::toJcc, Imm)                               // ANY
-  ASMJIT_INST_1c(j, J, Cond::toJcc, uint64_t)                          // ANY
+  ASMJIT_INST_1c(j, J, Condition::toJcc, Label)                        // ANY
+  ASMJIT_INST_1c(j, J, Condition::toJcc, Imm)                          // ANY
+  ASMJIT_INST_1c(j, J, Condition::toJcc, uint64_t)                     // ANY
   ASMJIT_INST_2x(jecxz, Jecxz, Gp, Label)                              // ANY       [EXPLICIT] Short jump if CX/ECX/RCX is zero.
   ASMJIT_INST_2x(jecxz, Jecxz, Gp, Imm)                                // ANY       [EXPLICIT] Short jump if CX/ECX/RCX is zero.
   ASMJIT_INST_2x(jecxz, Jecxz, Gp, uint64_t)                           // ANY       [EXPLICIT] Short jump if CX/ECX/RCX is zero.
@@ -700,8 +700,8 @@ public:
   ASMJIT_INST_2i(sar, Sar, Gp, Imm)                                    // ANY
   ASMJIT_INST_2i(sar, Sar, Mem, Imm)                                   // ANY
   ASMJIT_INST_2x(scas, Scas, ZAX, ES_ZDI)                              // ANY       [EXPLICIT]
-  ASMJIT_INST_1c(set, Set, Cond::toSetcc, Gp)                          // ANY
-  ASMJIT_INST_1c(set, Set, Cond::toSetcc, Mem)                         // ANY
+  ASMJIT_INST_1c(set, Set, Condition::toSetcc, Gp)                     // ANY
+  ASMJIT_INST_1c(set, Set, Condition::toSetcc, Mem)                    // ANY
   ASMJIT_INST_0x(sfence, Sfence)                                       // SSE
   ASMJIT_INST_1x(sgdt, Sgdt, Mem)                                      // ANY
   ASMJIT_INST_2x(shl, Shl, Gp, CL)                                     // ANY

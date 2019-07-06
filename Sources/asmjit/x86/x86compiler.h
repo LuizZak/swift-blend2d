@@ -8,7 +8,7 @@
 #define _ASMJIT_X86_X86COMPILER_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/compiler.h"
 #include "../core/datatypes.h"
@@ -43,7 +43,7 @@ public:
   //! \name Virtual Registers
   //! \{
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 # define ASMJIT_NEW_REG(OUT, PARAM, NAME_FMT)                 \
     va_list ap;                                               \
     va_start(ap, NAME_FMT);                                   \
@@ -257,5 +257,5 @@ public:
 
 ASMJIT_END_SUB_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER
 #endif // _ASMJIT_X86_X86COMPILER_H

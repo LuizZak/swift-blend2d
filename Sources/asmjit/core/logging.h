@@ -15,7 +15,7 @@ ASMJIT_BEGIN_NAMESPACE
 //! \addtogroup asmjit_core
 //! \{
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 
 // ============================================================================
 // [Forward Declarations]
@@ -26,7 +26,7 @@ class BaseReg;
 class Logger;
 struct Operand_;
 
-#ifndef ASMJIT_DISABLE_BUILDER
+#ifndef ASMJIT_NO_BUILDER
 class BaseBuilder;
 class BaseNode;
 #endif
@@ -247,7 +247,7 @@ public:
 
   //! \}
 
-  //! \name Accessors
+  //! \name Logger Data Accessors
   //! \{
 
   //! Returns aggregated logger data as `char*` pointer.
@@ -259,7 +259,7 @@ public:
 
   //! \}
 
-  //! \name Utilities
+  //! \name Logger Data Manipulation
   //! \{
 
   //! Clears the accumulated logger data.
@@ -307,7 +307,7 @@ struct Logging {
     String& sb,
     uint32_t typeId) noexcept;
 
-  #ifndef ASMJIT_DISABLE_BUILDER
+  #ifndef ASMJIT_NO_BUILDER
   ASMJIT_API static Error formatNode(
     String& sb,
     uint32_t flags,

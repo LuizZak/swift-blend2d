@@ -4,6 +4,19 @@
 // [License]
 // Zlib - See LICENSE.md file in the package.
 
+#ifndef _ASMJIT_CORE_BUILD_H
+#define _ASMJIT_CORE_BUILD_H
+
+// ============================================================================
+// [asmjit::Version]
+// ============================================================================
+
+#define ASMJIT_LIBRARY_VERSION 0x010200 /* 1.2.0 */
+
+// ============================================================================
+// [asmjit::Options]
+// ============================================================================
+
 // AsmJit Static Builds and Embedding
 // ----------------------------------
 //
@@ -45,23 +58,26 @@
 // (like BaseCompiler).
 //
 // AsmJit features are enabled by default.
-// #define ASMJIT_DISABLE_BUILDER    // Disable Builder (completely).
-// #define ASMJIT_DISABLE_COMPILER   // Disable Compiler (completely).
-// #define ASMJIT_DISABLE_JIT        // Disable JIT memory manager and JitRuntime.
-// #define ASMJIT_DISABLE_LOGGING    // Disable logging and formatting (completely).
-// #define ASMJIT_DISABLE_TEXT       // Disable everything that contains text
+// #define ASMJIT_NO_BUILDER         // Disable Builder (completely).
+// #define ASMJIT_NO_COMPILER        // Disable Compiler (completely).
+// #define ASMJIT_NO_JIT             // Disable JIT memory manager and JitRuntime.
+// #define ASMJIT_NO_LOGGING         // Disable logging and formatting (completely).
+// #define ASMJIT_NO_TEXT            // Disable everything that contains text
 //                                   // representation (instructions, errors, ...).
-// #define ASMJIT_DISABLE_INST_API   // Disable API related to instruction database
+// #define ASMJIT_NO_VALIDATION      // Disable validation API and options.
+// #define ASMJIT_NO_INTROSPECTION   // Disable API related to instruction database
 //                                   // (validation, cpu features, rw-info, etc).
 
-#ifndef _ASMJIT_CORE_BUILD_H
-#define _ASMJIT_CORE_BUILD_H
+// Prevent compile-time errors caused by misconfiguration.
+#if defined(ASMJIT_NO_TEXT) && !defined(ASMJIT_NO_LOGGING)
+  #pragma "ASMJIT_NO_TEXT can only be defined when ASMJIT_NO_LOGGING is defined."
+  #undef ASMJIT_NO_TEXT
+#endif
 
-// ============================================================================
-// [asmjit::Version]
-// ============================================================================
-
-#define ASMJIT_LIBRARY_VERSION 0x010200 /* 1.2.0 */
+#if defined(ASMJIT_NO_INTROSPECTION) && !defined(ASMJIT_NO_COMPILER)
+  #pragma message("ASMJIT_NO_INTROSPECTION can only be defined when ASMJIT_NO_COMPILER is defined")
+  #undef ASMJIT_NO_INTROSPECTION
+#endif
 
 // ============================================================================
 // [asmjit::Dependencies]
@@ -131,11 +147,6 @@
   #else
     #define ASMJIT_BUILD_RELEASE
   #endif
-#endif
-
-// Prevent compile-time errors caused by misconfiguration.
-#if defined(ASMJIT_DISABLE_TEXT) && !defined(ASMJIT_DISABLE_LOGGING)
-  #error "[asmjit] ASMJIT_DISABLE_TEXT requires ASMJIT_DISABLE_LOGGING to be defined."
 #endif
 
 // ============================================================================
@@ -511,9 +522,12 @@
 
 // Internal macros that are only used when building AsmJit itself.
 #ifdef ASMJIT_EXPORTS
-  #if !defined(ASMJIT_BUILD_DEBUG) && ASMJIT_CXX_HAS_ATTRIBUTE(__optimize__, ASMJIT_CXX_GNU >= ASMJIT_CXX_MAKE_VER(4, 4, 0))
+  #if !defined(ASMJIT_BUILD_DEBUG) && ASMJIT_CXX_GNU >= ASMJIT_CXX_MAKE_VER(4, 4, 0)
     #define ASMJIT_FAVOR_SIZE  __attribute__((__optimize__("Os")))
     #define ASMJIT_FAVOR_SPEED __attribute__((__optimize__("O3")))
+  #elif ASMJIT_CXX_HAS_ATTRIBUTE(__minsize__, 0)
+    #define ASMJIT_FAVOR_SIZE __attribute__((__minsize__))
+    #define ASMJIT_FAVOR_SPEED
   #else
     #define ASMJIT_FAVOR_SIZE
     #define ASMJIT_FAVOR_SPEED

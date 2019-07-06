@@ -41,18 +41,6 @@ class String {
 public:
   ASMJIT_NONCOPYABLE(String)
 
-  //! \cond INTERNAL
-  enum : uint32_t {
-    kLayoutSize = 32,
-    kSSOCapacity = kLayoutSize - 2
-  };
-
-  //! String type.
-  enum Type : uint8_t {
-    kTypeLarge    = 0x1Fu, //!< Large string (owned by String).
-    kTypeExternal = 0x20u  //!< External string (zone allocated or not owned by String).
-  };
-
   //! String operation.
   enum Op : uint32_t {
     kOpAssign        = 0,
@@ -65,6 +53,18 @@ public:
     kFormatShowSpace = 0x00000002u,
     kFormatAlternate = 0x00000004u,
     kFormatSigned    = 0x80000000u
+  };
+
+  //! \cond INTERNAL
+  enum : uint32_t {
+    kLayoutSize = 32,
+    kSSOCapacity = kLayoutSize - 2
+  };
+
+  //! String type.
+  enum Type : uint8_t {
+    kTypeLarge    = 0x1Fu, //!< Large string (owned by String).
+    kTypeExternal = 0x20u  //!< External string (zone allocated or not owned by String).
   };
 
   union Raw {
@@ -322,7 +322,7 @@ union FixedString {
   //! \{
 
   inline bool eq(const char* other) const noexcept {
-    return ::strcmp(str, other) == 0;
+    return strcmp(str, other) == 0;
   }
 
   //! \}

@@ -38,7 +38,7 @@ struct ZoneStringBase {
 
   Error setData(Zone* zone, uint32_t maxEmbeddedSize, const char* str, size_t size) noexcept {
     if (size == SIZE_MAX)
-      size = ::strlen(str);
+      size = strlen(str);
 
     if (size <= maxEmbeddedSize) {
       memcpy(_embedded, str, size);

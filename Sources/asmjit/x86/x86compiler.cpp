@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#if defined(ASMJIT_BUILD_X86) && !defined(ASMJIT_DISABLE_COMPILER)
+#if defined(ASMJIT_BUILD_X86) && !defined(ASMJIT_NO_COMPILER)
 
 #include "../x86/x86assembler.h"
 #include "../x86/x86compiler.h"
@@ -57,4 +57,4 @@ Error Compiler::onAttach(CodeHolder* code) noexcept {
 
 ASMJIT_END_SUB_NAMESPACE
 
-#endif // ASMJIT_BUILD_X86 && !ASMJIT_DISABLE_COMPILER
+#endif // ASMJIT_BUILD_X86 && !ASMJIT_NO_COMPILER

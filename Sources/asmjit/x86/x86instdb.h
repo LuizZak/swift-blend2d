@@ -127,13 +127,6 @@ enum Flags : uint32_t {
 
   // TODO: Deprecated
   // ----------------
-  //
-  // These flags describe the use of 1st and/or 1st+2nd operands. This allows
-  // to fast calculate which operands are read, written, or read and written.
-
-  kFlagFixedReg           = 0x00000010u, //!< Some operand uses fixed register.
-  kFlagFixedMem           = 0x00000020u, //!< Some operand uses fixed register to access memory (EAX|RAX, EDI|RDI, ESI|RSI).
-  kFlagFixedRM            = 0x00000030u, //!< Combination of `kFlagUseFixedReg` and `kFlagUseFixedMem`.
 
   kFlagVolatile           = 0x00000040u,
   kFlagPrivileged         = 0x00000080u, //!< This is a privileged operation that cannot run in user mode.
@@ -207,16 +200,6 @@ enum Flags : uint32_t {
 };
 
 // ============================================================================
-// [asmjit::x86::InstDB::OperationFlags]
-// ============================================================================
-
-//! Used to describe what the instruction does and some of its quirks.
-enum OperationFlags : uint32_t {
-  //! Hint for instruction schedulers to never reorder this instruction (side effects, memory barrier, etc).
-  kOperationVolatile = 0x00000001u
-};
-
-// ============================================================================
 // [asmjit::x86::InstDB::SingleRegCase]
 // ============================================================================
 
@@ -229,10 +212,8 @@ enum SingleRegCase : uint32_t {
   kSingleRegWO = 2
 };
 
-ASMJIT_VARAPI const char _nameData[];
-
 // ============================================================================
-// [asmjit::x86::InstDB::OpSignature]
+// [asmjit::x86::InstDB::InstSignature / OpSignature]
 // ============================================================================
 
 //! Operand signature (X86).
@@ -251,10 +232,6 @@ struct OpSignature {
 };
 
 ASMJIT_VARAPI const OpSignature _opSignatureTable[];
-
-// ============================================================================
-// [asmjit::x86::InstDB::InstSignature]
-// ============================================================================
 
 //! Instruction signature (X86).
 //!
@@ -377,18 +354,22 @@ struct InstInfo {
   uint32_t _nameDataIndex : 14;
   //! Index to `_commonInfoTable`.
   uint32_t _commonInfoIndex : 10;
-  //! Index to common B table (internal, this table is not exported).
+  //! Index to `InstDB::_commonInfoTableB`.
   uint32_t _commonInfoIndexB : 8;
+
+  //! Instruction encoding, see `InstDB::EncodingId`.
+  uint8_t _encoding;
+  //! Main opcode value (0.255).
+  uint8_t _mainOpcodeValue;
+  //! Index to `InstDB::_mainOpcodeTable` that is combined with `_mainOpcodeValue`
+  //! to form the final opcode.
+  uint8_t _mainOpcodeIndex;
+  //! Index to `InstDB::_altOpcodeTable` that contains a full alternative opcode.
+  uint8_t _altOpcodeIndex;
 
   // --------------------------------------------------------------------------
   // [Accessors]
   // --------------------------------------------------------------------------
-
-  //! Returns instruction name (null terminated).
-  //!
-  //! \note If AsmJit was compiled with `ASMJIT_DISABLE_TEXT` then this will
-  //! return an empty string (null terminated string of zero size).
-  inline const char* name() const noexcept { return _nameData + _nameDataIndex; };
 
   //! Returns common information, see `CommonInfo`.
   inline const CommonInfo& commonInfo() const noexcept { return _commonInfoTable[_commonInfoIndex]; }
@@ -446,10 +427,6 @@ struct InstInfo {
   //! Tests whether the instruction supports AVX512 broadcast (64-bit).
   inline bool hasAvx512B64() const noexcept { return hasFlag(kFlagAvx512B64); }
 
-  inline bool hasFixedReg() const noexcept { return hasFlag(kFlagFixedReg); }
-  inline bool hasFixedMem() const noexcept { return hasFlag(kFlagFixedMem); }
-  inline bool hasFixedRM() const noexcept { return hasFlag(kFlagFixedRM); }
-
   //! Gets the control-flow type of the instruction.
   inline uint32_t controlType() const noexcept { return commonInfo().controlType(); }
   inline uint32_t singleRegCase() const noexcept { return commonInfo().singleRegCase(); }
@@ -462,19 +439,6 @@ struct InstInfo {
 };
 
 ASMJIT_VARAPI const InstInfo _instInfoTable[];
-
-#ifndef ASMJIT_DISABLE_TEXT
-//! Gets an instruction ID from the given instruction `name`.
-//!
-//! \note Instruction name MUST BE in lowercase, otherwise there will be no
-//! match. If there is an exact match the instruction id is returned, otherwise
-//! `Globals::kInvalidInstId` (zero) is returned instead. The given `name` does
-//! not have to be null-terminated if `nameSize` is provided (not `SIZE_MAX`).
-ASMJIT_API uint32_t idByName(const char* name, size_t nameSize = SIZE_MAX) noexcept;
-
-//! Gets an instruction name from a given instruction id `instId`.
-ASMJIT_API const char* nameById(uint32_t instId) noexcept;
-#endif
 
 inline const InstInfo& infoById(uint32_t instId) noexcept {
   ASMJIT_ASSERT(Inst::isDefinedId(instId));

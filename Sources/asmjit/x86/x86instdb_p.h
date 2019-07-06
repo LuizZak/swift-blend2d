@@ -73,7 +73,7 @@ enum EncodingId : uint32_t {
   kEncodingX86MovntiMovdiri,             //!< X86 movnti/movdiri.
   kEncodingX86EnqcmdMovdir64b,           //!< X86 enqcmd/enqcmds/movdir64b.
   kEncodingX86Out,                       //!< X86 out.
-  kEncodingX86Outs,                      //!< X86 out[b|q|d].
+  kEncodingX86Outs,                      //!< X86 out[b|w|d].
   kEncodingX86Push,                      //!< X86 push.
   kEncodingX86Pop,                       //!< X86 pop.
   kEncodingX86Ret,                       //!< X86 ret.
@@ -189,6 +189,80 @@ struct CommonInfoTableB {
   inline const uint8_t* featuresEnd() const noexcept { return _features + ASMJIT_ARRAY_SIZE(_features); }
 };
 
+// ============================================================================
+// [asmjit::x86::InstDB - InstNameIndex]
+// ============================================================================
+
+// ${NameLimits:Begin}
+// ------------------- Automatically generated, do not edit -------------------
+enum : uint32_t { kMaxNameSize = 17 };
+// ----------------------------------------------------------------------------
+// ${NameLimits:End}
+
+struct InstNameIndex {
+  uint16_t start;
+  uint16_t end;
+};
+
+// ============================================================================
+// [asmjit::x86::InstDB - RWInfo]
+// ============================================================================
+
+struct RWInfo {
+  enum Category : uint8_t {
+    kCategoryGeneric,
+    kCategoryMov,
+    kCategoryImul,
+    kCategoryMovh64,
+    kCategoryVmaskmov,
+    kCategoryVmovddup,
+    kCategoryVmovmskpd,
+    kCategoryVmovmskps,
+    kCategoryVmov1_2,
+    kCategoryVmov1_4,
+    kCategoryVmov1_8,
+    kCategoryVmov2_1,
+    kCategoryVmov4_1,
+    kCategoryVmov8_1
+  };
+
+  uint8_t category;
+  uint8_t rmInfo;
+  uint8_t opInfoIndex[6];
+};
+
+struct RWInfoOp {
+  uint64_t rByteMask;
+  uint64_t wByteMask;
+  uint8_t physId;
+  uint8_t reserved[3];
+  uint32_t flags;
+};
+
+//! R/M information.
+//!
+//! This data is used to replace register operand by a memory operand reliably.
+struct RWInfoRm {
+  enum Category : uint8_t {
+    kCategoryNone = 0,
+    kCategoryFixed,
+    kCategoryConsistent,
+    kCategoryHalf,
+    kCategoryQuarter,
+    kCategoryEighth
+  };
+
+  enum Flags : uint8_t {
+    kFlagAmbiguous = 0x01
+  };
+
+  uint8_t category;
+  uint8_t rmOpsMask;
+  uint8_t fixedSize;
+  uint8_t flags;
+  uint8_t rmFeature;
+};
+
 struct RWFlagsInfoTable {
   //! CPU/FPU flags read.
   uint32_t readFlags;
@@ -196,49 +270,27 @@ struct RWFlagsInfoTable {
   uint32_t writeFlags;
 };
 
+extern const uint8_t rwInfoIndex[Inst::_kIdCount * 2];
+extern const RWInfo rwInfo[];
+extern const RWInfoOp rwInfoOp[];
+extern const RWInfoRm rwInfoRm[];
+extern const RWFlagsInfoTable _rwFlagsInfoTable[];
+
 // ============================================================================
 // [asmjit::x86::InstDB::Tables]
 // ============================================================================
 
-extern const uint8_t _encodingTable[];
 extern const uint32_t _mainOpcodeTable[];
-extern const uint8_t _altOpcodeIndex[];
 extern const uint32_t _altOpcodeTable[];
 
+#ifndef ASMJIT_NO_TEXT
+extern const char _nameData[];
+extern const InstNameIndex instNameIndex[26];
+#endif // !ASMJIT_NO_TEXT
+
 extern const CommonInfoTableB _commonInfoTableB[];
-extern const RWFlagsInfoTable _rwFlagsInfoTable[];
-
-static inline uint32_t encodingFromId(uint32_t instId) noexcept {
-  ASMJIT_ASSERT(Inst::isDefinedId(instId));
-  return _encodingTable[instId];
-}
-
-static inline uint32_t mainOpcodeFromId(uint32_t instId) noexcept {
-  ASMJIT_ASSERT(Inst::isDefinedId(instId));
-  return _mainOpcodeTable[instId];
-}
-
-static inline uint32_t altOpcodeFromId(uint32_t instId) noexcept {
-  ASMJIT_ASSERT(Inst::isDefinedId(instId));
-  return _altOpcodeTable[_altOpcodeIndex[instId]];
-}
 
 } // {InstDB}
-
-// ============================================================================
-// [asmjit::x86::InstInternal]
-// ============================================================================
-
-//! Implements API provided by `BaseInst` (X86).
-namespace InstInternal {
-
-#ifndef ASMJIT_DISABLE_INST_API
-Error validate(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount) noexcept;
-Error queryRWInfo(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, InstRWInfo& out) noexcept;
-Error queryFeatures(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, BaseFeatures& out) noexcept;
-#endif
-
-} // {InstInternal}
 
 //! \}
 //! \endcond

@@ -175,7 +175,7 @@ Error BaseEmitter::commentf(const char* fmt, ...) {
   if (ASMJIT_UNLIKELY(!_code))
     return DebugUtils::errored(kErrorNotInitialized);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   StringTmp<1024> sb;
 
   va_list ap;
@@ -197,7 +197,7 @@ Error BaseEmitter::commentv(const char* fmt, va_list ap) {
   if (ASMJIT_UNLIKELY(!_code))
     return DebugUtils::errored(kErrorNotInitialized);
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   StringTmp<1024> sb;
 
   Error err = sb.appendVFormat(fmt, ap);

@@ -34,6 +34,17 @@ static ASMJIT_INLINE uint32_t x86VecTypeIdToRegType(uint32_t typeId) noexcept {
          typeId <= Type::_kIdVec256End ? Reg::kTypeYmm : Reg::kTypeZmm;
 }
 
+//! Converts `size` to a 'kmov?' instructio.
+static inline uint32_t x86KmovFromSize(uint32_t size) noexcept {
+  switch (size) {
+    case  1: return Inst::kIdKmovb;
+    case  2: return Inst::kIdKmovw;
+    case  4: return Inst::kIdKmovd;
+    case  8: return Inst::kIdKmovq;
+    default: return Inst::kIdNone;
+  }
+}
+
 // ============================================================================
 // [asmjit::X86Internal - FuncDetail]
 // ============================================================================
@@ -975,7 +986,7 @@ ASMJIT_FAVOR_SIZE Error X86Internal::emitArgMove(Emitter* emitter,
       }
 
       if (Type::isMask(srcTypeId)) {
-        instId = Inst::kmovFromSize(srcSize);
+        instId = x86KmovFromSize(srcSize);
         dst.setSignature(srcSize <= 4 ? Reg::signatureOfT<Reg::kTypeGpd>()
                                       : Reg::signatureOfT<Reg::kTypeGpq>());
         break;
@@ -1018,7 +1029,7 @@ ASMJIT_FAVOR_SIZE Error X86Internal::emitArgMove(Emitter* emitter,
       srcSize = Support::min(srcSize, dstSize);
 
       if (Type::isInt(srcTypeId) || Type::isMask(srcTypeId) || src.isMem()) {
-        instId = Inst::kmovFromSize(srcSize);
+        instId = x86KmovFromSize(srcSize);
         if (Reg::isGp(src) && srcSize <= 4) src.setSignature(Reg::signatureOfT<Reg::kTypeGpd>());
         break;
       }
@@ -1300,7 +1311,7 @@ ASMJIT_FAVOR_SIZE Error X86Internal::emitEpilog(Emitter* emitter, const FuncFram
 // [asmjit::X86Internal - Emit Arguments Assignment]
 // ============================================================================
 
-#if !defined(ASMJIT_DISABLE_LOGGING)
+#ifndef ASMJIT_NO_LOGGING
 static void dumpFuncValue(String& sb, uint32_t archId, const FuncValue& value) noexcept {
   Logging::formatTypeId(sb, value.typeId());
   sb.appendChar('@');

@@ -13,21 +13,55 @@
 #include "../core/inst.h"
 
 #ifdef ASMJIT_BUILD_X86
-  #include "../x86/x86instdb_p.h"
+  #include "../x86/x86instapi_p.h"
 #endif
 
 #ifdef ASMJIT_BUILD_ARM
-  #include "../arm/arminstdb.h"
+  #include "../arm/arminstapi_p.h"
 #endif
 
 ASMJIT_BEGIN_NAMESPACE
 
 // ============================================================================
-// [asmjit::BaseInst - Validate]
+// [asmjit::InstAPI - Text]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_INST_API
-Error BaseInst::validate(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount) noexcept {
+#ifndef ASMJIT_NO_TEXT
+Error InstAPI::instIdToString(uint32_t archId, uint32_t instId, String& output) noexcept {
+#ifdef ASMJIT_BUILD_X86
+  if (ArchInfo::isX86Family(archId))
+    return x86::InstInternal::instIdToString(archId, instId, output);
+#endif
+
+#ifdef ASMJIT_BUILD_ARM
+  if (ArchInfo::isArmFamily(archId))
+    return arm::InstInternal::instIdToString(archId, instId, output);
+#endif
+
+  return DebugUtils::errored(kErrorInvalidArch);
+}
+
+uint32_t InstAPI::stringToInstId(uint32_t archId, const char* s, size_t len) noexcept {
+#ifdef ASMJIT_BUILD_X86
+  if (ArchInfo::isX86Family(archId))
+    return x86::InstInternal::stringToInstId(archId, s, len);
+#endif
+
+#ifdef ASMJIT_BUILD_ARM
+  if (ArchInfo::isArmFamily(archId))
+    return arm::InstInternal::stringToInstId(archId, s, len);
+#endif
+
+  return 0;
+}
+#endif // !ASMJIT_NO_TEXT
+
+// ============================================================================
+// [asmjit::InstAPI - Validate]
+// ============================================================================
+
+#ifndef ASMJIT_NO_VALIDATION
+Error InstAPI::validate(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount) noexcept {
 #ifdef ASMJIT_BUILD_X86
   if (ArchInfo::isX86Family(archId))
     return x86::InstInternal::validate(archId, inst, operands, opCount);
@@ -40,14 +74,14 @@ Error BaseInst::validate(uint32_t archId, const BaseInst& inst, const Operand_* 
 
   return DebugUtils::errored(kErrorInvalidArch);
 }
-#endif
+#endif // !ASMJIT_NO_VALIDATION
 
 // ============================================================================
-// [asmjit::BaseInst - QueryRWInfo]
+// [asmjit::InstAPI - QueryRWInfo]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_INST_API
-Error BaseInst::queryRWInfo(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, InstRWInfo& out) noexcept {
+#ifndef ASMJIT_NO_INTROSPECTION
+Error InstAPI::queryRWInfo(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, InstRWInfo& out) noexcept {
   if (ASMJIT_UNLIKELY(opCount > 6))
     return DebugUtils::errored(kErrorInvalidArgument);
 
@@ -63,14 +97,14 @@ Error BaseInst::queryRWInfo(uint32_t archId, const BaseInst& inst, const Operand
 
   return DebugUtils::errored(kErrorInvalidArch);
 }
-#endif
+#endif // !ASMJIT_NO_INTROSPECTION
 
 // ============================================================================
-// [asmjit::BaseInst - QueryFeatures]
+// [asmjit::InstAPI - QueryFeatures]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_INST_API
-Error BaseInst::queryFeatures(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, BaseFeatures& out) noexcept {
+#ifndef ASMJIT_NO_INTROSPECTION
+Error InstAPI::queryFeatures(uint32_t archId, const BaseInst& inst, const Operand_* operands, uint32_t opCount, BaseFeatures& out) noexcept {
 #ifdef ASMJIT_BUILD_X86
   if (ArchInfo::isX86Family(archId))
     return x86::InstInternal::queryFeatures(archId, inst, operands, opCount, out);
@@ -83,7 +117,7 @@ Error BaseInst::queryFeatures(uint32_t archId, const BaseInst& inst, const Opera
 
   return DebugUtils::errored(kErrorInvalidArch);
 }
-#endif
+#endif // !ASMJIT_NO_INTROSPECTION
 
 ASMJIT_END_NAMESPACE
 

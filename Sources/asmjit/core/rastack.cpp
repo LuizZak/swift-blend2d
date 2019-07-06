@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/rastack_p.h"
 #include "../core/support.h"
@@ -189,4 +189,4 @@ Error RAStackAllocator::adjustSlotOffsets(int32_t offset) noexcept {
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER

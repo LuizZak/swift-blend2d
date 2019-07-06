@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 
 #include "../core/builder.h"
 #include "../core/codeholder.h"
@@ -28,7 +28,7 @@
 
 ASMJIT_BEGIN_NAMESPACE
 
-#if defined(ASMJIT_DISABLE_COMPILER)
+#if defined(ASMJIT_NO_COMPILER)
 class VirtReg;
 #endif
 
@@ -100,7 +100,7 @@ Error FileLogger::_log(const char* data, size_t size) noexcept {
     return kErrorOk;
 
   if (size == SIZE_MAX)
-    size = ::strlen(data);
+    size = strlen(data);
 
   fwrite(data, 1, size, _file);
   return kErrorOk;
@@ -263,7 +263,7 @@ Error Logging::formatTypeId(String& sb, uint32_t typeId) noexcept {
 
 }
 
-#ifndef ASMJIT_DISABLE_BUILDER
+#ifndef ASMJIT_NO_BUILDER
 static Error formatFuncValue(String& sb, uint32_t flags, const BaseEmitter* emitter, FuncValue value) noexcept {
   uint32_t typeId = value.typeId();
   ASMJIT_PROPAGATE(Logging::formatTypeId(sb, typeId));
@@ -294,7 +294,7 @@ static Error formatFuncRets(
     if (i) ASMJIT_PROPAGATE(sb.appendString(", "));
     ASMJIT_PROPAGATE(formatFuncValue(sb, flags, emitter, fd.ret(i)));
 
-    #ifndef ASMJIT_DISABLE_COMPILER
+    #ifndef ASMJIT_NO_COMPILER
     if (vRegs) {
       static const char nullRet[] = "<none>";
       ASMJIT_PROPAGATE(sb.appendFormat(" %s", vRegs[i] ? vRegs[i]->name() : nullRet));
@@ -320,7 +320,7 @@ static Error formatFuncArgs(
     if (i) ASMJIT_PROPAGATE(sb.appendString(", "));
     ASMJIT_PROPAGATE(formatFuncValue(sb, flags, emitter, fd.arg(i)));
 
-    #ifndef ASMJIT_DISABLE_COMPILER
+    #ifndef ASMJIT_NO_COMPILER
     if (vRegs) {
       static const char nullArg[] = "<none>";
       ASMJIT_PROPAGATE(sb.appendFormat(" %s", vRegs[i] ? vRegs[i]->name() : nullArg));
@@ -422,7 +422,7 @@ Error Logging::formatNode(
       break;
     }
 
-    #ifndef ASMJIT_DISABLE_COMPILER
+    #ifndef ASMJIT_NO_COMPILER
     case BaseNode::kNodeFunc: {
       const FuncNode* node = node_->as<FuncNode>();
 

@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_RALOCAL_P_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
 
 #include "../core/raassignment_p.h"
 #include "../core/radefs_p.h"
@@ -253,5 +253,5 @@ public:
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_COMPILER
+#endif // !ASMJIT_NO_COMPILER
 #endif // _ASMJIT_CORE_RALOCAL_P_H

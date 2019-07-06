@@ -8,7 +8,7 @@
 #define _ASMJIT_CORE_BUILDER_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_BUILDER
+#ifndef ASMJIT_NO_BUILDER
 
 #include "../core/assembler.h"
 #include "../core/codeholder.h"
@@ -328,7 +328,7 @@ public:
   //! \name Logging
   //! \{
 
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   ASMJIT_API Error dump(String& sb, uint32_t flags = 0) const noexcept;
   #endif
 
@@ -1274,5 +1274,5 @@ public:
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_BUILDER
+#endif // !ASMJIT_NO_BUILDER
 #endif // _ASMJIT_CORE_BUILDER_H

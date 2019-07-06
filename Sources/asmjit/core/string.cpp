@@ -139,7 +139,7 @@ Error String::assignString(const char* data, size_t size) noexcept {
 
   // Null terminated string without `size` specified.
   if (size == SIZE_MAX)
-    size = data ? ::strlen(data) : size_t(0);
+    size = data ? strlen(data) : size_t(0);
 
   if (isLarge()) {
     if (size <= _large.capacity) {
@@ -200,7 +200,7 @@ Error String::assignString(const char* data, size_t size) noexcept {
 
 Error String::_opString(uint32_t op, const char* str, size_t size) noexcept {
   if (size == SIZE_MAX)
-    size = str ? ::strlen(str) : size_t(0);
+    size = str ? strlen(str) : size_t(0);
 
   if (!size)
     return kErrorOk;
@@ -499,15 +499,15 @@ UNIT(asmjit_core_string) {
   const char* large = "Large string that will not fit into SSO buffer";
   EXPECT(s.assignString(large) == kErrorOk);
   EXPECT(s.isLarge() == true);
-  EXPECT(s.size() == ::strlen(large));
+  EXPECT(s.size() == strlen(large));
   EXPECT(s.capacity() > String::kSSOCapacity);
   EXPECT(s.eq(large) == true);
-  EXPECT(s.eq(large, ::strlen(large)) == true);
+  EXPECT(s.eq(large, strlen(large)) == true);
 
   const char* additional = " (additional content)";
   EXPECT(s.isLarge() == true);
   EXPECT(s.appendString(additional) == kErrorOk);
-  EXPECT(s.size() == ::strlen(large) + ::strlen(additional));
+  EXPECT(s.size() == strlen(large) + strlen(additional));
 
   EXPECT(s.clear() == kErrorOk);
   EXPECT(s.size() == 0);

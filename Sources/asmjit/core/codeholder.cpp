@@ -273,7 +273,7 @@ void CodeHolder::clearEmitterOptions(uint32_t options) noexcept {
 // ============================================================================
 
 void CodeHolder::setLogger(Logger* logger) noexcept {
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   _logger = logger;
   uint32_t option = !logger ? uint32_t(0) : uint32_t(BaseEmitter::kOptionLoggingEnabled);
   CodeHolder_modifyEmitterOptions(this, BaseEmitter::kOptionLoggingEnabled, option);
@@ -826,6 +826,9 @@ static Error CodeHolder_evaluateExpression(CodeHolder* self, Expression* exp, ui
     case Expression::kOpSra:
       result = Support::sar(a, Support::min<uint64_t>(b, 63));
       break;
+
+    default:
+      return DebugUtils::errored(kErrorInvalidState);
   }
 
   *out = result;

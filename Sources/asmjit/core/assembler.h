@@ -103,7 +103,7 @@ public:
   ASMJIT_API Error _emitOpArray(uint32_t instId, const Operand_* operands, size_t count) override;
 
 protected:
-  #ifndef ASMJIT_DISABLE_LOGGING
+  #ifndef ASMJIT_NO_LOGGING
   void _emitLog(
     uint32_t instId, uint32_t options, const Operand_& o0, const Operand_& o1, const Operand_& o2, const Operand_& o3,
     uint32_t relSize, uint32_t immSize, uint8_t* afterCursor);

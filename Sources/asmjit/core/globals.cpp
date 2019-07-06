@@ -16,7 +16,7 @@ ASMJIT_BEGIN_NAMESPACE
 // ============================================================================
 
 ASMJIT_FAVOR_SIZE const char* DebugUtils::errorAsString(Error err) noexcept {
-#ifndef ASMJIT_DISABLE_TEXT
+#ifndef ASMJIT_NO_TEXT
   static const char errorMessages[] =
     "Ok\0"
     "Out of memory\0"

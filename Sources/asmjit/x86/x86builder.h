@@ -8,7 +8,7 @@
 #define _ASMJIT_X86_X86BUILDER_H
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_BUILDER
+#ifndef ASMJIT_NO_BUILDER
 
 #include "../core/builder.h"
 #include "../core/datatypes.h"
@@ -58,5 +58,5 @@ public:
 
 ASMJIT_END_SUB_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_BUILDER
+#endif // !ASMJIT_NO_BUILDER
 #endif // _ASMJIT_X86_X86BUILDER_H

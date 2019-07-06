@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_BUILDER
+#ifndef ASMJIT_NO_BUILDER
 
 #include "../core/builder.h"
 #include "../core/logging.h"
@@ -91,7 +91,7 @@ ConstPoolNode* BaseBuilder::newConstPoolNode() noexcept {
 CommentNode* BaseBuilder::newCommentNode(const char* data, size_t size) noexcept {
   if (data) {
     if (size == SIZE_MAX)
-      size = ::strlen(data);
+      size = strlen(data);
 
     if (size > 0) {
       data = static_cast<char*>(_dataZone.dup(data, size, true));
@@ -542,7 +542,7 @@ Error BaseBuilder::bind(const Label& label) {
 
 ASMJIT_FAVOR_SIZE Pass* BaseBuilder::passByName(const char* name) const noexcept {
   for (Pass* pass : _passes)
-    if (::strcmp(pass->name(), name) == 0)
+    if (strcmp(pass->name(), name) == 0)
       return pass;
   return nullptr;
 }
@@ -643,7 +643,7 @@ Error BaseBuilder::_emit(uint32_t instId, const Operand_& o0, const Operand_& o1
       return DebugUtils::errored(kErrorNotInitialized);
 
     // Strict validation.
-    #ifndef ASMJIT_DISABLE_INST_API
+    #ifndef ASMJIT_NO_VALIDATION
     if (hasEmitterOption(kOptionStrictValidation)) {
       Operand_ opArray[4];
       opArray[0].copyFrom(o0);
@@ -651,7 +651,7 @@ Error BaseBuilder::_emit(uint32_t instId, const Operand_& o0, const Operand_& o1
       opArray[2].copyFrom(o2);
       opArray[3].copyFrom(o3);
 
-      Error err = BaseInst::validate(archId(), BaseInst(instId, options, _extraReg), opArray, opCount);
+      Error err = InstAPI::validate(archId(), BaseInst(instId, options, _extraReg), opArray, opCount);
       if (ASMJIT_UNLIKELY(err)) {
         resetInstOptions();
         resetExtraReg();
@@ -688,7 +688,7 @@ Error BaseBuilder::_emit(uint32_t instId, const Operand_& o0, const Operand_& o1
 
   const char* comment = inlineComment();
   if (comment)
-    node->setInlineComment(static_cast<char*>(_dataZone.dup(comment, ::strlen(comment), true)));
+    node->setInlineComment(static_cast<char*>(_dataZone.dup(comment, strlen(comment), true)));
 
   resetInstOptions();
   resetExtraReg();
@@ -712,7 +712,7 @@ Error BaseBuilder::_emit(uint32_t instId, const Operand_& o0, const Operand_& o1
       return DebugUtils::errored(kErrorNotInitialized);
 
     // Strict validation.
-    #ifndef ASMJIT_DISABLE_INST_API
+    #ifndef ASMJIT_NO_VALIDATION
     if (hasEmitterOption(kOptionStrictValidation)) {
       Operand_ opArray[Globals::kMaxOpCount];
       opArray[0].copyFrom(o0);
@@ -722,7 +722,7 @@ Error BaseBuilder::_emit(uint32_t instId, const Operand_& o0, const Operand_& o1
       opArray[4].copyFrom(o4);
       opArray[5].copyFrom(o5);
 
-      Error err = BaseInst::validate(archId(), BaseInst(instId, options, _extraReg), opArray, opCount);
+      Error err = InstAPI::validate(archId(), BaseInst(instId, options, _extraReg), opArray, opCount);
       if (ASMJIT_UNLIKELY(err)) {
         resetInstOptions();
         resetExtraReg();
@@ -760,7 +760,7 @@ Error BaseBuilder::_emit(uint32_t instId, const Operand_& o0, const Operand_& o1
 
   const char* comment = inlineComment();
   if (comment)
-    node->setInlineComment(static_cast<char*>(_dataZone.dup(comment, ::strlen(comment), true)));
+    node->setInlineComment(static_cast<char*>(_dataZone.dup(comment, strlen(comment), true)));
 
   resetInstOptions();
   resetExtraReg();
@@ -922,7 +922,7 @@ Error BaseBuilder::serialize(BaseEmitter* dst) {
 // [asmjit::BaseBuilder - Logging]
 // ============================================================================
 
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 Error BaseBuilder::dump(String& sb, uint32_t flags) const noexcept {
   BaseNode* node = _firstNode;
   while (node) {
@@ -992,4 +992,4 @@ Pass::~Pass() noexcept {}
 
 ASMJIT_END_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_BUILDER
+#endif // !ASMJIT_NO_BUILDER

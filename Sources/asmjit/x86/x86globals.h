@@ -24,1522 +24,1522 @@ ASMJIT_BEGIN_SUB_NAMESPACE(x86)
 // [asmjit::x86::Inst]
 // ============================================================================
 
-//! Instruction (X86).
+//! Instruction.
 //!
 //! \note Only used to hold x86-specific enumerations and static functions.
 struct Inst : public BaseInst {
-  //! Instruction id (X86).
+  //! Instruction id.
   enum Id : uint32_t {
     // ${InstId:Begin}
-    kIdNone = 0,
-    kIdAaa,                              // <X86>
-    kIdAad,                              // <X86>
-    kIdAam,                              // <X86>
-    kIdAas,                              // <X86>
-    kIdAdc,                              // <ANY>
-    kIdAdcx,                             // {ADX}
-    kIdAdd,                              // <ANY>
-    kIdAddpd,                            // {SSE2}
-    kIdAddps,                            // {SSE}
-    kIdAddsd,                            // {SSE2}
-    kIdAddss,                            // {SSE}
-    kIdAddsubpd,                         // {SSE3}
-    kIdAddsubps,                         // {SSE3}
-    kIdAdox,                             // {ADX}
-    kIdAesdec,                           // {AESNI}
-    kIdAesdeclast,                       // {AESNI}
-    kIdAesenc,                           // {AESNI}
-    kIdAesenclast,                       // {AESNI}
-    kIdAesimc,                           // {AESNI}
-    kIdAeskeygenassist,                  // {AESNI}
-    kIdAnd,                              // <ANY>
-    kIdAndn,                             // {BMI}
-    kIdAndnpd,                           // {SSE2}
-    kIdAndnps,                           // {SSE}
-    kIdAndpd,                            // {SSE2}
-    kIdAndps,                            // {SSE}
-    kIdArpl,                             // <X86>
-    kIdBextr,                            // {BMI}
-    kIdBlcfill,                          // {TBM}
-    kIdBlci,                             // {TBM}
-    kIdBlcic,                            // {TBM}
-    kIdBlcmsk,                           // {TBM}
-    kIdBlcs,                             // {TBM}
-    kIdBlendpd,                          // {SSE4_1}
-    kIdBlendps,                          // {SSE4_1}
-    kIdBlendvpd,                         // {SSE4_1}
-    kIdBlendvps,                         // {SSE4_1}
-    kIdBlsfill,                          // {TBM}
-    kIdBlsi,                             // {BMI}
-    kIdBlsic,                            // {TBM}
-    kIdBlsmsk,                           // {BMI}
-    kIdBlsr,                             // {BMI}
-    kIdBndcl,                            // {MPX}
-    kIdBndcn,                            // {MPX}
-    kIdBndcu,                            // {MPX}
-    kIdBndldx,                           // {MPX}
-    kIdBndmk,                            // {MPX}
-    kIdBndmov,                           // {MPX}
-    kIdBndstx,                           // {MPX}
-    kIdBound,                            // <X86>
-    kIdBsf,                              // <ANY>
-    kIdBsr,                              // <ANY>
-    kIdBswap,                            // <ANY>
-    kIdBt,                               // <ANY>
-    kIdBtc,                              // <ANY>
-    kIdBtr,                              // <ANY>
-    kIdBts,                              // <ANY>
-    kIdBzhi,                             // {BMI2}
-    kIdCall,                             // <ANY>
-    kIdCbw,                              // <ANY>
-    kIdCdq,                              // <ANY>
-    kIdCdqe,                             // <X64>
-    kIdClac,                             // {SMAP}
-    kIdClc,                              // <ANY>
-    kIdCld,                              // <ANY>
-    kIdCldemote,                         // {CLDEMOTE}
-    kIdClflush,                          // {CLFLUSH}
-    kIdClflushopt,                       // {CLFLUSHOPT}
-    kIdClgi,                             // {SVM}
-    kIdCli,                              // <ANY>
-    kIdClts,                             // <ANY>
-    kIdClwb,                             // {CLWB}
-    kIdClzero,                           // {CLZERO}
-    kIdCmc,                              // <ANY>
-    kIdCmova,                            // {CMOV}
-    kIdCmovae,                           // {CMOV}
-    kIdCmovb,                            // {CMOV}
-    kIdCmovbe,                           // {CMOV}
-    kIdCmovc,                            // {CMOV}
-    kIdCmove,                            // {CMOV}
-    kIdCmovg,                            // {CMOV}
-    kIdCmovge,                           // {CMOV}
-    kIdCmovl,                            // {CMOV}
-    kIdCmovle,                           // {CMOV}
-    kIdCmovna,                           // {CMOV}
-    kIdCmovnae,                          // {CMOV}
-    kIdCmovnb,                           // {CMOV}
-    kIdCmovnbe,                          // {CMOV}
-    kIdCmovnc,                           // {CMOV}
-    kIdCmovne,                           // {CMOV}
-    kIdCmovng,                           // {CMOV}
-    kIdCmovnge,                          // {CMOV}
-    kIdCmovnl,                           // {CMOV}
-    kIdCmovnle,                          // {CMOV}
-    kIdCmovno,                           // {CMOV}
-    kIdCmovnp,                           // {CMOV}
-    kIdCmovns,                           // {CMOV}
-    kIdCmovnz,                           // {CMOV}
-    kIdCmovo,                            // {CMOV}
-    kIdCmovp,                            // {CMOV}
-    kIdCmovpe,                           // {CMOV}
-    kIdCmovpo,                           // {CMOV}
-    kIdCmovs,                            // {CMOV}
-    kIdCmovz,                            // {CMOV}
-    kIdCmp,                              // <ANY>
-    kIdCmppd,                            // {SSE2}
-    kIdCmpps,                            // {SSE}
-    kIdCmps,                             // <ANY>
-    kIdCmpsd,                            // {SSE2}
-    kIdCmpss,                            // {SSE}
-    kIdCmpxchg,                          // {I486}
-    kIdCmpxchg16b,                       // {CMPXCHG16B} & <X64>
-    kIdCmpxchg8b,                        // {CMPXCHG8B}
-    kIdComisd,                           // {SSE2}
-    kIdComiss,                           // {SSE}
-    kIdCpuid,                            // {I486}
-    kIdCqo,                              // <X64>
-    kIdCrc32,                            // {SSE4_2}
-    kIdCvtdq2pd,                         // {SSE2}
-    kIdCvtdq2ps,                         // {SSE2}
-    kIdCvtpd2dq,                         // {SSE2}
-    kIdCvtpd2pi,                         // {SSE2}
-    kIdCvtpd2ps,                         // {SSE2}
-    kIdCvtpi2pd,                         // {SSE2}
-    kIdCvtpi2ps,                         // {SSE}
-    kIdCvtps2dq,                         // {SSE2}
-    kIdCvtps2pd,                         // {SSE2}
-    kIdCvtps2pi,                         // {SSE}
-    kIdCvtsd2si,                         // {SSE2}
-    kIdCvtsd2ss,                         // {SSE2}
-    kIdCvtsi2sd,                         // {SSE2}
-    kIdCvtsi2ss,                         // {SSE}
-    kIdCvtss2sd,                         // {SSE2}
-    kIdCvtss2si,                         // {SSE}
-    kIdCvttpd2dq,                        // {SSE2}
-    kIdCvttpd2pi,                        // {SSE2}
-    kIdCvttps2dq,                        // {SSE2}
-    kIdCvttps2pi,                        // {SSE}
-    kIdCvttsd2si,                        // {SSE2}
-    kIdCvttss2si,                        // {SSE}
-    kIdCwd,                              // <ANY>
-    kIdCwde,                             // <ANY>
-    kIdDaa,                              // <X86>
-    kIdDas,                              // <X86>
-    kIdDec,                              // <ANY>
-    kIdDiv,                              // <ANY>
-    kIdDivpd,                            // {SSE2}
-    kIdDivps,                            // {SSE}
-    kIdDivsd,                            // {SSE2}
-    kIdDivss,                            // {SSE}
-    kIdDppd,                             // {SSE4_1}
-    kIdDpps,                             // {SSE4_1}
-    kIdEmms,                             // {MMX}
-    kIdEnqcmd,                           // {ENQCMD}
-    kIdEnqcmds,                          // {ENQCMD}
-    kIdEnter,                            // <ANY>
-    kIdExtractps,                        // {SSE4_1}
-    kIdExtrq,                            // {SSE4A}
-    kIdF2xm1,                            // <ANY>
-    kIdFabs,                             // <ANY>
-    kIdFadd,                             // <ANY>
-    kIdFaddp,                            // <ANY>
-    kIdFbld,                             // <ANY>
-    kIdFbstp,                            // <ANY>
-    kIdFchs,                             // <ANY>
-    kIdFclex,                            // <ANY>
-    kIdFcmovb,                           // {CMOV}
-    kIdFcmovbe,                          // {CMOV}
-    kIdFcmove,                           // {CMOV}
-    kIdFcmovnb,                          // {CMOV}
-    kIdFcmovnbe,                         // {CMOV}
-    kIdFcmovne,                          // {CMOV}
-    kIdFcmovnu,                          // {CMOV}
-    kIdFcmovu,                           // {CMOV}
-    kIdFcom,                             // <ANY>
-    kIdFcomi,                            // <ANY>
-    kIdFcomip,                           // <ANY>
-    kIdFcomp,                            // <ANY>
-    kIdFcompp,                           // <ANY>
-    kIdFcos,                             // <ANY>
-    kIdFdecstp,                          // <ANY>
-    kIdFdiv,                             // <ANY>
-    kIdFdivp,                            // <ANY>
-    kIdFdivr,                            // <ANY>
-    kIdFdivrp,                           // <ANY>
-    kIdFemms,                            // {3DNOW}
-    kIdFfree,                            // <ANY>
-    kIdFiadd,                            // <ANY>
-    kIdFicom,                            // <ANY>
-    kIdFicomp,                           // <ANY>
-    kIdFidiv,                            // <ANY>
-    kIdFidivr,                           // <ANY>
-    kIdFild,                             // <ANY>
-    kIdFimul,                            // <ANY>
-    kIdFincstp,                          // <ANY>
-    kIdFinit,                            // <ANY>
-    kIdFist,                             // <ANY>
-    kIdFistp,                            // <ANY>
-    kIdFisttp,                           // {SSE3}
-    kIdFisub,                            // <ANY>
-    kIdFisubr,                           // <ANY>
-    kIdFld,                              // <ANY>
-    kIdFld1,                             // <ANY>
-    kIdFldcw,                            // <ANY>
-    kIdFldenv,                           // <ANY>
-    kIdFldl2e,                           // <ANY>
-    kIdFldl2t,                           // <ANY>
-    kIdFldlg2,                           // <ANY>
-    kIdFldln2,                           // <ANY>
-    kIdFldpi,                            // <ANY>
-    kIdFldz,                             // <ANY>
-    kIdFmul,                             // <ANY>
-    kIdFmulp,                            // <ANY>
-    kIdFnclex,                           // <ANY>
-    kIdFninit,                           // <ANY>
-    kIdFnop,                             // <ANY>
-    kIdFnsave,                           // <ANY>
-    kIdFnstcw,                           // <ANY>
-    kIdFnstenv,                          // <ANY>
-    kIdFnstsw,                           // <ANY>
-    kIdFpatan,                           // <ANY>
-    kIdFprem,                            // <ANY>
-    kIdFprem1,                           // <ANY>
-    kIdFptan,                            // <ANY>
-    kIdFrndint,                          // <ANY>
-    kIdFrstor,                           // <ANY>
-    kIdFsave,                            // <ANY>
-    kIdFscale,                           // <ANY>
-    kIdFsin,                             // <ANY>
-    kIdFsincos,                          // <ANY>
-    kIdFsqrt,                            // <ANY>
-    kIdFst,                              // <ANY>
-    kIdFstcw,                            // <ANY>
-    kIdFstenv,                           // <ANY>
-    kIdFstp,                             // <ANY>
-    kIdFstsw,                            // <ANY>
-    kIdFsub,                             // <ANY>
-    kIdFsubp,                            // <ANY>
-    kIdFsubr,                            // <ANY>
-    kIdFsubrp,                           // <ANY>
-    kIdFtst,                             // <ANY>
-    kIdFucom,                            // <ANY>
-    kIdFucomi,                           // <ANY>
-    kIdFucomip,                          // <ANY>
-    kIdFucomp,                           // <ANY>
-    kIdFucompp,                          // <ANY>
-    kIdFwait,                            // <ANY>
-    kIdFxam,                             // <ANY>
-    kIdFxch,                             // <ANY>
-    kIdFxrstor,                          // {FXSR}
-    kIdFxrstor64,                        // {FXSR} & <X64>
-    kIdFxsave,                           // {FXSR}
-    kIdFxsave64,                         // {FXSR} & <X64>
-    kIdFxtract,                          // <ANY>
-    kIdFyl2x,                            // <ANY>
-    kIdFyl2xp1,                          // <ANY>
-    kIdGetsec,                           // {SMX}
-    kIdGf2p8affineinvqb,                 // {GFNI}
-    kIdGf2p8affineqb,                    // {GFNI}
-    kIdGf2p8mulb,                        // {GFNI}
-    kIdHaddpd,                           // {SSE3}
-    kIdHaddps,                           // {SSE3}
-    kIdHlt,                              // <ANY>
-    kIdHsubpd,                           // {SSE3}
-    kIdHsubps,                           // {SSE3}
-    kIdIdiv,                             // <ANY>
-    kIdImul,                             // <ANY>
-    kIdIn,                               // <ANY>
-    kIdInc,                              // <ANY>
-    kIdIns,                              // <ANY>
-    kIdInsertps,                         // {SSE4_1}
-    kIdInsertq,                          // {SSE4A}
-    kIdInt,                              // <ANY>
-    kIdInt3,                             // <ANY>
-    kIdInto,                             // <X86>
-    kIdInvd,                             // {I486}
-    kIdInvept,                           // {VMX}
-    kIdInvlpg,                           // {I486}
-    kIdInvlpga,                          // {SVM}
-    kIdInvpcid,                          // {I486}
-    kIdInvvpid,                          // {VMX}
-    kIdIret,                             // <ANY>
-    kIdIretd,                            // <ANY>
-    kIdIretq,                            // <X64>
-    kIdIretw,                            // <ANY>
-    kIdJa,                               // <ANY>
-    kIdJae,                              // <ANY>
-    kIdJb,                               // <ANY>
-    kIdJbe,                              // <ANY>
-    kIdJc,                               // <ANY>
-    kIdJe,                               // <ANY>
-    kIdJecxz,                            // <ANY>
-    kIdJg,                               // <ANY>
-    kIdJge,                              // <ANY>
-    kIdJl,                               // <ANY>
-    kIdJle,                              // <ANY>
-    kIdJmp,                              // <ANY>
-    kIdJna,                              // <ANY>
-    kIdJnae,                             // <ANY>
-    kIdJnb,                              // <ANY>
-    kIdJnbe,                             // <ANY>
-    kIdJnc,                              // <ANY>
-    kIdJne,                              // <ANY>
-    kIdJng,                              // <ANY>
-    kIdJnge,                             // <ANY>
-    kIdJnl,                              // <ANY>
-    kIdJnle,                             // <ANY>
-    kIdJno,                              // <ANY>
-    kIdJnp,                              // <ANY>
-    kIdJns,                              // <ANY>
-    kIdJnz,                              // <ANY>
-    kIdJo,                               // <ANY>
-    kIdJp,                               // <ANY>
-    kIdJpe,                              // <ANY>
-    kIdJpo,                              // <ANY>
-    kIdJs,                               // <ANY>
-    kIdJz,                               // <ANY>
-    kIdKaddb,                            // {AVX512_DQ}
-    kIdKaddd,                            // {AVX512_BW}
-    kIdKaddq,                            // {AVX512_BW}
-    kIdKaddw,                            // {AVX512_DQ}
-    kIdKandb,                            // {AVX512_DQ}
-    kIdKandd,                            // {AVX512_BW}
-    kIdKandnb,                           // {AVX512_DQ}
-    kIdKandnd,                           // {AVX512_BW}
-    kIdKandnq,                           // {AVX512_BW}
-    kIdKandnw,                           // {AVX512_F}
-    kIdKandq,                            // {AVX512_BW}
-    kIdKandw,                            // {AVX512_F}
-    kIdKmovb,                            // {AVX512_DQ}
-    kIdKmovd,                            // {AVX512_BW}
-    kIdKmovq,                            // {AVX512_BW}
-    kIdKmovw,                            // {AVX512_F}
-    kIdKnotb,                            // {AVX512_DQ}
-    kIdKnotd,                            // {AVX512_BW}
-    kIdKnotq,                            // {AVX512_BW}
-    kIdKnotw,                            // {AVX512_F}
-    kIdKorb,                             // {AVX512_DQ}
-    kIdKord,                             // {AVX512_BW}
-    kIdKorq,                             // {AVX512_BW}
-    kIdKortestb,                         // {AVX512_DQ}
-    kIdKortestd,                         // {AVX512_BW}
-    kIdKortestq,                         // {AVX512_BW}
-    kIdKortestw,                         // {AVX512_F}
-    kIdKorw,                             // {AVX512_F}
-    kIdKshiftlb,                         // {AVX512_DQ}
-    kIdKshiftld,                         // {AVX512_BW}
-    kIdKshiftlq,                         // {AVX512_BW}
-    kIdKshiftlw,                         // {AVX512_F}
-    kIdKshiftrb,                         // {AVX512_DQ}
-    kIdKshiftrd,                         // {AVX512_BW}
-    kIdKshiftrq,                         // {AVX512_BW}
-    kIdKshiftrw,                         // {AVX512_F}
-    kIdKtestb,                           // {AVX512_DQ}
-    kIdKtestd,                           // {AVX512_BW}
-    kIdKtestq,                           // {AVX512_BW}
-    kIdKtestw,                           // {AVX512_DQ}
-    kIdKunpckbw,                         // {AVX512_F}
-    kIdKunpckdq,                         // {AVX512_BW}
-    kIdKunpckwd,                         // {AVX512_BW}
-    kIdKxnorb,                           // {AVX512_DQ}
-    kIdKxnord,                           // {AVX512_BW}
-    kIdKxnorq,                           // {AVX512_BW}
-    kIdKxnorw,                           // {AVX512_F}
-    kIdKxorb,                            // {AVX512_DQ}
-    kIdKxord,                            // {AVX512_BW}
-    kIdKxorq,                            // {AVX512_BW}
-    kIdKxorw,                            // {AVX512_F}
-    kIdLahf,                             // {LAHFSAHF}
-    kIdLar,                              // <ANY>
-    kIdLddqu,                            // {SSE3}
-    kIdLdmxcsr,                          // {SSE}
-    kIdLds,                              // <X86>
-    kIdLea,                              // <ANY>
-    kIdLeave,                            // <ANY>
-    kIdLes,                              // <X86>
-    kIdLfence,                           // {SSE2}
-    kIdLfs,                              // <ANY>
-    kIdLgdt,                             // <ANY>
-    kIdLgs,                              // <ANY>
-    kIdLidt,                             // <ANY>
-    kIdLldt,                             // <ANY>
-    kIdLlwpcb,                           // {LWP}
-    kIdLmsw,                             // <ANY>
-    kIdLods,                             // <ANY>
-    kIdLoop,                             // <ANY>
-    kIdLoope,                            // <ANY>
-    kIdLoopne,                           // <ANY>
-    kIdLsl,                              // <ANY>
-    kIdLss,                              // <ANY>
-    kIdLtr,                              // <ANY>
-    kIdLwpins,                           // {LWP}
-    kIdLwpval,                           // {LWP}
-    kIdLzcnt,                            // {LZCNT}
-    kIdMaskmovdqu,                       // {SSE2}
-    kIdMaskmovq,                         // {MMX2}
-    kIdMaxpd,                            // {SSE2}
-    kIdMaxps,                            // {SSE}
-    kIdMaxsd,                            // {SSE2}
-    kIdMaxss,                            // {SSE}
-    kIdMfence,                           // {SSE2}
-    kIdMinpd,                            // {SSE2}
-    kIdMinps,                            // {SSE}
-    kIdMinsd,                            // {SSE2}
-    kIdMinss,                            // {SSE}
-    kIdMonitor,                          // {MONITOR}
-    kIdMonitorx,                         // {MONITORX}
-    kIdMov,                              // <ANY>
-    kIdMovapd,                           // {SSE2}
-    kIdMovaps,                           // {SSE}
-    kIdMovbe,                            // {MOVBE}
-    kIdMovd,                             // {MMX|SSE2}
-    kIdMovddup,                          // {SSE3}
-    kIdMovdir64b,                        // {MOVDIR64B}
-    kIdMovdiri,                          // {MOVDIRI}
-    kIdMovdq2q,                          // {SSE2}
-    kIdMovdqa,                           // {SSE2}
-    kIdMovdqu,                           // {SSE2}
-    kIdMovhlps,                          // {SSE}
-    kIdMovhpd,                           // {SSE2}
-    kIdMovhps,                           // {SSE}
-    kIdMovlhps,                          // {SSE}
-    kIdMovlpd,                           // {SSE2}
-    kIdMovlps,                           // {SSE}
-    kIdMovmskpd,                         // {SSE2}
-    kIdMovmskps,                         // {SSE}
-    kIdMovntdq,                          // {SSE2}
-    kIdMovntdqa,                         // {SSE4_1}
-    kIdMovnti,                           // {SSE2}
-    kIdMovntpd,                          // {SSE2}
-    kIdMovntps,                          // {SSE}
-    kIdMovntq,                           // {MMX2}
-    kIdMovntsd,                          // {SSE4A}
-    kIdMovntss,                          // {SSE4A}
-    kIdMovq,                             // {MMX|SSE2}
-    kIdMovq2dq,                          // {SSE2}
-    kIdMovs,                             // <ANY>
-    kIdMovsd,                            // {SSE2}
-    kIdMovshdup,                         // {SSE3}
-    kIdMovsldup,                         // {SSE3}
-    kIdMovss,                            // {SSE}
-    kIdMovsx,                            // <ANY>
-    kIdMovsxd,                           // <X64>
-    kIdMovupd,                           // {SSE2}
-    kIdMovups,                           // {SSE}
-    kIdMovzx,                            // <ANY>
-    kIdMpsadbw,                          // {SSE4_1}
-    kIdMul,                              // <ANY>
-    kIdMulpd,                            // {SSE2}
-    kIdMulps,                            // {SSE}
-    kIdMulsd,                            // {SSE2}
-    kIdMulss,                            // {SSE}
-    kIdMulx,                             // {BMI2}
-    kIdMwait,                            // {MONITOR}
-    kIdMwaitx,                           // {MONITORX}
-    kIdNeg,                              // <ANY>
-    kIdNop,                              // <ANY>
-    kIdNot,                              // <ANY>
-    kIdOr,                               // <ANY>
-    kIdOrpd,                             // {SSE2}
-    kIdOrps,                             // {SSE}
-    kIdOut,                              // <ANY>
-    kIdOuts,                             // <ANY>
-    kIdPabsb,                            // {SSSE3}
-    kIdPabsd,                            // {SSSE3}
-    kIdPabsw,                            // {SSSE3}
-    kIdPackssdw,                         // {MMX|SSE2}
-    kIdPacksswb,                         // {MMX|SSE2}
-    kIdPackusdw,                         // {SSE4_1}
-    kIdPackuswb,                         // {MMX|SSE2}
-    kIdPaddb,                            // {MMX|SSE2}
-    kIdPaddd,                            // {MMX|SSE2}
-    kIdPaddq,                            // {SSE2}
-    kIdPaddsb,                           // {MMX|SSE2}
-    kIdPaddsw,                           // {MMX|SSE2}
-    kIdPaddusb,                          // {MMX|SSE2}
-    kIdPaddusw,                          // {MMX|SSE2}
-    kIdPaddw,                            // {MMX|SSE2}
-    kIdPalignr,                          // {SSE3}
-    kIdPand,                             // {MMX|SSE2}
-    kIdPandn,                            // {MMX|SSE2}
-    kIdPause,                            // <ANY>
-    kIdPavgb,                            // {MMX2|SSE2}
-    kIdPavgusb,                          // {3DNOW}
-    kIdPavgw,                            // {MMX2|SSE2}
-    kIdPblendvb,                         // {SSE4_1}
-    kIdPblendw,                          // {SSE4_1}
-    kIdPclmulqdq,                        // {PCLMULQDQ}
-    kIdPcmpeqb,                          // {MMX|SSE2}
-    kIdPcmpeqd,                          // {MMX|SSE2}
-    kIdPcmpeqq,                          // {SSE4_1}
-    kIdPcmpeqw,                          // {MMX|SSE2}
-    kIdPcmpestri,                        // {SSE4_2}
-    kIdPcmpestrm,                        // {SSE4_2}
-    kIdPcmpgtb,                          // {MMX|SSE2}
-    kIdPcmpgtd,                          // {MMX|SSE2}
-    kIdPcmpgtq,                          // {SSE4_2}
-    kIdPcmpgtw,                          // {MMX|SSE2}
-    kIdPcmpistri,                        // {SSE4_2}
-    kIdPcmpistrm,                        // {SSE4_2}
-    kIdPcommit,                          // {PCOMMIT}
-    kIdPdep,                             // {BMI2}
-    kIdPext,                             // {BMI2}
-    kIdPextrb,                           // {SSE4_1}
-    kIdPextrd,                           // {SSE4_1}
-    kIdPextrq,                           // {SSE4_1} & <X64>
-    kIdPextrw,                           // {MMX2|SSE2|SSE4_1}
-    kIdPf2id,                            // {3DNOW}
-    kIdPf2iw,                            // {3DNOW2}
-    kIdPfacc,                            // {3DNOW}
-    kIdPfadd,                            // {3DNOW}
-    kIdPfcmpeq,                          // {3DNOW}
-    kIdPfcmpge,                          // {3DNOW}
-    kIdPfcmpgt,                          // {3DNOW}
-    kIdPfmax,                            // {3DNOW}
-    kIdPfmin,                            // {3DNOW}
-    kIdPfmul,                            // {3DNOW}
-    kIdPfnacc,                           // {3DNOW2}
-    kIdPfpnacc,                          // {3DNOW2}
-    kIdPfrcp,                            // {3DNOW}
-    kIdPfrcpit1,                         // {3DNOW}
-    kIdPfrcpit2,                         // {3DNOW}
-    kIdPfrcpv,                           // {GEODE}
-    kIdPfrsqit1,                         // {3DNOW}
-    kIdPfrsqrt,                          // {3DNOW}
-    kIdPfrsqrtv,                         // {GEODE}
-    kIdPfsub,                            // {3DNOW}
-    kIdPfsubr,                           // {3DNOW}
-    kIdPhaddd,                           // {SSSE3}
-    kIdPhaddsw,                          // {SSSE3}
-    kIdPhaddw,                           // {SSSE3}
-    kIdPhminposuw,                       // {SSE4_1}
-    kIdPhsubd,                           // {SSSE3}
-    kIdPhsubsw,                          // {SSSE3}
-    kIdPhsubw,                           // {SSSE3}
-    kIdPi2fd,                            // {3DNOW}
-    kIdPi2fw,                            // {3DNOW2}
-    kIdPinsrb,                           // {SSE4_1}
-    kIdPinsrd,                           // {SSE4_1}
-    kIdPinsrq,                           // {SSE4_1} & <X64>
-    kIdPinsrw,                           // {MMX2|SSE2}
-    kIdPmaddubsw,                        // {SSSE3}
-    kIdPmaddwd,                          // {MMX|SSE2}
-    kIdPmaxsb,                           // {SSE4_1}
-    kIdPmaxsd,                           // {SSE4_1}
-    kIdPmaxsw,                           // {MMX2|SSE2}
-    kIdPmaxub,                           // {MMX2|SSE2}
-    kIdPmaxud,                           // {SSE4_1}
-    kIdPmaxuw,                           // {SSE4_1}
-    kIdPminsb,                           // {SSE4_1}
-    kIdPminsd,                           // {SSE4_1}
-    kIdPminsw,                           // {MMX2|SSE2}
-    kIdPminub,                           // {MMX2|SSE2}
-    kIdPminud,                           // {SSE4_1}
-    kIdPminuw,                           // {SSE4_1}
-    kIdPmovmskb,                         // {MMX2|SSE2}
-    kIdPmovsxbd,                         // {SSE4_1}
-    kIdPmovsxbq,                         // {SSE4_1}
-    kIdPmovsxbw,                         // {SSE4_1}
-    kIdPmovsxdq,                         // {SSE4_1}
-    kIdPmovsxwd,                         // {SSE4_1}
-    kIdPmovsxwq,                         // {SSE4_1}
-    kIdPmovzxbd,                         // {SSE4_1}
-    kIdPmovzxbq,                         // {SSE4_1}
-    kIdPmovzxbw,                         // {SSE4_1}
-    kIdPmovzxdq,                         // {SSE4_1}
-    kIdPmovzxwd,                         // {SSE4_1}
-    kIdPmovzxwq,                         // {SSE4_1}
-    kIdPmuldq,                           // {SSE4_1}
-    kIdPmulhrsw,                         // {SSSE3}
-    kIdPmulhrw,                          // {3DNOW}
-    kIdPmulhuw,                          // {MMX2|SSE2}
-    kIdPmulhw,                           // {MMX|SSE2}
-    kIdPmulld,                           // {SSE4_1}
-    kIdPmullw,                           // {MMX|SSE2}
-    kIdPmuludq,                          // {SSE2}
-    kIdPop,                              // <ANY>
-    kIdPopa,                             // <X86>
-    kIdPopad,                            // <X86>
-    kIdPopcnt,                           // {POPCNT}
-    kIdPopf,                             // <ANY>
-    kIdPopfd,                            // <X86>
-    kIdPopfq,                            // <X64>
-    kIdPor,                              // {MMX|SSE2}
-    kIdPrefetch,                         // {3DNOW}
-    kIdPrefetchnta,                      // {MMX2}
-    kIdPrefetcht0,                       // {MMX2}
-    kIdPrefetcht1,                       // {MMX2}
-    kIdPrefetcht2,                       // {MMX2}
-    kIdPrefetchw,                        // {PREFETCHW}
-    kIdPrefetchwt1,                      // {PREFETCHWT1}
-    kIdPsadbw,                           // {MMX2|SSE2}
-    kIdPshufb,                           // {SSSE3}
-    kIdPshufd,                           // {SSE2}
-    kIdPshufhw,                          // {SSE2}
-    kIdPshuflw,                          // {SSE2}
-    kIdPshufw,                           // {MMX2}
-    kIdPsignb,                           // {SSSE3}
-    kIdPsignd,                           // {SSSE3}
-    kIdPsignw,                           // {SSSE3}
-    kIdPslld,                            // {MMX|SSE2}
-    kIdPslldq,                           // {SSE2}
-    kIdPsllq,                            // {MMX|SSE2}
-    kIdPsllw,                            // {MMX|SSE2}
-    kIdPsrad,                            // {MMX|SSE2}
-    kIdPsraw,                            // {MMX|SSE2}
-    kIdPsrld,                            // {MMX|SSE2}
-    kIdPsrldq,                           // {SSE2}
-    kIdPsrlq,                            // {MMX|SSE2}
-    kIdPsrlw,                            // {MMX|SSE2}
-    kIdPsubb,                            // {MMX|SSE2}
-    kIdPsubd,                            // {MMX|SSE2}
-    kIdPsubq,                            // {SSE2}
-    kIdPsubsb,                           // {MMX|SSE2}
-    kIdPsubsw,                           // {MMX|SSE2}
-    kIdPsubusb,                          // {MMX|SSE2}
-    kIdPsubusw,                          // {MMX|SSE2}
-    kIdPsubw,                            // {MMX|SSE2}
-    kIdPswapd,                           // {3DNOW2}
-    kIdPtest,                            // {SSE4_1}
-    kIdPunpckhbw,                        // {MMX|SSE2}
-    kIdPunpckhdq,                        // {MMX|SSE2}
-    kIdPunpckhqdq,                       // {SSE2}
-    kIdPunpckhwd,                        // {MMX|SSE2}
-    kIdPunpcklbw,                        // {MMX|SSE2}
-    kIdPunpckldq,                        // {MMX|SSE2}
-    kIdPunpcklqdq,                       // {SSE2}
-    kIdPunpcklwd,                        // {MMX|SSE2}
-    kIdPush,                             // <ANY>
-    kIdPusha,                            // <X86>
-    kIdPushad,                           // <X86>
-    kIdPushf,                            // <ANY>
-    kIdPushfd,                           // <X86>
-    kIdPushfq,                           // <X64>
-    kIdPxor,                             // {MMX|SSE2}
-    kIdRcl,                              // <ANY>
-    kIdRcpps,                            // {SSE}
-    kIdRcpss,                            // {SSE}
-    kIdRcr,                              // <ANY>
-    kIdRdfsbase,                         // {FSGSBASE} & <X64>
-    kIdRdgsbase,                         // {FSGSBASE} & <X64>
-    kIdRdmsr,                            // {MSR}
-    kIdRdpid,                            // {RDPID}
-    kIdRdpmc,                            // <ANY>
-    kIdRdrand,                           // {RDRAND}
-    kIdRdseed,                           // {RDSEED}
-    kIdRdtsc,                            // {RDTSC}
-    kIdRdtscp,                           // {RDTSCP}
-    kIdRet,                              // <ANY>
-    kIdRol,                              // <ANY>
-    kIdRor,                              // <ANY>
-    kIdRorx,                             // {BMI2}
-    kIdRoundpd,                          // {SSE4_1}
-    kIdRoundps,                          // {SSE4_1}
-    kIdRoundsd,                          // {SSE4_1}
-    kIdRoundss,                          // {SSE4_1}
-    kIdRsm,                              // <X86>
-    kIdRsqrtps,                          // {SSE}
-    kIdRsqrtss,                          // {SSE}
-    kIdSahf,                             // {LAHFSAHF}
-    kIdSal,                              // <ANY>
-    kIdSar,                              // <ANY>
-    kIdSarx,                             // {BMI2}
-    kIdSbb,                              // <ANY>
-    kIdScas,                             // <ANY>
-    kIdSeta,                             // <ANY>
-    kIdSetae,                            // <ANY>
-    kIdSetb,                             // <ANY>
-    kIdSetbe,                            // <ANY>
-    kIdSetc,                             // <ANY>
-    kIdSete,                             // <ANY>
-    kIdSetg,                             // <ANY>
-    kIdSetge,                            // <ANY>
-    kIdSetl,                             // <ANY>
-    kIdSetle,                            // <ANY>
-    kIdSetna,                            // <ANY>
-    kIdSetnae,                           // <ANY>
-    kIdSetnb,                            // <ANY>
-    kIdSetnbe,                           // <ANY>
-    kIdSetnc,                            // <ANY>
-    kIdSetne,                            // <ANY>
-    kIdSetng,                            // <ANY>
-    kIdSetnge,                           // <ANY>
-    kIdSetnl,                            // <ANY>
-    kIdSetnle,                           // <ANY>
-    kIdSetno,                            // <ANY>
-    kIdSetnp,                            // <ANY>
-    kIdSetns,                            // <ANY>
-    kIdSetnz,                            // <ANY>
-    kIdSeto,                             // <ANY>
-    kIdSetp,                             // <ANY>
-    kIdSetpe,                            // <ANY>
-    kIdSetpo,                            // <ANY>
-    kIdSets,                             // <ANY>
-    kIdSetz,                             // <ANY>
-    kIdSfence,                           // {MMX2}
-    kIdSgdt,                             // <ANY>
-    kIdSha1msg1,                         // {SHA}
-    kIdSha1msg2,                         // {SHA}
-    kIdSha1nexte,                        // {SHA}
-    kIdSha1rnds4,                        // {SHA}
-    kIdSha256msg1,                       // {SHA}
-    kIdSha256msg2,                       // {SHA}
-    kIdSha256rnds2,                      // {SHA}
-    kIdShl,                              // <ANY>
-    kIdShld,                             // <ANY>
-    kIdShlx,                             // {BMI2}
-    kIdShr,                              // <ANY>
-    kIdShrd,                             // <ANY>
-    kIdShrx,                             // {BMI2}
-    kIdShufpd,                           // {SSE2}
-    kIdShufps,                           // {SSE}
-    kIdSidt,                             // <ANY>
-    kIdSkinit,                           // {SKINIT}
-    kIdSldt,                             // <ANY>
-    kIdSlwpcb,                           // {LWP}
-    kIdSmsw,                             // <ANY>
-    kIdSqrtpd,                           // {SSE2}
-    kIdSqrtps,                           // {SSE}
-    kIdSqrtsd,                           // {SSE2}
-    kIdSqrtss,                           // {SSE}
-    kIdStac,                             // {SMAP}
-    kIdStc,                              // <ANY>
-    kIdStd,                              // <ANY>
-    kIdStgi,                             // {SKINIT}
-    kIdSti,                              // <ANY>
-    kIdStmxcsr,                          // {SSE}
-    kIdStos,                             // <ANY>
-    kIdStr,                              // <ANY>
-    kIdSub,                              // <ANY>
-    kIdSubpd,                            // {SSE2}
-    kIdSubps,                            // {SSE}
-    kIdSubsd,                            // {SSE2}
-    kIdSubss,                            // {SSE}
-    kIdSwapgs,                           // <X64>
-    kIdSyscall,                          // <X64>
-    kIdSysenter,                         // <ANY>
-    kIdSysexit,                          // <ANY>
-    kIdSysexit64,                        // <ANY>
-    kIdSysret,                           // <X64>
-    kIdSysret64,                         // <X64>
-    kIdT1mskc,                           // {TBM}
-    kIdTest,                             // <ANY>
-    kIdTzcnt,                            // {BMI}
-    kIdTzmsk,                            // {TBM}
-    kIdUcomisd,                          // {SSE2}
-    kIdUcomiss,                          // {SSE}
-    kIdUd2,                              // <ANY>
-    kIdUnpckhpd,                         // {SSE2}
-    kIdUnpckhps,                         // {SSE}
-    kIdUnpcklpd,                         // {SSE2}
-    kIdUnpcklps,                         // {SSE}
-    kIdV4fmaddps,                        // {AVX512_4FMAPS}
-    kIdV4fmaddss,                        // {AVX512_4FMAPS}
-    kIdV4fnmaddps,                       // {AVX512_4FMAPS}
-    kIdV4fnmaddss,                       // {AVX512_4FMAPS}
-    kIdVaddpd,                           // {AVX|AVX512_F+VL}
-    kIdVaddps,                           // {AVX|AVX512_F+VL}
-    kIdVaddsd,                           // {AVX|AVX512_F}
-    kIdVaddss,                           // {AVX|AVX512_F}
-    kIdVaddsubpd,                        // {AVX}
-    kIdVaddsubps,                        // {AVX}
-    kIdVaesdec,                          // {AVX|AVX512_F+VL & AESNI|VAES}
-    kIdVaesdeclast,                      // {AVX|AVX512_F+VL & AESNI|VAES}
-    kIdVaesenc,                          // {AVX|AVX512_F+VL & AESNI|VAES}
-    kIdVaesenclast,                      // {AVX|AVX512_F+VL & AESNI|VAES}
-    kIdVaesimc,                          // {AVX & AESNI}
-    kIdVaeskeygenassist,                 // {AVX & AESNI}
-    kIdValignd,                          // {AVX512_F+VL}
-    kIdValignq,                          // {AVX512_F+VL}
-    kIdVandnpd,                          // {AVX|AVX512_DQ+VL}
-    kIdVandnps,                          // {AVX|AVX512_DQ+VL}
-    kIdVandpd,                           // {AVX|AVX512_DQ+VL}
-    kIdVandps,                           // {AVX|AVX512_DQ+VL}
-    kIdVblendmb,                         // {AVX512_BW+VL}
-    kIdVblendmd,                         // {AVX512_F+VL}
-    kIdVblendmpd,                        // {AVX512_F+VL}
-    kIdVblendmps,                        // {AVX512_F+VL}
-    kIdVblendmq,                         // {AVX512_F+VL}
-    kIdVblendmw,                         // {AVX512_BW+VL}
-    kIdVblendpd,                         // {AVX}
-    kIdVblendps,                         // {AVX}
-    kIdVblendvpd,                        // {AVX}
-    kIdVblendvps,                        // {AVX}
-    kIdVbroadcastf128,                   // {AVX}
-    kIdVbroadcastf32x2,                  // {AVX512_DQ+VL}
-    kIdVbroadcastf32x4,                  // {AVX512_F}
-    kIdVbroadcastf32x8,                  // {AVX512_DQ}
-    kIdVbroadcastf64x2,                  // {AVX512_DQ+VL}
-    kIdVbroadcastf64x4,                  // {AVX512_F}
-    kIdVbroadcasti128,                   // {AVX2}
-    kIdVbroadcasti32x2,                  // {AVX512_DQ+VL}
-    kIdVbroadcasti32x4,                  // {AVX512_F+VL}
-    kIdVbroadcasti32x8,                  // {AVX512_DQ}
-    kIdVbroadcasti64x2,                  // {AVX512_DQ+VL}
-    kIdVbroadcasti64x4,                  // {AVX512_F}
-    kIdVbroadcastsd,                     // {AVX|AVX2|AVX512_F+VL}
-    kIdVbroadcastss,                     // {AVX|AVX2|AVX512_F+VL}
-    kIdVcmppd,                           // {AVX|AVX512_F+VL}
-    kIdVcmpps,                           // {AVX|AVX512_F+VL}
-    kIdVcmpsd,                           // {AVX|AVX512_F}
-    kIdVcmpss,                           // {AVX|AVX512_F}
-    kIdVcomisd,                          // {AVX|AVX512_F}
-    kIdVcomiss,                          // {AVX|AVX512_F}
-    kIdVcompresspd,                      // {AVX512_F+VL}
-    kIdVcompressps,                      // {AVX512_F+VL}
-    kIdVcvtdq2pd,                        // {AVX|AVX512_F+VL}
-    kIdVcvtdq2ps,                        // {AVX|AVX512_F+VL}
-    kIdVcvtne2ps2bf16,                   // {AVX512_BF16+VL}
-    kIdVcvtneps2bf16,                    // {AVX512_BF16+VL}
-    kIdVcvtpd2dq,                        // {AVX|AVX512_F+VL}
-    kIdVcvtpd2ps,                        // {AVX|AVX512_F+VL}
-    kIdVcvtpd2qq,                        // {AVX512_DQ+VL}
-    kIdVcvtpd2udq,                       // {AVX512_F+VL}
-    kIdVcvtpd2uqq,                       // {AVX512_DQ+VL}
-    kIdVcvtph2ps,                        // {AVX512_F+VL & F16C}
-    kIdVcvtps2dq,                        // {AVX|AVX512_F+VL}
-    kIdVcvtps2pd,                        // {AVX|AVX512_F+VL}
-    kIdVcvtps2ph,                        // {AVX512_F+VL & F16C}
-    kIdVcvtps2qq,                        // {AVX512_DQ+VL}
-    kIdVcvtps2udq,                       // {AVX512_F+VL}
-    kIdVcvtps2uqq,                       // {AVX512_DQ+VL}
-    kIdVcvtqq2pd,                        // {AVX512_DQ+VL}
-    kIdVcvtqq2ps,                        // {AVX512_DQ+VL}
-    kIdVcvtsd2si,                        // {AVX|AVX512_F}
-    kIdVcvtsd2ss,                        // {AVX|AVX512_F}
-    kIdVcvtsd2usi,                       // {AVX512_F}
-    kIdVcvtsi2sd,                        // {AVX|AVX512_F}
-    kIdVcvtsi2ss,                        // {AVX|AVX512_F}
-    kIdVcvtss2sd,                        // {AVX|AVX512_F}
-    kIdVcvtss2si,                        // {AVX|AVX512_F}
-    kIdVcvtss2usi,                       // {AVX512_F}
-    kIdVcvttpd2dq,                       // {AVX|AVX512_F+VL}
-    kIdVcvttpd2qq,                       // {AVX512_F+VL}
-    kIdVcvttpd2udq,                      // {AVX512_F+VL}
-    kIdVcvttpd2uqq,                      // {AVX512_DQ+VL}
-    kIdVcvttps2dq,                       // {AVX|AVX512_F+VL}
-    kIdVcvttps2qq,                       // {AVX512_DQ+VL}
-    kIdVcvttps2udq,                      // {AVX512_F+VL}
-    kIdVcvttps2uqq,                      // {AVX512_DQ+VL}
-    kIdVcvttsd2si,                       // {AVX|AVX512_F}
-    kIdVcvttsd2usi,                      // {AVX512_F}
-    kIdVcvttss2si,                       // {AVX|AVX512_F}
-    kIdVcvttss2usi,                      // {AVX512_F}
-    kIdVcvtudq2pd,                       // {AVX512_F+VL}
-    kIdVcvtudq2ps,                       // {AVX512_F+VL}
-    kIdVcvtuqq2pd,                       // {AVX512_DQ+VL}
-    kIdVcvtuqq2ps,                       // {AVX512_DQ+VL}
-    kIdVcvtusi2sd,                       // {AVX512_F}
-    kIdVcvtusi2ss,                       // {AVX512_F}
-    kIdVdbpsadbw,                        // {AVX512_BW+VL}
-    kIdVdivpd,                           // {AVX|AVX512_F+VL}
-    kIdVdivps,                           // {AVX|AVX512_F+VL}
-    kIdVdivsd,                           // {AVX|AVX512_F}
-    kIdVdivss,                           // {AVX|AVX512_F}
-    kIdVdpbf16ps,                        // {AVX512_BF16+VL}
-    kIdVdppd,                            // {AVX}
-    kIdVdpps,                            // {AVX}
-    kIdVerr,                             // <ANY>
-    kIdVerw,                             // <ANY>
-    kIdVexp2pd,                          // {AVX512_ERI}
-    kIdVexp2ps,                          // {AVX512_ERI}
-    kIdVexpandpd,                        // {AVX512_F+VL}
-    kIdVexpandps,                        // {AVX512_F+VL}
-    kIdVextractf128,                     // {AVX}
-    kIdVextractf32x4,                    // {AVX512_F+VL}
-    kIdVextractf32x8,                    // {AVX512_DQ}
-    kIdVextractf64x2,                    // {AVX512_DQ+VL}
-    kIdVextractf64x4,                    // {AVX512_F}
-    kIdVextracti128,                     // {AVX2}
-    kIdVextracti32x4,                    // {AVX512_F+VL}
-    kIdVextracti32x8,                    // {AVX512_DQ}
-    kIdVextracti64x2,                    // {AVX512_DQ+VL}
-    kIdVextracti64x4,                    // {AVX512_F}
-    kIdVextractps,                       // {AVX|AVX512_F}
-    kIdVfixupimmpd,                      // {AVX512_F+VL}
-    kIdVfixupimmps,                      // {AVX512_F+VL}
-    kIdVfixupimmsd,                      // {AVX512_F}
-    kIdVfixupimmss,                      // {AVX512_F}
-    kIdVfmadd132pd,                      // {FMA|AVX512_F+VL}
-    kIdVfmadd132ps,                      // {FMA|AVX512_F+VL}
-    kIdVfmadd132sd,                      // {FMA|AVX512_F}
-    kIdVfmadd132ss,                      // {FMA|AVX512_F}
-    kIdVfmadd213pd,                      // {FMA|AVX512_F+VL}
-    kIdVfmadd213ps,                      // {FMA|AVX512_F+VL}
-    kIdVfmadd213sd,                      // {FMA|AVX512_F}
-    kIdVfmadd213ss,                      // {FMA|AVX512_F}
-    kIdVfmadd231pd,                      // {FMA|AVX512_F+VL}
-    kIdVfmadd231ps,                      // {FMA|AVX512_F+VL}
-    kIdVfmadd231sd,                      // {FMA|AVX512_F}
-    kIdVfmadd231ss,                      // {FMA|AVX512_F}
-    kIdVfmaddpd,                         // {FMA4}
-    kIdVfmaddps,                         // {FMA4}
-    kIdVfmaddsd,                         // {FMA4}
-    kIdVfmaddss,                         // {FMA4}
-    kIdVfmaddsub132pd,                   // {FMA|AVX512_F+VL}
-    kIdVfmaddsub132ps,                   // {FMA|AVX512_F+VL}
-    kIdVfmaddsub213pd,                   // {FMA|AVX512_F+VL}
-    kIdVfmaddsub213ps,                   // {FMA|AVX512_F+VL}
-    kIdVfmaddsub231pd,                   // {FMA|AVX512_F+VL}
-    kIdVfmaddsub231ps,                   // {FMA|AVX512_F+VL}
-    kIdVfmaddsubpd,                      // {FMA4}
-    kIdVfmaddsubps,                      // {FMA4}
-    kIdVfmsub132pd,                      // {FMA|AVX512_F+VL}
-    kIdVfmsub132ps,                      // {FMA|AVX512_F+VL}
-    kIdVfmsub132sd,                      // {FMA|AVX512_F}
-    kIdVfmsub132ss,                      // {FMA|AVX512_F}
-    kIdVfmsub213pd,                      // {FMA|AVX512_F+VL}
-    kIdVfmsub213ps,                      // {FMA|AVX512_F+VL}
-    kIdVfmsub213sd,                      // {FMA|AVX512_F}
-    kIdVfmsub213ss,                      // {FMA|AVX512_F}
-    kIdVfmsub231pd,                      // {FMA|AVX512_F+VL}
-    kIdVfmsub231ps,                      // {FMA|AVX512_F+VL}
-    kIdVfmsub231sd,                      // {FMA|AVX512_F}
-    kIdVfmsub231ss,                      // {FMA|AVX512_F}
-    kIdVfmsubadd132pd,                   // {FMA|AVX512_F+VL}
-    kIdVfmsubadd132ps,                   // {FMA|AVX512_F+VL}
-    kIdVfmsubadd213pd,                   // {FMA|AVX512_F+VL}
-    kIdVfmsubadd213ps,                   // {FMA|AVX512_F+VL}
-    kIdVfmsubadd231pd,                   // {FMA|AVX512_F+VL}
-    kIdVfmsubadd231ps,                   // {FMA|AVX512_F+VL}
-    kIdVfmsubaddpd,                      // {FMA4}
-    kIdVfmsubaddps,                      // {FMA4}
-    kIdVfmsubpd,                         // {FMA4}
-    kIdVfmsubps,                         // {FMA4}
-    kIdVfmsubsd,                         // {FMA4}
-    kIdVfmsubss,                         // {FMA4}
-    kIdVfnmadd132pd,                     // {FMA|AVX512_F+VL}
-    kIdVfnmadd132ps,                     // {FMA|AVX512_F+VL}
-    kIdVfnmadd132sd,                     // {FMA|AVX512_F}
-    kIdVfnmadd132ss,                     // {FMA|AVX512_F}
-    kIdVfnmadd213pd,                     // {FMA|AVX512_F+VL}
-    kIdVfnmadd213ps,                     // {FMA|AVX512_F+VL}
-    kIdVfnmadd213sd,                     // {FMA|AVX512_F}
-    kIdVfnmadd213ss,                     // {FMA|AVX512_F}
-    kIdVfnmadd231pd,                     // {FMA|AVX512_F+VL}
-    kIdVfnmadd231ps,                     // {FMA|AVX512_F+VL}
-    kIdVfnmadd231sd,                     // {FMA|AVX512_F}
-    kIdVfnmadd231ss,                     // {FMA|AVX512_F}
-    kIdVfnmaddpd,                        // {FMA4}
-    kIdVfnmaddps,                        // {FMA4}
-    kIdVfnmaddsd,                        // {FMA4}
-    kIdVfnmaddss,                        // {FMA4}
-    kIdVfnmsub132pd,                     // {FMA|AVX512_F+VL}
-    kIdVfnmsub132ps,                     // {FMA|AVX512_F+VL}
-    kIdVfnmsub132sd,                     // {FMA|AVX512_F}
-    kIdVfnmsub132ss,                     // {FMA|AVX512_F}
-    kIdVfnmsub213pd,                     // {FMA|AVX512_F+VL}
-    kIdVfnmsub213ps,                     // {FMA|AVX512_F+VL}
-    kIdVfnmsub213sd,                     // {FMA|AVX512_F}
-    kIdVfnmsub213ss,                     // {FMA|AVX512_F}
-    kIdVfnmsub231pd,                     // {FMA|AVX512_F+VL}
-    kIdVfnmsub231ps,                     // {FMA|AVX512_F+VL}
-    kIdVfnmsub231sd,                     // {FMA|AVX512_F}
-    kIdVfnmsub231ss,                     // {FMA|AVX512_F}
-    kIdVfnmsubpd,                        // {FMA4}
-    kIdVfnmsubps,                        // {FMA4}
-    kIdVfnmsubsd,                        // {FMA4}
-    kIdVfnmsubss,                        // {FMA4}
-    kIdVfpclasspd,                       // {AVX512_DQ+VL}
-    kIdVfpclassps,                       // {AVX512_DQ+VL}
-    kIdVfpclasssd,                       // {AVX512_DQ}
-    kIdVfpclassss,                       // {AVX512_DQ}
-    kIdVfrczpd,                          // {XOP}
-    kIdVfrczps,                          // {XOP}
-    kIdVfrczsd,                          // {XOP}
-    kIdVfrczss,                          // {XOP}
-    kIdVgatherdpd,                       // {AVX2|AVX512_F+VL}
-    kIdVgatherdps,                       // {AVX2|AVX512_F+VL}
-    kIdVgatherpf0dpd,                    // {AVX512_PFI}
-    kIdVgatherpf0dps,                    // {AVX512_PFI}
-    kIdVgatherpf0qpd,                    // {AVX512_PFI}
-    kIdVgatherpf0qps,                    // {AVX512_PFI}
-    kIdVgatherpf1dpd,                    // {AVX512_PFI}
-    kIdVgatherpf1dps,                    // {AVX512_PFI}
-    kIdVgatherpf1qpd,                    // {AVX512_PFI}
-    kIdVgatherpf1qps,                    // {AVX512_PFI}
-    kIdVgatherqpd,                       // {AVX2|AVX512_F+VL}
-    kIdVgatherqps,                       // {AVX2|AVX512_F+VL}
-    kIdVgetexppd,                        // {AVX512_F+VL}
-    kIdVgetexpps,                        // {AVX512_F+VL}
-    kIdVgetexpsd,                        // {AVX512_F}
-    kIdVgetexpss,                        // {AVX512_F}
-    kIdVgetmantpd,                       // {AVX512_F+VL}
-    kIdVgetmantps,                       // {AVX512_F+VL}
-    kIdVgetmantsd,                       // {AVX512_F}
-    kIdVgetmantss,                       // {AVX512_F}
-    kIdVgf2p8affineinvqb,                // {AVX|AVX512_F+VL & GFNI}
-    kIdVgf2p8affineqb,                   // {AVX|AVX512_F+VL & GFNI}
-    kIdVgf2p8mulb,                       // {AVX|AVX512_F+VL & GFNI}
-    kIdVhaddpd,                          // {AVX}
-    kIdVhaddps,                          // {AVX}
-    kIdVhsubpd,                          // {AVX}
-    kIdVhsubps,                          // {AVX}
-    kIdVinsertf128,                      // {AVX}
-    kIdVinsertf32x4,                     // {AVX512_F+VL}
-    kIdVinsertf32x8,                     // {AVX512_DQ}
-    kIdVinsertf64x2,                     // {AVX512_DQ+VL}
-    kIdVinsertf64x4,                     // {AVX512_F}
-    kIdVinserti128,                      // {AVX2}
-    kIdVinserti32x4,                     // {AVX512_F+VL}
-    kIdVinserti32x8,                     // {AVX512_DQ}
-    kIdVinserti64x2,                     // {AVX512_DQ+VL}
-    kIdVinserti64x4,                     // {AVX512_F}
-    kIdVinsertps,                        // {AVX|AVX512_F}
-    kIdVlddqu,                           // {AVX}
-    kIdVldmxcsr,                         // {AVX}
-    kIdVmaskmovdqu,                      // {AVX}
-    kIdVmaskmovpd,                       // {AVX}
-    kIdVmaskmovps,                       // {AVX}
-    kIdVmaxpd,                           // {AVX|AVX512_F+VL}
-    kIdVmaxps,                           // {AVX|AVX512_F+VL}
-    kIdVmaxsd,                           // {AVX|AVX512_F+VL}
-    kIdVmaxss,                           // {AVX|AVX512_F+VL}
-    kIdVmcall,                           // {VMX}
-    kIdVmclear,                          // {VMX}
-    kIdVmfunc,                           // {VMX}
-    kIdVminpd,                           // {AVX|AVX512_F+VL}
-    kIdVminps,                           // {AVX|AVX512_F+VL}
-    kIdVminsd,                           // {AVX|AVX512_F+VL}
-    kIdVminss,                           // {AVX|AVX512_F+VL}
-    kIdVmlaunch,                         // {VMX}
-    kIdVmload,                           // {SVM}
-    kIdVmmcall,                          // {SVM}
-    kIdVmovapd,                          // {AVX|AVX512_F+VL}
-    kIdVmovaps,                          // {AVX|AVX512_F+VL}
-    kIdVmovd,                            // {AVX|AVX512_F}
-    kIdVmovddup,                         // {AVX|AVX512_F+VL}
-    kIdVmovdqa,                          // {AVX}
-    kIdVmovdqa32,                        // {AVX512_F+VL}
-    kIdVmovdqa64,                        // {AVX512_F+VL}
-    kIdVmovdqu,                          // {AVX}
-    kIdVmovdqu16,                        // {AVX512_BW+VL}
-    kIdVmovdqu32,                        // {AVX512_F+VL}
-    kIdVmovdqu64,                        // {AVX512_F+VL}
-    kIdVmovdqu8,                         // {AVX512_BW+VL}
-    kIdVmovhlps,                         // {AVX|AVX512_F}
-    kIdVmovhpd,                          // {AVX|AVX512_F}
-    kIdVmovhps,                          // {AVX|AVX512_F}
-    kIdVmovlhps,                         // {AVX|AVX512_F}
-    kIdVmovlpd,                          // {AVX|AVX512_F}
-    kIdVmovlps,                          // {AVX|AVX512_F}
-    kIdVmovmskpd,                        // {AVX}
-    kIdVmovmskps,                        // {AVX}
-    kIdVmovntdq,                         // {AVX|AVX512_F+VL}
-    kIdVmovntdqa,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVmovntpd,                         // {AVX|AVX512_F+VL}
-    kIdVmovntps,                         // {AVX|AVX512_F+VL}
-    kIdVmovq,                            // {AVX|AVX512_F}
-    kIdVmovsd,                           // {AVX|AVX512_F}
-    kIdVmovshdup,                        // {AVX|AVX512_F+VL}
-    kIdVmovsldup,                        // {AVX|AVX512_F+VL}
-    kIdVmovss,                           // {AVX|AVX512_F}
-    kIdVmovupd,                          // {AVX|AVX512_F+VL}
-    kIdVmovups,                          // {AVX|AVX512_F+VL}
-    kIdVmpsadbw,                         // {AVX|AVX2}
-    kIdVmptrld,                          // {VMX}
-    kIdVmptrst,                          // {VMX}
-    kIdVmread,                           // {VMX}
-    kIdVmresume,                         // {VMX}
-    kIdVmrun,                            // {SVM}
-    kIdVmsave,                           // {SVM}
-    kIdVmulpd,                           // {AVX|AVX512_F+VL}
-    kIdVmulps,                           // {AVX|AVX512_F+VL}
-    kIdVmulsd,                           // {AVX|AVX512_F}
-    kIdVmulss,                           // {AVX|AVX512_F}
-    kIdVmwrite,                          // {VMX}
-    kIdVmxon,                            // {VMX}
-    kIdVorpd,                            // {AVX|AVX512_DQ+VL}
-    kIdVorps,                            // {AVX|AVX512_DQ+VL}
-    kIdVp4dpwssd,                        // {AVX512_4VNNIW}
-    kIdVp4dpwssds,                       // {AVX512_4VNNIW}
-    kIdVpabsb,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpabsd,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpabsq,                           // {AVX512_F+VL}
-    kIdVpabsw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpackssdw,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpacksswb,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpackusdw,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpackuswb,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpaddb,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpaddd,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpaddq,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpaddsb,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpaddsw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpaddusb,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpaddusw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpaddw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpalignr,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpand,                            // {AVX|AVX2}
-    kIdVpandd,                           // {AVX512_F+VL}
-    kIdVpandn,                           // {AVX|AVX2}
-    kIdVpandnd,                          // {AVX512_F+VL}
-    kIdVpandnq,                          // {AVX512_F+VL}
-    kIdVpandq,                           // {AVX512_F+VL}
-    kIdVpavgb,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpavgw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpblendd,                         // {AVX2}
-    kIdVpblendvb,                        // {AVX|AVX2}
-    kIdVpblendw,                         // {AVX|AVX2}
-    kIdVpbroadcastb,                     // {AVX2|AVX512_BW+VL}
-    kIdVpbroadcastd,                     // {AVX2|AVX512_F+VL}
-    kIdVpbroadcastmb2d,                  // {AVX512_CDI+VL}
-    kIdVpbroadcastmb2q,                  // {AVX512_CDI+VL}
-    kIdVpbroadcastq,                     // {AVX2|AVX512_F+VL}
-    kIdVpbroadcastw,                     // {AVX2|AVX512_BW+VL}
-    kIdVpclmulqdq,                       // {AVX|AVX512_F+VL & PCLMULQDQ|VPCLMULQDQ}
-    kIdVpcmov,                           // {XOP}
-    kIdVpcmpb,                           // {AVX512_BW+VL}
-    kIdVpcmpd,                           // {AVX512_F+VL}
-    kIdVpcmpeqb,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpcmpeqd,                         // {AVX|AVX2|AVX512_F+VL}
-    kIdVpcmpeqq,                         // {AVX|AVX2|AVX512_F+VL}
-    kIdVpcmpeqw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpcmpestri,                       // {AVX}
-    kIdVpcmpestrm,                       // {AVX}
-    kIdVpcmpgtb,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpcmpgtd,                         // {AVX|AVX2|AVX512_F+VL}
-    kIdVpcmpgtq,                         // {AVX|AVX2|AVX512_F+VL}
-    kIdVpcmpgtw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpcmpistri,                       // {AVX}
-    kIdVpcmpistrm,                       // {AVX}
-    kIdVpcmpq,                           // {AVX512_F+VL}
-    kIdVpcmpub,                          // {AVX512_BW+VL}
-    kIdVpcmpud,                          // {AVX512_F+VL}
-    kIdVpcmpuq,                          // {AVX512_F+VL}
-    kIdVpcmpuw,                          // {AVX512_BW+VL}
-    kIdVpcmpw,                           // {AVX512_BW+VL}
-    kIdVpcomb,                           // {XOP}
-    kIdVpcomd,                           // {XOP}
-    kIdVpcompressb,                      // {AVX512_VBMI2+VL}
-    kIdVpcompressd,                      // {AVX512_F+VL}
-    kIdVpcompressq,                      // {AVX512_F+VL}
-    kIdVpcompressw,                      // {AVX512_VBMI2+VL}
-    kIdVpcomq,                           // {XOP}
-    kIdVpcomub,                          // {XOP}
-    kIdVpcomud,                          // {XOP}
-    kIdVpcomuq,                          // {XOP}
-    kIdVpcomuw,                          // {XOP}
-    kIdVpcomw,                           // {XOP}
-    kIdVpconflictd,                      // {AVX512_CDI+VL}
-    kIdVpconflictq,                      // {AVX512_CDI+VL}
-    kIdVpdpbusd,                         // {AVX512_VNNI+VL}
-    kIdVpdpbusds,                        // {AVX512_VNNI+VL}
-    kIdVpdpwssd,                         // {AVX512_VNNI+VL}
-    kIdVpdpwssds,                        // {AVX512_VNNI+VL}
-    kIdVperm2f128,                       // {AVX}
-    kIdVperm2i128,                       // {AVX2}
-    kIdVpermb,                           // {AVX512_VBMI+VL}
-    kIdVpermd,                           // {AVX2|AVX512_F+VL}
-    kIdVpermi2b,                         // {AVX512_VBMI+VL}
-    kIdVpermi2d,                         // {AVX512_F+VL}
-    kIdVpermi2pd,                        // {AVX512_F+VL}
-    kIdVpermi2ps,                        // {AVX512_F+VL}
-    kIdVpermi2q,                         // {AVX512_F+VL}
-    kIdVpermi2w,                         // {AVX512_BW+VL}
-    kIdVpermil2pd,                       // {XOP}
-    kIdVpermil2ps,                       // {XOP}
-    kIdVpermilpd,                        // {AVX|AVX512_F+VL}
-    kIdVpermilps,                        // {AVX|AVX512_F+VL}
-    kIdVpermpd,                          // {AVX2}
-    kIdVpermps,                          // {AVX2}
-    kIdVpermq,                           // {AVX2|AVX512_F+VL}
-    kIdVpermt2b,                         // {AVX512_VBMI+VL}
-    kIdVpermt2d,                         // {AVX512_F+VL}
-    kIdVpermt2pd,                        // {AVX512_F+VL}
-    kIdVpermt2ps,                        // {AVX512_F+VL}
-    kIdVpermt2q,                         // {AVX512_F+VL}
-    kIdVpermt2w,                         // {AVX512_BW+VL}
-    kIdVpermw,                           // {AVX512_BW+VL}
-    kIdVpexpandb,                        // {AVX512_VBMI2+VL}
-    kIdVpexpandd,                        // {AVX512_F+VL}
-    kIdVpexpandq,                        // {AVX512_F+VL}
-    kIdVpexpandw,                        // {AVX512_VBMI2+VL}
-    kIdVpextrb,                          // {AVX|AVX512_BW}
-    kIdVpextrd,                          // {AVX|AVX512_DQ}
-    kIdVpextrq,                          // {AVX|AVX512_DQ} & <X64>
-    kIdVpextrw,                          // {AVX|AVX512_BW}
-    kIdVpgatherdd,                       // {AVX2|AVX512_F+VL}
-    kIdVpgatherdq,                       // {AVX2|AVX512_F+VL}
-    kIdVpgatherqd,                       // {AVX2|AVX512_F+VL}
-    kIdVpgatherqq,                       // {AVX2|AVX512_F+VL}
-    kIdVphaddbd,                         // {XOP}
-    kIdVphaddbq,                         // {XOP}
-    kIdVphaddbw,                         // {XOP}
-    kIdVphaddd,                          // {AVX|AVX2}
-    kIdVphadddq,                         // {XOP}
-    kIdVphaddsw,                         // {AVX|AVX2}
-    kIdVphaddubd,                        // {XOP}
-    kIdVphaddubq,                        // {XOP}
-    kIdVphaddubw,                        // {XOP}
-    kIdVphaddudq,                        // {XOP}
-    kIdVphadduwd,                        // {XOP}
-    kIdVphadduwq,                        // {XOP}
-    kIdVphaddw,                          // {AVX|AVX2}
-    kIdVphaddwd,                         // {XOP}
-    kIdVphaddwq,                         // {XOP}
-    kIdVphminposuw,                      // {AVX}
-    kIdVphsubbw,                         // {XOP}
-    kIdVphsubd,                          // {AVX|AVX2}
-    kIdVphsubdq,                         // {XOP}
-    kIdVphsubsw,                         // {AVX|AVX2}
-    kIdVphsubw,                          // {AVX|AVX2}
-    kIdVphsubwd,                         // {XOP}
-    kIdVpinsrb,                          // {AVX|AVX512_BW}
-    kIdVpinsrd,                          // {AVX|AVX512_DQ}
-    kIdVpinsrq,                          // {AVX|AVX512_DQ} & <X64>
-    kIdVpinsrw,                          // {AVX|AVX512_BW}
-    kIdVplzcntd,                         // {AVX512_CDI+VL}
-    kIdVplzcntq,                         // {AVX512_CDI+VL}
-    kIdVpmacsdd,                         // {XOP}
-    kIdVpmacsdqh,                        // {XOP}
-    kIdVpmacsdql,                        // {XOP}
-    kIdVpmacssdd,                        // {XOP}
-    kIdVpmacssdqh,                       // {XOP}
-    kIdVpmacssdql,                       // {XOP}
-    kIdVpmacsswd,                        // {XOP}
-    kIdVpmacssww,                        // {XOP}
-    kIdVpmacswd,                         // {XOP}
-    kIdVpmacsww,                         // {XOP}
-    kIdVpmadcsswd,                       // {XOP}
-    kIdVpmadcswd,                        // {XOP}
-    kIdVpmadd52huq,                      // {AVX512_IFMA+VL}
-    kIdVpmadd52luq,                      // {AVX512_IFMA+VL}
-    kIdVpmaddubsw,                       // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmaddwd,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmaskmovd,                       // {AVX2}
-    kIdVpmaskmovq,                       // {AVX2}
-    kIdVpmaxsb,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmaxsd,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmaxsq,                          // {AVX512_F+VL}
-    kIdVpmaxsw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmaxub,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmaxud,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmaxuq,                          // {AVX512_F+VL}
-    kIdVpmaxuw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpminsb,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpminsd,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpminsq,                          // {AVX512_F+VL}
-    kIdVpminsw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpminub,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpminud,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpminuq,                          // {AVX512_F+VL}
-    kIdVpminuw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmovb2m,                         // {AVX512_BW+VL}
-    kIdVpmovd2m,                         // {AVX512_DQ+VL}
-    kIdVpmovdb,                          // {AVX512_F+VL}
-    kIdVpmovdw,                          // {AVX512_F+VL}
-    kIdVpmovm2b,                         // {AVX512_BW+VL}
-    kIdVpmovm2d,                         // {AVX512_DQ+VL}
-    kIdVpmovm2q,                         // {AVX512_DQ+VL}
-    kIdVpmovm2w,                         // {AVX512_BW+VL}
-    kIdVpmovmskb,                        // {AVX|AVX2}
-    kIdVpmovq2m,                         // {AVX512_DQ+VL}
-    kIdVpmovqb,                          // {AVX512_F+VL}
-    kIdVpmovqd,                          // {AVX512_F+VL}
-    kIdVpmovqw,                          // {AVX512_F+VL}
-    kIdVpmovsdb,                         // {AVX512_F+VL}
-    kIdVpmovsdw,                         // {AVX512_F+VL}
-    kIdVpmovsqb,                         // {AVX512_F+VL}
-    kIdVpmovsqd,                         // {AVX512_F+VL}
-    kIdVpmovsqw,                         // {AVX512_F+VL}
-    kIdVpmovswb,                         // {AVX512_BW+VL}
-    kIdVpmovsxbd,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovsxbq,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovsxbw,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmovsxdq,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovsxwd,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovsxwq,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovusdb,                        // {AVX512_F+VL}
-    kIdVpmovusdw,                        // {AVX512_F+VL}
-    kIdVpmovusqb,                        // {AVX512_F+VL}
-    kIdVpmovusqd,                        // {AVX512_F+VL}
-    kIdVpmovusqw,                        // {AVX512_F+VL}
-    kIdVpmovuswb,                        // {AVX512_BW+VL}
-    kIdVpmovw2m,                         // {AVX512_BW+VL}
-    kIdVpmovwb,                          // {AVX512_BW+VL}
-    kIdVpmovzxbd,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovzxbq,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovzxbw,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmovzxdq,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovzxwd,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmovzxwq,                        // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmuldq,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmulhrsw,                        // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmulhuw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmulhw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmulld,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpmullq,                          // {AVX512_DQ+VL}
-    kIdVpmullw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpmultishiftqb,                   // {AVX512_VBMI+VL}
-    kIdVpmuludq,                         // {AVX|AVX2|AVX512_F+VL}
-    kIdVpopcntb,                         // {AVX512_BITALG+VL}
-    kIdVpopcntd,                         // {AVX512_VPOPCNTDQ+VL}
-    kIdVpopcntq,                         // {AVX512_VPOPCNTDQ+VL}
-    kIdVpopcntw,                         // {AVX512_BITALG+VL}
-    kIdVpor,                             // {AVX|AVX2}
-    kIdVpord,                            // {AVX512_F+VL}
-    kIdVporq,                            // {AVX512_F+VL}
-    kIdVpperm,                           // {XOP}
-    kIdVprold,                           // {AVX512_F+VL}
-    kIdVprolq,                           // {AVX512_F+VL}
-    kIdVprolvd,                          // {AVX512_F+VL}
-    kIdVprolvq,                          // {AVX512_F+VL}
-    kIdVprord,                           // {AVX512_F+VL}
-    kIdVprorq,                           // {AVX512_F+VL}
-    kIdVprorvd,                          // {AVX512_F+VL}
-    kIdVprorvq,                          // {AVX512_F+VL}
-    kIdVprotb,                           // {XOP}
-    kIdVprotd,                           // {XOP}
-    kIdVprotq,                           // {XOP}
-    kIdVprotw,                           // {XOP}
-    kIdVpsadbw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpscatterdd,                      // {AVX512_F+VL}
-    kIdVpscatterdq,                      // {AVX512_F+VL}
-    kIdVpscatterqd,                      // {AVX512_F+VL}
-    kIdVpscatterqq,                      // {AVX512_F+VL}
-    kIdVpshab,                           // {XOP}
-    kIdVpshad,                           // {XOP}
-    kIdVpshaq,                           // {XOP}
-    kIdVpshaw,                           // {XOP}
-    kIdVpshlb,                           // {XOP}
-    kIdVpshld,                           // {XOP}
-    kIdVpshldd,                          // {AVX512_VBMI2+VL}
-    kIdVpshldq,                          // {AVX512_VBMI2+VL}
-    kIdVpshldvd,                         // {AVX512_VBMI2+VL}
-    kIdVpshldvq,                         // {AVX512_VBMI2+VL}
-    kIdVpshldvw,                         // {AVX512_VBMI2+VL}
-    kIdVpshldw,                          // {AVX512_VBMI2+VL}
-    kIdVpshlq,                           // {XOP}
-    kIdVpshlw,                           // {XOP}
-    kIdVpshrdd,                          // {AVX512_VBMI2+VL}
-    kIdVpshrdq,                          // {AVX512_VBMI2+VL}
-    kIdVpshrdvd,                         // {AVX512_VBMI2+VL}
-    kIdVpshrdvq,                         // {AVX512_VBMI2+VL}
-    kIdVpshrdvw,                         // {AVX512_VBMI2+VL}
-    kIdVpshrdw,                          // {AVX512_VBMI2+VL}
-    kIdVpshufb,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpshufbitqmb,                     // {AVX512_BITALG+VL}
-    kIdVpshufd,                          // {AVX|AVX2|AVX512_F+VL}
-    kIdVpshufhw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpshuflw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsignb,                          // {AVX|AVX2}
-    kIdVpsignd,                          // {AVX|AVX2}
-    kIdVpsignw,                          // {AVX|AVX2}
-    kIdVpslld,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpslldq,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsllq,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpsllvd,                          // {AVX2|AVX512_F+VL}
-    kIdVpsllvq,                          // {AVX2|AVX512_F+VL}
-    kIdVpsllvw,                          // {AVX512_BW+VL}
-    kIdVpsllw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsrad,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpsraq,                           // {AVX512_F+VL}
-    kIdVpsravd,                          // {AVX2|AVX512_F+VL}
-    kIdVpsravq,                          // {AVX512_F+VL}
-    kIdVpsravw,                          // {AVX512_BW+VL}
-    kIdVpsraw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsrld,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpsrldq,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsrlq,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpsrlvd,                          // {AVX2|AVX512_F+VL}
-    kIdVpsrlvq,                          // {AVX2|AVX512_F+VL}
-    kIdVpsrlvw,                          // {AVX512_BW+VL}
-    kIdVpsrlw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsubb,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsubd,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpsubq,                           // {AVX|AVX2|AVX512_F+VL}
-    kIdVpsubsb,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsubsw,                          // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsubusb,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsubusw,                         // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpsubw,                           // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpternlogd,                       // {AVX512_F+VL}
-    kIdVpternlogq,                       // {AVX512_F+VL}
-    kIdVptest,                           // {AVX}
-    kIdVptestmb,                         // {AVX512_BW+VL}
-    kIdVptestmd,                         // {AVX512_F+VL}
-    kIdVptestmq,                         // {AVX512_F+VL}
-    kIdVptestmw,                         // {AVX512_BW+VL}
-    kIdVptestnmb,                        // {AVX512_BW+VL}
-    kIdVptestnmd,                        // {AVX512_F+VL}
-    kIdVptestnmq,                        // {AVX512_F+VL}
-    kIdVptestnmw,                        // {AVX512_BW+VL}
-    kIdVpunpckhbw,                       // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpunpckhdq,                       // {AVX|AVX2|AVX512_F+VL}
-    kIdVpunpckhqdq,                      // {AVX|AVX2|AVX512_F+VL}
-    kIdVpunpckhwd,                       // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpunpcklbw,                       // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpunpckldq,                       // {AVX|AVX2|AVX512_F+VL}
-    kIdVpunpcklqdq,                      // {AVX|AVX2|AVX512_F+VL}
-    kIdVpunpcklwd,                       // {AVX|AVX2|AVX512_BW+VL}
-    kIdVpxor,                            // {AVX|AVX2}
-    kIdVpxord,                           // {AVX512_F+VL}
-    kIdVpxorq,                           // {AVX512_F+VL}
-    kIdVrangepd,                         // {AVX512_DQ+VL}
-    kIdVrangeps,                         // {AVX512_DQ+VL}
-    kIdVrangesd,                         // {AVX512_DQ}
-    kIdVrangess,                         // {AVX512_DQ}
-    kIdVrcp14pd,                         // {AVX512_F+VL}
-    kIdVrcp14ps,                         // {AVX512_F+VL}
-    kIdVrcp14sd,                         // {AVX512_F}
-    kIdVrcp14ss,                         // {AVX512_F}
-    kIdVrcp28pd,                         // {AVX512_ERI}
-    kIdVrcp28ps,                         // {AVX512_ERI}
-    kIdVrcp28sd,                         // {AVX512_ERI}
-    kIdVrcp28ss,                         // {AVX512_ERI}
-    kIdVrcpps,                           // {AVX}
-    kIdVrcpss,                           // {AVX}
-    kIdVreducepd,                        // {AVX512_DQ+VL}
-    kIdVreduceps,                        // {AVX512_DQ+VL}
-    kIdVreducesd,                        // {AVX512_DQ}
-    kIdVreducess,                        // {AVX512_DQ}
-    kIdVrndscalepd,                      // {AVX512_F+VL}
-    kIdVrndscaleps,                      // {AVX512_F+VL}
-    kIdVrndscalesd,                      // {AVX512_F}
-    kIdVrndscaless,                      // {AVX512_F}
-    kIdVroundpd,                         // {AVX}
-    kIdVroundps,                         // {AVX}
-    kIdVroundsd,                         // {AVX}
-    kIdVroundss,                         // {AVX}
-    kIdVrsqrt14pd,                       // {AVX512_F+VL}
-    kIdVrsqrt14ps,                       // {AVX512_F+VL}
-    kIdVrsqrt14sd,                       // {AVX512_F}
-    kIdVrsqrt14ss,                       // {AVX512_F}
-    kIdVrsqrt28pd,                       // {AVX512_ERI}
-    kIdVrsqrt28ps,                       // {AVX512_ERI}
-    kIdVrsqrt28sd,                       // {AVX512_ERI}
-    kIdVrsqrt28ss,                       // {AVX512_ERI}
-    kIdVrsqrtps,                         // {AVX}
-    kIdVrsqrtss,                         // {AVX}
-    kIdVscalefpd,                        // {AVX512_F+VL}
-    kIdVscalefps,                        // {AVX512_F+VL}
-    kIdVscalefsd,                        // {AVX512_F}
-    kIdVscalefss,                        // {AVX512_F}
-    kIdVscatterdpd,                      // {AVX512_F+VL}
-    kIdVscatterdps,                      // {AVX512_F+VL}
-    kIdVscatterpf0dpd,                   // {AVX512_PFI}
-    kIdVscatterpf0dps,                   // {AVX512_PFI}
-    kIdVscatterpf0qpd,                   // {AVX512_PFI}
-    kIdVscatterpf0qps,                   // {AVX512_PFI}
-    kIdVscatterpf1dpd,                   // {AVX512_PFI}
-    kIdVscatterpf1dps,                   // {AVX512_PFI}
-    kIdVscatterpf1qpd,                   // {AVX512_PFI}
-    kIdVscatterpf1qps,                   // {AVX512_PFI}
-    kIdVscatterqpd,                      // {AVX512_F+VL}
-    kIdVscatterqps,                      // {AVX512_F+VL}
-    kIdVshuff32x4,                       // {AVX512_F+VL}
-    kIdVshuff64x2,                       // {AVX512_F+VL}
-    kIdVshufi32x4,                       // {AVX512_F+VL}
-    kIdVshufi64x2,                       // {AVX512_F+VL}
-    kIdVshufpd,                          // {AVX|AVX512_F+VL}
-    kIdVshufps,                          // {AVX|AVX512_F+VL}
-    kIdVsqrtpd,                          // {AVX|AVX512_F+VL}
-    kIdVsqrtps,                          // {AVX|AVX512_F+VL}
-    kIdVsqrtsd,                          // {AVX|AVX512_F}
-    kIdVsqrtss,                          // {AVX|AVX512_F}
-    kIdVstmxcsr,                         // {AVX}
-    kIdVsubpd,                           // {AVX|AVX512_F+VL}
-    kIdVsubps,                           // {AVX|AVX512_F+VL}
-    kIdVsubsd,                           // {AVX|AVX512_F}
-    kIdVsubss,                           // {AVX|AVX512_F}
-    kIdVtestpd,                          // {AVX}
-    kIdVtestps,                          // {AVX}
-    kIdVucomisd,                         // {AVX|AVX512_F}
-    kIdVucomiss,                         // {AVX|AVX512_F}
-    kIdVunpckhpd,                        // {AVX|AVX512_F+VL}
-    kIdVunpckhps,                        // {AVX|AVX512_F+VL}
-    kIdVunpcklpd,                        // {AVX|AVX512_F+VL}
-    kIdVunpcklps,                        // {AVX|AVX512_F+VL}
-    kIdVxorpd,                           // {AVX|AVX512_DQ+VL}
-    kIdVxorps,                           // {AVX|AVX512_DQ+VL}
-    kIdVzeroall,                         // {AVX}
-    kIdVzeroupper,                       // {AVX}
-    kIdWbinvd,                           // <ANY>
-    kIdWbnoinvd,                         // {WBNOINVD}
-    kIdWrfsbase,                         // {FSGSBASE} & <X64>
-    kIdWrgsbase,                         // {FSGSBASE} & <X64>
-    kIdWrmsr,                            // {MSR}
-    kIdXabort,                           // {RTM}
-    kIdXadd,                             // {I486}
-    kIdXbegin,                           // {RTM}
-    kIdXchg,                             // <ANY>
-    kIdXend,                             // {RTM}
-    kIdXgetbv,                           // {XSAVE}
-    kIdXlatb,                            // <ANY>
-    kIdXor,                              // <ANY>
-    kIdXorpd,                            // {SSE2}
-    kIdXorps,                            // {SSE}
-    kIdXrstor,                           // {XSAVE}
-    kIdXrstor64,                         // {XSAVE} & <X64>
-    kIdXrstors,                          // {XSAVES}
-    kIdXrstors64,                        // {XSAVES} & <X64>
-    kIdXsave,                            // {XSAVE}
-    kIdXsave64,                          // {XSAVE} & <X64>
-    kIdXsavec,                           // {XSAVEC}
-    kIdXsavec64,                         // {XSAVEC} & <X64>
-    kIdXsaveopt,                         // {XSAVEOPT}
-    kIdXsaveopt64,                       // {XSAVEOPT} & <X64>
-    kIdXsaves,                           // {XSAVES}
-    kIdXsaves64,                         // {XSAVES} & <X64>
-    kIdXsetbv,                           // {XSAVE}
-    kIdXtest,                            // {TSX}
+    kIdNone = 0,                         //!< Invalid instruction id.
+    kIdAaa,                              //!< Instruction 'aaa' (X86).
+    kIdAad,                              //!< Instruction 'aad' (X86).
+    kIdAam,                              //!< Instruction 'aam' (X86).
+    kIdAas,                              //!< Instruction 'aas' (X86).
+    kIdAdc,                              //!< Instruction 'adc'.
+    kIdAdcx,                             //!< Instruction 'adcx' {ADX}.
+    kIdAdd,                              //!< Instruction 'add'.
+    kIdAddpd,                            //!< Instruction 'addpd' {SSE2}.
+    kIdAddps,                            //!< Instruction 'addps' {SSE}.
+    kIdAddsd,                            //!< Instruction 'addsd' {SSE2}.
+    kIdAddss,                            //!< Instruction 'addss' {SSE}.
+    kIdAddsubpd,                         //!< Instruction 'addsubpd' {SSE3}.
+    kIdAddsubps,                         //!< Instruction 'addsubps' {SSE3}.
+    kIdAdox,                             //!< Instruction 'adox' {ADX}.
+    kIdAesdec,                           //!< Instruction 'aesdec' {AESNI}.
+    kIdAesdeclast,                       //!< Instruction 'aesdeclast' {AESNI}.
+    kIdAesenc,                           //!< Instruction 'aesenc' {AESNI}.
+    kIdAesenclast,                       //!< Instruction 'aesenclast' {AESNI}.
+    kIdAesimc,                           //!< Instruction 'aesimc' {AESNI}.
+    kIdAeskeygenassist,                  //!< Instruction 'aeskeygenassist' {AESNI}.
+    kIdAnd,                              //!< Instruction 'and'.
+    kIdAndn,                             //!< Instruction 'andn' {BMI}.
+    kIdAndnpd,                           //!< Instruction 'andnpd' {SSE2}.
+    kIdAndnps,                           //!< Instruction 'andnps' {SSE}.
+    kIdAndpd,                            //!< Instruction 'andpd' {SSE2}.
+    kIdAndps,                            //!< Instruction 'andps' {SSE}.
+    kIdArpl,                             //!< Instruction 'arpl' (X86).
+    kIdBextr,                            //!< Instruction 'bextr' {BMI}.
+    kIdBlcfill,                          //!< Instruction 'blcfill' {TBM}.
+    kIdBlci,                             //!< Instruction 'blci' {TBM}.
+    kIdBlcic,                            //!< Instruction 'blcic' {TBM}.
+    kIdBlcmsk,                           //!< Instruction 'blcmsk' {TBM}.
+    kIdBlcs,                             //!< Instruction 'blcs' {TBM}.
+    kIdBlendpd,                          //!< Instruction 'blendpd' {SSE4_1}.
+    kIdBlendps,                          //!< Instruction 'blendps' {SSE4_1}.
+    kIdBlendvpd,                         //!< Instruction 'blendvpd' {SSE4_1}.
+    kIdBlendvps,                         //!< Instruction 'blendvps' {SSE4_1}.
+    kIdBlsfill,                          //!< Instruction 'blsfill' {TBM}.
+    kIdBlsi,                             //!< Instruction 'blsi' {BMI}.
+    kIdBlsic,                            //!< Instruction 'blsic' {TBM}.
+    kIdBlsmsk,                           //!< Instruction 'blsmsk' {BMI}.
+    kIdBlsr,                             //!< Instruction 'blsr' {BMI}.
+    kIdBndcl,                            //!< Instruction 'bndcl' {MPX}.
+    kIdBndcn,                            //!< Instruction 'bndcn' {MPX}.
+    kIdBndcu,                            //!< Instruction 'bndcu' {MPX}.
+    kIdBndldx,                           //!< Instruction 'bndldx' {MPX}.
+    kIdBndmk,                            //!< Instruction 'bndmk' {MPX}.
+    kIdBndmov,                           //!< Instruction 'bndmov' {MPX}.
+    kIdBndstx,                           //!< Instruction 'bndstx' {MPX}.
+    kIdBound,                            //!< Instruction 'bound' (X86).
+    kIdBsf,                              //!< Instruction 'bsf'.
+    kIdBsr,                              //!< Instruction 'bsr'.
+    kIdBswap,                            //!< Instruction 'bswap'.
+    kIdBt,                               //!< Instruction 'bt'.
+    kIdBtc,                              //!< Instruction 'btc'.
+    kIdBtr,                              //!< Instruction 'btr'.
+    kIdBts,                              //!< Instruction 'bts'.
+    kIdBzhi,                             //!< Instruction 'bzhi' {BMI2}.
+    kIdCall,                             //!< Instruction 'call'.
+    kIdCbw,                              //!< Instruction 'cbw'.
+    kIdCdq,                              //!< Instruction 'cdq'.
+    kIdCdqe,                             //!< Instruction 'cdqe' (X64).
+    kIdClac,                             //!< Instruction 'clac' {SMAP}.
+    kIdClc,                              //!< Instruction 'clc'.
+    kIdCld,                              //!< Instruction 'cld'.
+    kIdCldemote,                         //!< Instruction 'cldemote' {CLDEMOTE}.
+    kIdClflush,                          //!< Instruction 'clflush' {CLFLUSH}.
+    kIdClflushopt,                       //!< Instruction 'clflushopt' {CLFLUSHOPT}.
+    kIdClgi,                             //!< Instruction 'clgi' {SVM}.
+    kIdCli,                              //!< Instruction 'cli'.
+    kIdClts,                             //!< Instruction 'clts'.
+    kIdClwb,                             //!< Instruction 'clwb' {CLWB}.
+    kIdClzero,                           //!< Instruction 'clzero' {CLZERO}.
+    kIdCmc,                              //!< Instruction 'cmc'.
+    kIdCmova,                            //!< Instruction 'cmova' {CMOV}.
+    kIdCmovae,                           //!< Instruction 'cmovae' {CMOV}.
+    kIdCmovb,                            //!< Instruction 'cmovb' {CMOV}.
+    kIdCmovbe,                           //!< Instruction 'cmovbe' {CMOV}.
+    kIdCmovc,                            //!< Instruction 'cmovc' {CMOV}.
+    kIdCmove,                            //!< Instruction 'cmove' {CMOV}.
+    kIdCmovg,                            //!< Instruction 'cmovg' {CMOV}.
+    kIdCmovge,                           //!< Instruction 'cmovge' {CMOV}.
+    kIdCmovl,                            //!< Instruction 'cmovl' {CMOV}.
+    kIdCmovle,                           //!< Instruction 'cmovle' {CMOV}.
+    kIdCmovna,                           //!< Instruction 'cmovna' {CMOV}.
+    kIdCmovnae,                          //!< Instruction 'cmovnae' {CMOV}.
+    kIdCmovnb,                           //!< Instruction 'cmovnb' {CMOV}.
+    kIdCmovnbe,                          //!< Instruction 'cmovnbe' {CMOV}.
+    kIdCmovnc,                           //!< Instruction 'cmovnc' {CMOV}.
+    kIdCmovne,                           //!< Instruction 'cmovne' {CMOV}.
+    kIdCmovng,                           //!< Instruction 'cmovng' {CMOV}.
+    kIdCmovnge,                          //!< Instruction 'cmovnge' {CMOV}.
+    kIdCmovnl,                           //!< Instruction 'cmovnl' {CMOV}.
+    kIdCmovnle,                          //!< Instruction 'cmovnle' {CMOV}.
+    kIdCmovno,                           //!< Instruction 'cmovno' {CMOV}.
+    kIdCmovnp,                           //!< Instruction 'cmovnp' {CMOV}.
+    kIdCmovns,                           //!< Instruction 'cmovns' {CMOV}.
+    kIdCmovnz,                           //!< Instruction 'cmovnz' {CMOV}.
+    kIdCmovo,                            //!< Instruction 'cmovo' {CMOV}.
+    kIdCmovp,                            //!< Instruction 'cmovp' {CMOV}.
+    kIdCmovpe,                           //!< Instruction 'cmovpe' {CMOV}.
+    kIdCmovpo,                           //!< Instruction 'cmovpo' {CMOV}.
+    kIdCmovs,                            //!< Instruction 'cmovs' {CMOV}.
+    kIdCmovz,                            //!< Instruction 'cmovz' {CMOV}.
+    kIdCmp,                              //!< Instruction 'cmp'.
+    kIdCmppd,                            //!< Instruction 'cmppd' {SSE2}.
+    kIdCmpps,                            //!< Instruction 'cmpps' {SSE}.
+    kIdCmps,                             //!< Instruction 'cmps'.
+    kIdCmpsd,                            //!< Instruction 'cmpsd' {SSE2}.
+    kIdCmpss,                            //!< Instruction 'cmpss' {SSE}.
+    kIdCmpxchg,                          //!< Instruction 'cmpxchg' {I486}.
+    kIdCmpxchg16b,                       //!< Instruction 'cmpxchg16b' {CMPXCHG16B} (X64).
+    kIdCmpxchg8b,                        //!< Instruction 'cmpxchg8b' {CMPXCHG8B}.
+    kIdComisd,                           //!< Instruction 'comisd' {SSE2}.
+    kIdComiss,                           //!< Instruction 'comiss' {SSE}.
+    kIdCpuid,                            //!< Instruction 'cpuid' {I486}.
+    kIdCqo,                              //!< Instruction 'cqo' (X64).
+    kIdCrc32,                            //!< Instruction 'crc32' {SSE4_2}.
+    kIdCvtdq2pd,                         //!< Instruction 'cvtdq2pd' {SSE2}.
+    kIdCvtdq2ps,                         //!< Instruction 'cvtdq2ps' {SSE2}.
+    kIdCvtpd2dq,                         //!< Instruction 'cvtpd2dq' {SSE2}.
+    kIdCvtpd2pi,                         //!< Instruction 'cvtpd2pi' {SSE2}.
+    kIdCvtpd2ps,                         //!< Instruction 'cvtpd2ps' {SSE2}.
+    kIdCvtpi2pd,                         //!< Instruction 'cvtpi2pd' {SSE2}.
+    kIdCvtpi2ps,                         //!< Instruction 'cvtpi2ps' {SSE}.
+    kIdCvtps2dq,                         //!< Instruction 'cvtps2dq' {SSE2}.
+    kIdCvtps2pd,                         //!< Instruction 'cvtps2pd' {SSE2}.
+    kIdCvtps2pi,                         //!< Instruction 'cvtps2pi' {SSE}.
+    kIdCvtsd2si,                         //!< Instruction 'cvtsd2si' {SSE2}.
+    kIdCvtsd2ss,                         //!< Instruction 'cvtsd2ss' {SSE2}.
+    kIdCvtsi2sd,                         //!< Instruction 'cvtsi2sd' {SSE2}.
+    kIdCvtsi2ss,                         //!< Instruction 'cvtsi2ss' {SSE}.
+    kIdCvtss2sd,                         //!< Instruction 'cvtss2sd' {SSE2}.
+    kIdCvtss2si,                         //!< Instruction 'cvtss2si' {SSE}.
+    kIdCvttpd2dq,                        //!< Instruction 'cvttpd2dq' {SSE2}.
+    kIdCvttpd2pi,                        //!< Instruction 'cvttpd2pi' {SSE2}.
+    kIdCvttps2dq,                        //!< Instruction 'cvttps2dq' {SSE2}.
+    kIdCvttps2pi,                        //!< Instruction 'cvttps2pi' {SSE}.
+    kIdCvttsd2si,                        //!< Instruction 'cvttsd2si' {SSE2}.
+    kIdCvttss2si,                        //!< Instruction 'cvttss2si' {SSE}.
+    kIdCwd,                              //!< Instruction 'cwd'.
+    kIdCwde,                             //!< Instruction 'cwde'.
+    kIdDaa,                              //!< Instruction 'daa' (X86).
+    kIdDas,                              //!< Instruction 'das' (X86).
+    kIdDec,                              //!< Instruction 'dec'.
+    kIdDiv,                              //!< Instruction 'div'.
+    kIdDivpd,                            //!< Instruction 'divpd' {SSE2}.
+    kIdDivps,                            //!< Instruction 'divps' {SSE}.
+    kIdDivsd,                            //!< Instruction 'divsd' {SSE2}.
+    kIdDivss,                            //!< Instruction 'divss' {SSE}.
+    kIdDppd,                             //!< Instruction 'dppd' {SSE4_1}.
+    kIdDpps,                             //!< Instruction 'dpps' {SSE4_1}.
+    kIdEmms,                             //!< Instruction 'emms' {MMX}.
+    kIdEnqcmd,                           //!< Instruction 'enqcmd' {ENQCMD}.
+    kIdEnqcmds,                          //!< Instruction 'enqcmds' {ENQCMD}.
+    kIdEnter,                            //!< Instruction 'enter'.
+    kIdExtractps,                        //!< Instruction 'extractps' {SSE4_1}.
+    kIdExtrq,                            //!< Instruction 'extrq' {SSE4A}.
+    kIdF2xm1,                            //!< Instruction 'f2xm1'.
+    kIdFabs,                             //!< Instruction 'fabs'.
+    kIdFadd,                             //!< Instruction 'fadd'.
+    kIdFaddp,                            //!< Instruction 'faddp'.
+    kIdFbld,                             //!< Instruction 'fbld'.
+    kIdFbstp,                            //!< Instruction 'fbstp'.
+    kIdFchs,                             //!< Instruction 'fchs'.
+    kIdFclex,                            //!< Instruction 'fclex'.
+    kIdFcmovb,                           //!< Instruction 'fcmovb' {CMOV}.
+    kIdFcmovbe,                          //!< Instruction 'fcmovbe' {CMOV}.
+    kIdFcmove,                           //!< Instruction 'fcmove' {CMOV}.
+    kIdFcmovnb,                          //!< Instruction 'fcmovnb' {CMOV}.
+    kIdFcmovnbe,                         //!< Instruction 'fcmovnbe' {CMOV}.
+    kIdFcmovne,                          //!< Instruction 'fcmovne' {CMOV}.
+    kIdFcmovnu,                          //!< Instruction 'fcmovnu' {CMOV}.
+    kIdFcmovu,                           //!< Instruction 'fcmovu' {CMOV}.
+    kIdFcom,                             //!< Instruction 'fcom'.
+    kIdFcomi,                            //!< Instruction 'fcomi'.
+    kIdFcomip,                           //!< Instruction 'fcomip'.
+    kIdFcomp,                            //!< Instruction 'fcomp'.
+    kIdFcompp,                           //!< Instruction 'fcompp'.
+    kIdFcos,                             //!< Instruction 'fcos'.
+    kIdFdecstp,                          //!< Instruction 'fdecstp'.
+    kIdFdiv,                             //!< Instruction 'fdiv'.
+    kIdFdivp,                            //!< Instruction 'fdivp'.
+    kIdFdivr,                            //!< Instruction 'fdivr'.
+    kIdFdivrp,                           //!< Instruction 'fdivrp'.
+    kIdFemms,                            //!< Instruction 'femms' {3DNOW}.
+    kIdFfree,                            //!< Instruction 'ffree'.
+    kIdFiadd,                            //!< Instruction 'fiadd'.
+    kIdFicom,                            //!< Instruction 'ficom'.
+    kIdFicomp,                           //!< Instruction 'ficomp'.
+    kIdFidiv,                            //!< Instruction 'fidiv'.
+    kIdFidivr,                           //!< Instruction 'fidivr'.
+    kIdFild,                             //!< Instruction 'fild'.
+    kIdFimul,                            //!< Instruction 'fimul'.
+    kIdFincstp,                          //!< Instruction 'fincstp'.
+    kIdFinit,                            //!< Instruction 'finit'.
+    kIdFist,                             //!< Instruction 'fist'.
+    kIdFistp,                            //!< Instruction 'fistp'.
+    kIdFisttp,                           //!< Instruction 'fisttp' {SSE3}.
+    kIdFisub,                            //!< Instruction 'fisub'.
+    kIdFisubr,                           //!< Instruction 'fisubr'.
+    kIdFld,                              //!< Instruction 'fld'.
+    kIdFld1,                             //!< Instruction 'fld1'.
+    kIdFldcw,                            //!< Instruction 'fldcw'.
+    kIdFldenv,                           //!< Instruction 'fldenv'.
+    kIdFldl2e,                           //!< Instruction 'fldl2e'.
+    kIdFldl2t,                           //!< Instruction 'fldl2t'.
+    kIdFldlg2,                           //!< Instruction 'fldlg2'.
+    kIdFldln2,                           //!< Instruction 'fldln2'.
+    kIdFldpi,                            //!< Instruction 'fldpi'.
+    kIdFldz,                             //!< Instruction 'fldz'.
+    kIdFmul,                             //!< Instruction 'fmul'.
+    kIdFmulp,                            //!< Instruction 'fmulp'.
+    kIdFnclex,                           //!< Instruction 'fnclex'.
+    kIdFninit,                           //!< Instruction 'fninit'.
+    kIdFnop,                             //!< Instruction 'fnop'.
+    kIdFnsave,                           //!< Instruction 'fnsave'.
+    kIdFnstcw,                           //!< Instruction 'fnstcw'.
+    kIdFnstenv,                          //!< Instruction 'fnstenv'.
+    kIdFnstsw,                           //!< Instruction 'fnstsw'.
+    kIdFpatan,                           //!< Instruction 'fpatan'.
+    kIdFprem,                            //!< Instruction 'fprem'.
+    kIdFprem1,                           //!< Instruction 'fprem1'.
+    kIdFptan,                            //!< Instruction 'fptan'.
+    kIdFrndint,                          //!< Instruction 'frndint'.
+    kIdFrstor,                           //!< Instruction 'frstor'.
+    kIdFsave,                            //!< Instruction 'fsave'.
+    kIdFscale,                           //!< Instruction 'fscale'.
+    kIdFsin,                             //!< Instruction 'fsin'.
+    kIdFsincos,                          //!< Instruction 'fsincos'.
+    kIdFsqrt,                            //!< Instruction 'fsqrt'.
+    kIdFst,                              //!< Instruction 'fst'.
+    kIdFstcw,                            //!< Instruction 'fstcw'.
+    kIdFstenv,                           //!< Instruction 'fstenv'.
+    kIdFstp,                             //!< Instruction 'fstp'.
+    kIdFstsw,                            //!< Instruction 'fstsw'.
+    kIdFsub,                             //!< Instruction 'fsub'.
+    kIdFsubp,                            //!< Instruction 'fsubp'.
+    kIdFsubr,                            //!< Instruction 'fsubr'.
+    kIdFsubrp,                           //!< Instruction 'fsubrp'.
+    kIdFtst,                             //!< Instruction 'ftst'.
+    kIdFucom,                            //!< Instruction 'fucom'.
+    kIdFucomi,                           //!< Instruction 'fucomi'.
+    kIdFucomip,                          //!< Instruction 'fucomip'.
+    kIdFucomp,                           //!< Instruction 'fucomp'.
+    kIdFucompp,                          //!< Instruction 'fucompp'.
+    kIdFwait,                            //!< Instruction 'fwait'.
+    kIdFxam,                             //!< Instruction 'fxam'.
+    kIdFxch,                             //!< Instruction 'fxch'.
+    kIdFxrstor,                          //!< Instruction 'fxrstor' {FXSR}.
+    kIdFxrstor64,                        //!< Instruction 'fxrstor64' {FXSR} (X64).
+    kIdFxsave,                           //!< Instruction 'fxsave' {FXSR}.
+    kIdFxsave64,                         //!< Instruction 'fxsave64' {FXSR} (X64).
+    kIdFxtract,                          //!< Instruction 'fxtract'.
+    kIdFyl2x,                            //!< Instruction 'fyl2x'.
+    kIdFyl2xp1,                          //!< Instruction 'fyl2xp1'.
+    kIdGetsec,                           //!< Instruction 'getsec' {SMX}.
+    kIdGf2p8affineinvqb,                 //!< Instruction 'gf2p8affineinvqb' {GFNI}.
+    kIdGf2p8affineqb,                    //!< Instruction 'gf2p8affineqb' {GFNI}.
+    kIdGf2p8mulb,                        //!< Instruction 'gf2p8mulb' {GFNI}.
+    kIdHaddpd,                           //!< Instruction 'haddpd' {SSE3}.
+    kIdHaddps,                           //!< Instruction 'haddps' {SSE3}.
+    kIdHlt,                              //!< Instruction 'hlt'.
+    kIdHsubpd,                           //!< Instruction 'hsubpd' {SSE3}.
+    kIdHsubps,                           //!< Instruction 'hsubps' {SSE3}.
+    kIdIdiv,                             //!< Instruction 'idiv'.
+    kIdImul,                             //!< Instruction 'imul'.
+    kIdIn,                               //!< Instruction 'in'.
+    kIdInc,                              //!< Instruction 'inc'.
+    kIdIns,                              //!< Instruction 'ins'.
+    kIdInsertps,                         //!< Instruction 'insertps' {SSE4_1}.
+    kIdInsertq,                          //!< Instruction 'insertq' {SSE4A}.
+    kIdInt,                              //!< Instruction 'int'.
+    kIdInt3,                             //!< Instruction 'int3'.
+    kIdInto,                             //!< Instruction 'into' (X86).
+    kIdInvd,                             //!< Instruction 'invd' {I486}.
+    kIdInvept,                           //!< Instruction 'invept' {VMX}.
+    kIdInvlpg,                           //!< Instruction 'invlpg' {I486}.
+    kIdInvlpga,                          //!< Instruction 'invlpga' {SVM}.
+    kIdInvpcid,                          //!< Instruction 'invpcid' {I486}.
+    kIdInvvpid,                          //!< Instruction 'invvpid' {VMX}.
+    kIdIret,                             //!< Instruction 'iret'.
+    kIdIretd,                            //!< Instruction 'iretd'.
+    kIdIretq,                            //!< Instruction 'iretq' (X64).
+    kIdIretw,                            //!< Instruction 'iretw'.
+    kIdJa,                               //!< Instruction 'ja'.
+    kIdJae,                              //!< Instruction 'jae'.
+    kIdJb,                               //!< Instruction 'jb'.
+    kIdJbe,                              //!< Instruction 'jbe'.
+    kIdJc,                               //!< Instruction 'jc'.
+    kIdJe,                               //!< Instruction 'je'.
+    kIdJecxz,                            //!< Instruction 'jecxz'.
+    kIdJg,                               //!< Instruction 'jg'.
+    kIdJge,                              //!< Instruction 'jge'.
+    kIdJl,                               //!< Instruction 'jl'.
+    kIdJle,                              //!< Instruction 'jle'.
+    kIdJmp,                              //!< Instruction 'jmp'.
+    kIdJna,                              //!< Instruction 'jna'.
+    kIdJnae,                             //!< Instruction 'jnae'.
+    kIdJnb,                              //!< Instruction 'jnb'.
+    kIdJnbe,                             //!< Instruction 'jnbe'.
+    kIdJnc,                              //!< Instruction 'jnc'.
+    kIdJne,                              //!< Instruction 'jne'.
+    kIdJng,                              //!< Instruction 'jng'.
+    kIdJnge,                             //!< Instruction 'jnge'.
+    kIdJnl,                              //!< Instruction 'jnl'.
+    kIdJnle,                             //!< Instruction 'jnle'.
+    kIdJno,                              //!< Instruction 'jno'.
+    kIdJnp,                              //!< Instruction 'jnp'.
+    kIdJns,                              //!< Instruction 'jns'.
+    kIdJnz,                              //!< Instruction 'jnz'.
+    kIdJo,                               //!< Instruction 'jo'.
+    kIdJp,                               //!< Instruction 'jp'.
+    kIdJpe,                              //!< Instruction 'jpe'.
+    kIdJpo,                              //!< Instruction 'jpo'.
+    kIdJs,                               //!< Instruction 'js'.
+    kIdJz,                               //!< Instruction 'jz'.
+    kIdKaddb,                            //!< Instruction 'kaddb' {AVX512_DQ}.
+    kIdKaddd,                            //!< Instruction 'kaddd' {AVX512_BW}.
+    kIdKaddq,                            //!< Instruction 'kaddq' {AVX512_BW}.
+    kIdKaddw,                            //!< Instruction 'kaddw' {AVX512_DQ}.
+    kIdKandb,                            //!< Instruction 'kandb' {AVX512_DQ}.
+    kIdKandd,                            //!< Instruction 'kandd' {AVX512_BW}.
+    kIdKandnb,                           //!< Instruction 'kandnb' {AVX512_DQ}.
+    kIdKandnd,                           //!< Instruction 'kandnd' {AVX512_BW}.
+    kIdKandnq,                           //!< Instruction 'kandnq' {AVX512_BW}.
+    kIdKandnw,                           //!< Instruction 'kandnw' {AVX512_F}.
+    kIdKandq,                            //!< Instruction 'kandq' {AVX512_BW}.
+    kIdKandw,                            //!< Instruction 'kandw' {AVX512_F}.
+    kIdKmovb,                            //!< Instruction 'kmovb' {AVX512_DQ}.
+    kIdKmovd,                            //!< Instruction 'kmovd' {AVX512_BW}.
+    kIdKmovq,                            //!< Instruction 'kmovq' {AVX512_BW}.
+    kIdKmovw,                            //!< Instruction 'kmovw' {AVX512_F}.
+    kIdKnotb,                            //!< Instruction 'knotb' {AVX512_DQ}.
+    kIdKnotd,                            //!< Instruction 'knotd' {AVX512_BW}.
+    kIdKnotq,                            //!< Instruction 'knotq' {AVX512_BW}.
+    kIdKnotw,                            //!< Instruction 'knotw' {AVX512_F}.
+    kIdKorb,                             //!< Instruction 'korb' {AVX512_DQ}.
+    kIdKord,                             //!< Instruction 'kord' {AVX512_BW}.
+    kIdKorq,                             //!< Instruction 'korq' {AVX512_BW}.
+    kIdKortestb,                         //!< Instruction 'kortestb' {AVX512_DQ}.
+    kIdKortestd,                         //!< Instruction 'kortestd' {AVX512_BW}.
+    kIdKortestq,                         //!< Instruction 'kortestq' {AVX512_BW}.
+    kIdKortestw,                         //!< Instruction 'kortestw' {AVX512_F}.
+    kIdKorw,                             //!< Instruction 'korw' {AVX512_F}.
+    kIdKshiftlb,                         //!< Instruction 'kshiftlb' {AVX512_DQ}.
+    kIdKshiftld,                         //!< Instruction 'kshiftld' {AVX512_BW}.
+    kIdKshiftlq,                         //!< Instruction 'kshiftlq' {AVX512_BW}.
+    kIdKshiftlw,                         //!< Instruction 'kshiftlw' {AVX512_F}.
+    kIdKshiftrb,                         //!< Instruction 'kshiftrb' {AVX512_DQ}.
+    kIdKshiftrd,                         //!< Instruction 'kshiftrd' {AVX512_BW}.
+    kIdKshiftrq,                         //!< Instruction 'kshiftrq' {AVX512_BW}.
+    kIdKshiftrw,                         //!< Instruction 'kshiftrw' {AVX512_F}.
+    kIdKtestb,                           //!< Instruction 'ktestb' {AVX512_DQ}.
+    kIdKtestd,                           //!< Instruction 'ktestd' {AVX512_BW}.
+    kIdKtestq,                           //!< Instruction 'ktestq' {AVX512_BW}.
+    kIdKtestw,                           //!< Instruction 'ktestw' {AVX512_DQ}.
+    kIdKunpckbw,                         //!< Instruction 'kunpckbw' {AVX512_F}.
+    kIdKunpckdq,                         //!< Instruction 'kunpckdq' {AVX512_BW}.
+    kIdKunpckwd,                         //!< Instruction 'kunpckwd' {AVX512_BW}.
+    kIdKxnorb,                           //!< Instruction 'kxnorb' {AVX512_DQ}.
+    kIdKxnord,                           //!< Instruction 'kxnord' {AVX512_BW}.
+    kIdKxnorq,                           //!< Instruction 'kxnorq' {AVX512_BW}.
+    kIdKxnorw,                           //!< Instruction 'kxnorw' {AVX512_F}.
+    kIdKxorb,                            //!< Instruction 'kxorb' {AVX512_DQ}.
+    kIdKxord,                            //!< Instruction 'kxord' {AVX512_BW}.
+    kIdKxorq,                            //!< Instruction 'kxorq' {AVX512_BW}.
+    kIdKxorw,                            //!< Instruction 'kxorw' {AVX512_F}.
+    kIdLahf,                             //!< Instruction 'lahf' {LAHFSAHF}.
+    kIdLar,                              //!< Instruction 'lar'.
+    kIdLddqu,                            //!< Instruction 'lddqu' {SSE3}.
+    kIdLdmxcsr,                          //!< Instruction 'ldmxcsr' {SSE}.
+    kIdLds,                              //!< Instruction 'lds' (X86).
+    kIdLea,                              //!< Instruction 'lea'.
+    kIdLeave,                            //!< Instruction 'leave'.
+    kIdLes,                              //!< Instruction 'les' (X86).
+    kIdLfence,                           //!< Instruction 'lfence' {SSE2}.
+    kIdLfs,                              //!< Instruction 'lfs'.
+    kIdLgdt,                             //!< Instruction 'lgdt'.
+    kIdLgs,                              //!< Instruction 'lgs'.
+    kIdLidt,                             //!< Instruction 'lidt'.
+    kIdLldt,                             //!< Instruction 'lldt'.
+    kIdLlwpcb,                           //!< Instruction 'llwpcb' {LWP}.
+    kIdLmsw,                             //!< Instruction 'lmsw'.
+    kIdLods,                             //!< Instruction 'lods'.
+    kIdLoop,                             //!< Instruction 'loop'.
+    kIdLoope,                            //!< Instruction 'loope'.
+    kIdLoopne,                           //!< Instruction 'loopne'.
+    kIdLsl,                              //!< Instruction 'lsl'.
+    kIdLss,                              //!< Instruction 'lss'.
+    kIdLtr,                              //!< Instruction 'ltr'.
+    kIdLwpins,                           //!< Instruction 'lwpins' {LWP}.
+    kIdLwpval,                           //!< Instruction 'lwpval' {LWP}.
+    kIdLzcnt,                            //!< Instruction 'lzcnt' {LZCNT}.
+    kIdMaskmovdqu,                       //!< Instruction 'maskmovdqu' {SSE2}.
+    kIdMaskmovq,                         //!< Instruction 'maskmovq' {MMX2}.
+    kIdMaxpd,                            //!< Instruction 'maxpd' {SSE2}.
+    kIdMaxps,                            //!< Instruction 'maxps' {SSE}.
+    kIdMaxsd,                            //!< Instruction 'maxsd' {SSE2}.
+    kIdMaxss,                            //!< Instruction 'maxss' {SSE}.
+    kIdMfence,                           //!< Instruction 'mfence' {SSE2}.
+    kIdMinpd,                            //!< Instruction 'minpd' {SSE2}.
+    kIdMinps,                            //!< Instruction 'minps' {SSE}.
+    kIdMinsd,                            //!< Instruction 'minsd' {SSE2}.
+    kIdMinss,                            //!< Instruction 'minss' {SSE}.
+    kIdMonitor,                          //!< Instruction 'monitor' {MONITOR}.
+    kIdMonitorx,                         //!< Instruction 'monitorx' {MONITORX}.
+    kIdMov,                              //!< Instruction 'mov'.
+    kIdMovapd,                           //!< Instruction 'movapd' {SSE2}.
+    kIdMovaps,                           //!< Instruction 'movaps' {SSE}.
+    kIdMovbe,                            //!< Instruction 'movbe' {MOVBE}.
+    kIdMovd,                             //!< Instruction 'movd' {MMX|SSE2}.
+    kIdMovddup,                          //!< Instruction 'movddup' {SSE3}.
+    kIdMovdir64b,                        //!< Instruction 'movdir64b' {MOVDIR64B}.
+    kIdMovdiri,                          //!< Instruction 'movdiri' {MOVDIRI}.
+    kIdMovdq2q,                          //!< Instruction 'movdq2q' {SSE2}.
+    kIdMovdqa,                           //!< Instruction 'movdqa' {SSE2}.
+    kIdMovdqu,                           //!< Instruction 'movdqu' {SSE2}.
+    kIdMovhlps,                          //!< Instruction 'movhlps' {SSE}.
+    kIdMovhpd,                           //!< Instruction 'movhpd' {SSE2}.
+    kIdMovhps,                           //!< Instruction 'movhps' {SSE}.
+    kIdMovlhps,                          //!< Instruction 'movlhps' {SSE}.
+    kIdMovlpd,                           //!< Instruction 'movlpd' {SSE2}.
+    kIdMovlps,                           //!< Instruction 'movlps' {SSE}.
+    kIdMovmskpd,                         //!< Instruction 'movmskpd' {SSE2}.
+    kIdMovmskps,                         //!< Instruction 'movmskps' {SSE}.
+    kIdMovntdq,                          //!< Instruction 'movntdq' {SSE2}.
+    kIdMovntdqa,                         //!< Instruction 'movntdqa' {SSE4_1}.
+    kIdMovnti,                           //!< Instruction 'movnti' {SSE2}.
+    kIdMovntpd,                          //!< Instruction 'movntpd' {SSE2}.
+    kIdMovntps,                          //!< Instruction 'movntps' {SSE}.
+    kIdMovntq,                           //!< Instruction 'movntq' {MMX2}.
+    kIdMovntsd,                          //!< Instruction 'movntsd' {SSE4A}.
+    kIdMovntss,                          //!< Instruction 'movntss' {SSE4A}.
+    kIdMovq,                             //!< Instruction 'movq' {MMX|SSE2}.
+    kIdMovq2dq,                          //!< Instruction 'movq2dq' {SSE2}.
+    kIdMovs,                             //!< Instruction 'movs'.
+    kIdMovsd,                            //!< Instruction 'movsd' {SSE2}.
+    kIdMovshdup,                         //!< Instruction 'movshdup' {SSE3}.
+    kIdMovsldup,                         //!< Instruction 'movsldup' {SSE3}.
+    kIdMovss,                            //!< Instruction 'movss' {SSE}.
+    kIdMovsx,                            //!< Instruction 'movsx'.
+    kIdMovsxd,                           //!< Instruction 'movsxd' (X64).
+    kIdMovupd,                           //!< Instruction 'movupd' {SSE2}.
+    kIdMovups,                           //!< Instruction 'movups' {SSE}.
+    kIdMovzx,                            //!< Instruction 'movzx'.
+    kIdMpsadbw,                          //!< Instruction 'mpsadbw' {SSE4_1}.
+    kIdMul,                              //!< Instruction 'mul'.
+    kIdMulpd,                            //!< Instruction 'mulpd' {SSE2}.
+    kIdMulps,                            //!< Instruction 'mulps' {SSE}.
+    kIdMulsd,                            //!< Instruction 'mulsd' {SSE2}.
+    kIdMulss,                            //!< Instruction 'mulss' {SSE}.
+    kIdMulx,                             //!< Instruction 'mulx' {BMI2}.
+    kIdMwait,                            //!< Instruction 'mwait' {MONITOR}.
+    kIdMwaitx,                           //!< Instruction 'mwaitx' {MONITORX}.
+    kIdNeg,                              //!< Instruction 'neg'.
+    kIdNop,                              //!< Instruction 'nop'.
+    kIdNot,                              //!< Instruction 'not'.
+    kIdOr,                               //!< Instruction 'or'.
+    kIdOrpd,                             //!< Instruction 'orpd' {SSE2}.
+    kIdOrps,                             //!< Instruction 'orps' {SSE}.
+    kIdOut,                              //!< Instruction 'out'.
+    kIdOuts,                             //!< Instruction 'outs'.
+    kIdPabsb,                            //!< Instruction 'pabsb' {SSSE3}.
+    kIdPabsd,                            //!< Instruction 'pabsd' {SSSE3}.
+    kIdPabsw,                            //!< Instruction 'pabsw' {SSSE3}.
+    kIdPackssdw,                         //!< Instruction 'packssdw' {MMX|SSE2}.
+    kIdPacksswb,                         //!< Instruction 'packsswb' {MMX|SSE2}.
+    kIdPackusdw,                         //!< Instruction 'packusdw' {SSE4_1}.
+    kIdPackuswb,                         //!< Instruction 'packuswb' {MMX|SSE2}.
+    kIdPaddb,                            //!< Instruction 'paddb' {MMX|SSE2}.
+    kIdPaddd,                            //!< Instruction 'paddd' {MMX|SSE2}.
+    kIdPaddq,                            //!< Instruction 'paddq' {SSE2}.
+    kIdPaddsb,                           //!< Instruction 'paddsb' {MMX|SSE2}.
+    kIdPaddsw,                           //!< Instruction 'paddsw' {MMX|SSE2}.
+    kIdPaddusb,                          //!< Instruction 'paddusb' {MMX|SSE2}.
+    kIdPaddusw,                          //!< Instruction 'paddusw' {MMX|SSE2}.
+    kIdPaddw,                            //!< Instruction 'paddw' {MMX|SSE2}.
+    kIdPalignr,                          //!< Instruction 'palignr' {SSE3}.
+    kIdPand,                             //!< Instruction 'pand' {MMX|SSE2}.
+    kIdPandn,                            //!< Instruction 'pandn' {MMX|SSE2}.
+    kIdPause,                            //!< Instruction 'pause'.
+    kIdPavgb,                            //!< Instruction 'pavgb' {MMX2|SSE2}.
+    kIdPavgusb,                          //!< Instruction 'pavgusb' {3DNOW}.
+    kIdPavgw,                            //!< Instruction 'pavgw' {MMX2|SSE2}.
+    kIdPblendvb,                         //!< Instruction 'pblendvb' {SSE4_1}.
+    kIdPblendw,                          //!< Instruction 'pblendw' {SSE4_1}.
+    kIdPclmulqdq,                        //!< Instruction 'pclmulqdq' {PCLMULQDQ}.
+    kIdPcmpeqb,                          //!< Instruction 'pcmpeqb' {MMX|SSE2}.
+    kIdPcmpeqd,                          //!< Instruction 'pcmpeqd' {MMX|SSE2}.
+    kIdPcmpeqq,                          //!< Instruction 'pcmpeqq' {SSE4_1}.
+    kIdPcmpeqw,                          //!< Instruction 'pcmpeqw' {MMX|SSE2}.
+    kIdPcmpestri,                        //!< Instruction 'pcmpestri' {SSE4_2}.
+    kIdPcmpestrm,                        //!< Instruction 'pcmpestrm' {SSE4_2}.
+    kIdPcmpgtb,                          //!< Instruction 'pcmpgtb' {MMX|SSE2}.
+    kIdPcmpgtd,                          //!< Instruction 'pcmpgtd' {MMX|SSE2}.
+    kIdPcmpgtq,                          //!< Instruction 'pcmpgtq' {SSE4_2}.
+    kIdPcmpgtw,                          //!< Instruction 'pcmpgtw' {MMX|SSE2}.
+    kIdPcmpistri,                        //!< Instruction 'pcmpistri' {SSE4_2}.
+    kIdPcmpistrm,                        //!< Instruction 'pcmpistrm' {SSE4_2}.
+    kIdPcommit,                          //!< Instruction 'pcommit' {PCOMMIT}.
+    kIdPdep,                             //!< Instruction 'pdep' {BMI2}.
+    kIdPext,                             //!< Instruction 'pext' {BMI2}.
+    kIdPextrb,                           //!< Instruction 'pextrb' {SSE4_1}.
+    kIdPextrd,                           //!< Instruction 'pextrd' {SSE4_1}.
+    kIdPextrq,                           //!< Instruction 'pextrq' {SSE4_1} (X64).
+    kIdPextrw,                           //!< Instruction 'pextrw' {MMX2|SSE2|SSE4_1}.
+    kIdPf2id,                            //!< Instruction 'pf2id' {3DNOW}.
+    kIdPf2iw,                            //!< Instruction 'pf2iw' {3DNOW2}.
+    kIdPfacc,                            //!< Instruction 'pfacc' {3DNOW}.
+    kIdPfadd,                            //!< Instruction 'pfadd' {3DNOW}.
+    kIdPfcmpeq,                          //!< Instruction 'pfcmpeq' {3DNOW}.
+    kIdPfcmpge,                          //!< Instruction 'pfcmpge' {3DNOW}.
+    kIdPfcmpgt,                          //!< Instruction 'pfcmpgt' {3DNOW}.
+    kIdPfmax,                            //!< Instruction 'pfmax' {3DNOW}.
+    kIdPfmin,                            //!< Instruction 'pfmin' {3DNOW}.
+    kIdPfmul,                            //!< Instruction 'pfmul' {3DNOW}.
+    kIdPfnacc,                           //!< Instruction 'pfnacc' {3DNOW2}.
+    kIdPfpnacc,                          //!< Instruction 'pfpnacc' {3DNOW2}.
+    kIdPfrcp,                            //!< Instruction 'pfrcp' {3DNOW}.
+    kIdPfrcpit1,                         //!< Instruction 'pfrcpit1' {3DNOW}.
+    kIdPfrcpit2,                         //!< Instruction 'pfrcpit2' {3DNOW}.
+    kIdPfrcpv,                           //!< Instruction 'pfrcpv' {GEODE}.
+    kIdPfrsqit1,                         //!< Instruction 'pfrsqit1' {3DNOW}.
+    kIdPfrsqrt,                          //!< Instruction 'pfrsqrt' {3DNOW}.
+    kIdPfrsqrtv,                         //!< Instruction 'pfrsqrtv' {GEODE}.
+    kIdPfsub,                            //!< Instruction 'pfsub' {3DNOW}.
+    kIdPfsubr,                           //!< Instruction 'pfsubr' {3DNOW}.
+    kIdPhaddd,                           //!< Instruction 'phaddd' {SSSE3}.
+    kIdPhaddsw,                          //!< Instruction 'phaddsw' {SSSE3}.
+    kIdPhaddw,                           //!< Instruction 'phaddw' {SSSE3}.
+    kIdPhminposuw,                       //!< Instruction 'phminposuw' {SSE4_1}.
+    kIdPhsubd,                           //!< Instruction 'phsubd' {SSSE3}.
+    kIdPhsubsw,                          //!< Instruction 'phsubsw' {SSSE3}.
+    kIdPhsubw,                           //!< Instruction 'phsubw' {SSSE3}.
+    kIdPi2fd,                            //!< Instruction 'pi2fd' {3DNOW}.
+    kIdPi2fw,                            //!< Instruction 'pi2fw' {3DNOW2}.
+    kIdPinsrb,                           //!< Instruction 'pinsrb' {SSE4_1}.
+    kIdPinsrd,                           //!< Instruction 'pinsrd' {SSE4_1}.
+    kIdPinsrq,                           //!< Instruction 'pinsrq' {SSE4_1} (X64).
+    kIdPinsrw,                           //!< Instruction 'pinsrw' {MMX2|SSE2}.
+    kIdPmaddubsw,                        //!< Instruction 'pmaddubsw' {SSSE3}.
+    kIdPmaddwd,                          //!< Instruction 'pmaddwd' {MMX|SSE2}.
+    kIdPmaxsb,                           //!< Instruction 'pmaxsb' {SSE4_1}.
+    kIdPmaxsd,                           //!< Instruction 'pmaxsd' {SSE4_1}.
+    kIdPmaxsw,                           //!< Instruction 'pmaxsw' {MMX2|SSE2}.
+    kIdPmaxub,                           //!< Instruction 'pmaxub' {MMX2|SSE2}.
+    kIdPmaxud,                           //!< Instruction 'pmaxud' {SSE4_1}.
+    kIdPmaxuw,                           //!< Instruction 'pmaxuw' {SSE4_1}.
+    kIdPminsb,                           //!< Instruction 'pminsb' {SSE4_1}.
+    kIdPminsd,                           //!< Instruction 'pminsd' {SSE4_1}.
+    kIdPminsw,                           //!< Instruction 'pminsw' {MMX2|SSE2}.
+    kIdPminub,                           //!< Instruction 'pminub' {MMX2|SSE2}.
+    kIdPminud,                           //!< Instruction 'pminud' {SSE4_1}.
+    kIdPminuw,                           //!< Instruction 'pminuw' {SSE4_1}.
+    kIdPmovmskb,                         //!< Instruction 'pmovmskb' {MMX2|SSE2}.
+    kIdPmovsxbd,                         //!< Instruction 'pmovsxbd' {SSE4_1}.
+    kIdPmovsxbq,                         //!< Instruction 'pmovsxbq' {SSE4_1}.
+    kIdPmovsxbw,                         //!< Instruction 'pmovsxbw' {SSE4_1}.
+    kIdPmovsxdq,                         //!< Instruction 'pmovsxdq' {SSE4_1}.
+    kIdPmovsxwd,                         //!< Instruction 'pmovsxwd' {SSE4_1}.
+    kIdPmovsxwq,                         //!< Instruction 'pmovsxwq' {SSE4_1}.
+    kIdPmovzxbd,                         //!< Instruction 'pmovzxbd' {SSE4_1}.
+    kIdPmovzxbq,                         //!< Instruction 'pmovzxbq' {SSE4_1}.
+    kIdPmovzxbw,                         //!< Instruction 'pmovzxbw' {SSE4_1}.
+    kIdPmovzxdq,                         //!< Instruction 'pmovzxdq' {SSE4_1}.
+    kIdPmovzxwd,                         //!< Instruction 'pmovzxwd' {SSE4_1}.
+    kIdPmovzxwq,                         //!< Instruction 'pmovzxwq' {SSE4_1}.
+    kIdPmuldq,                           //!< Instruction 'pmuldq' {SSE4_1}.
+    kIdPmulhrsw,                         //!< Instruction 'pmulhrsw' {SSSE3}.
+    kIdPmulhrw,                          //!< Instruction 'pmulhrw' {3DNOW}.
+    kIdPmulhuw,                          //!< Instruction 'pmulhuw' {MMX2|SSE2}.
+    kIdPmulhw,                           //!< Instruction 'pmulhw' {MMX|SSE2}.
+    kIdPmulld,                           //!< Instruction 'pmulld' {SSE4_1}.
+    kIdPmullw,                           //!< Instruction 'pmullw' {MMX|SSE2}.
+    kIdPmuludq,                          //!< Instruction 'pmuludq' {SSE2}.
+    kIdPop,                              //!< Instruction 'pop'.
+    kIdPopa,                             //!< Instruction 'popa' (X86).
+    kIdPopad,                            //!< Instruction 'popad' (X86).
+    kIdPopcnt,                           //!< Instruction 'popcnt' {POPCNT}.
+    kIdPopf,                             //!< Instruction 'popf'.
+    kIdPopfd,                            //!< Instruction 'popfd' (X86).
+    kIdPopfq,                            //!< Instruction 'popfq' (X64).
+    kIdPor,                              //!< Instruction 'por' {MMX|SSE2}.
+    kIdPrefetch,                         //!< Instruction 'prefetch' {3DNOW}.
+    kIdPrefetchnta,                      //!< Instruction 'prefetchnta' {MMX2}.
+    kIdPrefetcht0,                       //!< Instruction 'prefetcht0' {MMX2}.
+    kIdPrefetcht1,                       //!< Instruction 'prefetcht1' {MMX2}.
+    kIdPrefetcht2,                       //!< Instruction 'prefetcht2' {MMX2}.
+    kIdPrefetchw,                        //!< Instruction 'prefetchw' {PREFETCHW}.
+    kIdPrefetchwt1,                      //!< Instruction 'prefetchwt1' {PREFETCHWT1}.
+    kIdPsadbw,                           //!< Instruction 'psadbw' {MMX2|SSE2}.
+    kIdPshufb,                           //!< Instruction 'pshufb' {SSSE3}.
+    kIdPshufd,                           //!< Instruction 'pshufd' {SSE2}.
+    kIdPshufhw,                          //!< Instruction 'pshufhw' {SSE2}.
+    kIdPshuflw,                          //!< Instruction 'pshuflw' {SSE2}.
+    kIdPshufw,                           //!< Instruction 'pshufw' {MMX2}.
+    kIdPsignb,                           //!< Instruction 'psignb' {SSSE3}.
+    kIdPsignd,                           //!< Instruction 'psignd' {SSSE3}.
+    kIdPsignw,                           //!< Instruction 'psignw' {SSSE3}.
+    kIdPslld,                            //!< Instruction 'pslld' {MMX|SSE2}.
+    kIdPslldq,                           //!< Instruction 'pslldq' {SSE2}.
+    kIdPsllq,                            //!< Instruction 'psllq' {MMX|SSE2}.
+    kIdPsllw,                            //!< Instruction 'psllw' {MMX|SSE2}.
+    kIdPsrad,                            //!< Instruction 'psrad' {MMX|SSE2}.
+    kIdPsraw,                            //!< Instruction 'psraw' {MMX|SSE2}.
+    kIdPsrld,                            //!< Instruction 'psrld' {MMX|SSE2}.
+    kIdPsrldq,                           //!< Instruction 'psrldq' {SSE2}.
+    kIdPsrlq,                            //!< Instruction 'psrlq' {MMX|SSE2}.
+    kIdPsrlw,                            //!< Instruction 'psrlw' {MMX|SSE2}.
+    kIdPsubb,                            //!< Instruction 'psubb' {MMX|SSE2}.
+    kIdPsubd,                            //!< Instruction 'psubd' {MMX|SSE2}.
+    kIdPsubq,                            //!< Instruction 'psubq' {SSE2}.
+    kIdPsubsb,                           //!< Instruction 'psubsb' {MMX|SSE2}.
+    kIdPsubsw,                           //!< Instruction 'psubsw' {MMX|SSE2}.
+    kIdPsubusb,                          //!< Instruction 'psubusb' {MMX|SSE2}.
+    kIdPsubusw,                          //!< Instruction 'psubusw' {MMX|SSE2}.
+    kIdPsubw,                            //!< Instruction 'psubw' {MMX|SSE2}.
+    kIdPswapd,                           //!< Instruction 'pswapd' {3DNOW2}.
+    kIdPtest,                            //!< Instruction 'ptest' {SSE4_1}.
+    kIdPunpckhbw,                        //!< Instruction 'punpckhbw' {MMX|SSE2}.
+    kIdPunpckhdq,                        //!< Instruction 'punpckhdq' {MMX|SSE2}.
+    kIdPunpckhqdq,                       //!< Instruction 'punpckhqdq' {SSE2}.
+    kIdPunpckhwd,                        //!< Instruction 'punpckhwd' {MMX|SSE2}.
+    kIdPunpcklbw,                        //!< Instruction 'punpcklbw' {MMX|SSE2}.
+    kIdPunpckldq,                        //!< Instruction 'punpckldq' {MMX|SSE2}.
+    kIdPunpcklqdq,                       //!< Instruction 'punpcklqdq' {SSE2}.
+    kIdPunpcklwd,                        //!< Instruction 'punpcklwd' {MMX|SSE2}.
+    kIdPush,                             //!< Instruction 'push'.
+    kIdPusha,                            //!< Instruction 'pusha' (X86).
+    kIdPushad,                           //!< Instruction 'pushad' (X86).
+    kIdPushf,                            //!< Instruction 'pushf'.
+    kIdPushfd,                           //!< Instruction 'pushfd' (X86).
+    kIdPushfq,                           //!< Instruction 'pushfq' (X64).
+    kIdPxor,                             //!< Instruction 'pxor' {MMX|SSE2}.
+    kIdRcl,                              //!< Instruction 'rcl'.
+    kIdRcpps,                            //!< Instruction 'rcpps' {SSE}.
+    kIdRcpss,                            //!< Instruction 'rcpss' {SSE}.
+    kIdRcr,                              //!< Instruction 'rcr'.
+    kIdRdfsbase,                         //!< Instruction 'rdfsbase' {FSGSBASE} (X64).
+    kIdRdgsbase,                         //!< Instruction 'rdgsbase' {FSGSBASE} (X64).
+    kIdRdmsr,                            //!< Instruction 'rdmsr' {MSR}.
+    kIdRdpid,                            //!< Instruction 'rdpid' {RDPID}.
+    kIdRdpmc,                            //!< Instruction 'rdpmc'.
+    kIdRdrand,                           //!< Instruction 'rdrand' {RDRAND}.
+    kIdRdseed,                           //!< Instruction 'rdseed' {RDSEED}.
+    kIdRdtsc,                            //!< Instruction 'rdtsc' {RDTSC}.
+    kIdRdtscp,                           //!< Instruction 'rdtscp' {RDTSCP}.
+    kIdRet,                              //!< Instruction 'ret'.
+    kIdRol,                              //!< Instruction 'rol'.
+    kIdRor,                              //!< Instruction 'ror'.
+    kIdRorx,                             //!< Instruction 'rorx' {BMI2}.
+    kIdRoundpd,                          //!< Instruction 'roundpd' {SSE4_1}.
+    kIdRoundps,                          //!< Instruction 'roundps' {SSE4_1}.
+    kIdRoundsd,                          //!< Instruction 'roundsd' {SSE4_1}.
+    kIdRoundss,                          //!< Instruction 'roundss' {SSE4_1}.
+    kIdRsm,                              //!< Instruction 'rsm' (X86).
+    kIdRsqrtps,                          //!< Instruction 'rsqrtps' {SSE}.
+    kIdRsqrtss,                          //!< Instruction 'rsqrtss' {SSE}.
+    kIdSahf,                             //!< Instruction 'sahf' {LAHFSAHF}.
+    kIdSal,                              //!< Instruction 'sal'.
+    kIdSar,                              //!< Instruction 'sar'.
+    kIdSarx,                             //!< Instruction 'sarx' {BMI2}.
+    kIdSbb,                              //!< Instruction 'sbb'.
+    kIdScas,                             //!< Instruction 'scas'.
+    kIdSeta,                             //!< Instruction 'seta'.
+    kIdSetae,                            //!< Instruction 'setae'.
+    kIdSetb,                             //!< Instruction 'setb'.
+    kIdSetbe,                            //!< Instruction 'setbe'.
+    kIdSetc,                             //!< Instruction 'setc'.
+    kIdSete,                             //!< Instruction 'sete'.
+    kIdSetg,                             //!< Instruction 'setg'.
+    kIdSetge,                            //!< Instruction 'setge'.
+    kIdSetl,                             //!< Instruction 'setl'.
+    kIdSetle,                            //!< Instruction 'setle'.
+    kIdSetna,                            //!< Instruction 'setna'.
+    kIdSetnae,                           //!< Instruction 'setnae'.
+    kIdSetnb,                            //!< Instruction 'setnb'.
+    kIdSetnbe,                           //!< Instruction 'setnbe'.
+    kIdSetnc,                            //!< Instruction 'setnc'.
+    kIdSetne,                            //!< Instruction 'setne'.
+    kIdSetng,                            //!< Instruction 'setng'.
+    kIdSetnge,                           //!< Instruction 'setnge'.
+    kIdSetnl,                            //!< Instruction 'setnl'.
+    kIdSetnle,                           //!< Instruction 'setnle'.
+    kIdSetno,                            //!< Instruction 'setno'.
+    kIdSetnp,                            //!< Instruction 'setnp'.
+    kIdSetns,                            //!< Instruction 'setns'.
+    kIdSetnz,                            //!< Instruction 'setnz'.
+    kIdSeto,                             //!< Instruction 'seto'.
+    kIdSetp,                             //!< Instruction 'setp'.
+    kIdSetpe,                            //!< Instruction 'setpe'.
+    kIdSetpo,                            //!< Instruction 'setpo'.
+    kIdSets,                             //!< Instruction 'sets'.
+    kIdSetz,                             //!< Instruction 'setz'.
+    kIdSfence,                           //!< Instruction 'sfence' {MMX2}.
+    kIdSgdt,                             //!< Instruction 'sgdt'.
+    kIdSha1msg1,                         //!< Instruction 'sha1msg1' {SHA}.
+    kIdSha1msg2,                         //!< Instruction 'sha1msg2' {SHA}.
+    kIdSha1nexte,                        //!< Instruction 'sha1nexte' {SHA}.
+    kIdSha1rnds4,                        //!< Instruction 'sha1rnds4' {SHA}.
+    kIdSha256msg1,                       //!< Instruction 'sha256msg1' {SHA}.
+    kIdSha256msg2,                       //!< Instruction 'sha256msg2' {SHA}.
+    kIdSha256rnds2,                      //!< Instruction 'sha256rnds2' {SHA}.
+    kIdShl,                              //!< Instruction 'shl'.
+    kIdShld,                             //!< Instruction 'shld'.
+    kIdShlx,                             //!< Instruction 'shlx' {BMI2}.
+    kIdShr,                              //!< Instruction 'shr'.
+    kIdShrd,                             //!< Instruction 'shrd'.
+    kIdShrx,                             //!< Instruction 'shrx' {BMI2}.
+    kIdShufpd,                           //!< Instruction 'shufpd' {SSE2}.
+    kIdShufps,                           //!< Instruction 'shufps' {SSE}.
+    kIdSidt,                             //!< Instruction 'sidt'.
+    kIdSkinit,                           //!< Instruction 'skinit' {SKINIT}.
+    kIdSldt,                             //!< Instruction 'sldt'.
+    kIdSlwpcb,                           //!< Instruction 'slwpcb' {LWP}.
+    kIdSmsw,                             //!< Instruction 'smsw'.
+    kIdSqrtpd,                           //!< Instruction 'sqrtpd' {SSE2}.
+    kIdSqrtps,                           //!< Instruction 'sqrtps' {SSE}.
+    kIdSqrtsd,                           //!< Instruction 'sqrtsd' {SSE2}.
+    kIdSqrtss,                           //!< Instruction 'sqrtss' {SSE}.
+    kIdStac,                             //!< Instruction 'stac' {SMAP}.
+    kIdStc,                              //!< Instruction 'stc'.
+    kIdStd,                              //!< Instruction 'std'.
+    kIdStgi,                             //!< Instruction 'stgi' {SKINIT}.
+    kIdSti,                              //!< Instruction 'sti'.
+    kIdStmxcsr,                          //!< Instruction 'stmxcsr' {SSE}.
+    kIdStos,                             //!< Instruction 'stos'.
+    kIdStr,                              //!< Instruction 'str'.
+    kIdSub,                              //!< Instruction 'sub'.
+    kIdSubpd,                            //!< Instruction 'subpd' {SSE2}.
+    kIdSubps,                            //!< Instruction 'subps' {SSE}.
+    kIdSubsd,                            //!< Instruction 'subsd' {SSE2}.
+    kIdSubss,                            //!< Instruction 'subss' {SSE}.
+    kIdSwapgs,                           //!< Instruction 'swapgs' (X64).
+    kIdSyscall,                          //!< Instruction 'syscall' (X64).
+    kIdSysenter,                         //!< Instruction 'sysenter'.
+    kIdSysexit,                          //!< Instruction 'sysexit'.
+    kIdSysexit64,                        //!< Instruction 'sysexit64'.
+    kIdSysret,                           //!< Instruction 'sysret' (X64).
+    kIdSysret64,                         //!< Instruction 'sysret64' (X64).
+    kIdT1mskc,                           //!< Instruction 't1mskc' {TBM}.
+    kIdTest,                             //!< Instruction 'test'.
+    kIdTzcnt,                            //!< Instruction 'tzcnt' {BMI}.
+    kIdTzmsk,                            //!< Instruction 'tzmsk' {TBM}.
+    kIdUcomisd,                          //!< Instruction 'ucomisd' {SSE2}.
+    kIdUcomiss,                          //!< Instruction 'ucomiss' {SSE}.
+    kIdUd2,                              //!< Instruction 'ud2'.
+    kIdUnpckhpd,                         //!< Instruction 'unpckhpd' {SSE2}.
+    kIdUnpckhps,                         //!< Instruction 'unpckhps' {SSE}.
+    kIdUnpcklpd,                         //!< Instruction 'unpcklpd' {SSE2}.
+    kIdUnpcklps,                         //!< Instruction 'unpcklps' {SSE}.
+    kIdV4fmaddps,                        //!< Instruction 'v4fmaddps' {AVX512_4FMAPS}.
+    kIdV4fmaddss,                        //!< Instruction 'v4fmaddss' {AVX512_4FMAPS}.
+    kIdV4fnmaddps,                       //!< Instruction 'v4fnmaddps' {AVX512_4FMAPS}.
+    kIdV4fnmaddss,                       //!< Instruction 'v4fnmaddss' {AVX512_4FMAPS}.
+    kIdVaddpd,                           //!< Instruction 'vaddpd' {AVX|AVX512_F+VL}.
+    kIdVaddps,                           //!< Instruction 'vaddps' {AVX|AVX512_F+VL}.
+    kIdVaddsd,                           //!< Instruction 'vaddsd' {AVX|AVX512_F}.
+    kIdVaddss,                           //!< Instruction 'vaddss' {AVX|AVX512_F}.
+    kIdVaddsubpd,                        //!< Instruction 'vaddsubpd' {AVX}.
+    kIdVaddsubps,                        //!< Instruction 'vaddsubps' {AVX}.
+    kIdVaesdec,                          //!< Instruction 'vaesdec' {AVX|AVX512_F+VL & AESNI|VAES}.
+    kIdVaesdeclast,                      //!< Instruction 'vaesdeclast' {AVX|AVX512_F+VL & AESNI|VAES}.
+    kIdVaesenc,                          //!< Instruction 'vaesenc' {AVX|AVX512_F+VL & AESNI|VAES}.
+    kIdVaesenclast,                      //!< Instruction 'vaesenclast' {AVX|AVX512_F+VL & AESNI|VAES}.
+    kIdVaesimc,                          //!< Instruction 'vaesimc' {AVX & AESNI}.
+    kIdVaeskeygenassist,                 //!< Instruction 'vaeskeygenassist' {AVX & AESNI}.
+    kIdValignd,                          //!< Instruction 'valignd' {AVX512_F+VL}.
+    kIdValignq,                          //!< Instruction 'valignq' {AVX512_F+VL}.
+    kIdVandnpd,                          //!< Instruction 'vandnpd' {AVX|AVX512_DQ+VL}.
+    kIdVandnps,                          //!< Instruction 'vandnps' {AVX|AVX512_DQ+VL}.
+    kIdVandpd,                           //!< Instruction 'vandpd' {AVX|AVX512_DQ+VL}.
+    kIdVandps,                           //!< Instruction 'vandps' {AVX|AVX512_DQ+VL}.
+    kIdVblendmb,                         //!< Instruction 'vblendmb' {AVX512_BW+VL}.
+    kIdVblendmd,                         //!< Instruction 'vblendmd' {AVX512_F+VL}.
+    kIdVblendmpd,                        //!< Instruction 'vblendmpd' {AVX512_F+VL}.
+    kIdVblendmps,                        //!< Instruction 'vblendmps' {AVX512_F+VL}.
+    kIdVblendmq,                         //!< Instruction 'vblendmq' {AVX512_F+VL}.
+    kIdVblendmw,                         //!< Instruction 'vblendmw' {AVX512_BW+VL}.
+    kIdVblendpd,                         //!< Instruction 'vblendpd' {AVX}.
+    kIdVblendps,                         //!< Instruction 'vblendps' {AVX}.
+    kIdVblendvpd,                        //!< Instruction 'vblendvpd' {AVX}.
+    kIdVblendvps,                        //!< Instruction 'vblendvps' {AVX}.
+    kIdVbroadcastf128,                   //!< Instruction 'vbroadcastf128' {AVX}.
+    kIdVbroadcastf32x2,                  //!< Instruction 'vbroadcastf32x2' {AVX512_DQ+VL}.
+    kIdVbroadcastf32x4,                  //!< Instruction 'vbroadcastf32x4' {AVX512_F}.
+    kIdVbroadcastf32x8,                  //!< Instruction 'vbroadcastf32x8' {AVX512_DQ}.
+    kIdVbroadcastf64x2,                  //!< Instruction 'vbroadcastf64x2' {AVX512_DQ+VL}.
+    kIdVbroadcastf64x4,                  //!< Instruction 'vbroadcastf64x4' {AVX512_F}.
+    kIdVbroadcasti128,                   //!< Instruction 'vbroadcasti128' {AVX2}.
+    kIdVbroadcasti32x2,                  //!< Instruction 'vbroadcasti32x2' {AVX512_DQ+VL}.
+    kIdVbroadcasti32x4,                  //!< Instruction 'vbroadcasti32x4' {AVX512_F+VL}.
+    kIdVbroadcasti32x8,                  //!< Instruction 'vbroadcasti32x8' {AVX512_DQ}.
+    kIdVbroadcasti64x2,                  //!< Instruction 'vbroadcasti64x2' {AVX512_DQ+VL}.
+    kIdVbroadcasti64x4,                  //!< Instruction 'vbroadcasti64x4' {AVX512_F}.
+    kIdVbroadcastsd,                     //!< Instruction 'vbroadcastsd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVbroadcastss,                     //!< Instruction 'vbroadcastss' {AVX|AVX2|AVX512_F+VL}.
+    kIdVcmppd,                           //!< Instruction 'vcmppd' {AVX|AVX512_F+VL}.
+    kIdVcmpps,                           //!< Instruction 'vcmpps' {AVX|AVX512_F+VL}.
+    kIdVcmpsd,                           //!< Instruction 'vcmpsd' {AVX|AVX512_F}.
+    kIdVcmpss,                           //!< Instruction 'vcmpss' {AVX|AVX512_F}.
+    kIdVcomisd,                          //!< Instruction 'vcomisd' {AVX|AVX512_F}.
+    kIdVcomiss,                          //!< Instruction 'vcomiss' {AVX|AVX512_F}.
+    kIdVcompresspd,                      //!< Instruction 'vcompresspd' {AVX512_F+VL}.
+    kIdVcompressps,                      //!< Instruction 'vcompressps' {AVX512_F+VL}.
+    kIdVcvtdq2pd,                        //!< Instruction 'vcvtdq2pd' {AVX|AVX512_F+VL}.
+    kIdVcvtdq2ps,                        //!< Instruction 'vcvtdq2ps' {AVX|AVX512_F+VL}.
+    kIdVcvtne2ps2bf16,                   //!< Instruction 'vcvtne2ps2bf16' {AVX512_BF16+VL}.
+    kIdVcvtneps2bf16,                    //!< Instruction 'vcvtneps2bf16' {AVX512_BF16+VL}.
+    kIdVcvtpd2dq,                        //!< Instruction 'vcvtpd2dq' {AVX|AVX512_F+VL}.
+    kIdVcvtpd2ps,                        //!< Instruction 'vcvtpd2ps' {AVX|AVX512_F+VL}.
+    kIdVcvtpd2qq,                        //!< Instruction 'vcvtpd2qq' {AVX512_DQ+VL}.
+    kIdVcvtpd2udq,                       //!< Instruction 'vcvtpd2udq' {AVX512_F+VL}.
+    kIdVcvtpd2uqq,                       //!< Instruction 'vcvtpd2uqq' {AVX512_DQ+VL}.
+    kIdVcvtph2ps,                        //!< Instruction 'vcvtph2ps' {AVX512_F+VL & F16C}.
+    kIdVcvtps2dq,                        //!< Instruction 'vcvtps2dq' {AVX|AVX512_F+VL}.
+    kIdVcvtps2pd,                        //!< Instruction 'vcvtps2pd' {AVX|AVX512_F+VL}.
+    kIdVcvtps2ph,                        //!< Instruction 'vcvtps2ph' {AVX512_F+VL & F16C}.
+    kIdVcvtps2qq,                        //!< Instruction 'vcvtps2qq' {AVX512_DQ+VL}.
+    kIdVcvtps2udq,                       //!< Instruction 'vcvtps2udq' {AVX512_F+VL}.
+    kIdVcvtps2uqq,                       //!< Instruction 'vcvtps2uqq' {AVX512_DQ+VL}.
+    kIdVcvtqq2pd,                        //!< Instruction 'vcvtqq2pd' {AVX512_DQ+VL}.
+    kIdVcvtqq2ps,                        //!< Instruction 'vcvtqq2ps' {AVX512_DQ+VL}.
+    kIdVcvtsd2si,                        //!< Instruction 'vcvtsd2si' {AVX|AVX512_F}.
+    kIdVcvtsd2ss,                        //!< Instruction 'vcvtsd2ss' {AVX|AVX512_F}.
+    kIdVcvtsd2usi,                       //!< Instruction 'vcvtsd2usi' {AVX512_F}.
+    kIdVcvtsi2sd,                        //!< Instruction 'vcvtsi2sd' {AVX|AVX512_F}.
+    kIdVcvtsi2ss,                        //!< Instruction 'vcvtsi2ss' {AVX|AVX512_F}.
+    kIdVcvtss2sd,                        //!< Instruction 'vcvtss2sd' {AVX|AVX512_F}.
+    kIdVcvtss2si,                        //!< Instruction 'vcvtss2si' {AVX|AVX512_F}.
+    kIdVcvtss2usi,                       //!< Instruction 'vcvtss2usi' {AVX512_F}.
+    kIdVcvttpd2dq,                       //!< Instruction 'vcvttpd2dq' {AVX|AVX512_F+VL}.
+    kIdVcvttpd2qq,                       //!< Instruction 'vcvttpd2qq' {AVX512_F+VL}.
+    kIdVcvttpd2udq,                      //!< Instruction 'vcvttpd2udq' {AVX512_F+VL}.
+    kIdVcvttpd2uqq,                      //!< Instruction 'vcvttpd2uqq' {AVX512_DQ+VL}.
+    kIdVcvttps2dq,                       //!< Instruction 'vcvttps2dq' {AVX|AVX512_F+VL}.
+    kIdVcvttps2qq,                       //!< Instruction 'vcvttps2qq' {AVX512_DQ+VL}.
+    kIdVcvttps2udq,                      //!< Instruction 'vcvttps2udq' {AVX512_F+VL}.
+    kIdVcvttps2uqq,                      //!< Instruction 'vcvttps2uqq' {AVX512_DQ+VL}.
+    kIdVcvttsd2si,                       //!< Instruction 'vcvttsd2si' {AVX|AVX512_F}.
+    kIdVcvttsd2usi,                      //!< Instruction 'vcvttsd2usi' {AVX512_F}.
+    kIdVcvttss2si,                       //!< Instruction 'vcvttss2si' {AVX|AVX512_F}.
+    kIdVcvttss2usi,                      //!< Instruction 'vcvttss2usi' {AVX512_F}.
+    kIdVcvtudq2pd,                       //!< Instruction 'vcvtudq2pd' {AVX512_F+VL}.
+    kIdVcvtudq2ps,                       //!< Instruction 'vcvtudq2ps' {AVX512_F+VL}.
+    kIdVcvtuqq2pd,                       //!< Instruction 'vcvtuqq2pd' {AVX512_DQ+VL}.
+    kIdVcvtuqq2ps,                       //!< Instruction 'vcvtuqq2ps' {AVX512_DQ+VL}.
+    kIdVcvtusi2sd,                       //!< Instruction 'vcvtusi2sd' {AVX512_F}.
+    kIdVcvtusi2ss,                       //!< Instruction 'vcvtusi2ss' {AVX512_F}.
+    kIdVdbpsadbw,                        //!< Instruction 'vdbpsadbw' {AVX512_BW+VL}.
+    kIdVdivpd,                           //!< Instruction 'vdivpd' {AVX|AVX512_F+VL}.
+    kIdVdivps,                           //!< Instruction 'vdivps' {AVX|AVX512_F+VL}.
+    kIdVdivsd,                           //!< Instruction 'vdivsd' {AVX|AVX512_F}.
+    kIdVdivss,                           //!< Instruction 'vdivss' {AVX|AVX512_F}.
+    kIdVdpbf16ps,                        //!< Instruction 'vdpbf16ps' {AVX512_BF16+VL}.
+    kIdVdppd,                            //!< Instruction 'vdppd' {AVX}.
+    kIdVdpps,                            //!< Instruction 'vdpps' {AVX}.
+    kIdVerr,                             //!< Instruction 'verr'.
+    kIdVerw,                             //!< Instruction 'verw'.
+    kIdVexp2pd,                          //!< Instruction 'vexp2pd' {AVX512_ERI}.
+    kIdVexp2ps,                          //!< Instruction 'vexp2ps' {AVX512_ERI}.
+    kIdVexpandpd,                        //!< Instruction 'vexpandpd' {AVX512_F+VL}.
+    kIdVexpandps,                        //!< Instruction 'vexpandps' {AVX512_F+VL}.
+    kIdVextractf128,                     //!< Instruction 'vextractf128' {AVX}.
+    kIdVextractf32x4,                    //!< Instruction 'vextractf32x4' {AVX512_F+VL}.
+    kIdVextractf32x8,                    //!< Instruction 'vextractf32x8' {AVX512_DQ}.
+    kIdVextractf64x2,                    //!< Instruction 'vextractf64x2' {AVX512_DQ+VL}.
+    kIdVextractf64x4,                    //!< Instruction 'vextractf64x4' {AVX512_F}.
+    kIdVextracti128,                     //!< Instruction 'vextracti128' {AVX2}.
+    kIdVextracti32x4,                    //!< Instruction 'vextracti32x4' {AVX512_F+VL}.
+    kIdVextracti32x8,                    //!< Instruction 'vextracti32x8' {AVX512_DQ}.
+    kIdVextracti64x2,                    //!< Instruction 'vextracti64x2' {AVX512_DQ+VL}.
+    kIdVextracti64x4,                    //!< Instruction 'vextracti64x4' {AVX512_F}.
+    kIdVextractps,                       //!< Instruction 'vextractps' {AVX|AVX512_F}.
+    kIdVfixupimmpd,                      //!< Instruction 'vfixupimmpd' {AVX512_F+VL}.
+    kIdVfixupimmps,                      //!< Instruction 'vfixupimmps' {AVX512_F+VL}.
+    kIdVfixupimmsd,                      //!< Instruction 'vfixupimmsd' {AVX512_F}.
+    kIdVfixupimmss,                      //!< Instruction 'vfixupimmss' {AVX512_F}.
+    kIdVfmadd132pd,                      //!< Instruction 'vfmadd132pd' {FMA|AVX512_F+VL}.
+    kIdVfmadd132ps,                      //!< Instruction 'vfmadd132ps' {FMA|AVX512_F+VL}.
+    kIdVfmadd132sd,                      //!< Instruction 'vfmadd132sd' {FMA|AVX512_F}.
+    kIdVfmadd132ss,                      //!< Instruction 'vfmadd132ss' {FMA|AVX512_F}.
+    kIdVfmadd213pd,                      //!< Instruction 'vfmadd213pd' {FMA|AVX512_F+VL}.
+    kIdVfmadd213ps,                      //!< Instruction 'vfmadd213ps' {FMA|AVX512_F+VL}.
+    kIdVfmadd213sd,                      //!< Instruction 'vfmadd213sd' {FMA|AVX512_F}.
+    kIdVfmadd213ss,                      //!< Instruction 'vfmadd213ss' {FMA|AVX512_F}.
+    kIdVfmadd231pd,                      //!< Instruction 'vfmadd231pd' {FMA|AVX512_F+VL}.
+    kIdVfmadd231ps,                      //!< Instruction 'vfmadd231ps' {FMA|AVX512_F+VL}.
+    kIdVfmadd231sd,                      //!< Instruction 'vfmadd231sd' {FMA|AVX512_F}.
+    kIdVfmadd231ss,                      //!< Instruction 'vfmadd231ss' {FMA|AVX512_F}.
+    kIdVfmaddpd,                         //!< Instruction 'vfmaddpd' {FMA4}.
+    kIdVfmaddps,                         //!< Instruction 'vfmaddps' {FMA4}.
+    kIdVfmaddsd,                         //!< Instruction 'vfmaddsd' {FMA4}.
+    kIdVfmaddss,                         //!< Instruction 'vfmaddss' {FMA4}.
+    kIdVfmaddsub132pd,                   //!< Instruction 'vfmaddsub132pd' {FMA|AVX512_F+VL}.
+    kIdVfmaddsub132ps,                   //!< Instruction 'vfmaddsub132ps' {FMA|AVX512_F+VL}.
+    kIdVfmaddsub213pd,                   //!< Instruction 'vfmaddsub213pd' {FMA|AVX512_F+VL}.
+    kIdVfmaddsub213ps,                   //!< Instruction 'vfmaddsub213ps' {FMA|AVX512_F+VL}.
+    kIdVfmaddsub231pd,                   //!< Instruction 'vfmaddsub231pd' {FMA|AVX512_F+VL}.
+    kIdVfmaddsub231ps,                   //!< Instruction 'vfmaddsub231ps' {FMA|AVX512_F+VL}.
+    kIdVfmaddsubpd,                      //!< Instruction 'vfmaddsubpd' {FMA4}.
+    kIdVfmaddsubps,                      //!< Instruction 'vfmaddsubps' {FMA4}.
+    kIdVfmsub132pd,                      //!< Instruction 'vfmsub132pd' {FMA|AVX512_F+VL}.
+    kIdVfmsub132ps,                      //!< Instruction 'vfmsub132ps' {FMA|AVX512_F+VL}.
+    kIdVfmsub132sd,                      //!< Instruction 'vfmsub132sd' {FMA|AVX512_F}.
+    kIdVfmsub132ss,                      //!< Instruction 'vfmsub132ss' {FMA|AVX512_F}.
+    kIdVfmsub213pd,                      //!< Instruction 'vfmsub213pd' {FMA|AVX512_F+VL}.
+    kIdVfmsub213ps,                      //!< Instruction 'vfmsub213ps' {FMA|AVX512_F+VL}.
+    kIdVfmsub213sd,                      //!< Instruction 'vfmsub213sd' {FMA|AVX512_F}.
+    kIdVfmsub213ss,                      //!< Instruction 'vfmsub213ss' {FMA|AVX512_F}.
+    kIdVfmsub231pd,                      //!< Instruction 'vfmsub231pd' {FMA|AVX512_F+VL}.
+    kIdVfmsub231ps,                      //!< Instruction 'vfmsub231ps' {FMA|AVX512_F+VL}.
+    kIdVfmsub231sd,                      //!< Instruction 'vfmsub231sd' {FMA|AVX512_F}.
+    kIdVfmsub231ss,                      //!< Instruction 'vfmsub231ss' {FMA|AVX512_F}.
+    kIdVfmsubadd132pd,                   //!< Instruction 'vfmsubadd132pd' {FMA|AVX512_F+VL}.
+    kIdVfmsubadd132ps,                   //!< Instruction 'vfmsubadd132ps' {FMA|AVX512_F+VL}.
+    kIdVfmsubadd213pd,                   //!< Instruction 'vfmsubadd213pd' {FMA|AVX512_F+VL}.
+    kIdVfmsubadd213ps,                   //!< Instruction 'vfmsubadd213ps' {FMA|AVX512_F+VL}.
+    kIdVfmsubadd231pd,                   //!< Instruction 'vfmsubadd231pd' {FMA|AVX512_F+VL}.
+    kIdVfmsubadd231ps,                   //!< Instruction 'vfmsubadd231ps' {FMA|AVX512_F+VL}.
+    kIdVfmsubaddpd,                      //!< Instruction 'vfmsubaddpd' {FMA4}.
+    kIdVfmsubaddps,                      //!< Instruction 'vfmsubaddps' {FMA4}.
+    kIdVfmsubpd,                         //!< Instruction 'vfmsubpd' {FMA4}.
+    kIdVfmsubps,                         //!< Instruction 'vfmsubps' {FMA4}.
+    kIdVfmsubsd,                         //!< Instruction 'vfmsubsd' {FMA4}.
+    kIdVfmsubss,                         //!< Instruction 'vfmsubss' {FMA4}.
+    kIdVfnmadd132pd,                     //!< Instruction 'vfnmadd132pd' {FMA|AVX512_F+VL}.
+    kIdVfnmadd132ps,                     //!< Instruction 'vfnmadd132ps' {FMA|AVX512_F+VL}.
+    kIdVfnmadd132sd,                     //!< Instruction 'vfnmadd132sd' {FMA|AVX512_F}.
+    kIdVfnmadd132ss,                     //!< Instruction 'vfnmadd132ss' {FMA|AVX512_F}.
+    kIdVfnmadd213pd,                     //!< Instruction 'vfnmadd213pd' {FMA|AVX512_F+VL}.
+    kIdVfnmadd213ps,                     //!< Instruction 'vfnmadd213ps' {FMA|AVX512_F+VL}.
+    kIdVfnmadd213sd,                     //!< Instruction 'vfnmadd213sd' {FMA|AVX512_F}.
+    kIdVfnmadd213ss,                     //!< Instruction 'vfnmadd213ss' {FMA|AVX512_F}.
+    kIdVfnmadd231pd,                     //!< Instruction 'vfnmadd231pd' {FMA|AVX512_F+VL}.
+    kIdVfnmadd231ps,                     //!< Instruction 'vfnmadd231ps' {FMA|AVX512_F+VL}.
+    kIdVfnmadd231sd,                     //!< Instruction 'vfnmadd231sd' {FMA|AVX512_F}.
+    kIdVfnmadd231ss,                     //!< Instruction 'vfnmadd231ss' {FMA|AVX512_F}.
+    kIdVfnmaddpd,                        //!< Instruction 'vfnmaddpd' {FMA4}.
+    kIdVfnmaddps,                        //!< Instruction 'vfnmaddps' {FMA4}.
+    kIdVfnmaddsd,                        //!< Instruction 'vfnmaddsd' {FMA4}.
+    kIdVfnmaddss,                        //!< Instruction 'vfnmaddss' {FMA4}.
+    kIdVfnmsub132pd,                     //!< Instruction 'vfnmsub132pd' {FMA|AVX512_F+VL}.
+    kIdVfnmsub132ps,                     //!< Instruction 'vfnmsub132ps' {FMA|AVX512_F+VL}.
+    kIdVfnmsub132sd,                     //!< Instruction 'vfnmsub132sd' {FMA|AVX512_F}.
+    kIdVfnmsub132ss,                     //!< Instruction 'vfnmsub132ss' {FMA|AVX512_F}.
+    kIdVfnmsub213pd,                     //!< Instruction 'vfnmsub213pd' {FMA|AVX512_F+VL}.
+    kIdVfnmsub213ps,                     //!< Instruction 'vfnmsub213ps' {FMA|AVX512_F+VL}.
+    kIdVfnmsub213sd,                     //!< Instruction 'vfnmsub213sd' {FMA|AVX512_F}.
+    kIdVfnmsub213ss,                     //!< Instruction 'vfnmsub213ss' {FMA|AVX512_F}.
+    kIdVfnmsub231pd,                     //!< Instruction 'vfnmsub231pd' {FMA|AVX512_F+VL}.
+    kIdVfnmsub231ps,                     //!< Instruction 'vfnmsub231ps' {FMA|AVX512_F+VL}.
+    kIdVfnmsub231sd,                     //!< Instruction 'vfnmsub231sd' {FMA|AVX512_F}.
+    kIdVfnmsub231ss,                     //!< Instruction 'vfnmsub231ss' {FMA|AVX512_F}.
+    kIdVfnmsubpd,                        //!< Instruction 'vfnmsubpd' {FMA4}.
+    kIdVfnmsubps,                        //!< Instruction 'vfnmsubps' {FMA4}.
+    kIdVfnmsubsd,                        //!< Instruction 'vfnmsubsd' {FMA4}.
+    kIdVfnmsubss,                        //!< Instruction 'vfnmsubss' {FMA4}.
+    kIdVfpclasspd,                       //!< Instruction 'vfpclasspd' {AVX512_DQ+VL}.
+    kIdVfpclassps,                       //!< Instruction 'vfpclassps' {AVX512_DQ+VL}.
+    kIdVfpclasssd,                       //!< Instruction 'vfpclasssd' {AVX512_DQ}.
+    kIdVfpclassss,                       //!< Instruction 'vfpclassss' {AVX512_DQ}.
+    kIdVfrczpd,                          //!< Instruction 'vfrczpd' {XOP}.
+    kIdVfrczps,                          //!< Instruction 'vfrczps' {XOP}.
+    kIdVfrczsd,                          //!< Instruction 'vfrczsd' {XOP}.
+    kIdVfrczss,                          //!< Instruction 'vfrczss' {XOP}.
+    kIdVgatherdpd,                       //!< Instruction 'vgatherdpd' {AVX2|AVX512_F+VL}.
+    kIdVgatherdps,                       //!< Instruction 'vgatherdps' {AVX2|AVX512_F+VL}.
+    kIdVgatherpf0dpd,                    //!< Instruction 'vgatherpf0dpd' {AVX512_PFI}.
+    kIdVgatherpf0dps,                    //!< Instruction 'vgatherpf0dps' {AVX512_PFI}.
+    kIdVgatherpf0qpd,                    //!< Instruction 'vgatherpf0qpd' {AVX512_PFI}.
+    kIdVgatherpf0qps,                    //!< Instruction 'vgatherpf0qps' {AVX512_PFI}.
+    kIdVgatherpf1dpd,                    //!< Instruction 'vgatherpf1dpd' {AVX512_PFI}.
+    kIdVgatherpf1dps,                    //!< Instruction 'vgatherpf1dps' {AVX512_PFI}.
+    kIdVgatherpf1qpd,                    //!< Instruction 'vgatherpf1qpd' {AVX512_PFI}.
+    kIdVgatherpf1qps,                    //!< Instruction 'vgatherpf1qps' {AVX512_PFI}.
+    kIdVgatherqpd,                       //!< Instruction 'vgatherqpd' {AVX2|AVX512_F+VL}.
+    kIdVgatherqps,                       //!< Instruction 'vgatherqps' {AVX2|AVX512_F+VL}.
+    kIdVgetexppd,                        //!< Instruction 'vgetexppd' {AVX512_F+VL}.
+    kIdVgetexpps,                        //!< Instruction 'vgetexpps' {AVX512_F+VL}.
+    kIdVgetexpsd,                        //!< Instruction 'vgetexpsd' {AVX512_F}.
+    kIdVgetexpss,                        //!< Instruction 'vgetexpss' {AVX512_F}.
+    kIdVgetmantpd,                       //!< Instruction 'vgetmantpd' {AVX512_F+VL}.
+    kIdVgetmantps,                       //!< Instruction 'vgetmantps' {AVX512_F+VL}.
+    kIdVgetmantsd,                       //!< Instruction 'vgetmantsd' {AVX512_F}.
+    kIdVgetmantss,                       //!< Instruction 'vgetmantss' {AVX512_F}.
+    kIdVgf2p8affineinvqb,                //!< Instruction 'vgf2p8affineinvqb' {AVX|AVX512_F+VL & GFNI}.
+    kIdVgf2p8affineqb,                   //!< Instruction 'vgf2p8affineqb' {AVX|AVX512_F+VL & GFNI}.
+    kIdVgf2p8mulb,                       //!< Instruction 'vgf2p8mulb' {AVX|AVX512_F+VL & GFNI}.
+    kIdVhaddpd,                          //!< Instruction 'vhaddpd' {AVX}.
+    kIdVhaddps,                          //!< Instruction 'vhaddps' {AVX}.
+    kIdVhsubpd,                          //!< Instruction 'vhsubpd' {AVX}.
+    kIdVhsubps,                          //!< Instruction 'vhsubps' {AVX}.
+    kIdVinsertf128,                      //!< Instruction 'vinsertf128' {AVX}.
+    kIdVinsertf32x4,                     //!< Instruction 'vinsertf32x4' {AVX512_F+VL}.
+    kIdVinsertf32x8,                     //!< Instruction 'vinsertf32x8' {AVX512_DQ}.
+    kIdVinsertf64x2,                     //!< Instruction 'vinsertf64x2' {AVX512_DQ+VL}.
+    kIdVinsertf64x4,                     //!< Instruction 'vinsertf64x4' {AVX512_F}.
+    kIdVinserti128,                      //!< Instruction 'vinserti128' {AVX2}.
+    kIdVinserti32x4,                     //!< Instruction 'vinserti32x4' {AVX512_F+VL}.
+    kIdVinserti32x8,                     //!< Instruction 'vinserti32x8' {AVX512_DQ}.
+    kIdVinserti64x2,                     //!< Instruction 'vinserti64x2' {AVX512_DQ+VL}.
+    kIdVinserti64x4,                     //!< Instruction 'vinserti64x4' {AVX512_F}.
+    kIdVinsertps,                        //!< Instruction 'vinsertps' {AVX|AVX512_F}.
+    kIdVlddqu,                           //!< Instruction 'vlddqu' {AVX}.
+    kIdVldmxcsr,                         //!< Instruction 'vldmxcsr' {AVX}.
+    kIdVmaskmovdqu,                      //!< Instruction 'vmaskmovdqu' {AVX}.
+    kIdVmaskmovpd,                       //!< Instruction 'vmaskmovpd' {AVX}.
+    kIdVmaskmovps,                       //!< Instruction 'vmaskmovps' {AVX}.
+    kIdVmaxpd,                           //!< Instruction 'vmaxpd' {AVX|AVX512_F+VL}.
+    kIdVmaxps,                           //!< Instruction 'vmaxps' {AVX|AVX512_F+VL}.
+    kIdVmaxsd,                           //!< Instruction 'vmaxsd' {AVX|AVX512_F+VL}.
+    kIdVmaxss,                           //!< Instruction 'vmaxss' {AVX|AVX512_F+VL}.
+    kIdVmcall,                           //!< Instruction 'vmcall' {VMX}.
+    kIdVmclear,                          //!< Instruction 'vmclear' {VMX}.
+    kIdVmfunc,                           //!< Instruction 'vmfunc' {VMX}.
+    kIdVminpd,                           //!< Instruction 'vminpd' {AVX|AVX512_F+VL}.
+    kIdVminps,                           //!< Instruction 'vminps' {AVX|AVX512_F+VL}.
+    kIdVminsd,                           //!< Instruction 'vminsd' {AVX|AVX512_F+VL}.
+    kIdVminss,                           //!< Instruction 'vminss' {AVX|AVX512_F+VL}.
+    kIdVmlaunch,                         //!< Instruction 'vmlaunch' {VMX}.
+    kIdVmload,                           //!< Instruction 'vmload' {SVM}.
+    kIdVmmcall,                          //!< Instruction 'vmmcall' {SVM}.
+    kIdVmovapd,                          //!< Instruction 'vmovapd' {AVX|AVX512_F+VL}.
+    kIdVmovaps,                          //!< Instruction 'vmovaps' {AVX|AVX512_F+VL}.
+    kIdVmovd,                            //!< Instruction 'vmovd' {AVX|AVX512_F}.
+    kIdVmovddup,                         //!< Instruction 'vmovddup' {AVX|AVX512_F+VL}.
+    kIdVmovdqa,                          //!< Instruction 'vmovdqa' {AVX}.
+    kIdVmovdqa32,                        //!< Instruction 'vmovdqa32' {AVX512_F+VL}.
+    kIdVmovdqa64,                        //!< Instruction 'vmovdqa64' {AVX512_F+VL}.
+    kIdVmovdqu,                          //!< Instruction 'vmovdqu' {AVX}.
+    kIdVmovdqu16,                        //!< Instruction 'vmovdqu16' {AVX512_BW+VL}.
+    kIdVmovdqu32,                        //!< Instruction 'vmovdqu32' {AVX512_F+VL}.
+    kIdVmovdqu64,                        //!< Instruction 'vmovdqu64' {AVX512_F+VL}.
+    kIdVmovdqu8,                         //!< Instruction 'vmovdqu8' {AVX512_BW+VL}.
+    kIdVmovhlps,                         //!< Instruction 'vmovhlps' {AVX|AVX512_F}.
+    kIdVmovhpd,                          //!< Instruction 'vmovhpd' {AVX|AVX512_F}.
+    kIdVmovhps,                          //!< Instruction 'vmovhps' {AVX|AVX512_F}.
+    kIdVmovlhps,                         //!< Instruction 'vmovlhps' {AVX|AVX512_F}.
+    kIdVmovlpd,                          //!< Instruction 'vmovlpd' {AVX|AVX512_F}.
+    kIdVmovlps,                          //!< Instruction 'vmovlps' {AVX|AVX512_F}.
+    kIdVmovmskpd,                        //!< Instruction 'vmovmskpd' {AVX}.
+    kIdVmovmskps,                        //!< Instruction 'vmovmskps' {AVX}.
+    kIdVmovntdq,                         //!< Instruction 'vmovntdq' {AVX|AVX512_F+VL}.
+    kIdVmovntdqa,                        //!< Instruction 'vmovntdqa' {AVX|AVX2|AVX512_F+VL}.
+    kIdVmovntpd,                         //!< Instruction 'vmovntpd' {AVX|AVX512_F+VL}.
+    kIdVmovntps,                         //!< Instruction 'vmovntps' {AVX|AVX512_F+VL}.
+    kIdVmovq,                            //!< Instruction 'vmovq' {AVX|AVX512_F}.
+    kIdVmovsd,                           //!< Instruction 'vmovsd' {AVX|AVX512_F}.
+    kIdVmovshdup,                        //!< Instruction 'vmovshdup' {AVX|AVX512_F+VL}.
+    kIdVmovsldup,                        //!< Instruction 'vmovsldup' {AVX|AVX512_F+VL}.
+    kIdVmovss,                           //!< Instruction 'vmovss' {AVX|AVX512_F}.
+    kIdVmovupd,                          //!< Instruction 'vmovupd' {AVX|AVX512_F+VL}.
+    kIdVmovups,                          //!< Instruction 'vmovups' {AVX|AVX512_F+VL}.
+    kIdVmpsadbw,                         //!< Instruction 'vmpsadbw' {AVX|AVX2}.
+    kIdVmptrld,                          //!< Instruction 'vmptrld' {VMX}.
+    kIdVmptrst,                          //!< Instruction 'vmptrst' {VMX}.
+    kIdVmread,                           //!< Instruction 'vmread' {VMX}.
+    kIdVmresume,                         //!< Instruction 'vmresume' {VMX}.
+    kIdVmrun,                            //!< Instruction 'vmrun' {SVM}.
+    kIdVmsave,                           //!< Instruction 'vmsave' {SVM}.
+    kIdVmulpd,                           //!< Instruction 'vmulpd' {AVX|AVX512_F+VL}.
+    kIdVmulps,                           //!< Instruction 'vmulps' {AVX|AVX512_F+VL}.
+    kIdVmulsd,                           //!< Instruction 'vmulsd' {AVX|AVX512_F}.
+    kIdVmulss,                           //!< Instruction 'vmulss' {AVX|AVX512_F}.
+    kIdVmwrite,                          //!< Instruction 'vmwrite' {VMX}.
+    kIdVmxon,                            //!< Instruction 'vmxon' {VMX}.
+    kIdVorpd,                            //!< Instruction 'vorpd' {AVX|AVX512_DQ+VL}.
+    kIdVorps,                            //!< Instruction 'vorps' {AVX|AVX512_DQ+VL}.
+    kIdVp4dpwssd,                        //!< Instruction 'vp4dpwssd' {AVX512_4VNNIW}.
+    kIdVp4dpwssds,                       //!< Instruction 'vp4dpwssds' {AVX512_4VNNIW}.
+    kIdVpabsb,                           //!< Instruction 'vpabsb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpabsd,                           //!< Instruction 'vpabsd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpabsq,                           //!< Instruction 'vpabsq' {AVX512_F+VL}.
+    kIdVpabsw,                           //!< Instruction 'vpabsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpackssdw,                        //!< Instruction 'vpackssdw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpacksswb,                        //!< Instruction 'vpacksswb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpackusdw,                        //!< Instruction 'vpackusdw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpackuswb,                        //!< Instruction 'vpackuswb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpaddb,                           //!< Instruction 'vpaddb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpaddd,                           //!< Instruction 'vpaddd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpaddq,                           //!< Instruction 'vpaddq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpaddsb,                          //!< Instruction 'vpaddsb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpaddsw,                          //!< Instruction 'vpaddsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpaddusb,                         //!< Instruction 'vpaddusb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpaddusw,                         //!< Instruction 'vpaddusw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpaddw,                           //!< Instruction 'vpaddw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpalignr,                         //!< Instruction 'vpalignr' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpand,                            //!< Instruction 'vpand' {AVX|AVX2}.
+    kIdVpandd,                           //!< Instruction 'vpandd' {AVX512_F+VL}.
+    kIdVpandn,                           //!< Instruction 'vpandn' {AVX|AVX2}.
+    kIdVpandnd,                          //!< Instruction 'vpandnd' {AVX512_F+VL}.
+    kIdVpandnq,                          //!< Instruction 'vpandnq' {AVX512_F+VL}.
+    kIdVpandq,                           //!< Instruction 'vpandq' {AVX512_F+VL}.
+    kIdVpavgb,                           //!< Instruction 'vpavgb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpavgw,                           //!< Instruction 'vpavgw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpblendd,                         //!< Instruction 'vpblendd' {AVX2}.
+    kIdVpblendvb,                        //!< Instruction 'vpblendvb' {AVX|AVX2}.
+    kIdVpblendw,                         //!< Instruction 'vpblendw' {AVX|AVX2}.
+    kIdVpbroadcastb,                     //!< Instruction 'vpbroadcastb' {AVX2|AVX512_BW+VL}.
+    kIdVpbroadcastd,                     //!< Instruction 'vpbroadcastd' {AVX2|AVX512_F+VL}.
+    kIdVpbroadcastmb2d,                  //!< Instruction 'vpbroadcastmb2d' {AVX512_CDI+VL}.
+    kIdVpbroadcastmb2q,                  //!< Instruction 'vpbroadcastmb2q' {AVX512_CDI+VL}.
+    kIdVpbroadcastq,                     //!< Instruction 'vpbroadcastq' {AVX2|AVX512_F+VL}.
+    kIdVpbroadcastw,                     //!< Instruction 'vpbroadcastw' {AVX2|AVX512_BW+VL}.
+    kIdVpclmulqdq,                       //!< Instruction 'vpclmulqdq' {AVX|AVX512_F+VL & PCLMULQDQ|VPCLMULQDQ}.
+    kIdVpcmov,                           //!< Instruction 'vpcmov' {XOP}.
+    kIdVpcmpb,                           //!< Instruction 'vpcmpb' {AVX512_BW+VL}.
+    kIdVpcmpd,                           //!< Instruction 'vpcmpd' {AVX512_F+VL}.
+    kIdVpcmpeqb,                         //!< Instruction 'vpcmpeqb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpcmpeqd,                         //!< Instruction 'vpcmpeqd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpcmpeqq,                         //!< Instruction 'vpcmpeqq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpcmpeqw,                         //!< Instruction 'vpcmpeqw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpcmpestri,                       //!< Instruction 'vpcmpestri' {AVX}.
+    kIdVpcmpestrm,                       //!< Instruction 'vpcmpestrm' {AVX}.
+    kIdVpcmpgtb,                         //!< Instruction 'vpcmpgtb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpcmpgtd,                         //!< Instruction 'vpcmpgtd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpcmpgtq,                         //!< Instruction 'vpcmpgtq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpcmpgtw,                         //!< Instruction 'vpcmpgtw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpcmpistri,                       //!< Instruction 'vpcmpistri' {AVX}.
+    kIdVpcmpistrm,                       //!< Instruction 'vpcmpistrm' {AVX}.
+    kIdVpcmpq,                           //!< Instruction 'vpcmpq' {AVX512_F+VL}.
+    kIdVpcmpub,                          //!< Instruction 'vpcmpub' {AVX512_BW+VL}.
+    kIdVpcmpud,                          //!< Instruction 'vpcmpud' {AVX512_F+VL}.
+    kIdVpcmpuq,                          //!< Instruction 'vpcmpuq' {AVX512_F+VL}.
+    kIdVpcmpuw,                          //!< Instruction 'vpcmpuw' {AVX512_BW+VL}.
+    kIdVpcmpw,                           //!< Instruction 'vpcmpw' {AVX512_BW+VL}.
+    kIdVpcomb,                           //!< Instruction 'vpcomb' {XOP}.
+    kIdVpcomd,                           //!< Instruction 'vpcomd' {XOP}.
+    kIdVpcompressb,                      //!< Instruction 'vpcompressb' {AVX512_VBMI2+VL}.
+    kIdVpcompressd,                      //!< Instruction 'vpcompressd' {AVX512_F+VL}.
+    kIdVpcompressq,                      //!< Instruction 'vpcompressq' {AVX512_F+VL}.
+    kIdVpcompressw,                      //!< Instruction 'vpcompressw' {AVX512_VBMI2+VL}.
+    kIdVpcomq,                           //!< Instruction 'vpcomq' {XOP}.
+    kIdVpcomub,                          //!< Instruction 'vpcomub' {XOP}.
+    kIdVpcomud,                          //!< Instruction 'vpcomud' {XOP}.
+    kIdVpcomuq,                          //!< Instruction 'vpcomuq' {XOP}.
+    kIdVpcomuw,                          //!< Instruction 'vpcomuw' {XOP}.
+    kIdVpcomw,                           //!< Instruction 'vpcomw' {XOP}.
+    kIdVpconflictd,                      //!< Instruction 'vpconflictd' {AVX512_CDI+VL}.
+    kIdVpconflictq,                      //!< Instruction 'vpconflictq' {AVX512_CDI+VL}.
+    kIdVpdpbusd,                         //!< Instruction 'vpdpbusd' {AVX512_VNNI+VL}.
+    kIdVpdpbusds,                        //!< Instruction 'vpdpbusds' {AVX512_VNNI+VL}.
+    kIdVpdpwssd,                         //!< Instruction 'vpdpwssd' {AVX512_VNNI+VL}.
+    kIdVpdpwssds,                        //!< Instruction 'vpdpwssds' {AVX512_VNNI+VL}.
+    kIdVperm2f128,                       //!< Instruction 'vperm2f128' {AVX}.
+    kIdVperm2i128,                       //!< Instruction 'vperm2i128' {AVX2}.
+    kIdVpermb,                           //!< Instruction 'vpermb' {AVX512_VBMI+VL}.
+    kIdVpermd,                           //!< Instruction 'vpermd' {AVX2|AVX512_F+VL}.
+    kIdVpermi2b,                         //!< Instruction 'vpermi2b' {AVX512_VBMI+VL}.
+    kIdVpermi2d,                         //!< Instruction 'vpermi2d' {AVX512_F+VL}.
+    kIdVpermi2pd,                        //!< Instruction 'vpermi2pd' {AVX512_F+VL}.
+    kIdVpermi2ps,                        //!< Instruction 'vpermi2ps' {AVX512_F+VL}.
+    kIdVpermi2q,                         //!< Instruction 'vpermi2q' {AVX512_F+VL}.
+    kIdVpermi2w,                         //!< Instruction 'vpermi2w' {AVX512_BW+VL}.
+    kIdVpermil2pd,                       //!< Instruction 'vpermil2pd' {XOP}.
+    kIdVpermil2ps,                       //!< Instruction 'vpermil2ps' {XOP}.
+    kIdVpermilpd,                        //!< Instruction 'vpermilpd' {AVX|AVX512_F+VL}.
+    kIdVpermilps,                        //!< Instruction 'vpermilps' {AVX|AVX512_F+VL}.
+    kIdVpermpd,                          //!< Instruction 'vpermpd' {AVX2}.
+    kIdVpermps,                          //!< Instruction 'vpermps' {AVX2}.
+    kIdVpermq,                           //!< Instruction 'vpermq' {AVX2|AVX512_F+VL}.
+    kIdVpermt2b,                         //!< Instruction 'vpermt2b' {AVX512_VBMI+VL}.
+    kIdVpermt2d,                         //!< Instruction 'vpermt2d' {AVX512_F+VL}.
+    kIdVpermt2pd,                        //!< Instruction 'vpermt2pd' {AVX512_F+VL}.
+    kIdVpermt2ps,                        //!< Instruction 'vpermt2ps' {AVX512_F+VL}.
+    kIdVpermt2q,                         //!< Instruction 'vpermt2q' {AVX512_F+VL}.
+    kIdVpermt2w,                         //!< Instruction 'vpermt2w' {AVX512_BW+VL}.
+    kIdVpermw,                           //!< Instruction 'vpermw' {AVX512_BW+VL}.
+    kIdVpexpandb,                        //!< Instruction 'vpexpandb' {AVX512_VBMI2+VL}.
+    kIdVpexpandd,                        //!< Instruction 'vpexpandd' {AVX512_F+VL}.
+    kIdVpexpandq,                        //!< Instruction 'vpexpandq' {AVX512_F+VL}.
+    kIdVpexpandw,                        //!< Instruction 'vpexpandw' {AVX512_VBMI2+VL}.
+    kIdVpextrb,                          //!< Instruction 'vpextrb' {AVX|AVX512_BW}.
+    kIdVpextrd,                          //!< Instruction 'vpextrd' {AVX|AVX512_DQ}.
+    kIdVpextrq,                          //!< Instruction 'vpextrq' {AVX|AVX512_DQ} (X64).
+    kIdVpextrw,                          //!< Instruction 'vpextrw' {AVX|AVX512_BW}.
+    kIdVpgatherdd,                       //!< Instruction 'vpgatherdd' {AVX2|AVX512_F+VL}.
+    kIdVpgatherdq,                       //!< Instruction 'vpgatherdq' {AVX2|AVX512_F+VL}.
+    kIdVpgatherqd,                       //!< Instruction 'vpgatherqd' {AVX2|AVX512_F+VL}.
+    kIdVpgatherqq,                       //!< Instruction 'vpgatherqq' {AVX2|AVX512_F+VL}.
+    kIdVphaddbd,                         //!< Instruction 'vphaddbd' {XOP}.
+    kIdVphaddbq,                         //!< Instruction 'vphaddbq' {XOP}.
+    kIdVphaddbw,                         //!< Instruction 'vphaddbw' {XOP}.
+    kIdVphaddd,                          //!< Instruction 'vphaddd' {AVX|AVX2}.
+    kIdVphadddq,                         //!< Instruction 'vphadddq' {XOP}.
+    kIdVphaddsw,                         //!< Instruction 'vphaddsw' {AVX|AVX2}.
+    kIdVphaddubd,                        //!< Instruction 'vphaddubd' {XOP}.
+    kIdVphaddubq,                        //!< Instruction 'vphaddubq' {XOP}.
+    kIdVphaddubw,                        //!< Instruction 'vphaddubw' {XOP}.
+    kIdVphaddudq,                        //!< Instruction 'vphaddudq' {XOP}.
+    kIdVphadduwd,                        //!< Instruction 'vphadduwd' {XOP}.
+    kIdVphadduwq,                        //!< Instruction 'vphadduwq' {XOP}.
+    kIdVphaddw,                          //!< Instruction 'vphaddw' {AVX|AVX2}.
+    kIdVphaddwd,                         //!< Instruction 'vphaddwd' {XOP}.
+    kIdVphaddwq,                         //!< Instruction 'vphaddwq' {XOP}.
+    kIdVphminposuw,                      //!< Instruction 'vphminposuw' {AVX}.
+    kIdVphsubbw,                         //!< Instruction 'vphsubbw' {XOP}.
+    kIdVphsubd,                          //!< Instruction 'vphsubd' {AVX|AVX2}.
+    kIdVphsubdq,                         //!< Instruction 'vphsubdq' {XOP}.
+    kIdVphsubsw,                         //!< Instruction 'vphsubsw' {AVX|AVX2}.
+    kIdVphsubw,                          //!< Instruction 'vphsubw' {AVX|AVX2}.
+    kIdVphsubwd,                         //!< Instruction 'vphsubwd' {XOP}.
+    kIdVpinsrb,                          //!< Instruction 'vpinsrb' {AVX|AVX512_BW}.
+    kIdVpinsrd,                          //!< Instruction 'vpinsrd' {AVX|AVX512_DQ}.
+    kIdVpinsrq,                          //!< Instruction 'vpinsrq' {AVX|AVX512_DQ} (X64).
+    kIdVpinsrw,                          //!< Instruction 'vpinsrw' {AVX|AVX512_BW}.
+    kIdVplzcntd,                         //!< Instruction 'vplzcntd' {AVX512_CDI+VL}.
+    kIdVplzcntq,                         //!< Instruction 'vplzcntq' {AVX512_CDI+VL}.
+    kIdVpmacsdd,                         //!< Instruction 'vpmacsdd' {XOP}.
+    kIdVpmacsdqh,                        //!< Instruction 'vpmacsdqh' {XOP}.
+    kIdVpmacsdql,                        //!< Instruction 'vpmacsdql' {XOP}.
+    kIdVpmacssdd,                        //!< Instruction 'vpmacssdd' {XOP}.
+    kIdVpmacssdqh,                       //!< Instruction 'vpmacssdqh' {XOP}.
+    kIdVpmacssdql,                       //!< Instruction 'vpmacssdql' {XOP}.
+    kIdVpmacsswd,                        //!< Instruction 'vpmacsswd' {XOP}.
+    kIdVpmacssww,                        //!< Instruction 'vpmacssww' {XOP}.
+    kIdVpmacswd,                         //!< Instruction 'vpmacswd' {XOP}.
+    kIdVpmacsww,                         //!< Instruction 'vpmacsww' {XOP}.
+    kIdVpmadcsswd,                       //!< Instruction 'vpmadcsswd' {XOP}.
+    kIdVpmadcswd,                        //!< Instruction 'vpmadcswd' {XOP}.
+    kIdVpmadd52huq,                      //!< Instruction 'vpmadd52huq' {AVX512_IFMA+VL}.
+    kIdVpmadd52luq,                      //!< Instruction 'vpmadd52luq' {AVX512_IFMA+VL}.
+    kIdVpmaddubsw,                       //!< Instruction 'vpmaddubsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmaddwd,                         //!< Instruction 'vpmaddwd' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmaskmovd,                       //!< Instruction 'vpmaskmovd' {AVX2}.
+    kIdVpmaskmovq,                       //!< Instruction 'vpmaskmovq' {AVX2}.
+    kIdVpmaxsb,                          //!< Instruction 'vpmaxsb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmaxsd,                          //!< Instruction 'vpmaxsd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmaxsq,                          //!< Instruction 'vpmaxsq' {AVX512_F+VL}.
+    kIdVpmaxsw,                          //!< Instruction 'vpmaxsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmaxub,                          //!< Instruction 'vpmaxub' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmaxud,                          //!< Instruction 'vpmaxud' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmaxuq,                          //!< Instruction 'vpmaxuq' {AVX512_F+VL}.
+    kIdVpmaxuw,                          //!< Instruction 'vpmaxuw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpminsb,                          //!< Instruction 'vpminsb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpminsd,                          //!< Instruction 'vpminsd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpminsq,                          //!< Instruction 'vpminsq' {AVX512_F+VL}.
+    kIdVpminsw,                          //!< Instruction 'vpminsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpminub,                          //!< Instruction 'vpminub' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpminud,                          //!< Instruction 'vpminud' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpminuq,                          //!< Instruction 'vpminuq' {AVX512_F+VL}.
+    kIdVpminuw,                          //!< Instruction 'vpminuw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmovb2m,                         //!< Instruction 'vpmovb2m' {AVX512_BW+VL}.
+    kIdVpmovd2m,                         //!< Instruction 'vpmovd2m' {AVX512_DQ+VL}.
+    kIdVpmovdb,                          //!< Instruction 'vpmovdb' {AVX512_F+VL}.
+    kIdVpmovdw,                          //!< Instruction 'vpmovdw' {AVX512_F+VL}.
+    kIdVpmovm2b,                         //!< Instruction 'vpmovm2b' {AVX512_BW+VL}.
+    kIdVpmovm2d,                         //!< Instruction 'vpmovm2d' {AVX512_DQ+VL}.
+    kIdVpmovm2q,                         //!< Instruction 'vpmovm2q' {AVX512_DQ+VL}.
+    kIdVpmovm2w,                         //!< Instruction 'vpmovm2w' {AVX512_BW+VL}.
+    kIdVpmovmskb,                        //!< Instruction 'vpmovmskb' {AVX|AVX2}.
+    kIdVpmovq2m,                         //!< Instruction 'vpmovq2m' {AVX512_DQ+VL}.
+    kIdVpmovqb,                          //!< Instruction 'vpmovqb' {AVX512_F+VL}.
+    kIdVpmovqd,                          //!< Instruction 'vpmovqd' {AVX512_F+VL}.
+    kIdVpmovqw,                          //!< Instruction 'vpmovqw' {AVX512_F+VL}.
+    kIdVpmovsdb,                         //!< Instruction 'vpmovsdb' {AVX512_F+VL}.
+    kIdVpmovsdw,                         //!< Instruction 'vpmovsdw' {AVX512_F+VL}.
+    kIdVpmovsqb,                         //!< Instruction 'vpmovsqb' {AVX512_F+VL}.
+    kIdVpmovsqd,                         //!< Instruction 'vpmovsqd' {AVX512_F+VL}.
+    kIdVpmovsqw,                         //!< Instruction 'vpmovsqw' {AVX512_F+VL}.
+    kIdVpmovswb,                         //!< Instruction 'vpmovswb' {AVX512_BW+VL}.
+    kIdVpmovsxbd,                        //!< Instruction 'vpmovsxbd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovsxbq,                        //!< Instruction 'vpmovsxbq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovsxbw,                        //!< Instruction 'vpmovsxbw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmovsxdq,                        //!< Instruction 'vpmovsxdq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovsxwd,                        //!< Instruction 'vpmovsxwd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovsxwq,                        //!< Instruction 'vpmovsxwq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovusdb,                        //!< Instruction 'vpmovusdb' {AVX512_F+VL}.
+    kIdVpmovusdw,                        //!< Instruction 'vpmovusdw' {AVX512_F+VL}.
+    kIdVpmovusqb,                        //!< Instruction 'vpmovusqb' {AVX512_F+VL}.
+    kIdVpmovusqd,                        //!< Instruction 'vpmovusqd' {AVX512_F+VL}.
+    kIdVpmovusqw,                        //!< Instruction 'vpmovusqw' {AVX512_F+VL}.
+    kIdVpmovuswb,                        //!< Instruction 'vpmovuswb' {AVX512_BW+VL}.
+    kIdVpmovw2m,                         //!< Instruction 'vpmovw2m' {AVX512_BW+VL}.
+    kIdVpmovwb,                          //!< Instruction 'vpmovwb' {AVX512_BW+VL}.
+    kIdVpmovzxbd,                        //!< Instruction 'vpmovzxbd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovzxbq,                        //!< Instruction 'vpmovzxbq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovzxbw,                        //!< Instruction 'vpmovzxbw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmovzxdq,                        //!< Instruction 'vpmovzxdq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovzxwd,                        //!< Instruction 'vpmovzxwd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmovzxwq,                        //!< Instruction 'vpmovzxwq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmuldq,                          //!< Instruction 'vpmuldq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmulhrsw,                        //!< Instruction 'vpmulhrsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmulhuw,                         //!< Instruction 'vpmulhuw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmulhw,                          //!< Instruction 'vpmulhw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmulld,                          //!< Instruction 'vpmulld' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpmullq,                          //!< Instruction 'vpmullq' {AVX512_DQ+VL}.
+    kIdVpmullw,                          //!< Instruction 'vpmullw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpmultishiftqb,                   //!< Instruction 'vpmultishiftqb' {AVX512_VBMI+VL}.
+    kIdVpmuludq,                         //!< Instruction 'vpmuludq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpopcntb,                         //!< Instruction 'vpopcntb' {AVX512_BITALG+VL}.
+    kIdVpopcntd,                         //!< Instruction 'vpopcntd' {AVX512_VPOPCNTDQ+VL}.
+    kIdVpopcntq,                         //!< Instruction 'vpopcntq' {AVX512_VPOPCNTDQ+VL}.
+    kIdVpopcntw,                         //!< Instruction 'vpopcntw' {AVX512_BITALG+VL}.
+    kIdVpor,                             //!< Instruction 'vpor' {AVX|AVX2}.
+    kIdVpord,                            //!< Instruction 'vpord' {AVX512_F+VL}.
+    kIdVporq,                            //!< Instruction 'vporq' {AVX512_F+VL}.
+    kIdVpperm,                           //!< Instruction 'vpperm' {XOP}.
+    kIdVprold,                           //!< Instruction 'vprold' {AVX512_F+VL}.
+    kIdVprolq,                           //!< Instruction 'vprolq' {AVX512_F+VL}.
+    kIdVprolvd,                          //!< Instruction 'vprolvd' {AVX512_F+VL}.
+    kIdVprolvq,                          //!< Instruction 'vprolvq' {AVX512_F+VL}.
+    kIdVprord,                           //!< Instruction 'vprord' {AVX512_F+VL}.
+    kIdVprorq,                           //!< Instruction 'vprorq' {AVX512_F+VL}.
+    kIdVprorvd,                          //!< Instruction 'vprorvd' {AVX512_F+VL}.
+    kIdVprorvq,                          //!< Instruction 'vprorvq' {AVX512_F+VL}.
+    kIdVprotb,                           //!< Instruction 'vprotb' {XOP}.
+    kIdVprotd,                           //!< Instruction 'vprotd' {XOP}.
+    kIdVprotq,                           //!< Instruction 'vprotq' {XOP}.
+    kIdVprotw,                           //!< Instruction 'vprotw' {XOP}.
+    kIdVpsadbw,                          //!< Instruction 'vpsadbw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpscatterdd,                      //!< Instruction 'vpscatterdd' {AVX512_F+VL}.
+    kIdVpscatterdq,                      //!< Instruction 'vpscatterdq' {AVX512_F+VL}.
+    kIdVpscatterqd,                      //!< Instruction 'vpscatterqd' {AVX512_F+VL}.
+    kIdVpscatterqq,                      //!< Instruction 'vpscatterqq' {AVX512_F+VL}.
+    kIdVpshab,                           //!< Instruction 'vpshab' {XOP}.
+    kIdVpshad,                           //!< Instruction 'vpshad' {XOP}.
+    kIdVpshaq,                           //!< Instruction 'vpshaq' {XOP}.
+    kIdVpshaw,                           //!< Instruction 'vpshaw' {XOP}.
+    kIdVpshlb,                           //!< Instruction 'vpshlb' {XOP}.
+    kIdVpshld,                           //!< Instruction 'vpshld' {XOP}.
+    kIdVpshldd,                          //!< Instruction 'vpshldd' {AVX512_VBMI2+VL}.
+    kIdVpshldq,                          //!< Instruction 'vpshldq' {AVX512_VBMI2+VL}.
+    kIdVpshldvd,                         //!< Instruction 'vpshldvd' {AVX512_VBMI2+VL}.
+    kIdVpshldvq,                         //!< Instruction 'vpshldvq' {AVX512_VBMI2+VL}.
+    kIdVpshldvw,                         //!< Instruction 'vpshldvw' {AVX512_VBMI2+VL}.
+    kIdVpshldw,                          //!< Instruction 'vpshldw' {AVX512_VBMI2+VL}.
+    kIdVpshlq,                           //!< Instruction 'vpshlq' {XOP}.
+    kIdVpshlw,                           //!< Instruction 'vpshlw' {XOP}.
+    kIdVpshrdd,                          //!< Instruction 'vpshrdd' {AVX512_VBMI2+VL}.
+    kIdVpshrdq,                          //!< Instruction 'vpshrdq' {AVX512_VBMI2+VL}.
+    kIdVpshrdvd,                         //!< Instruction 'vpshrdvd' {AVX512_VBMI2+VL}.
+    kIdVpshrdvq,                         //!< Instruction 'vpshrdvq' {AVX512_VBMI2+VL}.
+    kIdVpshrdvw,                         //!< Instruction 'vpshrdvw' {AVX512_VBMI2+VL}.
+    kIdVpshrdw,                          //!< Instruction 'vpshrdw' {AVX512_VBMI2+VL}.
+    kIdVpshufb,                          //!< Instruction 'vpshufb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpshufbitqmb,                     //!< Instruction 'vpshufbitqmb' {AVX512_BITALG+VL}.
+    kIdVpshufd,                          //!< Instruction 'vpshufd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpshufhw,                         //!< Instruction 'vpshufhw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpshuflw,                         //!< Instruction 'vpshuflw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsignb,                          //!< Instruction 'vpsignb' {AVX|AVX2}.
+    kIdVpsignd,                          //!< Instruction 'vpsignd' {AVX|AVX2}.
+    kIdVpsignw,                          //!< Instruction 'vpsignw' {AVX|AVX2}.
+    kIdVpslld,                           //!< Instruction 'vpslld' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpslldq,                          //!< Instruction 'vpslldq' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsllq,                           //!< Instruction 'vpsllq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpsllvd,                          //!< Instruction 'vpsllvd' {AVX2|AVX512_F+VL}.
+    kIdVpsllvq,                          //!< Instruction 'vpsllvq' {AVX2|AVX512_F+VL}.
+    kIdVpsllvw,                          //!< Instruction 'vpsllvw' {AVX512_BW+VL}.
+    kIdVpsllw,                           //!< Instruction 'vpsllw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsrad,                           //!< Instruction 'vpsrad' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpsraq,                           //!< Instruction 'vpsraq' {AVX512_F+VL}.
+    kIdVpsravd,                          //!< Instruction 'vpsravd' {AVX2|AVX512_F+VL}.
+    kIdVpsravq,                          //!< Instruction 'vpsravq' {AVX512_F+VL}.
+    kIdVpsravw,                          //!< Instruction 'vpsravw' {AVX512_BW+VL}.
+    kIdVpsraw,                           //!< Instruction 'vpsraw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsrld,                           //!< Instruction 'vpsrld' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpsrldq,                          //!< Instruction 'vpsrldq' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsrlq,                           //!< Instruction 'vpsrlq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpsrlvd,                          //!< Instruction 'vpsrlvd' {AVX2|AVX512_F+VL}.
+    kIdVpsrlvq,                          //!< Instruction 'vpsrlvq' {AVX2|AVX512_F+VL}.
+    kIdVpsrlvw,                          //!< Instruction 'vpsrlvw' {AVX512_BW+VL}.
+    kIdVpsrlw,                           //!< Instruction 'vpsrlw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsubb,                           //!< Instruction 'vpsubb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsubd,                           //!< Instruction 'vpsubd' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpsubq,                           //!< Instruction 'vpsubq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpsubsb,                          //!< Instruction 'vpsubsb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsubsw,                          //!< Instruction 'vpsubsw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsubusb,                         //!< Instruction 'vpsubusb' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsubusw,                         //!< Instruction 'vpsubusw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpsubw,                           //!< Instruction 'vpsubw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpternlogd,                       //!< Instruction 'vpternlogd' {AVX512_F+VL}.
+    kIdVpternlogq,                       //!< Instruction 'vpternlogq' {AVX512_F+VL}.
+    kIdVptest,                           //!< Instruction 'vptest' {AVX}.
+    kIdVptestmb,                         //!< Instruction 'vptestmb' {AVX512_BW+VL}.
+    kIdVptestmd,                         //!< Instruction 'vptestmd' {AVX512_F+VL}.
+    kIdVptestmq,                         //!< Instruction 'vptestmq' {AVX512_F+VL}.
+    kIdVptestmw,                         //!< Instruction 'vptestmw' {AVX512_BW+VL}.
+    kIdVptestnmb,                        //!< Instruction 'vptestnmb' {AVX512_BW+VL}.
+    kIdVptestnmd,                        //!< Instruction 'vptestnmd' {AVX512_F+VL}.
+    kIdVptestnmq,                        //!< Instruction 'vptestnmq' {AVX512_F+VL}.
+    kIdVptestnmw,                        //!< Instruction 'vptestnmw' {AVX512_BW+VL}.
+    kIdVpunpckhbw,                       //!< Instruction 'vpunpckhbw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpunpckhdq,                       //!< Instruction 'vpunpckhdq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpunpckhqdq,                      //!< Instruction 'vpunpckhqdq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpunpckhwd,                       //!< Instruction 'vpunpckhwd' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpunpcklbw,                       //!< Instruction 'vpunpcklbw' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpunpckldq,                       //!< Instruction 'vpunpckldq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpunpcklqdq,                      //!< Instruction 'vpunpcklqdq' {AVX|AVX2|AVX512_F+VL}.
+    kIdVpunpcklwd,                       //!< Instruction 'vpunpcklwd' {AVX|AVX2|AVX512_BW+VL}.
+    kIdVpxor,                            //!< Instruction 'vpxor' {AVX|AVX2}.
+    kIdVpxord,                           //!< Instruction 'vpxord' {AVX512_F+VL}.
+    kIdVpxorq,                           //!< Instruction 'vpxorq' {AVX512_F+VL}.
+    kIdVrangepd,                         //!< Instruction 'vrangepd' {AVX512_DQ+VL}.
+    kIdVrangeps,                         //!< Instruction 'vrangeps' {AVX512_DQ+VL}.
+    kIdVrangesd,                         //!< Instruction 'vrangesd' {AVX512_DQ}.
+    kIdVrangess,                         //!< Instruction 'vrangess' {AVX512_DQ}.
+    kIdVrcp14pd,                         //!< Instruction 'vrcp14pd' {AVX512_F+VL}.
+    kIdVrcp14ps,                         //!< Instruction 'vrcp14ps' {AVX512_F+VL}.
+    kIdVrcp14sd,                         //!< Instruction 'vrcp14sd' {AVX512_F}.
+    kIdVrcp14ss,                         //!< Instruction 'vrcp14ss' {AVX512_F}.
+    kIdVrcp28pd,                         //!< Instruction 'vrcp28pd' {AVX512_ERI}.
+    kIdVrcp28ps,                         //!< Instruction 'vrcp28ps' {AVX512_ERI}.
+    kIdVrcp28sd,                         //!< Instruction 'vrcp28sd' {AVX512_ERI}.
+    kIdVrcp28ss,                         //!< Instruction 'vrcp28ss' {AVX512_ERI}.
+    kIdVrcpps,                           //!< Instruction 'vrcpps' {AVX}.
+    kIdVrcpss,                           //!< Instruction 'vrcpss' {AVX}.
+    kIdVreducepd,                        //!< Instruction 'vreducepd' {AVX512_DQ+VL}.
+    kIdVreduceps,                        //!< Instruction 'vreduceps' {AVX512_DQ+VL}.
+    kIdVreducesd,                        //!< Instruction 'vreducesd' {AVX512_DQ}.
+    kIdVreducess,                        //!< Instruction 'vreducess' {AVX512_DQ}.
+    kIdVrndscalepd,                      //!< Instruction 'vrndscalepd' {AVX512_F+VL}.
+    kIdVrndscaleps,                      //!< Instruction 'vrndscaleps' {AVX512_F+VL}.
+    kIdVrndscalesd,                      //!< Instruction 'vrndscalesd' {AVX512_F}.
+    kIdVrndscaless,                      //!< Instruction 'vrndscaless' {AVX512_F}.
+    kIdVroundpd,                         //!< Instruction 'vroundpd' {AVX}.
+    kIdVroundps,                         //!< Instruction 'vroundps' {AVX}.
+    kIdVroundsd,                         //!< Instruction 'vroundsd' {AVX}.
+    kIdVroundss,                         //!< Instruction 'vroundss' {AVX}.
+    kIdVrsqrt14pd,                       //!< Instruction 'vrsqrt14pd' {AVX512_F+VL}.
+    kIdVrsqrt14ps,                       //!< Instruction 'vrsqrt14ps' {AVX512_F+VL}.
+    kIdVrsqrt14sd,                       //!< Instruction 'vrsqrt14sd' {AVX512_F}.
+    kIdVrsqrt14ss,                       //!< Instruction 'vrsqrt14ss' {AVX512_F}.
+    kIdVrsqrt28pd,                       //!< Instruction 'vrsqrt28pd' {AVX512_ERI}.
+    kIdVrsqrt28ps,                       //!< Instruction 'vrsqrt28ps' {AVX512_ERI}.
+    kIdVrsqrt28sd,                       //!< Instruction 'vrsqrt28sd' {AVX512_ERI}.
+    kIdVrsqrt28ss,                       //!< Instruction 'vrsqrt28ss' {AVX512_ERI}.
+    kIdVrsqrtps,                         //!< Instruction 'vrsqrtps' {AVX}.
+    kIdVrsqrtss,                         //!< Instruction 'vrsqrtss' {AVX}.
+    kIdVscalefpd,                        //!< Instruction 'vscalefpd' {AVX512_F+VL}.
+    kIdVscalefps,                        //!< Instruction 'vscalefps' {AVX512_F+VL}.
+    kIdVscalefsd,                        //!< Instruction 'vscalefsd' {AVX512_F}.
+    kIdVscalefss,                        //!< Instruction 'vscalefss' {AVX512_F}.
+    kIdVscatterdpd,                      //!< Instruction 'vscatterdpd' {AVX512_F+VL}.
+    kIdVscatterdps,                      //!< Instruction 'vscatterdps' {AVX512_F+VL}.
+    kIdVscatterpf0dpd,                   //!< Instruction 'vscatterpf0dpd' {AVX512_PFI}.
+    kIdVscatterpf0dps,                   //!< Instruction 'vscatterpf0dps' {AVX512_PFI}.
+    kIdVscatterpf0qpd,                   //!< Instruction 'vscatterpf0qpd' {AVX512_PFI}.
+    kIdVscatterpf0qps,                   //!< Instruction 'vscatterpf0qps' {AVX512_PFI}.
+    kIdVscatterpf1dpd,                   //!< Instruction 'vscatterpf1dpd' {AVX512_PFI}.
+    kIdVscatterpf1dps,                   //!< Instruction 'vscatterpf1dps' {AVX512_PFI}.
+    kIdVscatterpf1qpd,                   //!< Instruction 'vscatterpf1qpd' {AVX512_PFI}.
+    kIdVscatterpf1qps,                   //!< Instruction 'vscatterpf1qps' {AVX512_PFI}.
+    kIdVscatterqpd,                      //!< Instruction 'vscatterqpd' {AVX512_F+VL}.
+    kIdVscatterqps,                      //!< Instruction 'vscatterqps' {AVX512_F+VL}.
+    kIdVshuff32x4,                       //!< Instruction 'vshuff32x4' {AVX512_F+VL}.
+    kIdVshuff64x2,                       //!< Instruction 'vshuff64x2' {AVX512_F+VL}.
+    kIdVshufi32x4,                       //!< Instruction 'vshufi32x4' {AVX512_F+VL}.
+    kIdVshufi64x2,                       //!< Instruction 'vshufi64x2' {AVX512_F+VL}.
+    kIdVshufpd,                          //!< Instruction 'vshufpd' {AVX|AVX512_F+VL}.
+    kIdVshufps,                          //!< Instruction 'vshufps' {AVX|AVX512_F+VL}.
+    kIdVsqrtpd,                          //!< Instruction 'vsqrtpd' {AVX|AVX512_F+VL}.
+    kIdVsqrtps,                          //!< Instruction 'vsqrtps' {AVX|AVX512_F+VL}.
+    kIdVsqrtsd,                          //!< Instruction 'vsqrtsd' {AVX|AVX512_F}.
+    kIdVsqrtss,                          //!< Instruction 'vsqrtss' {AVX|AVX512_F}.
+    kIdVstmxcsr,                         //!< Instruction 'vstmxcsr' {AVX}.
+    kIdVsubpd,                           //!< Instruction 'vsubpd' {AVX|AVX512_F+VL}.
+    kIdVsubps,                           //!< Instruction 'vsubps' {AVX|AVX512_F+VL}.
+    kIdVsubsd,                           //!< Instruction 'vsubsd' {AVX|AVX512_F}.
+    kIdVsubss,                           //!< Instruction 'vsubss' {AVX|AVX512_F}.
+    kIdVtestpd,                          //!< Instruction 'vtestpd' {AVX}.
+    kIdVtestps,                          //!< Instruction 'vtestps' {AVX}.
+    kIdVucomisd,                         //!< Instruction 'vucomisd' {AVX|AVX512_F}.
+    kIdVucomiss,                         //!< Instruction 'vucomiss' {AVX|AVX512_F}.
+    kIdVunpckhpd,                        //!< Instruction 'vunpckhpd' {AVX|AVX512_F+VL}.
+    kIdVunpckhps,                        //!< Instruction 'vunpckhps' {AVX|AVX512_F+VL}.
+    kIdVunpcklpd,                        //!< Instruction 'vunpcklpd' {AVX|AVX512_F+VL}.
+    kIdVunpcklps,                        //!< Instruction 'vunpcklps' {AVX|AVX512_F+VL}.
+    kIdVxorpd,                           //!< Instruction 'vxorpd' {AVX|AVX512_DQ+VL}.
+    kIdVxorps,                           //!< Instruction 'vxorps' {AVX|AVX512_DQ+VL}.
+    kIdVzeroall,                         //!< Instruction 'vzeroall' {AVX}.
+    kIdVzeroupper,                       //!< Instruction 'vzeroupper' {AVX}.
+    kIdWbinvd,                           //!< Instruction 'wbinvd'.
+    kIdWbnoinvd,                         //!< Instruction 'wbnoinvd' {WBNOINVD}.
+    kIdWrfsbase,                         //!< Instruction 'wrfsbase' {FSGSBASE} (X64).
+    kIdWrgsbase,                         //!< Instruction 'wrgsbase' {FSGSBASE} (X64).
+    kIdWrmsr,                            //!< Instruction 'wrmsr' {MSR}.
+    kIdXabort,                           //!< Instruction 'xabort' {RTM}.
+    kIdXadd,                             //!< Instruction 'xadd' {I486}.
+    kIdXbegin,                           //!< Instruction 'xbegin' {RTM}.
+    kIdXchg,                             //!< Instruction 'xchg'.
+    kIdXend,                             //!< Instruction 'xend' {RTM}.
+    kIdXgetbv,                           //!< Instruction 'xgetbv' {XSAVE}.
+    kIdXlatb,                            //!< Instruction 'xlatb'.
+    kIdXor,                              //!< Instruction 'xor'.
+    kIdXorpd,                            //!< Instruction 'xorpd' {SSE2}.
+    kIdXorps,                            //!< Instruction 'xorps' {SSE}.
+    kIdXrstor,                           //!< Instruction 'xrstor' {XSAVE}.
+    kIdXrstor64,                         //!< Instruction 'xrstor64' {XSAVE} (X64).
+    kIdXrstors,                          //!< Instruction 'xrstors' {XSAVES}.
+    kIdXrstors64,                        //!< Instruction 'xrstors64' {XSAVES} (X64).
+    kIdXsave,                            //!< Instruction 'xsave' {XSAVE}.
+    kIdXsave64,                          //!< Instruction 'xsave64' {XSAVE} (X64).
+    kIdXsavec,                           //!< Instruction 'xsavec' {XSAVEC}.
+    kIdXsavec64,                         //!< Instruction 'xsavec64' {XSAVEC} (X64).
+    kIdXsaveopt,                         //!< Instruction 'xsaveopt' {XSAVEOPT}.
+    kIdXsaveopt64,                       //!< Instruction 'xsaveopt64' {XSAVEOPT} (X64).
+    kIdXsaves,                           //!< Instruction 'xsaves' {XSAVES}.
+    kIdXsaves64,                         //!< Instruction 'xsaves64' {XSAVES} (X64).
+    kIdXsetbv,                           //!< Instruction 'xsetbv' {XSAVE}.
+    kIdXtest,                            //!< Instruction 'xtest' {TSX}.
     _kIdCount
     // ${InstId:End}
   };
 
-  //! Instruction options (X86).
+  //! Instruction options.
   enum Options : uint32_t {
     kOptionVex3           = 0x00000400u, //!< Use 3-byte VEX prefix if possible (AVX) (must be 0x00000400).
     kOptionModMR          = 0x00000800u, //!< Use ModMR instead of ModRM when it's available.
@@ -1575,26 +1575,15 @@ struct Inst : public BaseInst {
 
   //! Tests whether the `instId` is defined (counts also Inst::kIdNone, which must be zero).
   static inline bool isDefinedId(uint32_t instId) noexcept { return instId < _kIdCount; }
-
-  //! Converts `size` to a 'kmov?' instructio.
-  static inline uint32_t kmovFromSize(uint32_t size) noexcept {
-    switch (size) {
-      case  1: return kIdKmovb;
-      case  2: return kIdKmovw;
-      case  4: return kIdKmovd;
-      case  8: return kIdKmovq;
-      default: return kIdNone;
-    }
-  }
 };
 
 // ============================================================================
-// [asmjit::x86::Cond]
+// [asmjit::x86::Condition]
 // ============================================================================
 
-namespace Cond {
+namespace Condition {
   //! Condition code.
-  enum Value : uint32_t {
+  enum Code : uint32_t {
     kO                    = 0x00u,       //!<                 OF==1
     kNO                   = 0x01u,       //!<                 OF==0
     kB                    = 0x02u,       //!< CF==1                  (unsigned < )
@@ -1690,7 +1679,7 @@ namespace Cond {
 // [asmjit::x86::FpuWord]
 // ============================================================================
 
-//! FPU control and status word (X86).
+//! FPU control and status word.
 namespace FpuWord {
   //! FPU status word.
   enum Status : uint32_t {
@@ -1746,12 +1735,12 @@ namespace FpuWord {
 // [asmjit::x86::Status]
 // ============================================================================
 
-//! CPU and FPU status (X86).
+//! CPU and FPU status flags.
 namespace Status {
-  //! Mask of status flags of both CPU and FPU.
+  //! CPU and FPU status flags used by `InstRWInfo`
   enum Flags : uint32_t {
     // ------------------------------------------------------------------------
-    // [Architecture Neutral Flags]
+    // [Architecture Neutral Flags - 0x000000FF]
     // ------------------------------------------------------------------------
 
     kCF = 0x00000001u, //!< Carry flag.
@@ -1760,7 +1749,7 @@ namespace Status {
     kZF = 0x00000008u, //!< Zero and/or equality flag (1 if zero/equal).
 
     // ------------------------------------------------------------------------
-    // [Architecture Specific Flags]
+    // [Architecture Specific Flags - 0xFFFFFF00]
     // ------------------------------------------------------------------------
 
     kAF = 0x00000100u, //!< Adjust flag.
@@ -1770,10 +1759,10 @@ namespace Status {
 
     kAC = 0x00001000u, //!< Alignment check.
 
-    kC0 = 0x00010000u, //!< FPU status word C0 flag.
-    kC1 = 0x00020000u, //!< FPU status word C1 flag.
-    kC2 = 0x00040000u, //!< FPU status word C2 flag.
-    kC3 = 0x00080000u  //!< FPU status word C3 flag.
+    kC0 = 0x00010000u, //!< FPU C0 status flag.
+    kC1 = 0x00020000u, //!< FPU C1 status flag.
+    kC2 = 0x00040000u, //!< FPU C2 status flag.
+    kC3 = 0x00080000u  //!< FPU C3 status flag.
   };
 }
 
@@ -1781,7 +1770,7 @@ namespace Status {
 // [asmjit::x86::Predicate]
 // ============================================================================
 
-//! Contains predicates used by SIMD instructions (X86).
+//! Contains predicates used by SIMD instructions.
 namespace Predicate {
   //! A predicate used by CMP[PD|PS|SD|SS] instructions.
   enum Cmp : uint32_t {
@@ -1887,15 +1876,17 @@ namespace Predicate {
   };
 
   //! A predicate used by VFPCLASS[PD|PS|SD|SS] instructions (AVX-512).
+  //!
+  //! \note Values can be combined together to form the final 8-bit mask.
   enum VFPClass : uint32_t {
-    kVFPClassQNaN         = 0x00u,
-    kVFPClassPZero        = 0x01u,
-    kVFPClassNZero        = 0x02u,
-    kVFPClassPInf         = 0x03u,
-    kVFPClassNInf         = 0x04u,
-    kVFPClassDenormal     = 0x05u,
-    kVFPClassNegative     = 0x06u,
-    kVFPClassSNaN         = 0x07u
+    kVFPClassQNaN         = 0x01u,       //!< Checks for QNaN.
+    kVFPClassPZero        = 0x02u,       //!< Checks for +0.
+    kVFPClassNZero        = 0x04u,       //!< Checks for -0.
+    kVFPClassPInf         = 0x08u,       //!< Checks for +Inf.
+    kVFPClassNInf         = 0x10u,       //!< Checks for -Inf.
+    kVFPClassDenormal     = 0x20u,       //!< Checks for denormal.
+    kVFPClassNegative     = 0x40u,       //!< Checks for negative finite value.
+    kVFPClassSNaN         = 0x80u        //!< Checks for SNaN.
   };
 
   //! A predicate used by VGETMANT[PD|PS|SD|SS] instructions (AVX-512).
@@ -1987,28 +1978,28 @@ namespace Predicate {
 // [asmjit::x86::TLog]
 // ============================================================================
 
-//! Bitwise ternary logic between 3 operands introduced by AVX-512 (X86).
+//! Bitwise ternary logic between 3 operands introduced by AVX-512.
 namespace TLog {
   //! A predicate that can be used to create a common predicate for VPTERNLOG[D|Q].
   enum Operator : uint32_t {
-    k0                    = 0x00u,
-    k1                    = 0xFFu,
-    kA                    = 0xF0u,
-    kB                    = 0xCCu,
-    kC                    = 0xAAu,
-    kNotA                 = kA ^ k1,
-    kNotB                 = kB ^ k1,
-    kNotC                 = kC ^ k1,
+    k0                    = 0x00u,       //!< 0 value.
+    k1                    = 0xFFu,       //!< 1 value.
+    kA                    = 0xF0u,       //!< A value.
+    kB                    = 0xCCu,       //!< B value.
+    kC                    = 0xAAu,       //!< C value.
+    kNotA                 = kA ^ k1,     //!< `!A` expression.
+    kNotB                 = kB ^ k1,     //!< `!B` expression.
+    kNotC                 = kC ^ k1,     //!< `!C` expression.
 
-    kAB                   = kA & kB,
-    kAC                   = kA & kC,
-    kBC                   = kB & kC,
-    kNotAB                = kAB ^ k1,
-    kNotAC                = kAC ^ k1,
-    kNotBC                = kBC ^ k1,
+    kAB                   = kA & kB,     //!< `A & B` expression.
+    kAC                   = kA & kC,     //!< `A & C` expression.
+    kBC                   = kB & kC,     //!< `B & C` expression.
+    kNotAB                = kAB ^ k1,    //!< `!(A & B)` expression.
+    kNotAC                = kAC ^ k1,    //!< `!(A & C)` expression.
+    kNotBC                = kBC ^ k1,    //!< `!(B & C)` expression.
 
-    kABC                  = kA & kB & kC,
-    kNotABC               = kABC ^ k1
+    kABC                  = kAB & kC,    //!< `A & B & C` expression.
+    kNotABC               = kABC ^ k1    //!< `!(A & B & C)` expression.
   };
 
   //! Creates an immediate that can be used by VPTERNLOG[D|Q] instructions.

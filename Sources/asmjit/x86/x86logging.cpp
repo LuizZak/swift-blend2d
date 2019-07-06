@@ -7,7 +7,7 @@
 #define ASMJIT_EXPORTS
 
 #include "../core/build.h"
-#ifndef ASMJIT_DISABLE_LOGGING
+#ifndef ASMJIT_NO_LOGGING
 
 #include "../core/misc_p.h"
 #include "../core/support.h"
@@ -15,7 +15,7 @@
 #include "../x86/x86logging_p.h"
 #include "../x86/x86operand.h"
 
-#ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
   #include "../core/compiler.h"
 #endif
 
@@ -613,7 +613,7 @@ ASMJIT_FAVOR_SIZE Error LoggingInternal::formatRegister(String& sb, uint32_t fla
   ASMJIT_UNUSED(archId);
   const RegFormatInfo& info = x86RegFormatInfo;
 
-  #ifndef ASMJIT_DISABLE_COMPILER
+#ifndef ASMJIT_NO_COMPILER
   if (Operand::isVirtId(rId)) {
     if (emitter && emitter->emitterType() == BaseEmitter::kTypeCompiler) {
       const BaseCompiler* cc = static_cast<const BaseCompiler*>(emitter);
@@ -637,9 +637,9 @@ ASMJIT_FAVOR_SIZE Error LoggingInternal::formatRegister(String& sb, uint32_t fla
       }
     }
   }
-  #else
+#else
   ASMJIT_UNUSED(flags);
-  #endif
+#endif
 
   if (ASMJIT_LIKELY(rType <= BaseReg::kTypeMax)) {
     const RegFormatInfo::NameEntry& nameEntry = info.nameEntries[rType];
@@ -689,7 +689,7 @@ ASMJIT_FAVOR_SIZE Error LoggingInternal::formatInstruction(
     if (options & (Inst::kOptionRep | Inst::kOptionRepne)) {
       sb.appendString((options & Inst::kOptionRep) ? "rep " : "repnz ");
       if (inst.hasExtraReg()) {
-        ASMJIT_PROPAGATE(sb.appendChar('{'));
+        ASMJIT_PROPAGATE(sb.appendString("{"));
         ASMJIT_PROPAGATE(formatOperand(sb, flags, emitter, archId, inst.extraReg().toReg<BaseReg>()));
         ASMJIT_PROPAGATE(sb.appendString("} "));
       }
@@ -718,7 +718,7 @@ ASMJIT_FAVOR_SIZE Error LoggingInternal::formatInstruction(
     if (options & Inst::kOptionVex3) ASMJIT_PROPAGATE(sb.appendString("vex3 "));
     if (options & Inst::kOptionEvex) ASMJIT_PROPAGATE(sb.appendString("evex "));
 
-    ASMJIT_PROPAGATE(sb.appendString(instInfo.name()));
+    ASMJIT_PROPAGATE(InstAPI::instIdToString(archId, instId, sb));
   }
   else {
     ASMJIT_PROPAGATE(sb.appendFormat("[InstId=#%u]", unsigned(instId)));
@@ -765,4 +765,4 @@ ASMJIT_FAVOR_SIZE Error LoggingInternal::formatInstruction(
 
 ASMJIT_END_SUB_NAMESPACE
 
-#endif // !ASMJIT_DISABLE_LOGGING
+#endif // !ASMJIT_NO_LOGGING
