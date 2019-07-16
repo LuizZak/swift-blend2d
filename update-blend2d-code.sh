@@ -14,7 +14,7 @@ mkdir temp
 
 cd temp
 git clone https://github.com/blend2d/blend2d.git --depth=1
-git clone https://github.com/asmjit/asmjit --branch next-wip --depth=1
+git clone https://github.com/asmjit/asmjit --depth=1
 
 # Copy all Blend2D files over
 echo "Copying over Blend2D files..."
