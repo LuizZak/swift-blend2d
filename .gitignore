@@ -4,3 +4,4 @@
 /*.xcodeproj
 /temp
 Tests/SwiftBlend2DTests/SnapshotFailures/
+.swiftpm/
