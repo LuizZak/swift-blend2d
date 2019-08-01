@@ -107,13 +107,13 @@ extension BLPoint: Equatable {
 extension BLPoint {
     /// Returns a `BLPoint` where each coordinate is the minimal value between
     /// this and another `BLPoint`.
-    func pointwiseMin(_ other: BLPoint) -> BLPoint {
+    public func pointwiseMin(_ other: BLPoint) -> BLPoint {
         return BLPoint(x: min(x, other.x), y: min(y, other.y))
     }
 
     /// Returns a `BLPoint` where each coordinate is the maximal value between
     /// this and another `BLPoint`.
-    func pointwiseMax(_ other: BLPoint) -> BLPoint {
+    public func pointwiseMax(_ other: BLPoint) -> BLPoint {
         return BLPoint(x: max(x, other.x), y: max(y, other.y))
     }
 }
