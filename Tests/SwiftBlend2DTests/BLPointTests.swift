@@ -133,4 +133,18 @@ class BLPointTests: XCTestCase {
         XCTAssertEqual(lhs.x, 1 / 3)
         XCTAssertEqual(lhs.y, 2 / 3)
     }
+
+    func testPointwiseMin() {
+        let p1 = BLPoint(x: 1, y: 4)
+        let p2 = BLPoint(x: 2, y: 3)
+
+        XCTAssertEqual(p1.pointwiseMin(p2), BLPoint(x: 1, y: 3))
+    }
+
+    func testPointwiseMax() {
+        let p1 = BLPoint(x: 1, y: 4)
+        let p2 = BLPoint(x: 2, y: 3)
+
+        XCTAssertEqual(p1.pointwiseMax(p2), BLPoint(x: 2, y: 4))
+    }
 }
