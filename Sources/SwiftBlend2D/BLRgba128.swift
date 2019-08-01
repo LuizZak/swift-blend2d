@@ -7,6 +7,10 @@ public extension BLRgba128 {
     /// Get whether the color is fully-transparent (alpha equals 0.0).
     @inlinable
     var isTransparent: Bool { return a == 0.0 }
+
+    func withTransparency(_ alpha: Float) -> BLRgba128 {
+        return BLRgba128(r: r, g: g, b: b, a: alpha)
+    }
 }
 
 extension BLRgba128: Equatable {

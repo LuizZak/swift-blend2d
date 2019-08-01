@@ -45,4 +45,13 @@ class BLRgba64Tests: XCTestCase {
         XCTAssertEqual(color.b, 771)
         XCTAssertEqual(color.a, 1028)
     }
+
+    func testWithTransparency() {
+        let color = BLRgba64(r: 1, g: 2, b: 3, a: 4).withTransparency(10)
+
+        XCTAssertEqual(color.r, 1)
+        XCTAssertEqual(color.g, 2)
+        XCTAssertEqual(color.b, 3)
+        XCTAssertEqual(color.a, 10)
+    }
 }

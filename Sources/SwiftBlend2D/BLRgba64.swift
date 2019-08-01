@@ -27,6 +27,10 @@ public extension BLRgba64 {
                   b: rgba32.b | (rgba32.b << 8),
                   a: rgba32.a | (rgba32.a << 8))
     }
+
+    func withTransparency(_ alpha: UInt32) -> BLRgba64 {
+        return BLRgba64(r: r, g: g, b: b, a: alpha)
+    }
 }
 
 extension BLRgba64: Equatable {

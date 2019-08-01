@@ -28,6 +28,10 @@ public extension BLRgba32 {
             + ((hi & 0x0000FF00) <<  8)
             + ((lo & 0x0000FF00) >>  8))
     }
+
+    func withTransparency(_ alpha: UInt32) -> BLRgba32 {
+        return BLRgba32(r: r, g: g, b: b, a: alpha)
+    }
 }
 
 extension BLRgba32: Equatable {
