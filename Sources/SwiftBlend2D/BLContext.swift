@@ -766,10 +766,11 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @discardableResult
     @inlinable
     public func strokeText(_ text: String, at point: BLPoint, font: BLFont) -> BLResult {
-        var cString = text.utf8CString
         var point = point
-        
-        return blContextStrokeTextD(&object, &point, &font.object, &cString, cString.count - 1, BLTextEncoding.utf8.rawValue)
+
+        return text.withCString { cString -> BLResult in
+            return blContextStrokeTextD(&object, &point, &font.object, cString, text.utf8.count - 1, BLTextEncoding.utf8.rawValue)
+        }
     }
     
     /// Strokes the passed `glyphRun` by using the given `font`.
