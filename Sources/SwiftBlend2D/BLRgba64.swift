@@ -29,7 +29,9 @@ public extension BLRgba64 {
     }
 
     func withTransparency(_ alpha: UInt32) -> BLRgba64 {
-        return BLRgba64(r: r, g: g, b: b, a: alpha)
+        var value = self
+        value.a = alpha
+        return value
     }
 }
 
