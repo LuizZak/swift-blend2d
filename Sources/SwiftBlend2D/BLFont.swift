@@ -113,24 +113,24 @@ public class BLFont: BLBaseClass<BLFontCore> {
     // TODO: Validate these glyph methods are working correctly with these array
     // parameter pointers
     
-    func getGlyphBounds(_ glyphIdData: [BLGlyphId]) -> BLBoxI {
+    public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> BLBoxI {
         var out = BLBoxI()
         blFontGetGlyphBounds(&object,
-                             glyphIdData,
-                             MemoryLayout<BLGlyphId>.stride,
+                             glyphRun.glyphIdData,
+                             Int(glyphRun.glyphIdAdvance),
                              &out,
-                             glyphIdData.count)
+                             glyphRun.size)
         
         return out
     }
     
-    func getGlyphAdvances(_ glyphIdData: [BLGlyphId]) -> BLGlyphPlacement {
+    public func getGlyphAdvances(_ glyphRun: BLGlyphRun) -> BLGlyphPlacement {
         var out = BLGlyphPlacement()
         blFontGetGlyphAdvances(&object,
-                               glyphIdData,
-                               MemoryLayout<BLGlyphId>.stride,
+                               glyphRun.glyphIdData,
+                               Int(glyphRun.glyphIdAdvance),
                                &out,
-                               glyphIdData.count)
+                               glyphRun.size)
         
         return out
     }
@@ -138,9 +138,9 @@ public class BLFont: BLBaseClass<BLFontCore> {
     // TODO: Validate these two getGlyphOutline methods- specifically what the
     // omitted 'closure' argument from each one means.
     
-    func getGlyphOutlines(_ glyphId: UInt32,
-                          userMatrix: BLMatrix2D? = nil,
-                          sink: BLPathSinkFunc? = nil) -> BLPath {
+    public func getGlyphOutlines(_ glyphId: UInt32,
+                                 userMatrix: BLMatrix2D? = nil,
+                                 sink: BLPathSinkFunc? = nil) -> BLPath {
         
         let path = BLPath()
         
@@ -151,9 +151,9 @@ public class BLFont: BLBaseClass<BLFontCore> {
         return path
     }
     
-    func getGlyphRunOutlines(_ glyphRun: BLGlyphRun,
-                             userMatrix: BLMatrix2D? = nil,
-                             sink: BLPathSinkFunc? = nil) -> BLPath {
+    public func getGlyphRunOutlines(_ glyphRun: BLGlyphRun,
+                                    userMatrix: BLMatrix2D? = nil,
+                                    sink: BLPathSinkFunc? = nil) -> BLPath {
         
         var glyphRun = glyphRun
         let path = BLPath()
