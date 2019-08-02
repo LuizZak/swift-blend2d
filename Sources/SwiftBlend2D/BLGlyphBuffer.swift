@@ -1,8 +1,26 @@
 import blend2d
 
 public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
+    @inlinable
     public var glyphRun: BLGlyphRun {
         return object.impl.pointee.glyphRun
+    }
+
+    /// Gets the glyph ids from this buffer.
+    ///
+    /// - complexity: O(size)
+    public var glyphIds: [BLGlyphId] {
+        var glyphs: [BLGlyphId] = []
+        glyphs.reserveCapacity(glyphRun.size)
+        var iterator = BLGlyphRunIterator(glyphRun: glyphRun)
+        while !iterator.atEnd {
+            if let glyphId = iterator.glyphId() {
+                glyphs.append(glyphId)
+            }
+            iterator.advance()
+        }
+
+        return glyphs
     }
     
     public override init() {
