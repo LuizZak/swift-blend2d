@@ -98,8 +98,7 @@ public extension BLPoint {
 extension BLPoint: Equatable {
     @inlinable
     public static func ==(lhs: BLPoint, rhs: BLPoint) -> Bool {
-        return lhs.x == rhs.x
-            && lhs.y == rhs.y
+        return lhs.x == rhs.x && lhs.y == rhs.y
     }
 }
 
