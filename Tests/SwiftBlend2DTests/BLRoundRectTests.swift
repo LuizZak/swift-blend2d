@@ -52,6 +52,15 @@ class BLRoundRectTests: XCTestCase {
         XCTAssertEqual(rect.bottomLeft, BLPoint(x: 1, y: 6))
         XCTAssertEqual(rect.bottomRight, BLPoint(x: 4, y: 6))
     }
+    
+    func testSides() {
+        let rect = BLRoundRect(x: 1, y: 2, w: 3, h: 4, rx: 2, ry: 2)
+
+        XCTAssertEqual(rect.top, 2)
+        XCTAssertEqual(rect.right, 4)
+        XCTAssertEqual(rect.left, 1)
+        XCTAssertEqual(rect.bottom, 6)
+    }
 
     func testSize() {
         var rect = BLRoundRect(x: 1, y: 2, w: 3, h: 4, rx: 5, ry: 6)
@@ -61,5 +70,15 @@ class BLRoundRectTests: XCTestCase {
         rect.size = BLSize(w: 7, h: 8)
 
         XCTAssertEqual(rect.size, BLSize(w: 7, h: 8))
+    }
+    
+    func testCenter() {
+        var rect = BLRoundRect(x: 1, y: 2, w: 3, h: 4, rx: 2, ry: 2)
+
+        XCTAssertEqual(rect.center, BLPoint(x: 2.5, y: 4))
+
+        rect.center = BLPoint(x: 5, y: 6)
+
+        XCTAssertEqual(rect, BLRoundRect(x: 3.5, y: 4, w: 3, h: 4, rx: 2, ry: 2))
     }
 }

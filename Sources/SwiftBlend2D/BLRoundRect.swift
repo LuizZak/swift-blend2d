@@ -22,6 +22,36 @@ public extension BLRoundRect {
     }
 
     @inlinable
+    var left: Double {
+        return x
+    }
+
+    @inlinable
+    var right: Double {
+        return x + w
+    }
+
+    @inlinable
+    var top: Double {
+        return y
+    }
+
+    @inlinable
+    var bottom: Double {
+        return y + h
+    }
+
+    @inlinable
+    var center: BLPoint {
+        get {
+            return BLPoint(x: x + w / 2, y: y + h / 2)
+        }
+        set {
+            (x, y) = (newValue.x - w / 2, newValue.y - h / 2)
+        }
+    }
+
+    @inlinable
     var size: BLSize {
         get {
             return BLSize(w: w, h: h)
