@@ -19,7 +19,7 @@ git clone https://github.com/asmjit/asmjit --depth=1
 # Copy all Blend2D files over
 echo "Copying over Blend2D files..."
 
-if [[ -d blend2d/src ]] && cp -R blend2d/src/ ../Sources/blend2d; then
+if [[ -d blend2d/src ]] && cp -R blend2d/src/* ../Sources/blend2d; then
     true
 else
     echo "Error while copying over Blend2D files: Could not locate source files path."
@@ -29,7 +29,7 @@ fi
 # Now copy all asmjit files over
 echo "Copying over asmjit files..."
 
-if [[ -d asmjit/src ]] && cp -R asmjit/src/asmjit/ ../Sources/asmjit/; then
+if [[ -d asmjit/src ]] && cp -R asmjit/src/asmjit/* ../Sources/asmjit/; then
     true
 else
     echo "Error while copying over asmjit files: Could not locate source files path."
