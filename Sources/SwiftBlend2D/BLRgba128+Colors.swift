@@ -1,6 +1,6 @@
 import blend2d
 
-extension BLRgba128 {
+public extension BLRgba128 {
     /// Transparent black color (red: 0, green: 0, blue: 0, alpha: 0)
     static let transparentBlack = BLRgba128(r: 0 / 255.0, g: 0 / 255.0, b: 0 / 255.0, a: 0 / 255.0)
     
