@@ -227,6 +227,7 @@ public extension BLMatrix2D {
     }
     
     @inlinable
+    @discardableResult
     mutating func translate(x: Double, y: Double) -> BLResult {
         self.m20 += x * self.m00 + y * self.m10
         self.m21 += x * self.m01 + y * self.m11
@@ -235,19 +236,23 @@ public extension BLMatrix2D {
     }
     
     @inlinable
+    @discardableResult
     mutating func translate(_ p: BLPointI) -> BLResult {
         return translate(BLPoint(p))
     }
     @inlinable
+    @discardableResult
     mutating func translate(_ p: BLPoint) -> BLResult {
         return translate(x: p.x, y: p.y)
     }
     
     @inlinable
+    @discardableResult
     mutating func scale(xy: Double) -> BLResult {
         return scale(x: xy, y: xy)
     }
     @inlinable
+    @discardableResult
     mutating func scale(x: Double, y: Double) -> BLResult {
         self.m00 *= x
         self.m01 *= x
@@ -258,30 +263,36 @@ public extension BLMatrix2D {
     }
     
     @inlinable
+    @discardableResult
     mutating func scale(_ p: BLPointI) -> BLResult {
         return scale(BLPoint(p))
     }
     @inlinable
+    @discardableResult
     mutating func scale(_ p: BLPoint) -> BLResult {
         return scale(x: p.x, y: p.y)
     }
     
     @inlinable
+    @discardableResult
     mutating func skew(x: Double, y: Double) -> BLResult {
         return skew(BLPoint(x: x, y: y))
     }
     @inlinable
+    @discardableResult
     mutating func skew(_ p: BLPoint) -> BLResult {
         var p = p
         return blMatrix2DApplyOp(&self, BLMatrix2DOp.skew.rawValue, &p)
     }
     
     @inlinable
+    @discardableResult
     mutating func rotate(angle: Double) -> BLResult {
         var angle = angle
         return blMatrix2DApplyOp(&self, BLMatrix2DOp.rotate.rawValue, &angle)
     }
     @inlinable
+    @discardableResult
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
         let opData = [
             angle, x, y
@@ -290,21 +301,25 @@ public extension BLMatrix2D {
     }
     
     @inlinable
+    @discardableResult
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
         return rotate(angle: angle, x: Double(point.x), y: Double(point.y))
     }
     @inlinable
+    @discardableResult
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
         return rotate(angle: angle, x: point.x, y: point.y)
     }
     
     @inlinable
+    @discardableResult
     mutating func transform(_ m: BLMatrix2D) -> BLResult {
         var m = m
         return blMatrix2DApplyOp(&self, BLMatrix2DOp.transform.rawValue, &m)
     }
     
     @inlinable
+    @discardableResult
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
         self.m20 += x
         self.m21 += y
@@ -313,19 +328,23 @@ public extension BLMatrix2D {
     }
     
     @inlinable
+    @discardableResult
     mutating func postTranslate(_ p: BLPointI) -> BLResult {
         return postTranslate(BLPoint(p))
     }
     @inlinable
+    @discardableResult
     mutating func postTranslate(_ p: BLPoint) -> BLResult {
         return postTranslate(x: p.x, y: p.y)
     }
     
     @inlinable
+    @discardableResult
     mutating func postScale(xy: Double) -> BLResult {
         return postScale(x: xy, y: xy)
     }
     @inlinable
+    @discardableResult
     mutating func postScale(x: Double, y: Double) -> BLResult {
         self.m00 *= x
         self.m01 *= y
@@ -337,30 +356,36 @@ public extension BLMatrix2D {
         return BL_SUCCESS.rawValue
     }
     @inlinable
+    @discardableResult
     mutating func postScale(_ p: BLPointI) -> BLResult {
         return postScale(BLPoint(p))
     }
     @inlinable
+    @discardableResult
     mutating func postScale(_ p: BLPoint) -> BLResult {
         return postScale(x: p.x, y: p.y)
     }
     
     @inlinable
+    @discardableResult
     mutating func postSkew(x: Double, y: Double) -> BLResult {
         return postSkew(BLPoint(x: x, y: y))
     }
     @inlinable
+    @discardableResult
     mutating func postSkew(_ p: BLPoint) -> BLResult {
         var p = p
         return blMatrix2DApplyOp(&self, BLMatrix2DOp.postSkew.rawValue, &p)
     }
     
     @inlinable
+    @discardableResult
     mutating func postRotate(angle: Double) -> BLResult {
         var angle = angle
         return blMatrix2DApplyOp(&self, BLMatrix2DOp.postRotate.rawValue, &angle)
     }
     @inlinable
+    @discardableResult
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
         let params = [
             angle, x, y
@@ -369,15 +394,18 @@ public extension BLMatrix2D {
     }
     
     @inlinable
+    @discardableResult
     mutating func postRotate(angle: Double, _ p: BLPointI) -> BLResult {
         return postRotate(angle: angle, BLPoint(p))
     }
     @inlinable
+    @discardableResult
     mutating func postRotate(angle: Double, _ p: BLPoint) -> BLResult {
         return postRotate(angle: angle, x: p.x, y: p.y)
     }
     
     @inlinable
+    @discardableResult
     mutating func postTransform(_ m: BLMatrix2D) -> BLResult {
         var m = m
         return blMatrix2DApplyOp(&self, BLMatrix2DOp.postTransform.rawValue, &m)
@@ -386,6 +414,7 @@ public extension BLMatrix2D {
     /// Inverts the matrix, returns `BL_SUCCESS` if the matrix has been inverted
     /// successfully.
     @inlinable
+    @discardableResult
     mutating func invert() -> BLResult {
         var sSelf = self
         return blMatrix2DInvert(&self, &sSelf)
@@ -411,8 +440,27 @@ public extension BLMatrix2D {
     }
     
     /// Inverts `source` matrix and stores the result in `desination`.
+    @discardableResult
     static func invert(destination: inout BLMatrix2D, source: BLMatrix2D) -> BLResult {
         var source = source
         return blMatrix2DInvert(&destination, &source)
+    }
+}
+
+public extension BLMatrix2D {
+    var inverted: BLMatrix2D {
+        var copy = self
+        copy.invert()
+        return copy
+    }
+    
+    static func * (lhs: BLMatrix2D, rhs: BLMatrix2D) -> BLMatrix2D {
+        var copy = lhs
+        copy.postTransform(rhs)
+        return copy
+    }
+    
+    static func * (lhs: BLPoint, rhs: BLMatrix2D) -> BLPoint {
+        return rhs.mapPoint(lhs)
     }
 }

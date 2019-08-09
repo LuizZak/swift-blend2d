@@ -457,7 +457,7 @@ public extension BLPath {
     /// this path.
     @discardableResult
     @inlinable
-    func addPath(_ path: BLPath, _ range: BLRange, _ p: BLPoint) -> BLResult {
+    func addPath(_ path: BLPath, translatedBy p: BLPoint, _ range: BLRange? = nil) -> BLResult {
         var p = p
         return withUnsafeNullablePointer(to: range) {
             return blPathAddTranslatedPath(&object, &path.object, $0, &p)
@@ -468,7 +468,7 @@ public extension BLPath {
     /// to this path.
     @discardableResult
     @inlinable
-    func addPath(_ path: BLPath, _ m: BLMatrix2D, _ range: BLRange? = nil) -> BLResult {
+    func addPath(_ path: BLPath, transformedBy m: BLMatrix2D, _ range: BLRange? = nil) -> BLResult {
         var m = m
         return withUnsafeNullablePointer(to: range) {
             return blPathAddTransformedPath(&object, &path.object, $0, &m)
