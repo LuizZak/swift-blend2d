@@ -50,16 +50,16 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
 
     /// Gets the weight of the font.
-    public var weight: UInt16 {
-        return object.impl.pointee.weight
+    public var weight: BLFontWeight {
+        return BLFontWeight(UInt32(object.impl.pointee.weight))
     }
     /// Gets the stretch of the font.
-    public var stretch: UInt8 {
-        return object.impl.pointee.stretch
+    public var stretch: BLFontStretch {
+        return BLFontStretch(UInt32(object.impl.pointee.stretch))
     }
     /// Gets the style of the font.
-    public var style: UInt8 {
-        return object.impl.pointee.style
+    public var style: BLFontStyle {
+        return BLFontStyle(UInt32(object.impl.pointee.style))
     }
     
     public init(fromFace face: BLFontFace, size: Float) {
@@ -109,9 +109,6 @@ public class BLFont: BLBaseClass<BLFontCore> {
         blFontGetTextMetrics(&object, &buf.object, &value)
         return value
     }
-    
-    // TODO: Validate these glyph methods are working correctly with these array
-    // parameter pointers
     
     public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> BLBoxI {
         var out = BLBoxI()

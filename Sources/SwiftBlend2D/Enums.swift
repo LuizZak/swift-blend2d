@@ -705,6 +705,99 @@ public extension BLByteOrder {
     static let swapped = BL_BYTE_ORDER_SWAPPED
 }
 
+public extension BLFontStyle {
+    /// Normal style.
+    static let normal = BL_FONT_STYLE_NORMAL
+    /// Oblique.
+    static let oblique = BL_FONT_STYLE_OBLIQUE
+    /// Italic.
+    static let italic = BL_FONT_STYLE_ITALIC
+}
+
+public extension BLFontStretch {
+    /// Ultra condensed stretch.
+    static let ultraCondensed = BL_FONT_STRETCH_ULTRA_CONDENSED
+    /// Extra condensed stretch.
+    static let extraCondensed = BL_FONT_STRETCH_EXTRA_CONDENSED
+    /// Condensed stretch.
+    static let condensed = BL_FONT_STRETCH_CONDENSED
+    /// Semi condensed stretch.
+    static let semiCondensed = BL_FONT_STRETCH_SEMI_CONDENSED
+    /// Normal stretch.
+    static let normal = BL_FONT_STRETCH_NORMAL
+    /// Semi expanded stretch.
+    static let semiExpanded = BL_FONT_STRETCH_SEMI_EXPANDED
+    /// Expanded stretch.
+    static let expanded = BL_FONT_STRETCH_EXPANDED
+    /// Extra expanded stretch.
+    static let extraExpanded = BL_FONT_STRETCH_EXTRA_EXPANDED
+    /// Ultra expanded stretch.
+    static let ultraExpanded = BL_FONT_STRETCH_ULTRA_EXPANDED
+}
+
+public extension BLFontWeight {
+    /// Thin weight (100).
+    static let thin = BL_FONT_WEIGHT_THIN
+    /// Extra light weight (200).
+    static let extraLight = BL_FONT_WEIGHT_EXTRA_LIGHT
+    /// Light weight (300).
+    static let light = BL_FONT_WEIGHT_LIGHT
+    /// Semi light weight (350).
+    static let semiLight = BL_FONT_WEIGHT_SEMI_LIGHT
+    /// Normal weight (400).
+    static let normal = BL_FONT_WEIGHT_NORMAL
+    /// Medium weight (500).
+    static let medium = BL_FONT_WEIGHT_MEDIUM
+    /// Semi bold weight (600).
+    static let semiBold = BL_FONT_WEIGHT_SEMI_BOLD
+    /// Bold weight (700).
+    static let bold = BL_FONT_WEIGHT_BOLD
+    /// Extra bold weight (800).
+    static let extraBold = BL_FONT_WEIGHT_EXTRA_BOLD
+    /// Black weight (900).
+    static let black = BL_FONT_WEIGHT_BLACK
+    /// Extra black weight (950).
+    static let extraBlack = BL_FONT_WEIGHT_EXTRA_BLACK
+}
+
+public extension BLFontFaceType {
+    /// None or unknown font type.
+    static let none = BL_FONT_FACE_TYPE_NONE
+    /// TrueType/OpenType font type.
+    static let openType = BL_FONT_FACE_TYPE_OPENTYPE
+}
+
+public extension BLFontFaceFlags {
+    /// Font uses typographic family and subfamily names.
+    static let typographicNames = BL_FONT_FACE_FLAG_TYPOGRAPHIC_NAMES
+    /// Font uses typographic metrics.
+    static let typographicMetrics = BL_FONT_FACE_FLAG_TYPOGRAPHIC_METRICS
+    /// Character to glyph mapping is available.
+    static let charToGlyphMapping = BL_FONT_FACE_FLAG_CHAR_TO_GLYPH_MAPPING
+    /// Horizontal glyph metrics (advances, side bearings) is available.
+    static let horizontalMetircs = BL_FONT_FACE_FLAG_HORIZONTAL_METIRCS
+    /// Vertical glyph metrics (advances, side bearings) is available.
+    static let verticalMetrics = BL_FONT_FACE_FLAG_VERTICAL_METRICS
+    /// Legacy horizontal kerning feature ('kern' table with horizontal kerning data).
+    static let horizontalKerning = BL_FONT_FACE_FLAG_HORIZONTAL_KERNING
+    /// Legacy vertical kerning feature ('kern' table with vertical kerning data).
+    static let verticalKerning = BL_FONT_FACE_FLAG_VERTICAL_KERNING
+    /// OpenType features (GDEF, GPOS, GSUB) are available.
+    static let opentypeFeatures = BL_FONT_FACE_FLAG_OPENTYPE_FEATURES
+    /// OpenType BLFont Variations feature is available.
+    static let opentypeVariations = BL_FONT_FACE_FLAG_OPENTYPE_VARIATIONS
+    /// Panose classification is available.
+    static let panoseData = BL_FONT_FACE_FLAG_PANOSE_DATA
+    /// Unicode coverage information is available.
+    static let unicodeCoverage = BL_FONT_FACE_FLAG_UNICODE_COVERAGE
+    /// Unicode variation sequences feature is available.
+    static let variationSequences = BL_FONT_FACE_FLAG_VARIATION_SEQUENCES
+    /// This is a symbol font.
+    static let symbolFont = BL_FONT_FACE_FLAG_SYMBOL_FONT
+    /// This is a last resort font.
+    static let lastResortFont = BL_FONT_FACE_FLAG_LAST_RESORT_FONT
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }
