@@ -438,6 +438,12 @@ public extension BLMatrix2D {
     func mapVector(_ v: BLPoint) -> BLPoint {
         return mapVector(x: v.x, y: v.y)
     }
+
+    /// Transforms a given polygon by multiplying each coordinate by this matrix.
+    @inlinable
+    func mapPolygon(_ polygon: [BLPoint]) -> [BLPoint] {
+        return polygon.map(mapVector)
+    }
     
     /// Inverts `source` matrix and stores the result in `desination`.
     @discardableResult

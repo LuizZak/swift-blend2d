@@ -88,4 +88,45 @@ class BLMatrix2DTests: XCTestCase {
         XCTAssert(abs(result.x - 5) < 1e-10)
         XCTAssert(abs(result.y - 15) < 1e-10)
     }
+
+    func testMapPolygon() {
+        let matrix = BLMatrix2D.makeRotation(angle: .pi) * BLMatrix2D.makeScaling(x: 0.5, y: 0.5) * BLMatrix2D.makeTranslation(x: 10, y: 20)
+        let points = [
+            BLPoint(x: -10, y: -10),
+            BLPoint(x: 10, y: -10),
+            BLPoint(x: 10, y: 10),
+            BLPoint(x: -10, y: 10)
+        ]
+        let expected = [
+            BLPoint(x: 15, y: 25),
+            BLPoint(x: 5, y: 25),
+            BLPoint(x: 5, y: 15),
+            BLPoint(x: 15, y: 15)
+        ]
+        
+        let result = matrix.mapPolygon(points)
+        
+        assertPolygonsEqual(expected, result)
+    }
+
+    func assertPolygonsEqual(_ expected: [BLPoint], _ actual: [BLPoint], line: Int = #line) {
+        var mismatch = false
+        for (actual, expected) in zip(actual, expected) {
+            if abs((actual - expected).x) < 1e-10 {
+                mismatch = true
+                break
+            }
+            if abs((actual - expected).y) < 1e-10 {
+                mismatch = true
+                break
+            }
+        }
+
+        if mismatch {
+            recordFailure(withDescription: "Expected polygon \(expected) but received \(actual)", 
+                          inFile: #file, 
+                          atLine: line, 
+                          expected: true)
+        }
+    }
 }
