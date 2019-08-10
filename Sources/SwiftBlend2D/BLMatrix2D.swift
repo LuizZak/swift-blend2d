@@ -448,18 +448,21 @@ public extension BLMatrix2D {
 }
 
 public extension BLMatrix2D {
+    @inlinable
     var inverted: BLMatrix2D {
         var copy = self
         copy.invert()
         return copy
     }
     
+    @inlinable
     static func * (lhs: BLMatrix2D, rhs: BLMatrix2D) -> BLMatrix2D {
         var copy = lhs
         copy.postTransform(rhs)
         return copy
     }
     
+    @inlinable
     static func * (lhs: BLPoint, rhs: BLMatrix2D) -> BLPoint {
         return rhs.mapPoint(lhs)
     }
