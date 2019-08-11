@@ -21,6 +21,17 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
     /// that will be created by `BLFontFace(fromLoader:)`.
     @inlinable
     public var faceType: UInt32 {
+        return UInt32(object.impl.pointee.faceType)
+    }
+    
+    /// Returns the number of faces this loader provides.
+    ///
+    /// If the loader is not initialized the result would be always zero. If the
+    /// loader is initialized to a single font it would be 1, and if the loader
+    /// is initialized to a font collection then the return would correspond to
+    /// the number of font-faces within that collection.
+    @inlinable
+    public var faceCount: UInt32 {
         return object.impl.pointee.faceCount
     }
     
@@ -52,6 +63,27 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
         }
     }
     
+    /// Creates a `BLFontLoader` from the given `data` of the given `size`.
+    ///
+    /// - note: Optionally a `destroyFunc` can be used as a notifier that will be
+    /// called when the data is no longer needed and `destroyData` acts as a user
+    /// data passed to `destroyFunc()`. Please note that all fonts created by the
+    /// loader would also reference the loader so `destroyFunc` will only be called
+    /// when there are no references to the loader possibly held by fonts or other
+    /// objects.
+    public init(fromData data: UnsafeRawBufferPointer,
+                destroyFunction: BLDestroyImplFunc? = nil,
+                destroyData: UnsafeMutableRawPointer? = nil) throws {
+        
+        try super.init { pointer in
+            blFontLoaderInit(pointer)
+            
+            return try resultToError(
+                blFontLoaderCreateFromData(pointer, data.baseAddress, data.count, destroyFunction, destroyData)
+            )
+        }
+    }
+    
     /// Returns `BLFontData` instance that matches the given `faceIndex`.
     ///
     /// Please note that this function never fails. If the `faceIndex` is out
@@ -64,28 +96,22 @@ public class BLFontLoader: BLBaseClass<BLFontLoaderCore> {
     /// the loader is not initialized.
     public func dataByFaceIndex(_ faceIndex: UInt32) throws -> BLFontData {
         guard let data = object.impl.pointee.virt.pointee.dataByFaceIndex(object.impl, faceIndex) else {
-            // TODO: Transform into a throwable error here
-            fatalError("No data for face index \(faceIndex)")
+            throw Error.noDataForFaceIndex(faceIndex)
         }
         
         return BLFontData(weakAssign: data)
     }
     
-    // TODO: Re-enable this back again once we figure out what destroyFunc and
-    // destroyData parameters to pass to `blFontLoaderCreateFromData`, if at all.
-    #if false
-    
-    public init(fromData data: UnsafeRawBufferPointer) throws {
-        try super.init { pointer in
-            blFontLoaderInit(pointer)
-            
-            return try resultToError(
-                blFontLoaderCreateFromData(pointer, data.baseAddress, data.count, nil, nil)
-            )
+    public enum Error: Swift.Error {
+        case noDataForFaceIndex(UInt32)
+        
+        public var localizedDescription: String {
+            switch self {
+            case .noDataForFaceIndex(let faceIndex):
+                return "No data for face index \(faceIndex)"
+            }
         }
     }
-    
-    #endif
 }
 
 extension BLFontLoader: Equatable {
