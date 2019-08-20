@@ -62,7 +62,7 @@ This may change at any moment.
 `BLPath` | 🕒 Partial | 2D vector path [C++ API]|
 `BLPathView` | ℹ️ No work required | |
 `BLPattern` | 🕒 Partial | Pattern [C++ API] `(Missing Swift tests)` |
-`BLPixelConverter` | ❌ Unstarted | |
+`BLPixelConverter` | 🕒 Partial |  `(Missing Swift tests)` |
 `BLPixelConverterOptions` | ℹ️ No work required | Pixel conversion options |
 `BLPoint` | ✅ Done | Point specified as [x, y] using double as a storage type |
 `BLPointI` | ✅ Done | Point specified as [x, y] using int as a storage type |

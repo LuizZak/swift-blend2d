@@ -16,4 +16,13 @@ class BLFormatInfoTests: XCTestCase {
         XCTAssertNotEqual(BLFormatInfo(depth: 0, flags: 1, .init(.init(sizes: (9, 9, 9, 9), shifts: (9, 9, 9, 9)))),
                           BLFormatInfo(depth: 0, flags: 1, .init(.init(sizes: (2, 3, 4, 5), shifts: (6, 7, 8, 9)))))
     }
+    
+    func testFormats() {
+        XCTAssertEqual(BLFormatInfo.none, blFormatInfo.0)
+        XCTAssertEqual(BLFormatInfo.prgb32, blFormatInfo.1)
+        XCTAssertEqual(BLFormatInfo.xrgb32, blFormatInfo.2)
+        XCTAssertEqual(BLFormatInfo.a8, blFormatInfo.3)
+        XCTAssertEqual(BLFormatInfo.frgb32, blFormatInfo.4)
+        XCTAssertEqual(BLFormatInfo.zero32, blFormatInfo.5)
+    }
 }

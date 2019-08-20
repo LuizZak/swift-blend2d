@@ -5,3 +5,4 @@
 /temp
 Tests/SwiftBlend2DTests/SnapshotFailures/
 .swiftpm/
+default.profraw

@@ -1,5 +1,26 @@
 import blend2d
 
+public extension BLFormatInfo {
+    static var none: BLFormatInfo {
+        return blFormatInfo.0
+    }
+    static var prgb32: BLFormatInfo {
+        return blFormatInfo.1
+    }
+    static var xrgb32: BLFormatInfo {
+        return blFormatInfo.2
+    }
+    static var a8: BLFormatInfo {
+        return blFormatInfo.3
+    }
+    static var frgb32: BLFormatInfo {
+        return blFormatInfo.4
+    }
+    static var zero32: BLFormatInfo {
+        return blFormatInfo.5
+    }
+}
+
 extension BLFormatInfo: Equatable {
     public static func ==(lhs: BLFormatInfo, rhs: BLFormatInfo) -> Bool {
         if lhs.depth != rhs.depth || lhs.flags != rhs.flags {
