@@ -41,6 +41,28 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         }
         return point
     }
+
+    @inlinable
+    public var figureRanges: [BLRange] {
+        var ranges: [BLRange] = []
+        var index = 0
+        while index < size {
+            let range = getFigureRange(index: index)
+            ranges.append(range)
+
+            index = range.end
+        }
+        return ranges
+    }
+
+    @inlinable
+    public var figures: [BLPath] {
+        return figureRanges.map { range in
+            let subPath = BLPath()
+            subPath.addPath(self, range: range)
+            return subPath
+        }
+    }
     
     public override init() {
         super.init()
