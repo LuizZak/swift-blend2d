@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 import blend2d
 import SwiftBlend2D
 import TigerSample
@@ -508,56 +509,21 @@ func pathToResources() -> String {
 }
 
 func pathExists(_ path: String, isDirectory: inout Bool) -> Bool {
-    func S_ISDIR(_ m: mode_t) -> Bool {
-        return ((m & S_IFMT) == S_IFDIR)
+    var objcBool: ObjCBool = ObjCBool(false)
+    defer {
+        isDirectory = objcBool.boolValue
     }
-    
-    var sb = stat()
-    
-    if stat(path, &sb) != 0 {
-        return false
-    }
-    
-    isDirectory = S_ISDIR(sb.st_mode)
-    return true
+    return FileManager.default.fileExists(atPath: path, isDirectory: &objcBool)
 }
 
 func createDirectory(atPath path: String) throws {
-    if mkdir(path, S_IRWXU) != 0 && errno != EEXIST {
-        throw TestError.couldNotCreatePath
-    }
+    try FileManager.default.createDirectory(at: URL(fileURLWithPath: path),
+                                            withIntermediateDirectories: true,
+                                            attributes: nil)
 }
 
 func copyFile(source: String, dest: String) throws {
-    let f1 = fopen(source, "rb")
-    if f1 == nil {
-        throw TestError.couldNotCopyFile
-    }
-    defer {
-        fclose(f1)
-    }
-    
-    let f2 = fopen(dest, "wb")
-    if f2 == nil {
-        throw TestError.couldNotCopyFile
-    }
-    defer {
-        fclose(f2)
-    }
-    
-    var buffer: [Int8] = Array(repeating: 0, count: 1024)
-    var n: size_t = 0
-    
-    while true {
-        n = fread(&buffer, MemoryLayout<Int8>.size, buffer.count * MemoryLayout<Int8>.size, f1)
-        if n == 0 {
-            return
-        }
-        
-        if fwrite(buffer, MemoryLayout<Int8>.size, n, f2) != n {
-            throw TestError.couldNotCopyFile
-        }
-    }
+    try FileManager.default.copyItem(atPath: source, toPath: dest)
 }
 
 enum TestError: Error {
