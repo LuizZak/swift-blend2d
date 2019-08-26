@@ -525,8 +525,3 @@ func createDirectory(atPath path: String) throws {
 func copyFile(source: String, dest: String) throws {
     try FileManager.default.copyItem(atPath: source, toPath: dest)
 }
-
-enum TestError: Error {
-    case couldNotCreatePath
-    case couldNotCopyFile
-}
