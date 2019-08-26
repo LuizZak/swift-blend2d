@@ -131,14 +131,11 @@ public class BLFont: BLBaseClass<BLFontCore> {
         
         return out
     }
-    
-    // TODO: Validate these two getGlyphOutline methods- specifically what the
-    // omitted 'closure' argument from each one means.
-    
+
     public func getGlyphOutlines(_ glyphId: UInt32,
                                  userMatrix: BLMatrix2D? = nil,
                                  sink: BLPathSinkFunc? = nil) -> BLPath {
-        
+
         let path = BLPath()
         
         withUnsafeNullablePointer(to: userMatrix) { userMatrix in

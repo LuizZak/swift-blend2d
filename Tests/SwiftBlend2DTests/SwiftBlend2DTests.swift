@@ -213,7 +213,7 @@ class SwiftBlend2DTests: XCTestCase {
             gb.setText(line)
             font.shape(gb)
             tm = font.getTextMetrics(gb)
-            
+
             p.x = (480.0 - (tm.boundingBox.x1 - tm.boundingBox.x0)) / 2.0
             ctx.fillGlyphRun(gb.glyphRun, at: p, font: font)
             p.y += Double(fm.ascent + fm.descent + fm.lineGap)
@@ -523,5 +523,8 @@ func createDirectory(atPath path: String) throws {
 }
 
 func copyFile(source: String, dest: String) throws {
+    if FileManager.default.fileExists(atPath: dest) {
+        try FileManager.default.removeItem(atPath: dest)
+    }
     try FileManager.default.copyItem(atPath: source, toPath: dest)
 }
