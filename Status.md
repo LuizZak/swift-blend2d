@@ -54,7 +54,7 @@ This may change at any moment.
 `BLImageDecoder` | ❌ Unstarted | Image decoder [C++ API]|
 `BLImageEncoder` | ❌ Unstarted | Image encoder [C++ API]|
 `BLImageInfo` | ℹ️ No work required | Image information provided by image codecs |
-`BLImageScaleOptions` | ❌ Unstarted | Options that can used to customize image scaling |
+`BLImageScaleOptions` | ℹ️ No work required | Options that can used to customize image scaling |
 `BLInternalCastImpl` | ℹ️ No work required | |
 `BLLine` | ✅ Done | Line specified as [x0, y0, x1, y1] using double as a storage type |
 `BLLinearGradientValues` | ℹ️ No work required | Linear gradient values packed into a structure |
