@@ -69,6 +69,16 @@ public extension BLBox {
     func contains(_ point: BLPointI) -> Bool {
         return contains(Double(point.x), Double(point.y))
     }
+
+    @inlinable
+    func offsetBy(x: Double, y: Double) -> BLBox {
+        return BLBox(x0: x0 + x, y0: y0 + y, x1: x1 + x, y1: y1 + y)
+    }
+
+    @inlinable
+    func insetBy(x: Double, y: Double) -> BLBox {
+        return BLBox(x0: x0 + x / 2, y0: y0 + y / 2, x1: x1 - x / 2, y1: y1 - y / 2)
+    }
     
     @inlinable
     mutating func reset() {

@@ -67,6 +67,20 @@ public extension BLBoxI {
             && point.x <  self.x1
             && point.y <  self.y1
     }
+
+    @inlinable
+    func offsetBy(x: Int, y: Int) -> BLBoxI {
+        let x = Int32(x)
+        let y = Int32(y)
+        return BLBoxI(x0: x0 + x, y0: y0 + y, x1: x1 + x, y1: y1 + y)
+    }
+
+    @inlinable
+    func insetBy(x: Int, y: Int) -> BLBoxI {
+        let x = Int32(x)
+        let y = Int32(y)
+        return BLBoxI(x0: x0 + x / 2, y0: y0 + y / 2, x1: x1 - x / 2, y1: y1 - y / 2)
+    }
     
     @inlinable
     mutating func reset() {

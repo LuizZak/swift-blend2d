@@ -87,4 +87,22 @@ class BLBoxITests: XCTestCase {
         
         XCTAssertEqual(box, BLBoxI(x0: 4, y0: 5, x1: 6, y1: 7))
     }
+
+    func testOffsetBy() {
+        let box = BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)
+
+        let offset = box.offsetBy(x: 10, y: 20)
+
+        XCTAssertEqual(offset, BLBoxI(x0: 11, y0: 22, x1: 13, y1: 24))
+    }
+
+    func testInset() {
+        let box = BLBoxI(x0: 0, y0: 0, x1: 10, y1: 10)
+        let result = box.insetBy(x: 2, y: 2)
+
+        XCTAssertEqual(result.x0, 1)
+        XCTAssertEqual(result.y0, 1)
+        XCTAssertEqual(result.x1, 9)
+        XCTAssertEqual(result.y1, 9)
+    }
 }
