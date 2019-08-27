@@ -17,7 +17,6 @@ class EnumsTestsTests: XCTestCase {
         isOptionSet(BLFileOpenFlags.self)
         isOptionSet(BLFileReadFlags.self)
     }
-    
-    // If this invocation fails, T does not conform to OptionSet.
+
     func isOptionSet<T: OptionSet>(_ value: T.Type) { }
 }

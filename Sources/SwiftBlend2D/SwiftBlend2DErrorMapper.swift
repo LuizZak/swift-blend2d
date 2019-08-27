@@ -1,7 +1,7 @@
 import blend2d
 
 @usableFromInline
-class Blend2DErrorMapper {
+class SwiftBlend2DErrorMapper {
     @usableFromInline
     var assertions: [(() -> Bool, () -> SwiftBlend2DError)] = []
     @usableFromInline
@@ -15,14 +15,14 @@ class Blend2DErrorMapper {
     }
 
     @inlinable
-    func asserting(_ assertion: @autoclosure @escaping () -> Bool, swiftError: @autoclosure @escaping () -> SwiftBlend2DError) -> Blend2DErrorMapper {
+    func asserting(_ assertion: @autoclosure @escaping () -> Bool, swiftError: @autoclosure @escaping () -> SwiftBlend2DError) -> SwiftBlend2DErrorMapper {
         assertions.append((assertion, swiftError))
         return self
     }
 
     @inlinable
-    func map(blend2DError errorCode: Blend2DError, swiftError: @autoclosure @escaping () -> SwiftBlend2DError) -> Blend2DErrorMapper {
-        mappings[errorCode.resultCode.rawValue] = swiftError
+    func map(blend2DError errorCode: BLResultCode, swiftError: @autoclosure @escaping () -> SwiftBlend2DError) -> SwiftBlend2DErrorMapper {
+        mappings[errorCode.rawValue] = swiftError
         return self
     }
 
@@ -31,7 +31,7 @@ class Blend2DErrorMapper {
     ///
     /// If `filePath` is `nil`, a non-specific file error is generated, instead.
     @inlinable
-    func addFileErrorMappings(filePath: String?) -> Blend2DErrorMapper {
+    func addFileErrorMappings(filePath: String?) -> SwiftBlend2DErrorMapper {
         return map(blend2DError: .invalidHandle, swiftError: SwiftBlend2DError.FileError(fileNotOpenAtPath: filePath))
     }
 
@@ -46,16 +46,14 @@ class Blend2DErrorMapper {
 
         let result = operation()
 
-        if result == BL_SUCCESS.rawValue {
-            return BL_SUCCESS.rawValue
+        if result == BLResultCode.success.rawValue {
+            return result
         }
 
         if let mapping = mappings[result] {
             throw mapping()
-        } else if let error = errorForResult(result) {
-            throw error
         }
 
-        return result
+        throw BLResultCode(rawValue: result)
     }
 }

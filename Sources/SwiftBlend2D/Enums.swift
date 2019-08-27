@@ -1,5 +1,332 @@
 import blend2d
 
+extension BLResultCode: Error { }
+public extension BLResultCode {
+    /// Successful result code.
+    static let success = BL_SUCCESS
+
+    static let startIndex = BL_ERROR_START_INDEX
+
+    /// Out of memory                 [ENOMEM].
+    static let outOfMemory = BL_ERROR_OUT_OF_MEMORY
+    /// Invalid value/argument        [EINVAL].
+    static let invalidValue = BL_ERROR_INVALID_VALUE
+    /// Invalid state                 [EFAULT].
+    static let invalidState = BL_ERROR_INVALID_STATE
+    /// Invalid handle or file.       [EBADF].
+    static let invalidHandle = BL_ERROR_INVALID_HANDLE
+    /// Value too large               [EOVERFLOW].
+    static let valueTooLarge = BL_ERROR_VALUE_TOO_LARGE
+    /// Not initialized (some instance is built-in none when it shouldn't be).
+    static let notInitialized = BL_ERROR_NOT_INITIALIZED
+    /// Not implemented               [ENOSYS].
+    static let notImplemented = BL_ERROR_NOT_IMPLEMENTED
+    /// Operation not permitted       [EPERM].
+    static let notPermitted = BL_ERROR_NOT_PERMITTED
+
+    /// IO error                      [EIO].
+    static let io = BL_ERROR_IO
+    /// Device or resource busy       [EBUSY].
+    static let busy = BL_ERROR_BUSY
+    /// Operation interrupted         [EINTR].
+    static let interrupted = BL_ERROR_INTERRUPTED
+    /// Try again                     [EAGAIN].
+    static let tryAgain = BL_ERROR_TRY_AGAIN
+    /// Timed out                     [ETIMEDOUT].
+    static let timedOut = BL_ERROR_TIMED_OUT
+    /// Broken pipe                   [EPIPE].
+    static let brokenPipe = BL_ERROR_BROKEN_PIPE
+    /// File is not seekable          [ESPIPE].
+    static let invalidSeek = BL_ERROR_INVALID_SEEK
+    /// Too many levels of symlinks   [ELOOP].
+    static let symlinkLoop = BL_ERROR_SYMLINK_LOOP
+    /// File is too large             [EFBIG].
+    static let fileTooLarge = BL_ERROR_FILE_TOO_LARGE
+    /// File/directory already exists [EEXIST].
+    static let alreadyExists = BL_ERROR_ALREADY_EXISTS
+    /// Access denied                 [EACCES].
+    static let accessDenied = BL_ERROR_ACCESS_DENIED
+    /// Media changed                 [Windows::ERROR_MEDIA_CHANGED].
+    static let mediaChanged = BL_ERROR_MEDIA_CHANGED
+    /// The file/FS is read-only      [EROFS].
+    static let readOnlyFs = BL_ERROR_READ_ONLY_FS
+    /// Device doesn't exist          [ENXIO].
+    static let noDevice = BL_ERROR_NO_DEVICE
+    /// Not found no entry (fs)      [ENOENT].
+    static let noEntry = BL_ERROR_NO_ENTRY
+    /// No media in drive/device      [ENOMEDIUM].
+    static let noMedia = BL_ERROR_NO_MEDIA
+    /// No more data / end of file    [ENODATA].
+    static let noMoreData = BL_ERROR_NO_MORE_DATA
+    /// No more files                 [ENMFILE].
+    static let noMoreFiles = BL_ERROR_NO_MORE_FILES
+    /// No space left on device       [ENOSPC].
+    static let noSpaceLeft = BL_ERROR_NO_SPACE_LEFT
+    /// Directory is not empty        [ENOTEMPTY].
+    static let notEmpty = BL_ERROR_NOT_EMPTY
+    /// Not a file                    [EISDIR].
+    static let notFile = BL_ERROR_NOT_FILE
+    /// Not a directory               [ENOTDIR].
+    static let notDirectory = BL_ERROR_NOT_DIRECTORY
+    /// Not same device               [EXDEV].
+    static let notSameDevice = BL_ERROR_NOT_SAME_DEVICE
+    /// Not a block device            [ENOTBLK].
+    static let notBlockDevice = BL_ERROR_NOT_BLOCK_DEVICE
+
+    /// File/path name is invalid     [n/a].
+    static let invalidFileName = BL_ERROR_INVALID_FILE_NAME
+    /// File/path name is too long    [ENAMETOOLONG].
+    static let fileNameTooLong = BL_ERROR_FILE_NAME_TOO_LONG
+
+    /// Too many open files           [EMFILE].
+    static let tooManyOpenFiles = BL_ERROR_TOO_MANY_OPEN_FILES
+    /// Too many open files by OS     [ENFILE].
+    static let tooManyOpenFilesByOs = BL_ERROR_TOO_MANY_OPEN_FILES_BY_OS
+    /// Too many symbolic links on FS [EMLINK].
+    static let tooManyLinks = BL_ERROR_TOO_MANY_LINKS
+    /// Too many threads              [EAGAIN].
+    static let tooManyThreads = BL_ERROR_TOO_MANY_THREADS
+
+    /// File is empty (not specific to any OS error).
+    static let fileEmpty = BL_ERROR_FILE_EMPTY
+    /// File open failed              [Windows::ERROR_OPEN_FAILED].
+    static let openFailed = BL_ERROR_OPEN_FAILED
+    /// Not a root device/directory   [Windows::ERROR_DIR_NOT_ROOT].
+    static let notRootDevice = BL_ERROR_NOT_ROOT_DEVICE
+
+    /// Unknown system error that failed to translate to Blend2D result code.
+    static let unknownSystemError = BL_ERROR_UNKNOWN_SYSTEM_ERROR
+
+    /// Invalid data alignment.
+    static let invalidAlignment = BL_ERROR_INVALID_ALIGNMENT
+    /// Invalid data signature or header.
+    static let invalidSignature = BL_ERROR_INVALID_SIGNATURE
+    /// Invalid or corrupted data.
+    static let invalidData = BL_ERROR_INVALID_DATA
+    /// Invalid string (invalid data of either UTF8, UTF16, or UTF32).
+    static let invalidString = BL_ERROR_INVALID_STRING
+    /// Truncated data (more data required than memory/stream provides).
+    static let dataTruncated = BL_ERROR_DATA_TRUNCATED
+    /// Input data too large to be processed.
+    static let dataTooLarge = BL_ERROR_DATA_TOO_LARGE
+    /// Decompression failed due to invalid data (RLE, Huffman, etc).
+    static let decompressionFailed = BL_ERROR_DECOMPRESSION_FAILED
+
+    /// Invalid geometry (invalid path data or shape).
+    static let invalidGeometry = BL_ERROR_INVALID_GEOMETRY
+    /// Returned when there is no matching vertex in path data.
+    static let noMatchingVertex = BL_ERROR_NO_MATCHING_VERTEX
+
+    /// No matching cookie (BLContext).
+    static let noMatchingCookie = BL_ERROR_NO_MATCHING_COOKIE
+    /// No states to restore (BLContext).
+    static let noStatesToRestore = BL_ERROR_NO_STATES_TO_RESTORE
+
+    /// The size of the image is too large.
+    static let imageTooLarge = BL_ERROR_IMAGE_TOO_LARGE
+    /// Image codec for a required format doesn't exist.
+    static let imageNoMatchingCodec = BL_ERROR_IMAGE_NO_MATCHING_CODEC
+    /// Unknown or invalid file format that cannot be read.
+    static let imageUnknownFileFormat = BL_ERROR_IMAGE_UNKNOWN_FILE_FORMAT
+    /// Image codec doesn't support reading the file format.
+    static let imageDecoderNotProvided = BL_ERROR_IMAGE_DECODER_NOT_PROVIDED
+    /// Image codec doesn't support writing the file format.
+    static let imageEncoderNotProvided = BL_ERROR_IMAGE_ENCODER_NOT_PROVIDED
+
+    /// Multiple IHDR chunks are not allowed (PNG).
+    static let pngMultipleIhdr = BL_ERROR_PNG_MULTIPLE_IHDR
+    /// Invalid IDAT chunk (PNG).
+    static let pngInvalidIdat = BL_ERROR_PNG_INVALID_IDAT
+    /// Invalid IEND chunk (PNG).
+    static let pngInvalidIend = BL_ERROR_PNG_INVALID_IEND
+    /// Invalid PLTE chunk (PNG).
+    static let pngInvalidPlte = BL_ERROR_PNG_INVALID_PLTE
+    /// Invalid tRNS chunk (PNG).
+    static let pngInvalidTrns = BL_ERROR_PNG_INVALID_TRNS
+    /// Invalid filter type (PNG).
+    static let pngInvalidFilter = BL_ERROR_PNG_INVALID_FILTER
+
+    /// Unsupported feature (JPEG).
+    static let jpegUnsupportedFeature = BL_ERROR_JPEG_UNSUPPORTED_FEATURE
+    /// Invalid SOS marker or header (JPEG).
+    static let jpegInvalidSos = BL_ERROR_JPEG_INVALID_SOS
+    /// Invalid SOF marker (JPEG).
+    static let jpegInvalidSof = BL_ERROR_JPEG_INVALID_SOF
+    /// Multiple SOF markers (JPEG).
+    static let jpegMultipleSof = BL_ERROR_JPEG_MULTIPLE_SOF
+    /// Unsupported SOF marker (JPEG).
+    static let jpegUnsupportedSof = BL_ERROR_JPEG_UNSUPPORTED_SOF
+
+    /// Font has no character to glyph mapping data.
+    static let fontNoCharacterMapping = BL_ERROR_FONT_NO_CHARACTER_MAPPING
+    /// Font has missing an important table.
+    static let fontMissingImportantTable = BL_ERROR_FONT_MISSING_IMPORTANT_TABLE
+    /// Font feature is not available.
+    static let fontFeatureNotAvailable = BL_ERROR_FONT_FEATURE_NOT_AVAILABLE
+    /// Font has an invalid CFF data.
+    static let fontCffInvalidData = BL_ERROR_FONT_CFF_INVALID_DATA
+    /// Font program terminated because the execution reached the limit.
+    static let fontProgramTerminated = BL_ERROR_FONT_PROGRAM_TERMINATED
+
+    /// Invalid glyph identifier.
+    static let invalidGlyph = BL_ERROR_INVALID_GLYPH
+
+    var description: String {
+        switch self {
+        case .outOfMemory:
+            return "Out of memory"
+        case .invalidValue:
+            return "Invalid value/argument"
+        case .invalidState:
+            return "Invalid state"
+        case .invalidHandle:
+            return "Invalid handle or file."
+        case .valueTooLarge:
+            return "Value too large"
+        case .notInitialized:
+            return "Not initialize (some instance is built-in none when it shouldn't be)."
+        case .notImplemented:
+            return "Not implemented"
+        case .notPermitted:
+            return "Operation not permitted"
+        case .io:
+            return "IO error"
+        case .busy:
+            return "Device or resource busy"
+        case .interrupted:
+            return "Operation interrupted"
+        case .tryAgain:
+            return "Try again"
+        case .timedOut:
+            return "Timed out"
+        case .brokenPipe:
+            return "Broken pipe"
+        case .invalidSeek:
+            return "File is not seekable"
+        case .symlinkLoop:
+            return "Too many levels of symlinks"
+        case .fileTooLarge:
+            return "File is too large"
+        case .alreadyExists:
+            return "File/directory already exists"
+        case .accessDenied:
+            return "Access denied"
+        case .mediaChanged:
+            return "Media changed."
+        case .readOnlyFs:
+            return "The file/FS is read-only"
+        case .noDevice:
+            return "Device doesn't exist"
+        case .noEntry:
+            return "No such file or directory"
+        case .noMedia:
+            return "No media in drive/device"
+        case .noMoreData:
+            return "No more data / end of file"
+        case .noMoreFiles:
+            return "No more files"
+        case .noSpaceLeft:
+            return "No space left on device"
+        case .notEmpty:
+            return "Directory is not empty"
+        case .notFile:
+            return "Not a file"
+        case .notDirectory:
+            return "Not a directory"
+        case .notSameDevice:
+            return "Not same device"
+        case .notBlockDevice:
+            return "Not a block device"
+        case .invalidFileName:
+            return "File/path name is invalid."
+        case .fileNameTooLong:
+            return "File/path name is too long"
+        case .tooManyOpenFiles:
+            return "Too many open files"
+        case .tooManyOpenFilesByOs:
+            return "Too many open files by OS"
+        case .tooManyLinks:
+            return "Too many symbolic links on FS"
+        case .tooManyThreads:
+            return "Too many threads"
+        case .fileEmpty:
+            return "File is empty."
+        case .openFailed:
+            return "File open failed."
+        case .notRootDevice:
+            return "Not a root device/directory."
+        case .unknownSystemError:
+            return "Unknown system error that failed to translate to Blend2D result code."
+        case .invalidSignature:
+            return "Invalid data signature or header."
+        case .invalidData:
+            return "Invalid or corrupted data."
+        case .invalidString:
+            return "Invalid string (invalid data of either UTF8 UTF16 or UTF32)."
+        case .dataTruncated:
+            return "Truncated data (more data required than memory/stream provides)."
+        case .dataTooLarge:
+            return "Input data too large to be processed."
+        case .decompressionFailed:
+            return "Decompression failed due to invalid data (RLE Huffman etc)."
+        case .invalidGeometry:
+            return "Invalid geometry (invalid path data or shape)."
+        case .noMatchingVertex:
+            return "Returned when there is no matching vertex in path data."
+        case .noMatchingCookie:
+            return "No matching cookie (BLContext)."
+        case .noStatesToRestore:
+            return "No states to restore (BLContext)."
+        case .imageTooLarge:
+            return "The size of the image is too large."
+        case .imageNoMatchingCodec:
+            return "Image codec for a required format doesn't exist."
+        case .imageUnknownFileFormat:
+            return "Unknown or invalid file format that cannot be read."
+        case .imageDecoderNotProvided:
+            return "Image codec doesn't support reading the file format."
+        case .imageEncoderNotProvided:
+            return "Image codec doesn't support writing the file format."
+        case .pngMultipleIhdr:
+            return "Multiple IHDR chunks are not allowed (PNG)."
+        case .pngInvalidIdat:
+            return "Invalid IDAT chunk (PNG)."
+        case .pngInvalidIend:
+            return "Invalid IEND chunk (PNG)."
+        case .pngInvalidPlte:
+            return "Invalid PLTE chunk (PNG)."
+        case .pngInvalidTrns:
+            return "Invalid tRNS chunk (PNG)."
+        case .pngInvalidFilter:
+            return "Invalid filter type (PNG)."
+        case .jpegUnsupportedFeature:
+            return "Unsupported feature (JPEG)."
+        case .jpegInvalidSos:
+            return "Invalid SOS marker or header (JPEG)."
+        case .jpegInvalidSof:
+            return "Invalid SOF marker (JPEG)."
+        case .jpegMultipleSof:
+            return "Multiple SOF markers (JPEG)."
+        case .jpegUnsupportedSof:
+            return "Unsupported SOF marker (JPEG)."
+        case .fontNoCharacterMapping:
+            return "Font has no character to glyph mapping data."
+        case .fontMissingImportantTable:
+            return "Font has missing an important table."
+        case .fontFeatureNotAvailable:
+            return "Font feature is not available."
+        case .fontCffInvalidData:
+            return "Font has an invalid CFF data."
+        case .fontProgramTerminated:
+            return "Font program terminated because the execution reached the limit."
+        case .invalidGlyph:
+            return "Invalid glyph identifier."
+        default:
+            return "Unknown error"
+        }
+    }
+}
+
 public extension BLHitTest {
     /// Fully in.
     static let `in` = BL_HIT_TEST_IN
