@@ -133,6 +133,14 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
 
     public func getGlyphOutlines(_ glyphId: UInt32,
+                                 userMatrix: BLMatrix2D? = nil) -> BLPath {
+
+        return getGlyphOutlines(glyphId, userMatrix: userMatrix) { (_, _) -> BLResult in
+            return BL_SUCCESS.rawValue
+        }
+    }
+
+    public func getGlyphOutlines(_ glyphId: UInt32,
                                  userMatrix: BLMatrix2D? = nil,
                                  sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult) -> BLPath {
 
@@ -144,6 +152,14 @@ public class BLFont: BLBaseClass<BLFontCore> {
             }
 
             return path
+        }
+    }
+
+    public func getGlyphRunOutlines(_ glyphRun: BLGlyphRun,
+                                    userMatrix: BLMatrix2D? = nil) -> BLPath {
+
+        return getGlyphRunOutlines(glyphRun, userMatrix: userMatrix) { (_, _) -> BLResult in
+            return BL_SUCCESS.rawValue
         }
     }
     
