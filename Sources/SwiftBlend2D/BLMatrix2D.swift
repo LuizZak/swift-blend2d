@@ -416,8 +416,7 @@ public extension BLMatrix2D {
     @inlinable
     @discardableResult
     mutating func invert() -> BLResult {
-        var sSelf = self
-        return blMatrix2DInvert(&self, &sSelf)
+        BLMatrix2D.invert(destination: &self, source: self)
     }
     
     /// Map Points and Primitives
