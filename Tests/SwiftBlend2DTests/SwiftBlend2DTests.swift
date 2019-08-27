@@ -270,7 +270,7 @@ class SwiftBlend2DTests: XCTestCase {
     }
 
     func testStrokeShapes() {
-        let img = BLImage(width: 360, height: 50, format: .prgb32)
+        let img = BLImage(width: 720, height: 100, format: .prgb32)
         let ctx = BLContext(image: img)!
 
         ctx.setFillStyle(BLRgba32.white)
@@ -280,58 +280,58 @@ class SwiftBlend2DTests: XCTestCase {
 
         // Line
         do {
-            ctx.strokeLine(x0: 5, y0: 5, x1: 20, y1: 20)
+            ctx.strokeLine(x0: 10, y0: 10, x1: 40, y1: 40)
         }
         // Box
         do {
-            ctx.strokeBox(x0: 25, y0: 5, x1: 45, y1: 35)
+            ctx.strokeBox(x0: 50, y0: 10, x1: 90, y1: 70)
         }
         // Rect
         do {
-            ctx.strokeRect(x: 50, y: 5, w: 20, h: 25)
+            ctx.strokeRect(x: 100, y: 10, w: 40, h: 50)
         }
         // Arc
         do {
-            ctx.strokeArc(cx: 90, cy: 10, rx: 15, ry: 15, start: 0, sweep: .pi)
+            ctx.strokeArc(cx: 180, cy: 20, rx: 30, ry: 30, start: 0, sweep: .pi)
         }
         // Pie
         do {
-            ctx.strokePie(cx: 120, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+            ctx.strokePie(cx: 240, cy: 30, rx: 20, ry: 30, start: 0, sweep: .pi)
         }
         // Chord
         do {
-            ctx.strokeChord(cx: 150, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+            ctx.strokeChord(cx: 300, cy: 30, rx: 20, ry: 30, start: 0, sweep: .pi)
         }
         // Circle
         do {
-            ctx.strokeCircle(x: 180, y: 20, radius: 15)
+            ctx.strokeCircle(x: 360, y: 40, radius: 30)
         }
         // Ellipse
         do {
-            ctx.strokeEllipse(x: 215, y: 20, radiusX: 15, radiusY: 10)
+            ctx.strokeEllipse(x: 430, y: 40, radiusX: 30, radiusY: 20)
         }
         // Triangle
         do {
-            ctx.strokeTriangle(x0: 235, y0: 5, x1: 250, y1: 15, x2: 245, y2: 25)
+            ctx.strokeTriangle(x0: 470, y0: 10, x1: 500, y1: 30, x2: 490, y2: 50)
         }
         // Rounded rectangle
         do {
-            ctx.strokeRoundRect(x: 255, y: 5, width: 25, height: 20, radiusX: 10, radiusY: 5)
+            ctx.strokeRoundRect(x: 510, y: 10, width: 50, height: 50, radiusX: 20, radiusY: 10)
         }
         // Stroke polyline
         do {
             ctx.strokePolyline([
-                BLPoint(x: 290, y: 5),
-                BLPoint(x: 320, y: 10),
-                BLPoint(x: 310, y: 20),
+                BLPoint(x: 580, y: 10),
+                BLPoint(x: 640, y: 20),
+                BLPoint(x: 620, y: 40),
             ])
         }
         // Stroke polygon
         do {
             ctx.strokePolygon([
-                BLPoint(x: 325, y: 5),
-                BLPoint(x: 355, y: 10),
-                BLPoint(x: 335, y: 20),
+                BLPoint(x: 650, y: 10),
+                BLPoint(x: 710, y: 20),
+                BLPoint(x: 670, y: 30),
             ])
         }
 
@@ -341,7 +341,7 @@ class SwiftBlend2DTests: XCTestCase {
     }
 
     func testFillShapes() {
-        let img = BLImage(width: 270, height: 50, format: .prgb32)
+        let img = BLImage(width: 540, height: 100, format: .prgb32)
         let ctx = BLContext(image: img)!
 
         ctx.setFillStyle(BLRgba32.white)
@@ -351,42 +351,42 @@ class SwiftBlend2DTests: XCTestCase {
         
         // Box
         do {
-            ctx.fillBox(x0: 5, y0: 5, x1: 25, y1: 35)
+            ctx.fillBox(x0: 10, y0: 10, x1: 50, y1: 70)
         }
         // Rect
         do {
-            ctx.fillRect(x: 30, y: 5, width: 20, height: 25)
+            ctx.fillRect(x: 60, y: 10, width: 40, height: 50)
         }
         // Pie
         do {
-            ctx.fillPie(cx: 70, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+            ctx.fillPie(cx: 140, cy: 30, rx: 20, ry: 30, start: 0, sweep: .pi)
         }
         // Chord
         do {
-            ctx.fillChord(cx: 100, cy: 15, rx: 10, ry: 15, start: 0, sweep: .pi)
+            ctx.fillChord(cx: 200, cy: 30, rx: 20, ry: 30, start: 0, sweep: .pi)
         }
         // Circle
         do {
-            ctx.fillCircle(x: 130, y: 20, radius: 15)
+            ctx.fillCircle(x: 260, y: 40, radius: 30)
         }
         // Ellipse
         do {
-            ctx.fillEllipse(x: 165, y: 20, radiusX: 15, radiusY: 10)
+            ctx.fillEllipse(x: 330, y: 40, radiusX: 30, radiusY: 20)
         }
         // Triangle
         do {
-            ctx.fillTriangle(x0: 185, y0: 5, x1: 200, y1: 15, x2: 195, y2: 25)
+            ctx.fillTriangle(x0: 370, y0: 10, x1: 400, y1: 30, x2: 390, y2: 50)
         }
         // Rounded rectangle
         do {
-            ctx.fillRoundRect(x: 205, y: 5, width: 25, height: 20, radiusX: 10, radiusY: 5)
+            ctx.fillRoundRect(x: 410, y: 10, width: 50, height: 40, radiusX: 30, radiusY: 10)
         }
         // Fill polygon
         do {
             ctx.fillPolygon([
-                BLPoint(x: 235, y: 5),
-                BLPoint(x: 265, y: 10),
-                BLPoint(x: 245, y: 20),
+                BLPoint(x: 470, y: 10),
+                BLPoint(x: 530, y: 20),
+                BLPoint(x: 490, y: 40),
             ])
         }
 
