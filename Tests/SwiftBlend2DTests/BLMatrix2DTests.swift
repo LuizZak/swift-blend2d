@@ -109,7 +109,7 @@ class BLMatrix2DTests: XCTestCase {
         assertPolygonsEqual(expected, result)
     }
 
-    func assertPolygonsEqual(_ expected: [BLPoint], _ actual: [BLPoint], line: Int = #line) {
+    func assertPolygonsEqual(_ expected: [BLPoint], _ actual: [BLPoint], line: UInt = #line) {
         var mismatch = false
         for (actual, expected) in zip(actual, expected) {
             if abs((actual - expected).x) < 1e-10 {
@@ -123,10 +123,7 @@ class BLMatrix2DTests: XCTestCase {
         }
 
         if mismatch {
-            recordFailure(withDescription: "Expected polygon \(expected) but received \(actual)", 
-                          inFile: #file, 
-                          atLine: line, 
-                          expected: true)
+            XCTFail("Expected polygon \(expected) but received \(actual)", line: line)
         }
     }
 }

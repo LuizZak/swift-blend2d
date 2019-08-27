@@ -191,7 +191,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.compOp = .sourceCopy
         ctx.fillAll()
         ctx.setFillStyle(BLRgba32(argb: 0xFFFFFFFF))
-        
+
         let face = try BLFontFace(fromFile: "\(pathToResources())/NotoSans-Regular.ttf")
         
         let font = BLFont(fromFace: face, size: 20.0)
@@ -412,8 +412,7 @@ extension SwiftBlend2DTests {
     func assertImageMatch(_ image: BLImage,
                           _ testName: String,
                           record: Bool = false,
-                          file: String = #file,
-                          line: Int = #line) {
+                          line: UInt = #line) {
         
         let snapshotsFolder = pathToSnapshots()
         let failuresFolder = pathToSnapshotFailures()
@@ -426,17 +425,11 @@ extension SwiftBlend2DTests {
             do {
                 try createDirectory(atPath: snapshotsFolder)
             } catch {
-                recordFailure(withDescription: "Error attempting to create snapshots directory '\(snapshotsFolder)': \(error)",
-                              inFile: file,
-                              atLine: line,
-                              expected: false)
+                XCTFail("Error attempting to create snapshots directory '\(snapshotsFolder)': \(error)", line: line)
                 return
             }
         } else if !isDirectory {
-            recordFailure(withDescription: "Path to save snapshots to '\(snapshotsFolder)' exists but is a file, not a folder.",
-                          inFile: file,
-                          atLine: line,
-                          expected: false)
+            XCTFail("Path to save snapshots to '\(snapshotsFolder)' exists but is a file, not a folder.", line: line)
             return
         }
 
@@ -446,15 +439,9 @@ extension SwiftBlend2DTests {
                 
                 try writePngFile(file: pngFile, filename: recordPath)
 
-                recordFailure(withDescription: "Successfully recorded snapshot for \(testName)",
-                             inFile: file,
-                             atLine: line,
-                             expected: true)
+                XCTFail("Successfully recorded snapshot for \(testName)", line: line)
             } catch {
-                recordFailure(withDescription: "Error attempting to save snapshot file at '\(recordPath)': \(error)",
-                              inFile: file,
-                              atLine: line,
-                              expected: false)
+                XCTFail("Error attempting to save snapshot file at '\(recordPath)': \(error)", line: line)
                 return
             }
         } else {
@@ -463,10 +450,7 @@ extension SwiftBlend2DTests {
                 let actualData = pngFileFromImage(image)
 
                 if recordedData != actualData {
-                    recordFailure(withDescription: "Snapshot \(testName) did not match recorded data. Please inspect image at \(failurePath) for further information.",
-                                  inFile: file,
-                                  atLine: line,
-                                  expected: true)
+                    XCTFail("Snapshot \(testName) did not match recorded data. Please inspect image at \(failurePath) for further information.", line: line)
                     
                     try createDirectory(atPath: pathToSnapshotFailures())
                     
@@ -474,10 +458,7 @@ extension SwiftBlend2DTests {
                     try writePngFile(file: actualData, filename: failurePath)
                 }
             } catch {
-                recordFailure(withDescription: "Error attempting to read and compare snapshot '\(testName)': \(error)",
-                              inFile: file,
-                              atLine: line,
-                              expected: false)
+                XCTFail("Error attempting to read and compare snapshot '\(testName)': \(error)", line: line)
             }
         }
     }

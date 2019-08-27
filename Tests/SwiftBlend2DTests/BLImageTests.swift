@@ -82,54 +82,32 @@ extension BLImageTests {
     }
     
     func assertIsNonDefaultPointer(_ imageCore: BLImageCore,
-                                   file: String = #file,
-                                   line: Int = #line) {
+                                   file: StaticString = #file,
+                                   line: UInt = #line) {
         if imageCore.impl == nil {
-            recordFailure(
-                withDescription: """
+            XCTFail("""
                 Provided image core has a nil-pointer to its inner BLImageImpl value.
                 Did you forget to invoke blImageInit()?
-                """,
-                inFile: file,
-                atLine: line,
-                expected: true
-            )
+                """, file: file, line: line)
         } else if imageCore.impl == BLImageTests.nilImageImpl {
-            recordFailure(
-                withDescription: """
+            XCTFail("""
                 Expected image implementation to not point to \(BLImageTests.nilImageImpl) (default image implementation).
-                """,
-                inFile: file,
-                atLine: line,
-                expected: true
-            )
+                """, file: file, line: line)
         }
     }
     
     func assertIsDefaultPointer(_ imageCore: BLImageCore,
-                                file: String = #file,
-                                line: Int = #line) {
-        
-        if imageCore.impl == nil {
-            recordFailure(
-                withDescription: """
-                Provided image core has a nil-pointer to its inner BLImageImpl value.
-                Did you forget to invoke blImageInit()?
-                """,
-                inFile: file,
-                atLine: line,
-                expected: true
-            )
-        } else if imageCore.impl != BLImageTests.nilImageImpl {
-            recordFailure(
-                withDescription: """
-                Expected image implementation to point to \(BLImageTests.nilImageImpl) \
-                (default image implementation), but found a pointer to \(imageCore.impl as Any) instead.
-                """,
-                inFile: file,
-                atLine: line,
-                expected: true
-            )
-        }
+                                file: StaticString = #file,
+                                line: UInt = #line) {
+
+        XCTAssertNotNil(imageCore.impl, """
+            Provided image core has a nil-pointer to its inner BLImageImpl value.
+            Did you forget to invoke blImageInit()?
+            """, file: file, line: line)
+
+        XCTAssertEqual(imageCore.impl, BLImageTests.nilImageImpl, """
+            Expected image implementation to point to \(BLImageTests.nilImageImpl) \
+            (default image implementation), but found a pointer to \(imageCore.impl as Any) instead.
+            """, file: file, line: line)
     }
 }
