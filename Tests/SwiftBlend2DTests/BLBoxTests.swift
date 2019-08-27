@@ -115,4 +115,14 @@ class BLBoxTests: XCTestCase {
         XCTAssertEqual(result.x1, 9)
         XCTAssertEqual(result.y1, 9)
     }
+
+    func testResized() {
+        let box = BLBox(x0: 10, y0: 10, x1: 30, y1: 30)
+        let result = box.resized(width: 10, height: 10)
+
+        XCTAssertEqual(result.x0, 10)
+        XCTAssertEqual(result.y0, 10)
+        XCTAssertEqual(result.x1, 20)
+        XCTAssertEqual(result.y1, 20)
+    }
 }

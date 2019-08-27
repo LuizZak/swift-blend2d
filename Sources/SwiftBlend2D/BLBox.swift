@@ -79,6 +79,11 @@ public extension BLBox {
     func insetBy(x: Double, y: Double) -> BLBox {
         return BLBox(x0: x0 + x / 2, y0: y0 + y / 2, x1: x1 - x / 2, y1: y1 - y / 2)
     }
+
+    @inlinable
+    func resized(width: Double, height: Double) -> BLBox {
+        return BLBox(x0: x0, y0: y0, x1: x0 + width, y1: y0 + height)
+    }
     
     @inlinable
     mutating func reset() {

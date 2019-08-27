@@ -81,6 +81,11 @@ public extension BLBoxI {
         let y = Int32(y)
         return BLBoxI(x0: x0 + x / 2, y0: y0 + y / 2, x1: x1 - x / 2, y1: y1 - y / 2)
     }
+
+    @inlinable
+    func resized(width: Int, height: Int) -> BLBoxI {
+        return BLBoxI(x0: x0, y0: y0, x1: x0 + Int32(width), y1: y0 + Int32(height))
+    }
     
     @inlinable
     mutating func reset() {
