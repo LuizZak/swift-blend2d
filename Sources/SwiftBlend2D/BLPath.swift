@@ -63,6 +63,10 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             return subPath
         }
     }
+
+    internal init(pointer: UnsafeMutablePointer<BLPathCore>) {
+        super.init(weakAssign: pointer.pointee)
+    }
     
     public override init() {
         super.init()

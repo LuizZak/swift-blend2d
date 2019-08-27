@@ -134,29 +134,48 @@ public class BLFont: BLBaseClass<BLFontCore> {
 
     public func getGlyphOutlines(_ glyphId: UInt32,
                                  userMatrix: BLMatrix2D? = nil,
-                                 sink: BLPathSinkFunc? = nil) -> BLPath {
+                                 sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult) -> BLPath {
 
-        let path = BLPath()
-        
-        withUnsafeNullablePointer(to: userMatrix) { userMatrix in
-            blFontGetGlyphOutlines(&object, glyphId, userMatrix, &path.object, sink, nil)
+        return withTemporaryPathSink(sink) { (sink, closure) in
+            let path = BLPath()
+
+            withUnsafeNullablePointer(to: userMatrix) { userMatrix in
+                blFontGetGlyphOutlines(&object, glyphId, userMatrix, &path.object, sink, closure)
+            }
+
+            return path
         }
-        
-        return path
     }
     
     public func getGlyphRunOutlines(_ glyphRun: BLGlyphRun,
                                     userMatrix: BLMatrix2D? = nil,
-                                    sink: BLPathSinkFunc? = nil) -> BLPath {
-        
-        var glyphRun = glyphRun
-        let path = BLPath()
-        
-        withUnsafeNullablePointer(to: userMatrix) { userMatrix in
-            blFontGetGlyphRunOutlines(&object, &glyphRun, userMatrix, &path.object, sink, nil)
+                                    sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult) -> BLPath {
+
+        return withTemporaryPathSink(sink) { (sink, closure) in
+            var glyphRun = glyphRun
+            let path = BLPath()
+
+            withUnsafeNullablePointer(to: userMatrix) { userMatrix in
+                blFontGetGlyphRunOutlines(&object, &glyphRun, userMatrix, &path.object, sink, closure)
+            }
+
+            return path
         }
-        
-        return path
+    }
+
+    private func withTemporaryPathSink<T>(_ original: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult,
+                                          do closure: (@escaping BLPathSinkFunc, UnsafeMutableRawPointer) -> T) -> T {
+
+        let pathSink: BLPathSinkFunc = { (path, outline, closure) -> BLResult in
+            guard let glyphSinkInfo = outline?.load(as: BLGlyphOutlineSinkInfo.self) else {
+                return BL_SUCCESS.rawValue
+            }
+            let castSink = closure!.load(as: ((BLPath, BLGlyphOutlineSinkInfo) -> BLResult).self)
+            return castSink(BLPath(pointer: path!), glyphSinkInfo)
+        }
+
+        var original = original
+        return closure(pathSink, &original)
     }
 }
 
