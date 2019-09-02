@@ -80,10 +80,13 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var postScriptName: BLString {
         return BLString(weakAssign: object.impl.pointee.postScriptName)
     }
+
+    // TODO: This property is commented out in Blend2D's source code
     /// Returns feature-set of this `BLFontFace`.
     //    public var featureSet: FontFeatureSet {
     //        return object.impl.pointee.featureSet
     //    }
+
     /// Returns design metrics of this `BLFontFace`.
     public var designMetrics: BLFontDesignMetrics {
         return object.impl.pointee.designMetrics
