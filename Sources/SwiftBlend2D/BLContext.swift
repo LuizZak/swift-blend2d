@@ -609,7 +609,8 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @discardableResult
     @inlinable
     public func fillCircle(_ circle: BLCircle) -> BLResult {
-        return fillGeometry(circle)
+        var circle = circle
+        return fillGeometry(.circle, &circle)
     }
 
     /// Fills an ellipse.
@@ -710,13 +711,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func fillGeometry(_ roundRect: BLRoundRect) -> BLResult {
         var roundRect = roundRect
         return blContextFillGeometry(&object, BLGeometryType.roundRect.rawValue, &roundRect)
-    }
-
-    @discardableResult
-    @inlinable
-    public func fillGeometry(_ circle: BLCircle) -> BLResult {
-        var circle = circle
-        return blContextFillGeometry(&object, BLGeometryType.circle.rawValue, &circle)
     }
 
     @discardableResult
