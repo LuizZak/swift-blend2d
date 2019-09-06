@@ -62,7 +62,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
 
     /// Gets or sets the tolerance used for curve flattening.
     @inlinable
-    public var flattenTolerance: Double  {
+    public var flattenTolerance: Double {
         get {
             return object.impl.pointee.state.pointee.approximationOptions.flattenTolerance
         }
