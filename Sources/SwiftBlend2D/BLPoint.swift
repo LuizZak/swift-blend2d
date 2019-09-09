@@ -6,6 +6,22 @@ public extension BLPoint {
 
     /// A one-valued BLPoint with coordinates (1, 1)
     static let one = BLPoint(x: 1, y: 1)
+
+    /// Returns the magnitude of this point
+    var magnitude: Double {
+        return sqrt(x * x + y * y)
+    }
+
+    /// Returns a normalized version of this point.
+    /// In case this point lies at (0, 0), (0, 0) is returned.
+    var normalized: BLPoint {
+        if x == 0 && y == 0 {
+            return .zero
+        }
+
+        let mag = magnitude
+        return BLPoint(x: x / mag, y: y / mag)
+    }
     
     @inlinable
     init(_ point: BLPointI) {
