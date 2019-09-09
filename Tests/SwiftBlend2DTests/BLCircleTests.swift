@@ -55,4 +55,13 @@ class BLCircleTests: XCTestCase {
         
         XCTAssertEqual(circle.boundingBox, BLBox(x0: -2, y0: -1, x1: 4, y1: 5))
     }
+
+    func testContains() {
+        let circle = BLCircle(cx: 10, cy: 10, r: 1)
+
+        XCTAssert(circle.contains(BLPoint(x: 10, y: 10)))
+        XCTAssert(circle.contains(BLPoint(x: 10.5, y: 10.5)))
+        XCTAssertFalse(circle.contains(BLPoint(x: 11, y: 10)))
+        XCTAssertFalse(circle.contains(BLPoint(x: 12, y: 8)))
+    }
 }

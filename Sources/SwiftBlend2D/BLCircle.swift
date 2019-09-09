@@ -27,6 +27,14 @@ public extension BLCircle {
     func expanding(by value: Double) -> BLCircle {
         return BLCircle(cx: cx, cy: cy, r: r + value)
     }
+
+    @inlinable
+    func contains(_ point: BLPoint) -> Bool {
+        let dx = point.x - cx
+        let dy = point.y - cy
+
+        return dx * dx + dy * dy < r * r
+    }
 }
 
 extension BLCircle: Equatable {
