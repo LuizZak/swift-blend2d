@@ -159,4 +159,11 @@ class BLPointTests: XCTestCase {
 
         XCTAssertEqual(p.normalized, BLPoint(x: 10 / sqrt(200), y: 10 / sqrt(200)))
     }
+
+    func testDotProduct() {
+        let p1 = BLPoint(x: 1, y: 2)
+        let p2 = BLPoint(x: 3, y: 4)
+
+        XCTAssertEqual(p1.dot(p2), 1 * 3 + 2 * 4)
+    }
 }

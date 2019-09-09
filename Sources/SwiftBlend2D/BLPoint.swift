@@ -27,6 +27,12 @@ public extension BLPoint {
     init(_ point: BLPointI) {
         self.init(x: Double(point.x), y: Double(point.y))
     }
+
+    /// Returns the dot product between `self` and `other`.
+    @inlinable
+    func dot(_ other: BLPoint) -> Double {
+        return x * other.x + y * other.y
+    }
 }
 
 // MARK: - Operators - BLPoint
