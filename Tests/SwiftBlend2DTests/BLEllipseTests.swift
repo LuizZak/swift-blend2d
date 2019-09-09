@@ -44,4 +44,24 @@ class BLEllipseTests: XCTestCase {
         XCTAssertEqual(result.rx, 8)
         XCTAssertEqual(result.ry, 8)
     }
+
+    func testContains() {
+        let ellipse = BLEllipse(cx: 10, cy: 10, rx: 2, ry: 1)
+
+        XCTAssert(ellipse.contains(x: 10, y: 10))
+        XCTAssert(ellipse.contains(x: 10.5, y: 10.5))
+        XCTAssert(ellipse.contains(x: 11, y: 10))
+        XCTAssertFalse(ellipse.contains(x: 12, y: 10))
+        XCTAssertFalse(ellipse.contains(x: 12, y: 8))
+    }
+
+    func testContainsPoint() {
+        let ellipse = BLEllipse(cx: 10, cy: 10, rx: 2, ry: 1)
+
+        XCTAssert(ellipse.contains(BLPoint(x: 10, y: 10)))
+        XCTAssert(ellipse.contains(BLPoint(x: 10.5, y: 10.5)))
+        XCTAssert(ellipse.contains(BLPoint(x: 11, y: 10)))
+        XCTAssertFalse(ellipse.contains(BLPoint(x: 12, y: 10)))
+        XCTAssertFalse(ellipse.contains(BLPoint(x: 12, y: 8)))
+    }
 }
