@@ -29,11 +29,16 @@ public extension BLCircle {
     }
 
     @inlinable
-    func contains(_ point: BLPoint) -> Bool {
-        let dx = point.x - cx
-        let dy = point.y - cy
+    func contains(x: Double, y: Double) -> Bool {
+        let dx = x - cx
+        let dy = y - cy
 
         return dx * dx + dy * dy < r * r
+    }
+
+    @inlinable
+    func contains(_ point: BLPoint) -> Bool {
+        return contains(x: point.x, y: point.y)
     }
 }
 
