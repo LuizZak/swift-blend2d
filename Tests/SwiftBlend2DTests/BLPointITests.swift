@@ -147,4 +147,11 @@ class BLPointITests: XCTestCase {
 
         XCTAssertEqual(p1.pointwiseMax(p2), BLPointI(x: 2, y: 4))
     }
+
+    func testDotProduct() {
+        let p1 = BLPointI(x: 1, y: 2)
+        let p2 = BLPointI(x: 3, y: 4)
+
+        XCTAssertEqual(p1.dot(p2), 1 * 3 + 2 * 4)
+    }
 }

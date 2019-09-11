@@ -6,6 +6,12 @@ public extension BLPointI {
 
     /// A one-valued BLPoint with coordinates (1, 1)
     static let one = BLPointI(x: 1, y: 1)
+
+    /// Returns the dot product between `self` and `other`.
+    @inlinable
+    func dot(_ other: BLPointI) -> Int {
+        return Int(x * other.x + y * other.y)
+    }
 }
 
 // MARK: - Operators
