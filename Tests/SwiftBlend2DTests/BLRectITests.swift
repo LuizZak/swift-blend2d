@@ -64,4 +64,34 @@ class BLRectITests: XCTestCase {
 
         XCTAssertEqual(rect, BLRectI(x: 4, y: 4, w: 3, h: 4))
     }
+
+    func testContains() {
+        let box = BLRectI(x: 0, y: 0, w: 10, h: 10)
+
+        XCTAssert(box.contains(0, 0))
+        XCTAssert(box.contains(5, 5))
+        XCTAssertFalse(box.contains(10, 10))
+        XCTAssertFalse(box.contains(-5, 5))
+        XCTAssertFalse(box.contains(5, -5))
+    }
+
+    func testContainsPoint() {
+        let box = BLRectI(x: 0, y: 0, w: 10, h: 10)
+
+        XCTAssert(box.contains(BLPoint(x: 0, y: 0)))
+        XCTAssert(box.contains(BLPoint(x: 5, y: 5)))
+        XCTAssertFalse(box.contains(BLPoint(x: 10, y: 10)))
+        XCTAssertFalse(box.contains(BLPoint(x: -5, y: 5)))
+        XCTAssertFalse(box.contains(BLPoint(x: 5, y: -5)))
+    }
+
+    func testContainsPointI() {
+        let box = BLRectI(x: 0, y: 0, w: 10, h: 10)
+
+        XCTAssert(box.contains(BLPointI(x: 0, y: 0)))
+        XCTAssert(box.contains(BLPointI(x: 5, y: 5)))
+        XCTAssertFalse(box.contains(BLPointI(x: 10, y: 10)))
+        XCTAssertFalse(box.contains(BLPointI(x: -5, y: 5)))
+        XCTAssertFalse(box.contains(BLPointI(x: 5, y: -5)))
+    }
 }

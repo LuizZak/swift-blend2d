@@ -65,6 +65,24 @@ public extension BLRectI {
     func insetBy(x: Int, y: Int) -> BLRectI {
         return BLRectI(x: self.x + Int32(x) / 2, y: self.y + Int32(y) / 2, w: w - Int32(x), h: h - Int32(y))
     }
+
+    @inlinable
+    func contains(_ x: Int, _ y: Int) -> Bool {
+        return x >= self.x
+            && y >= self.y
+            && x < (self.x + w)
+            && y < (self.y + h)
+    }
+
+    @inlinable
+    func contains(_ point: BLPointI) -> Bool {
+        return contains(Int(point.x), Int(point.y))
+    }
+
+    @inlinable
+    func contains(_ point: BLPoint) -> Bool {
+        return contains(Int(point.x), Int(point.y))
+    }
 }
 
 extension BLRectI: Equatable {

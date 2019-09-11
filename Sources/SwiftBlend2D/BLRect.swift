@@ -65,6 +65,24 @@ public extension BLRect {
     func insetBy(x: Double, y: Double) -> BLRect {
         return BLRect(x: self.x + x / 2, y: self.y + y / 2, w: w - x, h: h - y)
     }
+
+    @inlinable
+    func contains(_ x: Double, _ y: Double) -> Bool {
+        return x >= self.x
+            && y >= self.y
+            && x < (self.x + w)
+            && y < (self.y + h)
+    }
+
+    @inlinable
+    func contains(_ point: BLPoint) -> Bool {
+        return contains(point.x, point.y)
+    }
+
+    @inlinable
+    func contains(_ point: BLPointI) -> Bool {
+        return contains(Double(point.x), Double(point.y))
+    }
 }
 
 extension BLRect: Equatable {
