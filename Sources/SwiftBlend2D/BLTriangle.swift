@@ -7,6 +7,29 @@ public extension BLTriangle {
                   x1: p1.x, y1: p1.y,
                   x2: p2.x, y2: p2.y)
     }
+
+    @inlinable
+    func contains(x: Double, y: Double) -> Bool {
+        func sign(_ p1x: Double, _ p1y: Double, _ p2x: Double,
+                  _ p2y: Double, _ p3x: Double, _ p3y: Double) -> Double {
+
+            return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y)
+        }
+
+        let d1 = sign(x, y, x0, y0, x1, y1)
+        let d2 = sign(x, y, x1, y1, x2, y2)
+        let d3 = sign(x, y, x2, y2, x0, y0)
+
+        let has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0)
+        let has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0)
+
+        return !(has_neg && has_pos)
+    }
+
+    @inlinable
+    func contains(_ point: BLPoint) -> Bool {
+        return contains(x: point.x, y: point.y)
+    }
 }
 
 extension BLTriangle: Equatable {
