@@ -13,11 +13,12 @@ jobs:
   steps:
   - bash: 'brew install pkg-config'
   - bash: 'brew install libpng'
+  - bash: 'sudo xcode-select -s /Applications/Xcode_11.app/Contents/Developer'
   - bash: 'swift test'
 
 - job: Linux
   container:
-    image: swift:5.0-bionic
+    image: swift:5.1-bionic
     options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
   pool:
     vmImage: ubuntu-16.04
