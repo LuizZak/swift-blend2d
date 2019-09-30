@@ -65,6 +65,19 @@ public struct BLGradient: Equatable {
                 return .linear(linear)
             }
         }
+        set {
+            switch newValue {
+            case .linear(let values):
+                type = .linear
+                linear = values
+            case .radial(let values):
+                type = .radial
+                radial = values
+            case .conical(let values):
+                type = .conical
+                conical = values
+            }
+        }
     }
     
     /// Linear parameters.

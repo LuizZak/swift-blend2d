@@ -24,4 +24,12 @@ class BLGradientTests: XCTestCase {
         
         XCTAssert(linear.box.object.impl != copy.box.object.impl)
     }
+
+    func testSetGradientValues() {
+        var gradient = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 0))
+
+        gradient.gradientValues = .radial(BLRadialGradientValues(x0: 0, y0: 0, x1: 10, y1: 10, r0: 0))
+
+        XCTAssertEqual(gradient.type, .radial)
+    }
 }
