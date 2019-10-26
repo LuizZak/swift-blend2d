@@ -185,5 +185,5 @@ private func withCodecArray<T>(_ codecs: [BLImageCodec]?, _ closure: (UnsafePoin
 extension BLImageCore: CoreStructure {
     public static let initializer = blImageInit
     public static let deinitializer = blImageReset
-    public static var assignWeak = blImageAssignWeak
+    public static let assignWeak = blImageAssignWeak
 }

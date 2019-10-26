@@ -26,7 +26,7 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
                 //
                 // On subsequent operations this null-terminator is manually
                 // pushed to the end of the string data every time a mutating
-                // operation occures
+                // operation occurs
                 blStringAssignData(object, pointer, string.utf8CString.count)
             }
         }

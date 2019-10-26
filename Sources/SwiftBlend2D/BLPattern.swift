@@ -306,7 +306,7 @@ extension BLPattern: Equatable {
 }
 
 extension BLPatternCore: CoreStructure {
-    public static var initializer = blPatternInit
-    public static var deinitializer = blPatternReset
-    public static var assignWeak = blPatternAssignWeak
+    public static let initializer = blPatternInit
+    public static let deinitializer = blPatternReset
+    public static let assignWeak = blPatternAssignWeak
 }

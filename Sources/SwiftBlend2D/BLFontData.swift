@@ -42,7 +42,7 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
 }
 
 extension BLFontDataCore: CoreStructure {
-    public static var initializer = blFontDataInit
-    public static var deinitializer = blFontDataReset
-    public static var assignWeak = blFontDataAssignWeak
+    public static let initializer = blFontDataInit
+    public static let deinitializer = blFontDataReset
+    public static let assignWeak = blFontDataAssignWeak
 }

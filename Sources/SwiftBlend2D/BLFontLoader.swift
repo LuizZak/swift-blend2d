@@ -122,7 +122,7 @@ extension BLFontLoader: Equatable {
 }
 
 extension BLFontLoaderCore: CoreStructure {
-    public static var initializer = blFontLoaderInit
-    public static var deinitializer = blFontLoaderReset
-    public static var assignWeak = blFontLoaderAssignWeak
+    public static let initializer = blFontLoaderInit
+    public static let deinitializer = blFontLoaderReset
+    public static let assignWeak = blFontLoaderAssignWeak
 }

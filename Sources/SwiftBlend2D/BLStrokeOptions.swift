@@ -96,5 +96,5 @@ public struct BLStrokeOptions {
 extension BLStrokeOptionsCore: CoreStructure {
     public static let initializer = blStrokeOptionsInit
     public static let deinitializer = blStrokeOptionsReset
-    public static var assignWeak = blStrokeOptionsAssignWeak
+    public static let assignWeak = blStrokeOptionsAssignWeak
 }

@@ -140,5 +140,5 @@ extension BLImageCodec: Equatable {
 extension BLImageCodecCore: CoreStructure {
     public static let initializer = blImageCodecInit
     public static let deinitializer = blImageCodecReset
-    public static var assignWeak = blImageCodecAssignWeak
+    public static let assignWeak = blImageCodecAssignWeak
 }

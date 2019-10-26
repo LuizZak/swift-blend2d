@@ -1411,5 +1411,5 @@ internal extension BLContext {
 extension BLContextCore: CoreStructure {
     public static let initializer = blContextInit
     public static let deinitializer = blContextReset
-    public static var assignWeak = blContextAssignWeak
+    public static let assignWeak = blContextAssignWeak
 }

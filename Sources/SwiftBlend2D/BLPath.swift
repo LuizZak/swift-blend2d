@@ -505,5 +505,5 @@ public extension BLPath {
 extension BLPathCore: CoreStructure {
     public static let initializer = blPathInit
     public static let deinitializer = blPathReset
-    public static var assignWeak = blPathAssignWeak
+    public static let assignWeak = blPathAssignWeak
 }

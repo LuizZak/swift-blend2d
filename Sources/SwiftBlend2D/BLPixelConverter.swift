@@ -26,7 +26,7 @@ public class BLPixelConverter: BLBaseClass<BLPixelConverterCore> {
 }
 
 extension BLPixelConverterCore: CoreStructure {
-    public static var initializer = blPixelConverterInit
-    public static var deinitializer = blPixelConverterReset
-    public static var assignWeak = blPixelConverterAssign
+    public static let initializer = blPixelConverterInit
+    public static let deinitializer = blPixelConverterReset
+    public static let assignWeak = blPixelConverterAssign
 }

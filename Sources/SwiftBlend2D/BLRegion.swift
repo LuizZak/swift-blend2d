@@ -231,7 +231,7 @@ extension BLRegion: Equatable {
 }
 
 extension BLRegionCore: CoreStructure {
-    public static var initializer = blRegionInit
-    public static var deinitializer = blRegionReset
-    public static var assignWeak = blRegionAssignWeak
+    public static let initializer = blRegionInit
+    public static let deinitializer = blRegionReset
+    public static let assignWeak = blRegionAssignWeak
 }

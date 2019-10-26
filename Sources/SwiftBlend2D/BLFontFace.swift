@@ -144,7 +144,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
 }
 
 extension BLFontFaceCore: CoreStructure {
-    public static var initializer = blFontFaceInit
-    public static var deinitializer = blFontFaceReset
-    public static var assignWeak = blFontFaceAssignWeak
+    public static let initializer = blFontFaceInit
+    public static let deinitializer = blFontFaceReset
+    public static let assignWeak = blFontFaceAssignWeak
 }

@@ -65,7 +65,7 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
 }
 
 extension BLGlyphBufferCore: CoreStructure {
-    public static var initializer = blGlyphBufferInit
-    public static var deinitializer = blGlyphBufferReset
-    public static var assignWeak = emptyAssignWeak(type: BLGlyphBufferCore.self)
+    public static let initializer = blGlyphBufferInit
+    public static let deinitializer = blGlyphBufferReset
+    public static let assignWeak = emptyAssignWeak(type: BLGlyphBufferCore.self)
 }
