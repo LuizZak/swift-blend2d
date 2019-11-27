@@ -24,7 +24,7 @@ class BLImageCodecTests: XCTestCase {
         }
     }
     
-    func testBuiltInCodecs() {
+    func testBuiltInCodecsInitializeWithoutError() {
         for codec in BLImageCodec.BuiltInImageCodec.allCases {
             _ = BLImageCodec(builtInCodec: codec)
         }
