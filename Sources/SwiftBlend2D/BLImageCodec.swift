@@ -1,7 +1,5 @@
 import blend2d
-#if canImport(Foundation)
 import Foundation
-#endif
 
 public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     /// Returns image codec name (i.e, "PNG", "JPEG", etc...).
@@ -45,8 +43,6 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
         }
     }
     
-    #if canImport(Foundation)
-    
     /// Initializes the image codec which is most likely capable of handling the
     /// given image data.
     ///
@@ -72,21 +68,15 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
         }
     }
     
-    #endif
-    
     override init(weakAssign object: BLImageCodecCore) {
         super.init(weakAssign: object)
     }
-    
-    #if canImport(Foundation)
     
     public func inspectData(_ data: Data) -> Int {
         return data.withUnsafeBytes { pointer in
             inspectData(pointer)
         }
     }
-    
-    #endif
     
     func inspectData(_ pointer: UnsafeRawBufferPointer) -> Int {
         guard let dataAddress = pointer.baseAddress else {

@@ -7,7 +7,6 @@ class BLImageCodecTests: XCTestCase {
     }
     
     func testInitFromData() {
-        #if canImport(Foundation)
         for fixture in initFromDataTestFixtures {
             let data = Data(fixture.data)
             let codec = BLImageCodec(bestCandidateFor: data)
@@ -23,7 +22,6 @@ class BLImageCodecTests: XCTestCase {
                 instead.
                 """)
         }
-        #endif
     }
     
     func testBuiltInCodecs() {
