@@ -28,9 +28,9 @@ class BLArrayTests: XCTestCase {
     func testShrink() {
         let sut = BLArray<UInt8>()
         sut.reserveCapacity(128)
-        sut.append(0 as UInt8)
-        sut.append(1 as UInt8)
-        sut.append(2 as UInt8)
+        sut.append(0)
+        sut.append(1)
+        sut.append(2)
         
         sut.shrink()
         
@@ -41,7 +41,7 @@ class BLArrayTests: XCTestCase {
     func testWeakAssign() {
         let array = BLArray<Int32>()
         // Append an item to force creation of a new backing array structure
-        array.append(1 as Int32)
+        array.append(1)
         
         do {
             let weak = BLArray<Int32>(weakAssign: array.object)
@@ -65,5 +65,16 @@ class BLArrayTests: XCTestCase {
         XCTAssertEqual(array[0], 1)
         XCTAssertEqual(array[1], 2)
         XCTAssertEqual(array[2], 3)
+    }
+    
+    func testReplaceContents() {
+        let array = BLArray<Int>(array: [1])
+        
+        array.replaceContents([2, 3, 4])
+        
+        XCTAssertEqual(array.count, 3)
+        XCTAssertEqual(array[0], 2)
+        XCTAssertEqual(array[1], 3)
+        XCTAssertEqual(array[2], 4)
     }
 }

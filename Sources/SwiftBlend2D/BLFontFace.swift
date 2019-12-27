@@ -7,11 +7,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var data: BLFontData {
         return BLFontData(weakAssign: object.impl.pointee.data.impl)
     }
-    /// Gets `BLFontLoader` associated with this font-face.
-    public var loader: BLFontLoader {
-        return BLFontLoader(weakAssign: object.impl.pointee.loader)
-    }
-
+    
     // MARK: Properties
 
     /// Returns font weight (returns default weight in case this is a variable font).
@@ -124,17 +120,6 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
             return try mapError { blFontFaceCreateFromFile(pointer, filePath, readFlags.rawValue) }
                 .addFileErrorMappings(filePath: filePath)
                 .execute()
-        }
-    }
-    
-    /// Creates a new `BLFontFace` from `BLFontLoader`.
-    public init(fromLoader loader: BLFontLoader, faceIndex: UInt32) throws {
-        try super.init { pointer -> BLResult in
-            blFontFaceInit(pointer)
-            
-            return try mapError {
-                blFontFaceCreateFromLoader(pointer, &loader.object, faceIndex)
-            }.execute()
         }
     }
     

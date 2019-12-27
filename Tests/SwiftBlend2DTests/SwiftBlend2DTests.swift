@@ -419,6 +419,7 @@ extension SwiftBlend2DTests {
         let recordPath = snapshotsFolder + "/\(testName).png"
         let expectedPath = failuresFolder + "/\(testName)_expected.png"
         let failurePath = failuresFolder + "/\(testName)_actual.png"
+        let diffPath = failuresFolder + "/\(testName)_diff.png"
 
         var isDirectory: Bool = false
         if !pathExists(snapshotsFolder, isDirectory: &isDirectory) {
@@ -456,11 +457,54 @@ extension SwiftBlend2DTests {
                     
                     try copyFile(source: recordPath, dest: expectedPath)
                     try writePngFile(file: actualData, filename: failurePath)
+                    
+                    if let diffData = produceDiffImage(recordedData, actualData) {
+                        try writePngFile(file: diffData, filename: diffPath)
+                    }
                 }
             } catch {
                 XCTFail("Error attempting to read and compare snapshot '\(testName)': \(error)", line: line)
             }
         }
+    }
+    
+    func produceDiffImage(_ image1: PNGFile, _ image2: PNGFile) -> PNGFile? {
+        guard image1.width == image2.width && image1.height == image2.height else {
+            return nil
+        }
+        guard image1.bitDepth == image2.bitDepth && image1.colorType == image2.colorType else {
+            return nil
+        }
+        
+        var diffImage = image1
+        
+        // Loop through all pixels, applying a white overlay
+        for y in 0..<diffImage.rows.count {
+            for x in stride(from: 0, to: diffImage.rowLength, by: 4) {
+                diffImage.rows[y].withUnsafeMutableBufferPointer { pointer -> Void in
+                    let factor: UInt8 = 3
+                    let base = 255 - 255 / factor
+                    
+                    pointer[x] = base + pointer[x] / factor
+                    pointer[x + 1] = base + pointer[x + 1] / factor
+                    pointer[x + 2] = base + pointer[x + 2] / factor
+                    
+                    // Color pixel red if two images differ here
+                    if image1.rows[y][x] != image2.rows[y][x]
+                        || image1.rows[y][x + 1] != image2.rows[y][x + 1]
+                        || image1.rows[y][x + 2] != image2.rows[y][x + 2]
+                        || image1.rows[y][x + 3] != image2.rows[y][x + 3] {
+                        
+                        pointer[x] = 255
+                        pointer[x + 1] = 0
+                        pointer[x + 2] = 0
+                        pointer[x + 3] = 255
+                    }
+                }
+            }
+        }
+        
+        return diffImage
     }
 }
 

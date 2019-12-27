@@ -1,12 +1,12 @@
 import blend2d
 
 public class BLPixelConverter: BLBaseClass<BLPixelConverterCore> {
-    public init(source: BLFormatInfo, destination: BLFormatInfo) {
+    public init(source: BLFormatInfo, destination: BLFormatInfo, flags: BLPixelConverterCreateFlags) {
         super.init()
         
         var source = source
         var destination = destination
-        blPixelConverterCreate(&object, &destination, &source)
+        blPixelConverterCreate(&object, &destination, &source, flags.rawValue)
     }
     
     @discardableResult
