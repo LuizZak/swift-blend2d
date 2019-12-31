@@ -77,7 +77,7 @@ private func makePointer<T>(_ object: UnsafeMutablePointer<T>) -> UnsafeMutableP
     return object
 }
 
-private struct MockStructure: CoreStructure {
+private final class MockStructure: CoreStructure {
     static var latestInitializer: UnsafeMutablePointer<MockStructure>?
     static var latestDeinitializer: UnsafeMutablePointer<MockStructure>?
     static var latestAssignWeak: (UnsafeMutablePointer<MockStructure>?, UnsafePointer<MockStructure>?)?
