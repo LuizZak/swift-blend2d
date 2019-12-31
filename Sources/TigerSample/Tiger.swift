@@ -1,16 +1,15 @@
 import SwiftBlend2D
 
 public struct TigerPath {
-    public var blPath: BLPath = BLPath()
-    public var blStrokedPath: BLPath = BLPath()
-    public var blStrokeOptions: BLStrokeOptions = BLStrokeOptions()
+    public var blPath = BLPath()
+    public var blStrokeOptions = BLStrokeOptions()
 
-    public var fillColor: BLRgba32 = BLRgba32(argb: 0)
-    public var strokeColor: BLRgba32 = BLRgba32(argb: 0)
+    public var fillColor = BLRgba32()
+    public var strokeColor = BLRgba32()
 
     public var fillRule: BLFillRule = .nonZero
-    public var fill: Bool = false
-    public var stroke: Bool = false
+    public var fill = false
+    public var stroke = false
 }
 
 public class Tiger {
