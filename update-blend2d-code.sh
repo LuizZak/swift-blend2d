@@ -48,7 +48,7 @@ fi
 
 cd ..
 
-# rm -rf temp
+rm -rf temp
 
 echo "Success!"
 

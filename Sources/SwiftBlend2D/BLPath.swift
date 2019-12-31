@@ -152,9 +152,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         return blPathSetVertexAt(&object, index, cmd, x, y)
     }
     
-    /// Moves to `[p0]`.
+    /// Moves to `[point]`.
     ///
-    /// Appends `BLPathCmd.move[p0]` command to the path.
+    /// Appends `BLPathCmd.move[point]` command to the path.
     @discardableResult
     @inlinable
     public func moveTo(_ point: BLPoint) -> BLResult {
@@ -172,7 +172,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     
     /// Adds line to `p1`.
     ///
-    /// Appends `BLPathCmd.on[p1]` command to the path.
+    /// Appends `BLPathCmd.on[point]` command to the path.
     @discardableResult
     @inlinable
     public func lineTo(_ point: BLPoint) -> BLResult {
@@ -361,7 +361,11 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     ///   - https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands
     @discardableResult
     @inlinable
-    public func ellipticArcTo(r: BLPoint, xAxisRotation: Double, largeArcFlag: Bool, sweepFlag: Bool, p1: BLPoint) -> BLResult {
+    public func ellipticArcTo(r: BLPoint,
+                              xAxisRotation: Double,
+                              largeArcFlag: Bool,
+                              sweepFlag: Bool,
+                              p1: BLPoint) -> BLResult {
         return blPathEllipticArcTo(&object, r.x, r.y, xAxisRotation, largeArcFlag, sweepFlag, p1.x, p1.y)
     }
     
