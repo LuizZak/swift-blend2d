@@ -1174,7 +1174,46 @@ extension BLPixelConverterCreateFlags {
     /// This option disables such feature - creating a pixel converter would fail
     /// with `BL_ERROR_NOT_IMPLEMENTED` error if direct conversion is not possible.
     static let noMultiStep = BL_PIXEL_CONVERTER_CREATE_FLAG_NO_MULTI_STEP
-};
+}
+
+/// Path command.
+public extension BLPathCmd {
+    /// Move-to command (starts a new figure).
+    static let move = BL_PATH_CMD_MOVE
+    /// On-path command (interpreted as line-to or the end of a curve).
+    static let on = BL_PATH_CMD_ON
+    /// Quad-to control point.
+    static let quad = BL_PATH_CMD_QUAD
+    /// Cubic-to control point (always used as a pair of commands).
+    static let cubic = BL_PATH_CMD_CUBIC
+    /// Close path.
+    static let close = BL_PATH_CMD_CLOSE
+    
+    /// Count of path commands.
+    static let count = BL_PATH_CMD_COUNT
+}
+
+/// Path command (never stored in path).
+public extension BLPathCmdExtra {
+    /// Used by `BLPath.setVertexAt` to preserve the current command value.
+    static let preserve = BL_PATH_CMD_PRESERVE
+}
+
+/// Path flags.
+public extension BLPathFlags {
+    /// Path is empty (no commands or close commands only).
+    static let empty = BL_PATH_FLAG_EMPTY
+    /// Path contains multiple figures.
+    static let multiple = BL_PATH_FLAG_MULTIPLE
+    /// Path contains quad curves (at least one).
+    static let quads = BL_PATH_FLAG_QUADS
+    /// Path contains cubic curves (at least one).
+    static let cubics = BL_PATH_FLAG_CUBICS
+    /// Path is invalid.
+    static let invalid = BL_PATH_FLAG_INVALID
+    /// Flags are dirty (not reflecting the current status).
+    static let dirty = BL_PATH_FLAG_DIRTY
+}
 
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
