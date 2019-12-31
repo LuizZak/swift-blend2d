@@ -19,22 +19,18 @@ extension PNGFile: Equatable {
 public func readPngFile(_ filename: String) throws -> PNGFile {
     var file = PNGFile()
     
-    let fp = fopen(filename, "rb")
-    if fp == nil {
+    guard let fp = fopen(filename, "rb") else {
         throw PNGError.couldNotOpenFile
     }
-    
     defer {
         fclose(fp)
     }
     
-    let png = png_create_read_struct(PNG_LIBPNG_VER_STRING, nil, nil, nil)
-    if png == nil {
+    guard let png = png_create_read_struct(PNG_LIBPNG_VER_STRING, nil, nil, nil) else {
         throw PNGError.invalidPngFile
     }
     
-    let info = png_create_info_struct(png)
-    if info == nil {
+    guard let info = png_create_info_struct(png) else {
         throw PNGError.invalidPngFile
     }
     
@@ -42,8 +38,8 @@ public func readPngFile(_ filename: String) throws -> PNGFile {
     
     png_read_info(png, info)
     
-    file.width      = Int(png_get_image_width(png, info))
-    file.height     = Int(png_get_image_height(png, info))
+    file.width     = Int(png_get_image_width(png, info))
+    file.height    = Int(png_get_image_height(png, info))
     file.colorType = png_get_color_type(png, info)
     file.bitDepth  = png_get_bit_depth(png, info)
     
@@ -111,22 +107,18 @@ public func readPngFile(_ filename: String) throws -> PNGFile {
 }
 
 public func writePngFile(file: PNGFile, filename: String) throws {
-    let fp = fopen(filename, "wb")
-    if fp == nil {
+    guard let fp = fopen(filename, "wb") else {
         throw PNGError.couldNotOpenFile
     }
-    
     defer {
         fclose(fp)
     }
     
-    let png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nil, nil, nil)
-    if png == nil {
+    guard let png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nil, nil, nil) else {
         throw PNGError.invalidPngFile
     }
     
-    let info = png_create_info_struct(png)
-    if info == nil {
+    guard let info = png_create_info_struct(png) else {
         throw PNGError.invalidPngFile
     }
     
