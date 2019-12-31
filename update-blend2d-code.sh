@@ -19,6 +19,11 @@ git clone https://github.com/asmjit/asmjit --depth=1
 # Copy all Blend2D files over
 echo "Copying over Blend2D files..."
 
+mkdir blend2d/src/include
+cp -R ../Sources/blend2d/include/* blend2d/src/include/
+rm -R ../Sources/blend2d
+mkdir ../Sources/blend2d
+
 if [[ -d blend2d/src ]] && cp -R blend2d/src/* ../Sources/blend2d; then
     true
 else
@@ -29,6 +34,11 @@ fi
 # Now copy all asmjit files over
 echo "Copying over asmjit files..."
 
+mkdir asmjit/src/asmjit/include
+cp -R ../Sources/asmjit/include/* asmjit/src/asmjit/include/
+rm -R ../Sources/asmjit
+mkdir ../Sources/asmjit
+
 if [[ -d asmjit/src ]] && cp -R asmjit/src/asmjit/* ../Sources/asmjit/; then
     true
 else
@@ -38,7 +48,7 @@ fi
 
 cd ..
 
-rm -rf temp
+# rm -rf temp
 
 echo "Success!"
 
