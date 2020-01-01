@@ -103,15 +103,17 @@ public struct BLRegion {
         blRegionClear(&box.object)
     }
     
+    /// Shrinks the region data so it consumes only memory it requires.
     public mutating func shrink() {
         ensureUnique()
         
         blRegionShrink(&box.object)
     }
 
+    /// Reserves at least `capacity` boxes in this region.
     @inlinable
     @discardableResult
-    public mutating func reserve(capacity: Int) -> BLResult {
+    public mutating func reserveCapacity(_ capacity: Int) -> BLResult {
         ensureUnique()
         
         return blRegionReserve(&box.object, capacity)

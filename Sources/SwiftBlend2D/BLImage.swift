@@ -1,6 +1,4 @@
-#if canImport(Foundation)
 import Foundation
-#endif
 import blend2d
 
 public final class BLImage: BLBaseClass<BLImageCore> {
@@ -109,13 +107,12 @@ public final class BLImage: BLBaseClass<BLImageCore> {
             .execute()
     }
     
-    public func getData() -> BLImageData {
+    public func getImageData() -> BLImageData {
         var data = BLImageData()
         blImageGetData(&object, &data)
         return data
     }
     
-    #if canImport(Foundation)
     public func toData(codec: BLImageCodec) throws -> Data {
         var data = Data()
         try writeToData(data: &data, codec: codec)
@@ -127,7 +124,6 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         try writeToData(buffer, codec: codec)
         data.append(buffer.unsafePointer())
     }
-    #endif
     
     func writeToData<T>(_ buffer: BLArray<T>, codec: BLImageCodec) throws {
         try resultToError(

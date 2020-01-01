@@ -58,6 +58,7 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
                                rhsSizeMinusNullTerminator)
         }
     }
+    
     public static func += (lhs: BLString, rhs: BLString) {
         guard let data = blStringGetData(&rhs.object) else {
             return

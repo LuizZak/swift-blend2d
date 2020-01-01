@@ -1,6 +1,4 @@
-#if canImport(Foundation)
 import Foundation
-#endif
 import blend2d
 
 /// A thin abstraction over a native OS file IO.
@@ -63,16 +61,12 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         }
     }
     
-    #if canImport(Foundation)
-    
     @discardableResult
     public func write<T: ContiguousBytes>(data: T) throws -> Int {
         return try data.withUnsafeBytes { pointer in
             try write(buffer: pointer)
         }
     }
-    
-    #endif
     
     func write(buffer: UnsafeRawBufferPointer) throws -> Int {
         var bytesWritten = 0

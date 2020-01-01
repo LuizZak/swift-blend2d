@@ -4,10 +4,12 @@ public final class BLArray<Element: BLArrayElement> {
     @usableFromInline
     var object = BLArrayCore()
     
+    /// Returns the size of the array (number of items).
     public var count: Int {
         return blArrayGetSize(&object)
     }
     
+    /// Returns the capacity of the array (number of items).
     public var capacity: Int {
         return blArrayGetCapacity(&object)
     }
@@ -66,29 +68,55 @@ public final class BLArray<Element: BLArrayElement> {
     }
     
     public func asArray() -> [Element] {
-        return unsafeAsArray(of: Element.self)
+        return Array(unsafePointer())
     }
     
+    /// Returns an array of `T`-typed elements extracted from the raw buffer of
+    /// this array.
+    ///
+    /// Note that the count of elements of the returned array is the same as
+    /// `self.count`, so passing an element that with a stride greater than
+    /// `self.count * MemoryLayout<Element>.stride` is a programming error.
     @inlinable
     public func unsafeAsArray<T>(of type: T.Type) -> [T] {
         return unsafePointer().baseAddress?.withMemoryRebound(to: T.self, capacity: count) { pointer -> [T] in
             let buffer = UnsafeBufferPointer(start: pointer, count: count)
-            return Array(AnyIterator(buffer.makeIterator()))
+            return Array(buffer)
         } ?? []
     }
     
+    /// Clears the content of the array.
+    ///
+    /// - note: If the array used dynamically allocated memory and the instance
+    /// is mutable the memory won't be released, instead, it will be ready for
+    /// reuse.
+    public func clear() {
+        blArrayClear(&object)
+    }
+    
+    /// Shrinks the capacity of the array to fit its length.
+    ///
+    /// Some array operations like `append()` may grow the array more than necessary
+    /// to make it faster when such manipulation operations are called consecutively.
+    /// When you are done with modifications and you know the lifetime of the array
+    /// won't be short you can use `shrink()` to fit its memory requirements to the
+    /// number of items it stores, which could optimize the application's memory
+    /// requirements.
     public func shrink() {
         blArrayShrink(&object)
     }
     
+    /// Reserves the array capacity to hold at least `capacity` items.
     public func reserveCapacity(_ capacity: Int) {
         blArrayReserve(&object, capacity)
     }
     
+    /// Removes an item at the given `index`.
     public func remove(at index: Int) {
         blArrayRemoveIndex(&object, index)
     }
     
+    /// Returnsn whether the content of this array and `other` matches.
     public func equals(to other: BLArray) -> Bool {
         return blArrayEquals(&object, &other.object)
     }
@@ -111,10 +139,6 @@ public final class BLArray<Element: BLArrayElement> {
         }
     }
     
-    public func clear() {
-        blArrayClear(&object)
-    }
-    
     public func replaceContents(_ array: [Element]) {
         clear()
         
@@ -123,6 +147,12 @@ public final class BLArray<Element: BLArrayElement> {
                 append(contentsOf: pointer, lengthInBytes: view.pointee.size)
             }
         }
+    }
+}
+
+extension BLArray: ExpressibleByArrayLiteral {
+    public convenience init(arrayLiteral elements: Element...) {
+        self.init(array: elements)
     }
 }
 

@@ -77,4 +77,18 @@ class BLArrayTests: XCTestCase {
         XCTAssertEqual(array[1], 3)
         XCTAssertEqual(array[2], 4)
     }
+    
+    func testAsArray() {
+        let array = BLArray<Int>(array: [0xDD, 0xEE, 0xFF])
+        
+        XCTAssertEqual(array.asArray(), [0xDD, 0xEE, 0xFF])
+    }
+    
+    func testUnsafeAsArrayOf() {
+        let array = BLArray<Int>(array: [0xFF])
+        
+        let result = array.unsafeAsArray(of: Int8.self)
+        
+        XCTAssertEqual(result, [-1])
+    }
 }
