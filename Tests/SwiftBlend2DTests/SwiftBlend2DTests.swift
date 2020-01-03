@@ -397,7 +397,7 @@ class SwiftBlend2DTests: XCTestCase {
 }
 
 func pngFileFromImage(_ image: BLImage) -> PNGFile {
-    let data = image.getData()
+    let data = image.getImageData()
     
     assert(data.format == BLFormat.prgb32.rawValue)
     
