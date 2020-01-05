@@ -39,7 +39,6 @@ let package = Package(
             dependencies: [],
             cxxSettings: [
                 .define("ASMJIT_BUILD_X86", .when(platforms: [.macOS, .linux])),
-                .define("ASMJIT_BUILD_ARM", .when(platforms: [.iOS])),
                 .define("ASMJIT_BUILD_NO_STDCXX"),
                 .define("ASMJIT_STATIC"),
             ],
@@ -53,8 +52,8 @@ let package = Package(
             cxxSettings: [
                 .define("BL_BUILD_OPT_SSE2"),
                 .define("BL_BUILD_OPT_SSE3"),
-                .define("BL_BUILD_OPT_SSE4_1", .when(platforms: [.macOS])),
-                .define("BL_BUILD_OPT_SSE4_2", .when(platforms: [.macOS])),
+                .define("BL_BUILD_OPT_SSE4_1"),
+                .define("BL_BUILD_OPT_SSE4_2"),
                 .define("BL_BUILD_NO_STDCXX"),
             ]
         ),
