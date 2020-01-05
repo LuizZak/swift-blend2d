@@ -55,6 +55,7 @@ let package = Package(
                 .define("BL_BUILD_OPT_SSE4_1"),
                 .define("BL_BUILD_OPT_SSE4_2"),
                 .define("BL_BUILD_NO_STDCXX"),
+                .define("BL_STATIC")
             ]
         ),
         .testTarget(
