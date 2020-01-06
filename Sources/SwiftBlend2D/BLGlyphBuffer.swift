@@ -9,8 +9,8 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     /// Gets the glyph ids from this buffer.
     ///
     /// - complexity: O(size)
-    public var glyphIds: [BLGlyphId] {
-        var glyphs: [BLGlyphId] = []
+    public var glyphIds: [UInt32] {
+        var glyphs: [UInt32] = []
         glyphs.reserveCapacity(glyphRun.size)
         var iterator = BLGlyphRunIterator(glyphRun: glyphRun)
         while !iterator.atEnd {
@@ -32,7 +32,7 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         setText(text)
     }
 
-    public init(glyphIds: [BLGlyphId]) {
+    public init(glyphIds: [UInt32]) {
         super.init()
         setGlyphIds(glyphIds)
     }
@@ -50,7 +50,7 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         }
     }
     
-    public func setGlyphIds(_ glyphIds: [BLGlyphId]) {
+    public func setGlyphIds(_ glyphIds: [UInt32]) {
         glyphIds.withUnsafeBytes { pointer -> Void in
             guard let pointer = pointer.baseAddress else {
                 return
@@ -58,7 +58,7 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
             
             blGlyphBufferSetGlyphIds(&object,
                                      pointer,
-                                     MemoryLayout<BLGlyphId>.stride,
+                                     MemoryLayout<UInt32>.stride,
                                      glyphIds.count)
         }
     }

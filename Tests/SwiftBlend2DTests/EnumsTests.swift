@@ -10,7 +10,6 @@ class EnumsTestsTests: XCTestCase {
         isOptionSet(BLContextCreateFlags.self)
         isOptionSet(BLContextFlushFlags.self)
         isOptionSet(BLGlyphRunFlags.self)
-        isOptionSet(BLGlyphItemFlags.self)
         isOptionSet(BLFontFaceFlags.self)
         isOptionSet(BLFontFaceDiagFlags.self)
         isOptionSet(BLFormatFlags.self)

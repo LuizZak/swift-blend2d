@@ -5,21 +5,21 @@ public extension BLGlyphRun {
         return size == 0
     }
     
-    mutating func setGlyphIdData(_ glyphIds: UnsafeMutablePointer<BLGlyphId>) {
-        setGlyphIdData(glyphIds, advance: MemoryLayout<BLGlyphId>.size)
+    mutating func setGlyphData(_ glyphIds: UnsafeMutablePointer<UInt16>) {
+        setGlyphData(glyphIds, advance: MemoryLayout<UInt16>.size)
     }
-    mutating func setGlyphItemData(_ itemData: UnsafeMutablePointer<BLGlyphItem>) {
-        setGlyphIdData(itemData, advance: MemoryLayout<BLGlyphItem>.size)
+    mutating func setGlyphData(_ itemData: UnsafeMutablePointer<UInt32>) {
+        setGlyphData(itemData, advance: MemoryLayout<UInt32>.size)
     }
 
-    mutating func setGlyphIdData(_ data: UnsafeMutableRawPointer, advance: Int) {
-        glyphIdData = data
-        glyphIdAdvance = Int8(advance)
+    mutating func setGlyphData(_ data: UnsafeMutableRawPointer, advance: Int) {
+        glyphData = data
+        glyphAdvance = Int8(advance)
     }
 
     mutating func resetGlyphIdData() {
-        glyphIdData = nil
-        glyphIdAdvance = 0
+        glyphData = nil
+        glyphAdvance = 0
     }
 
     mutating func setPlacementData<T>(_ data: UnsafeMutablePointer<T>) {
@@ -87,16 +87,16 @@ public struct BLGlyphRunIterator {
     init(glyphRun: BLGlyphRun) {
         index = 0
         size = glyphRun.size
-        glyphIdData = glyphRun.glyphIdData
+        glyphIdData = glyphRun.glyphData
         placementData = glyphRun.placementData
-        glyphIdAdvance = Int(glyphRun.glyphIdAdvance)
+        glyphIdAdvance = Int(glyphRun.glyphAdvance)
         placementAdvance = Int(glyphRun.placementAdvance)
         
         if BLByteOrder.native == .be, var glyphIdData = glyphIdData {
             glyphIdData =
                 UnsafeMutableRawPointer(
                     glyphIdData.assumingMemoryBound(to: UInt8.self)
-                        + Int(max(glyphRun.glyphIdSize, 2) - 2)
+                        + Int(max(glyphRun.glyphSize, 2) - 2)
                 )
             
             self.glyphIdData = glyphIdData
@@ -105,8 +105,8 @@ public struct BLGlyphRunIterator {
         self.glyphRun = glyphRun
     }
     
-    public func glyphId() -> BLGlyphId? {
-        return glyphIdData?.load(as: BLGlyphId.self)
+    public func glyphId() -> UInt32? {
+        return glyphIdData?.load(as: UInt32.self)
     }
     
     public func placement<T>(as type: T.Type) -> T? {

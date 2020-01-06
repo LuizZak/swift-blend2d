@@ -40,7 +40,6 @@ This may change at any moment.
 `BLGlyphBuffer` | ✅ Done | |
 `BLGlyphBufferImpl` | ℹ️ No work required | Glyph buffer [C Data]|
 `BLGlyphInfo` | ℹ️ No work required | |
-`BLGlyphItem` | ✅ Done | |
 `BLGlyphMappingState` | ℹ️ No work required | Character to glyph mapping state |
 `BLGlyphOutlineSinkInfo` | ℹ️ No work required | Information passed to a BLPathSinkFunc sink by BLFont::getGlyphOutlines()|
 `BLGlyphPlacement` | ℹ️ No work required | |

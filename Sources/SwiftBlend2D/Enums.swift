@@ -1220,7 +1220,6 @@ extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }
 extension BLContextFlushFlags: OptionSet { }
 extension BLGlyphRunFlags: OptionSet { }
-extension BLGlyphItemFlags: OptionSet { }
 extension BLFontFaceFlags: OptionSet { }
 extension BLFontFaceDiagFlags: OptionSet { }
 extension BLFormatFlags: OptionSet { }
