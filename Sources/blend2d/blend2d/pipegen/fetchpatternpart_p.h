@@ -192,7 +192,7 @@ public:
     x86::Xmm minx_miny;
     //! Pad maximum coords.
     x86::Xmm maxx_maxy;
-    //! Correction .
+    //! Correction values (bilinear only).
     x86::Xmm corx_cory;
     //! Pattern width and height as doubles.
     x86::Xmm tw_th;

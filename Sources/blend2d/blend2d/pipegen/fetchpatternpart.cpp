@@ -2063,7 +2063,6 @@ void FetchAffinePatternPart::_initPart(x86::Gp& x, x86::Gp& y) noexcept {
   else {
     pc->vswizi32(f->maxx_maxy, f->minx_miny, x86::Predicate::shuf(3, 3, 2, 2)); // [MaxY|MaxY|MaxX|MaxX]
     pc->vswizi32(f->minx_miny, f->minx_miny, x86::Predicate::shuf(1, 1, 0, 0)); // [MinY|MinY|MinX|MinX]
-
     pc->vswizi32(f->corx_cory, f->corx_cory, x86::Predicate::shuf(1, 1, 0, 0)); // [CorY|CorY|CorX|CorX]
   }
 

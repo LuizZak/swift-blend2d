@@ -236,7 +236,8 @@ uint32_t BLPipeFetchData::initPatternAffine(uint32_t extendMode, uint32_t filter
 
       if (extendX == BL_EXTEND_MODE_REPEAT) {
         ox = 0;
-        d.affine.corY = d.affine.maxX;
+        d.affine.corX = d.affine.maxX;
+        d.affine.maxX = -1;
       }
     }
     ox--;
@@ -259,6 +260,7 @@ uint32_t BLPipeFetchData::initPatternAffine(uint32_t extendMode, uint32_t filter
       if (extendY == BL_EXTEND_MODE_REPEAT) {
         oy = 0;
         d.affine.corY = d.affine.maxY;
+        d.affine.maxY = -1;
       }
     }
     oy--;
