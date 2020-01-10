@@ -13,12 +13,6 @@ public extension BLFormatInfo {
     static var a8: BLFormatInfo {
         return blFormatInfo.3
     }
-    static var frgb32: BLFormatInfo {
-        return blFormatInfo.4
-    }
-    static var zero32: BLFormatInfo {
-        return blFormatInfo.5
-    }
 }
 
 extension BLFormatInfo: Equatable {
