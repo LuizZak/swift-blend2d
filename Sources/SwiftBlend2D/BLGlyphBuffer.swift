@@ -40,7 +40,12 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     public func clear() {
         blGlyphBufferClear(&object)
     }
-    
+
+    /// Sets a text in this glyph buffer.
+    ///
+    /// - Parameter text: A textual string
+    /// - Parameter length: The length, in bytes, of the text value to set.
+    /// Passing `nil` to indicate the entire text string should be used.
     public func setText<S: StringProtocol>(_ text: S, length: Int? = nil) {
         text.withCString { pointer -> Void in
             blGlyphBufferSetText(&object,

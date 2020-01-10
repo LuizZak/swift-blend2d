@@ -59,11 +59,11 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     public var faceUniqueId: UInt64 {
         return object.impl.pointee.faceUniqueId
     }
+
     /// Gets full name as UTF-8 null-terminated string.
     public var fullName: BLString {
         return BLString(weakAssign: object.impl.pointee.fullName)
     }
-
     /// Gets family name as UTF-8 null-terminated string.
     public var familyName: BLString {
         return BLString(weakAssign: object.impl.pointee.familyName)
@@ -98,6 +98,11 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     /// Returns unicode coverage of this `BLFontFace`.
     public var unicodeCoverage: BLFontUnicodeCoverage {
         return object.impl.pointee.unicodeCoverage
+    }
+
+    /// Returns `BLFontData` associated with this font-face.
+    public var fontData: BLFontData {
+        return BLFontData(weakAssign: object.impl.pointee.data.impl)
     }
 
     // MARK: - Initializers

@@ -1,29 +1,42 @@
 import blend2d
 
 public class BLFont: BLBaseClass<BLFontCore> {
+    /// Returns a 2x2 matrix of the font.
+    ///
+    /// The returned `BLFontMatrix` is used to scale fonts from design units
+    /// into user units. The matrix usually has a negative `m11` member as
+    /// fonts use a different coordinate system than Blend2D.
     public var matrix: BLFontMatrix {
         var fontMatrix = BLFontMatrix()
         blFontGetMatrix(&object, &fontMatrix)
         return fontMatrix
     }
-    
+
+    /// Returns the scaled metrics of the font.
+    ///
+    /// The returned metrics is a scale of design metrics that match the font
+    /// size and its options.
     public var metrics: BLFontMetrics {
         var metrics = BLFontMetrics()
         blFontGetMetrics(&object, &metrics)
         return metrics
     }
-    
+
+    /// Returns the design metrics of the font.
+    ///
+    /// The returned metrics is compatible with the metrics of `BLFontFace`
+    /// associated with this font.
     public var designMetrics: BLFontDesignMetrics {
         var metrics = BLFontDesignMetrics()
         blFontGetDesignMetrics(&object, &metrics)
         return metrics
     }
     
-    /// Gets face-type the font.
+    /// Returns the type of the font's associated font-face, see `BLFontFaceType`.
     public var faceType: BLFontFaceType {
         return face.faceType
     }
-    /// Gets font-flags the font.
+    /// Returns the flags of the font, see `BLFontFaceFlags`.
     public var faceFlags: BLFontFaceFlags {
         return face.faceFlags
     }
@@ -35,7 +48,10 @@ public class BLFont: BLBaseClass<BLFontCore> {
     public var unitsPerEm: Int32 {
         return face.unitsPerEm
     }
-    
+
+    /// Returns the font's associated font-face.
+    ///
+    /// Returns the same font-face, which was passed to `init(fromFace:size:)`.
     public var face: BLFontFace {
         return BLFontFace(weakAssign: object.impl.pointee.face)
     }
