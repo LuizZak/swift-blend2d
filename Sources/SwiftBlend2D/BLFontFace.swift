@@ -100,11 +100,6 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         return object.impl.pointee.unicodeCoverage
     }
 
-    /// Returns `BLFontData` associated with this font-face.
-    public var fontData: BLFontData {
-        return BLFontData(weakAssign: object.impl.pointee.data.impl)
-    }
-
     // MARK: - Initializers
     
     /// Create Functionality
