@@ -71,24 +71,24 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         }
         return ranges
     }
-
-    /// Gets a new list of paths that each represent a figure within this
-    /// path.
-    @inlinable
-    public var figures: [BLPath] {
-        return figureRanges.map { range in
-            let subPath = BLPath()
-            subPath.addPath(self, range: range)
-            return subPath
-        }
-    }
-
+    
     internal init(pointer: UnsafeMutablePointer<BLPathCore>) {
         super.init(weakAssign: pointer.pointee)
     }
     
     public override init() {
         super.init()
+    }
+    
+    /// Gets a new list of paths that each represent a figure within this
+    /// path.
+    @inlinable
+    public func getFigurePaths() -> [BLPath] {
+        return figureRanges.map { range in
+            let subPath = BLPath()
+            subPath.addPath(self, range: range)
+            return subPath
+        }
     }
 
     /// Clears the content of the path.
