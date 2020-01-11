@@ -22,7 +22,5 @@ class BLFormatInfoTests: XCTestCase {
         XCTAssertEqual(BLFormatInfo.prgb32, blFormatInfo.1)
         XCTAssertEqual(BLFormatInfo.xrgb32, blFormatInfo.2)
         XCTAssertEqual(BLFormatInfo.a8, blFormatInfo.3)
-        XCTAssertEqual(BLFormatInfo.frgb32, blFormatInfo.4)
-        XCTAssertEqual(BLFormatInfo.zero32, blFormatInfo.5)
     }
 }
