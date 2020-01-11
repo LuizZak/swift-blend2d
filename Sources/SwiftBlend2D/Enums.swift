@@ -952,6 +952,8 @@ public extension BLCompOp {
     static let plus = BL_COMP_OP_PLUS
     /// Minus.
     static let minus = BL_COMP_OP_MINUS
+    /// Modulate.
+    static let modulate = BL_COMP_OP_MODULATE
     /// Multiply.
     static let multiply = BL_COMP_OP_MULTIPLY
     /// Screen.
