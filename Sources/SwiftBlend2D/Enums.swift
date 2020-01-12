@@ -405,49 +405,49 @@ public extension BLStrokeTransformOrder {
 public extension BLGeometryType {
     /// No geometry provided.
     static let none = BL_GEOMETRY_TYPE_NONE
-    /// BLBoxI struct.
+    /// `BLBoxI` struct.
     static let boxI = BL_GEOMETRY_TYPE_BOXI
-    /// BLBox struct.
+    /// `BLBox` struct.
     static let boxD = BL_GEOMETRY_TYPE_BOXD
-    /// BLRectI struct.
+    /// `BLRectI` struct.
     static let rectI = BL_GEOMETRY_TYPE_RECTI
-    /// BLRect struct.
+    /// `BLRect` struct.
     static let rectD = BL_GEOMETRY_TYPE_RECTD
-    /// BLCircle struct.
+    /// `BLCircle` struct.
     static let circle = BL_GEOMETRY_TYPE_CIRCLE
-    /// BLEllipse struct.
+    /// `BLEllipse` struct.
     static let ellipse = BL_GEOMETRY_TYPE_ELLIPSE
-    /// BLRoundRect struct.
+    /// `BLRoundRect` struct.
     static let roundRect = BL_GEOMETRY_TYPE_ROUND_RECT
-    /// BLArc struct.
+    /// `BLArc` struct.
     static let arc = BL_GEOMETRY_TYPE_ARC
-    /// BLArc struct representing chord.
+    /// `BLArc` struct representing chord.
     static let chord = BL_GEOMETRY_TYPE_CHORD
-    /// BLArc struct representing pie.
+    /// `BLArc` struct representing pie.
     static let pie = BL_GEOMETRY_TYPE_PIE
-    /// BLLine struct.
+    /// `BLLine` struct.
     static let line = BL_GEOMETRY_TYPE_LINE
-    /// BLTriangle struct.
+    /// `BLTriangle` struct.
     static let triangle = BL_GEOMETRY_TYPE_TRIANGLE
-    /// BLArrayView<BLPointI> representing a polyline.
+    /// `BLArrayView<BLPointI>` representing a polyline.
     static let polylineI = BL_GEOMETRY_TYPE_POLYLINEI
-    /// BLArrayView<BLPoint> representing a polyline.
+    /// `BLArrayView<BLPoint>` representing a polyline.
     static let polylineD = BL_GEOMETRY_TYPE_POLYLINED
-    /// BLArrayView<BLPointI> representing a polygon.
+    /// `BLArrayView<BLPointI>` representing a polygon.
     static let polygonI = BL_GEOMETRY_TYPE_POLYGONI
-    /// BLArrayView<BLPoint> representing a polygon.
+    /// `BLArrayView<BLPoint>` representing a polygon.
     static let polygonD = BL_GEOMETRY_TYPE_POLYGOND
-    /// BLArrayView<BLBoxI> struct.
+    /// `BLArrayView<BLBoxI>` struct.
     static let arrayViewBoxI = BL_GEOMETRY_TYPE_ARRAY_VIEW_BOXI
-    /// BLArrayView<BLBox> struct.
+    /// `BLArrayView<BLBox>` struct.
     static let arrayViewBoxD = BL_GEOMETRY_TYPE_ARRAY_VIEW_BOXD
-    /// BLArrayView<BLRectI> struct.
+    /// `BLArrayView<BLRectI>` struct.
     static let arrayViewRectI = BL_GEOMETRY_TYPE_ARRAY_VIEW_RECTI
-    /// BLArrayView<BLRect> struct.
+    /// `BLArrayView<BLRect>` struct.
     static let arrayViewRectD = BL_GEOMETRY_TYPE_ARRAY_VIEW_RECTD
-    /// BLPath (or BLPathCore).
+    /// `BLPath` (or `BLPathCore`).
     static let path = BL_GEOMETRY_TYPE_PATH
-    /// BLRegion (or BLRegionCore).
+    /// `BLRegion` (or `BLRegionCore`).
     static let region = BL_GEOMETRY_TYPE_REGION
 }
 
@@ -752,7 +752,7 @@ public extension BLFileSeek {
 }
 
 public extension BLMatrix2DOp {
-    /// Reset matrix to identity (argument ignored, should be nullptr).
+    /// Reset matrix to identity (argument ignored, should be nil).
     static let reset = BL_MATRIX2D_OP_RESET
     /// Assign (copy) the other matrix.
     static let assign = BL_MATRIX2D_OP_ASSIGN
@@ -778,7 +778,7 @@ public extension BLMatrix2DOp {
     static let postSkew = BL_MATRIX2D_OP_POST_SKEW
     /// Post-rotate the matrix about [0, 0].
     static let postRotate = BL_MATRIX2D_OP_POST_ROTATE
-    /// Post-rotate the matrix about a reference BLPoint.
+    /// Post-rotate the matrix about a reference `BLPoint`.
     static let postRotatePt = BL_MATRIX2D_OP_POST_ROTATE_PT
     /// Post-transform this matrix by other `BLMatrix2D`.
     static let postTransform = BL_MATRIX2D_OP_POST_TRANSFORM
