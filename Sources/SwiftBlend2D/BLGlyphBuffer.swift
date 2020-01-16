@@ -32,9 +32,9 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         setText(text)
     }
 
-    public init(glyphIds: [UInt32]) {
+    public init(glyphs: [UInt32]) {
         super.init()
-        setGlyphIds(glyphIds)
+        setGlyphs(glyphs)
     }
     
     public func clear() {
@@ -55,16 +55,15 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         }
     }
     
-    public func setGlyphIds(_ glyphIds: [UInt32]) {
-        glyphIds.withUnsafeBytes { pointer -> Void in
+    public func setGlyphs(_ glyphs: [UInt32]) {
+        glyphs.withUnsafeBufferPointer { pointer -> Void in
             guard let pointer = pointer.baseAddress else {
                 return
             }
             
-            blGlyphBufferSetGlyphIds(&object,
-                                     pointer,
-                                     MemoryLayout<UInt32>.stride,
-                                     glyphIds.count)
+            blGlyphBufferSetGlyphs(&object,
+                                   pointer,
+                                   glyphs.count)
         }
     }
 }
