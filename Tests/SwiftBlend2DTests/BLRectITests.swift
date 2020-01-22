@@ -94,4 +94,32 @@ class BLRectITests: XCTestCase {
         XCTAssertFalse(box.contains(BLPointI(x: -5, y: 5)))
         XCTAssertFalse(box.contains(BLPointI(x: 5, y: -5)))
     }
+
+    func testResized() {
+        let rect = BLRectI(x: 10, y: 10, w: 30, h: 30)
+        let result = rect.resized(width: 10, height: 10)
+
+        XCTAssertEqual(result.x, 10)
+        XCTAssertEqual(result.y, 10)
+        XCTAssertEqual(result.w, 10)
+        XCTAssertEqual(result.h, 10)
+    }
+
+    func testInitWithRoundedRect() {
+        let rect = BLRectI(rounding: BLRect(x: 10.4, y: 10.6, w: 20.4, h: 20.6))
+
+        XCTAssertEqual(rect.x, 10)
+        XCTAssertEqual(rect.y, 11)
+        XCTAssertEqual(rect.w, 20)
+        XCTAssertEqual(rect.h, 21)
+    }
+
+    func testInitWithLocationAndSize() {
+        let rect = BLRectI(location: BLPointI(x: 1, y: 2), size: BLSizeI(w: 3, h: 4))
+
+        XCTAssertEqual(rect.x, 1)
+        XCTAssertEqual(rect.y, 2)
+        XCTAssertEqual(rect.w, 3)
+        XCTAssertEqual(rect.h, 4)
+    }
 }

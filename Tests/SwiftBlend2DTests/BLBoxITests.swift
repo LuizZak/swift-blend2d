@@ -154,4 +154,13 @@ class BLBoxITests: XCTestCase {
 
         XCTAssertEqual(box, BLBoxI.empty)
     }
+
+    func testInitWithRoundedBox() {
+        let box = BLBoxI(rounding: BLBox(x0: 10.4, y0: 10.6, x1: 20.4, y1: 20.6))
+
+        XCTAssertEqual(box.x0, 10)
+        XCTAssertEqual(box.y0, 11)
+        XCTAssertEqual(box.x1, 20)
+        XCTAssertEqual(box.y1, 21)
+    }
 }

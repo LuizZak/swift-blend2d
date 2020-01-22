@@ -98,12 +98,12 @@ class BLMatrix2DTests: XCTestCase {
             BLPoint(x: -10, y: 10)
         ]
         let expected = [
-            BLPoint(x: 15, y: 25),
-            BLPoint(x: 5, y: 25),
-            BLPoint(x: 5, y: 15),
-            BLPoint(x: 15, y: 15)
+            BLPoint(x: 15.0, y: 25.0),
+            BLPoint(x: 5, y: 25.0),
+            BLPoint(x: 5, y: 15.0),
+            BLPoint(x: 15.0, y: 15.0)
         ]
-        
+
         let result = matrix.mapPolygon(points)
         
         assertPolygonsEqual(expected, result)
@@ -112,11 +112,11 @@ class BLMatrix2DTests: XCTestCase {
     func assertPolygonsEqual(_ expected: [BLPoint], _ actual: [BLPoint], line: UInt = #line) {
         var mismatch = false
         for (actual, expected) in zip(actual, expected) {
-            if abs((actual - expected).x) < 1e-10 {
+            if abs((actual - expected).x) > 1e-10 {
                 mismatch = true
                 break
             }
-            if abs((actual - expected).y) < 1e-10 {
+            if abs((actual - expected).y) > 1e-10 {
                 mismatch = true
                 break
             }

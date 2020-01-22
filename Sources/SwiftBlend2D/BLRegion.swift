@@ -178,9 +178,18 @@ public struct BLRegion {
 
     @inlinable
     @discardableResult
+    public mutating func combine(_ a: BLRegion, operation: BLBooleanOp) -> BLResult {
+        ensureUnique()
+        var object = box.object
+        
+        return blRegionCombine(&box.object, &object, &a.box.object, operation.rawValue)
+    }
+
+    @inlinable
+    @discardableResult
     public mutating func combine(_ a: BLRegion, _ b: BLRegion, operation: BLBooleanOp) -> BLResult {
         ensureUnique()
-        
+
         return blRegionCombine(&box.object, &a.box.object, &b.box.object, operation.rawValue)
     }
     

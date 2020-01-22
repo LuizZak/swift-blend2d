@@ -55,6 +55,14 @@ public extension BLBoxI {
     }
 
     @inlinable
+    init(rounding box: BLBox) {
+        self.init(x0: Int32(round(box.x0)),
+                  y0: Int32(round(box.y0)),
+                  x1: Int32(round(box.x1)),
+                  y1: Int32(round(box.y1)))
+    }
+
+    @inlinable
     init(boundsForPoints points: [BLPointI]) {
         guard let first = points.first else {
             self = BLBoxI.empty

@@ -61,9 +61,18 @@ public extension BLRect {
         }
     }
 
+    init(location: BLPoint, size: BLSize) {
+        self.init(x: location.x, y: location.y, w: size.w, h: size.h)
+    }
+
     @inlinable
     func insetBy(x: Double, y: Double) -> BLRect {
         return BLRect(x: self.x + x / 2, y: self.y + y / 2, w: w - x, h: h - y)
+    }
+
+    @inlinable
+    func resized(width: Double, height: Double) -> BLRect {
+        return BLRect(x: x, y: y, w: width, h: height)
     }
 
     @inlinable

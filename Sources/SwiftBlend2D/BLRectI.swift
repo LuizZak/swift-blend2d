@@ -61,9 +61,26 @@ public extension BLRectI {
         }
     }
 
+    init(location: BLPointI, size: BLSizeI) {
+        self.init(x: location.x, y: location.y, w: size.w, h: size.h)
+    }
+
+    @inlinable
+    init(rounding rect: BLRect) {
+        self.init(x: Int32(round(rect.x)),
+                  y: Int32(round(rect.y)),
+                  w: Int32(round(rect.w)),
+                  h: Int32(round(rect.h)))
+    }
+
     @inlinable
     func insetBy(x: Int, y: Int) -> BLRectI {
         return BLRectI(x: self.x + Int32(x) / 2, y: self.y + Int32(y) / 2, w: w - Int32(x), h: h - Int32(y))
+    }
+
+    @inlinable
+    func resized(width: Int, height: Int) -> BLRectI {
+        return BLRectI(x: x, y: y, w: Int32(width), h: Int32(height))
     }
 
     @inlinable
