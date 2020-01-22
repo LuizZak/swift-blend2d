@@ -3,6 +3,15 @@ import blend2d
 import SwiftBlend2D
 
 class BLBoxTests: XCTestCase {
+    func testEmpty() {
+        let empty = BLBox.empty
+
+        XCTAssertEqual(empty.x0, 0)
+        XCTAssertEqual(empty.y0, 0)
+        XCTAssertEqual(empty.x1, 0)
+        XCTAssertEqual(empty.y1, 0)
+    }
+
     func testEquals() {
         XCTAssertEqual(BLBox(x0: 0, y0: 0, x1: 0, y1: 0), BLBox(x0: 0, y0: 0, x1: 0, y1: 0))
         XCTAssertNotEqual(BLBox(x0: 1, y0: 0, x1: 0, y1: 0), BLBox(x0: 0, y0: 0, x1: 0, y1: 0))
@@ -124,5 +133,35 @@ class BLBoxTests: XCTestCase {
         XCTAssertEqual(result.y0, 10)
         XCTAssertEqual(result.x1, 20)
         XCTAssertEqual(result.y1, 20)
+    }
+
+    func testInitBoundsForPoints() {
+        let box = BLBox(boundsForPoints: [
+            BLPoint(x: -5, y: 5),
+            BLPoint(x: 5, y: -5),
+            BLPoint(x: 7, y: -5)
+        ])
+
+        XCTAssertEqual(box.x0, -5)
+        XCTAssertEqual(box.y0, -5)
+        XCTAssertEqual(box.x1, 7)
+        XCTAssertEqual(box.y1, 5)
+    }
+
+    func testInitBoundsForPointsWithSinglePoint() {
+        let box = BLBox(boundsForPoints: [
+            BLPoint(x: 5, y: 5),
+        ])
+
+        XCTAssertEqual(box.x0, 5)
+        XCTAssertEqual(box.y0, 5)
+        XCTAssertEqual(box.x1, 5)
+        XCTAssertEqual(box.y1, 5)
+    }
+
+    func testInitBoundsForPointsEmpty() {
+        let box = BLBox(boundsForPoints: [])
+
+        XCTAssertEqual(box, BLBox.empty)
     }
 }

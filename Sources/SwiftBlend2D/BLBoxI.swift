@@ -1,6 +1,8 @@
 import blend2d
 
 public extension BLBoxI {
+    static let empty = BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0)
+
     @inlinable
     var topLeft: BLPointI {
         return BLPointI(x: x0, y: y0)
@@ -50,6 +52,24 @@ public extension BLBoxI {
     @inlinable
     init(x: Int, y: Int, width: Int, height: Int) {
         self.init(x0: Int32(x), y0: Int32(y), x1: Int32(x + width), y1: Int32(y + height))
+    }
+
+    @inlinable
+    init(boundsForPoints points: [BLPointI]) {
+        guard let first = points.first else {
+            self = BLBoxI.empty
+            return
+        }
+
+        var min = first
+        var max = first
+
+        for point in points {
+            min = min.pointwiseMin(point)
+            max = max.pointwiseMax(point)
+        }
+
+        self.init(x0: min.x, y0: min.y, x1: max.x, y1: max.y)
     }
     
     @inlinable
