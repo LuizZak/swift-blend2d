@@ -154,4 +154,11 @@ class BLPointITests: XCTestCase {
 
         XCTAssertEqual(p1.dot(p2), 1 * 3 + 2 * 4)
     }
+
+    func testInitRoundingPoint() {
+        let point = BLPointI(rounding: BLPoint(x: 10.6, y: 10.4))
+
+        XCTAssertEqual(point.x, 11)
+        XCTAssertEqual(point.y, 10)
+    }
 }

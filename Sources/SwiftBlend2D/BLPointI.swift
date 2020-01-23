@@ -7,6 +7,11 @@ public extension BLPointI {
     /// A one-valued BLPoint with coordinates (1, 1)
     static let one = BLPointI(x: 1, y: 1)
 
+    @inlinable
+    init(rounding point: BLPoint) {
+        self.init(x: Int32(round(point.x)), y: Int32(round(point.y)))
+    }
+
     /// Returns the dot product between `self` and `other`.
     @inlinable
     func dot(_ other: BLPointI) -> Int {
