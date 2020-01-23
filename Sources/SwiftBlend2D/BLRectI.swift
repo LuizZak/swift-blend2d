@@ -100,6 +100,24 @@ public extension BLRectI {
     func contains(_ point: BLPoint) -> Bool {
         return contains(Int(point.x), Int(point.y))
     }
+
+    /// Returns whether a given `BLRectI` rests completely inside the
+    /// boundaries of this `BLRectI`
+    func contains(_ other: BLRectI) -> Bool {
+        return other.topLeft.x >= topLeft.x
+            && other.topLeft.y >= topLeft.y
+            && other.bottomRight.x <= bottomRight.x
+            && other.bottomRight.y <= bottomRight.y
+    }
+
+    /// Returns whether a given `BLRectI` intersects this `BLRectI`
+    func intersects(_ other: BLRectI) -> Bool {
+        // X overlap check.
+        return left <= other.right
+            && right >= other.left
+            && top <= other.bottom
+            && bottom >= other.top
+    }
 }
 
 extension BLRectI: Equatable {

@@ -122,4 +122,23 @@ class BLRectITests: XCTestCase {
         XCTAssertEqual(rect.w, 3)
         XCTAssertEqual(rect.h, 4)
     }
+
+    func testContainsRect() {
+        let rect = BLRectI(x: 0, y: 0, w: 20, h: 20)
+
+        XCTAssert(rect.contains(rect))
+        XCTAssert(rect.contains(BLRectI(x: 10, y: 10, w: 5, h: 5)))
+        XCTAssertFalse(rect.contains(BLRectI(x: 10, y: 10, w: 15, h: 15)))
+        XCTAssertFalse(rect.contains(BLRectI(x: 30, y: 30, w: 15, h: 15)))
+    }
+
+    func testIntersects() {
+        let rect1 = BLRectI(x: 0, y: 0, w: 20, h: 20)
+        let rect2 = BLRectI(x: 10, y: 10, w: 20, h: 20)
+        let rect3 = BLRectI(x: 30, y: 0, w: 20, h: 20)
+
+        XCTAssert(rect1.intersects(rect2))
+        XCTAssertFalse(rect1.intersects(rect3))
+        XCTAssert(rect2.intersects(rect3))
+    }
 }

@@ -443,6 +443,22 @@ public extension BLMatrix2D {
     func mapPolygon(_ polygon: [BLPoint]) -> [BLPoint] {
         return polygon.map(mapPoint)
     }
+
+    /// Maps the corners of a given rectangle into a newer minimal rectangle
+    /// capable of containing all four mapped points.
+    @inlinable
+    func mapRect(_ rect: BLRect) -> BLRect {
+        let points = [
+            rect.topLeft,
+            rect.topRight,
+            rect.bottomLeft,
+            rect.bottomRight
+        ]
+
+        let transformed = mapPolygon(points)
+
+        return BLBox(boundsForPoints: transformed).asRectangle
+    }
     
     /// Inverts `source` matrix and stores the result in `desination`.
     @discardableResult
