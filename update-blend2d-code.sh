@@ -1,6 +1,6 @@
 # Check git satus and make sure we don't modify the working tree with update changes by mistake
 if [[ "${@#-force}" = "$@" && -n $(git status --porcelain) ]]; then
-    echo "Current git repo's state is not commited! Please commit and try again."
+    echo "Current git repo's state is not committed! Please commit and try again."
     exit 1
 fi
 
