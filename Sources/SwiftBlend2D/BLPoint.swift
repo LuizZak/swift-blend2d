@@ -138,3 +138,9 @@ extension BLPoint {
         return BLPoint(x: max(x, other.x), y: max(y, other.y))
     }
 }
+
+extension BLPoint: CustomStringConvertible {
+    public var description: String {
+        return "BLPoint(x: \(x), y: \(y))"
+    }
+}

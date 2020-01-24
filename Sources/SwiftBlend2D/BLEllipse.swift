@@ -33,3 +33,9 @@ extension BLEllipse: Equatable {
             && lhs.ry == rhs.ry
     }
 }
+
+extension BLEllipse: CustomStringConvertible {
+    public var description: String {
+        return "BLEllipse(cx: \(cx), cy: \(cy), rx: \(rx), rx: \(ry))"
+    }
+}

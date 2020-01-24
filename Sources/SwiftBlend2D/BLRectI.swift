@@ -129,3 +129,9 @@ extension BLRectI: Equatable {
             && lhs.h == rhs.h
     }
 }
+
+extension BLRectI: CustomStringConvertible {
+    public var description: String {
+        return "BLRectI(x: \(x), y: \(y), w: \(w), h: \(h))"
+    }
+}

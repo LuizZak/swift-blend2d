@@ -122,3 +122,9 @@ extension BLPointI {
     }
 }
 
+
+extension BLPointI: CustomStringConvertible {
+    public var description: String {
+        return "BLPointI(x: \(x), y: \(y))"
+    }
+}

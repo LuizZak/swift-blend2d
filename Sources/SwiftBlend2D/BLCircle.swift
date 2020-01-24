@@ -50,3 +50,9 @@ extension BLCircle: Equatable {
             && lhs.r == rhs.r
     }
 }
+
+extension BLCircle: CustomStringConvertible {
+    public var description: String {
+        return "BLCircle(cx: \(cx), cy: \(cy), r: \(r))"
+    }
+}

@@ -43,3 +43,9 @@ extension BLTriangle: Equatable {
             && lhs.y2 == rhs.y2
     }
 }
+
+extension BLTriangle: CustomStringConvertible {
+    public var description: String {
+        return "BLTriangle(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1), x2: \(x2), y2: \(y2))"
+    }
+}

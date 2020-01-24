@@ -92,3 +92,9 @@ extension BLLine: Equatable {
             && lhs.y1 == rhs.y1
     }
 }
+
+extension BLLine: CustomStringConvertible {
+    public var description: String {
+        return "BLLine(x0: \(x0), y0: \(x0), x1: \(x1), y1: \(y1))"
+    }
+}

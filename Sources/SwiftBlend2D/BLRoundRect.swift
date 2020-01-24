@@ -87,3 +87,9 @@ extension BLRoundRect: Equatable {
             && lhs.ry == rhs.ry
     }
 }
+
+extension BLRoundRect: CustomStringConvertible {
+    public var description: String {
+        return "BLRoundRect(x: \(x), y: \(y), w: \(w), h: \(h), rx: \(rx), ry: \(ry))"
+    }
+}

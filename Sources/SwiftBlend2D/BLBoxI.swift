@@ -133,3 +133,9 @@ extension BLBoxI: Equatable {
             && lhs.y1 == rhs.y1
     }
 }
+
+extension BLBoxI: CustomStringConvertible {
+    public var description: String {
+        return "BLBoxI(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"
+    }
+}
