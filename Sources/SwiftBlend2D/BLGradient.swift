@@ -351,6 +351,20 @@ public extension BLGradient {
         return blGradientAssignStops(&box.object, stops, stops.count)
     }
 
+    @inlinable
+    mutating func addStops(_ stops: [(offset: Double, rgba32: BLRgba32)]) {
+        for stop in stops {
+            addStop(stop.offset, stop.rgba32)
+        }
+    }
+
+    @inlinable
+    mutating func addStops(_ stops: [(offset: Double, rgba64: BLRgba64)]) {
+        for stop in stops {
+            addStop(stop.offset, stop.rgba64)
+        }
+    }
+
     @discardableResult
     @inlinable
     mutating func addStop(_ offset: Double, rgba32: UInt32) -> BLResult {

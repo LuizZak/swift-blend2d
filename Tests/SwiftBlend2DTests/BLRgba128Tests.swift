@@ -25,4 +25,14 @@ class BLRgba128Tests: XCTestCase {
         XCTAssertEqual(color.b, 3)
         XCTAssertEqual(color.a, 10)
     }
+
+    func testFadedTowards() {
+        let first = BLRgba128(r: 0.1, g: 0.1, b: 0.1, a: 0)
+        let second = BLRgba128(r: 0.5, g: 0.3, b: 0.3, a: 1)
+
+        XCTAssertEqual(first.faded(towards: second, factor: 0), first)
+        XCTAssertEqual(first.faded(towards: second, factor: 1), BLRgba128(r: 0.5, g: 0.3, b: 0.3, a: 0))
+        XCTAssertEqual(first.faded(towards: second, factor: 0.5), BLRgba128(r: 0.3, g: 0.2, b: 0.2, a: 0))
+        XCTAssertEqual(first.faded(towards: second, factor: 0.5, blendAlpha: true), BLRgba128(r: 0.3, g: 0.2, b: 0.2, a: 0.5))
+    }
 }

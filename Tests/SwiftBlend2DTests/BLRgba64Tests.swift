@@ -54,4 +54,21 @@ class BLRgba64Tests: XCTestCase {
         XCTAssertEqual(color.b, 3)
         XCTAssertEqual(color.a, 10)
     }
+
+    // Disabled for now; see BLRgba64's commented method
+//    func testFadedTowards() {
+//        let first = BLRgba64(r: 10 * 255, g: 10 * 255, b: 10 * 255, a: 0)
+//        let second = BLRgba64(r: 100 * 255, g: 5 * 255, b: 50 * 255, a: 255 * 255)
+//
+//        XCTAssertEqual(first.faded(towards: second, factor: 0), first)
+//
+//        XCTAssertEqual(first.faded(towards: second, factor: 1),
+//                       BLRgba64(r: 100 * 255, g: 5 * 255, b: 50 * 255, a: 0))
+//
+//        XCTAssertEqual(first.faded(towards: second, factor: 0.5),
+//                       BLRgba64(r: 55 * 255, g: 7 * 255, b: 30 * 255, a: 0))
+//
+//        XCTAssertEqual(first.faded(towards: second, factor: 0.5, blendAlpha: true),
+//                       BLRgba64(r: 55 * 255, g: 7 * 255, b: 30 * 255, a: 127 * 255))
+//    }
 }

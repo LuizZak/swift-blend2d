@@ -11,6 +11,18 @@ public extension BLRgba128 {
     func withTransparency(_ alpha: Float) -> BLRgba128 {
         return BLRgba128(r: r, g: g, b: b, a: alpha)
     }
+
+    func faded(towards otherColor: BLRgba128, factor: Double, blendAlpha: Bool = false) -> BLRgba128 {
+        let factor = Float(factor)
+        let from = 1 - factor
+
+        let a = blendAlpha ? self.a * from + otherColor.a * factor : self.a
+        let r = self.r * from + otherColor.r * factor
+        let g = self.g * from + otherColor.g * factor
+        let b = self.b * from + otherColor.b * factor
+
+        return BLRgba128(r: r, g: g, b: b, a: a)
+    }
 }
 
 extension BLRgba128: Equatable {

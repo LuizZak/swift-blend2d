@@ -13,9 +13,9 @@ public extension BLRgba32 {
         self.init(.init(value: argb))
     }
     
-    @inlinable
+    //@inlinable
     init(r: UInt32, g: UInt32, b: UInt32, a: UInt32 = 0xFF) {
-        self.init(.init(value: (a << 24) | (r << 16) | (g <<  8) | b))
+        self.init(.init(.init(b: b, g: g, r: r, a: a)))
     }
     
     @inlinable
@@ -32,11 +32,28 @@ public extension BLRgba32 {
     func withTransparency(_ alpha: UInt32) -> BLRgba32 {
         return BLRgba32(r: r, g: g, b: b, a: alpha)
     }
+
+    func faded(towards otherColor: BLRgba32, factor: Double, blendAlpha: Bool = false) -> BLRgba32 {
+        let from = 1 - factor
+
+        let a = UInt32(blendAlpha ? Double(self.a) * from + Double(otherColor.a) * factor : Double(self.a))
+        let r = UInt32(Double(self.r) * from + Double(otherColor.r) * factor)
+        let g = UInt32(Double(self.g) * from + Double(otherColor.g) * factor)
+        let b = UInt32(Double(self.b) * from + Double(otherColor.b) * factor)
+
+        return BLRgba32(r: r, g: g, b: b, a: a)
+    }
 }
 
 extension BLRgba32: Equatable {
     @inlinable
     public static func ==(lhs: BLRgba32, rhs: BLRgba32) -> Bool {
         return lhs.value == rhs.value
+    }
+}
+
+extension BLRgba32: CustomStringConvertible {
+    public var description: String {
+        return "{ a: \(a), r: \(r), g: \(g), b: \(b) }"
     }
 }
