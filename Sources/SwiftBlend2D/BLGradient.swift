@@ -8,10 +8,17 @@ public struct BLGradient: Equatable {
     // MARK: Gradient Stops
     @inlinable
     public var stops: [BLGradientStop] {
-        let buffer = UnsafeBufferPointer(start: blGradientGetStops(&box.object),
-                                         count: size)
-        
-        return Array(buffer)
+        get {
+            let buffer = UnsafeBufferPointer(start: blGradientGetStops(&box.object),
+                                             count: size)
+
+            return Array(buffer)
+        }
+        set {
+            if assignStops(newValue) == BLResultCode.invalidValue.rawValue {
+                fatalError("Invalid stops value; check that offset values are within range [0 - 1] inclusive and that no two stops have the same offset")
+            }
+        }
     }
 
     @inlinable
@@ -433,6 +440,19 @@ public extension BLGradient {
     mutating func replaceStopRgba64(index: Int, offset: Double, rgba64: UInt64) -> BLResult {
         ensureUnique()
         return blGradientReplaceStopRgba64(&box.object, index, offset, rgba64)
+    }
+
+    @inlinable
+    mutating func replaceStopRgba32(atIndex index: Int, rgba32: BLRgba32) -> BLResult {
+        if index < 0 || index >= box.object.impl.pointee.size {
+            fatalError("Index out of bounds: \(index) in bounds [0 - \(box.object.impl.pointee.size)]")
+        }
+        if let stops = blGradientGetStops(&box.object) {
+            ensureUnique()
+            return replaceStopRgba32(index: index, offset: stops[index].offset, rgba32: rgba32.value)
+        }
+
+        return BLResultCode.notInitialized.rawValue
     }
 
     @inlinable
