@@ -15,7 +15,7 @@ public extension BLRgba64 {
     
     @inlinable
     init(r: UInt32, g: UInt32, b: UInt32, a: UInt32 = 0xFFFF) {
-        self.init(.init(.init(b: b, g: g, r: r, a: b)))
+        self.init(.init(.init(b: b, g: g, r: r, a: a)))
     }
     
     // Note: Not @inlinable for now because this currently crashes the Swift
