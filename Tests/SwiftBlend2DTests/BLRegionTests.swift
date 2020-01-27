@@ -30,4 +30,20 @@ class BLRegionTests: XCTestCase {
             ]
         )
     }
+
+    func testArbitraryBoxesCrash() {
+        var region = BLRegion()
+        region.combine(box: BLBoxI(x0: 20, y0: 50, x1: 260, y1: 270), operation: .or)
+        region.combine(box: BLBoxI(x0: -56, y0: -169, x1: 185, y1: 52), operation: .or)
+        region.combine(box: BLBoxI(x0: -56, y0: -169, x1: 185, y1: 52), operation: .or)
+        region.combine(box: BLBoxI(x0: -56, y0: -169, x1: 185, y1: 52), operation: .or)
+        region.combine(box: BLBoxI(x0: -46, y0: -134, x1: 29, y1: -118), operation: .or)
+
+        XCTAssertEqual(
+            region.regionScans, [
+                BLBoxI(x0: -56, y0: -169, x1: 185, y1: 50),
+                BLBoxI(x0: -56, y0: 50, x1: 260, y1: 270)
+            ]
+        )
+    }
 }
