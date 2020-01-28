@@ -759,7 +759,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
 
     @discardableResult
     @inlinable
-    public func strokeText(_ text: String, at point: BLPoint, font: BLFont) -> BLResult {
+    public func strokeText<S: StringProtocol>(_ text: S, at point: BLPoint, font: BLFont) -> BLResult {
         var point = point
 
         return text.withCString { cString -> BLResult in
