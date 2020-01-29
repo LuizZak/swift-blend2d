@@ -255,6 +255,9 @@ class SwiftBlend2DTests: XCTestCase {
     func testConicalGradient() {
         let img = BLImage(width: 200, height: 200, format: .prgb32)
         let ctx = BLContext(image: img)!
+        
+        ctx.setFillStyle(BLRgba32.transparentBlack)
+        ctx.clearAll()
 
         var gradient = BLGradient(conical: BLConicalGradientValues(x0: 100, y0: 100, angle: .pi / 2))
         gradient.addStop(0, BLRgba32.green)
