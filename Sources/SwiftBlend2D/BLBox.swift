@@ -48,6 +48,11 @@ public extension BLBox {
                                 newValue.x + w / 2, newValue.y + h / 2)
         }
     }
+    
+    @inlinable
+    init(_ box: BLBoxI) {
+        self.init(x0: Double(box.x0), y0: Double(box.y0), x1: Double(box.x1), y1: Double(box.y1))
+    }
 
     @inlinable
     init(x: Double, y: Double, width: Double, height: Double) {
