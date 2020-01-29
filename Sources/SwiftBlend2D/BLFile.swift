@@ -55,13 +55,6 @@ public final class BLFile: BLBaseClass<BLFileCore> {
     }
     
     @discardableResult
-    public func write(data: [UInt8]) throws -> Int {
-        return try data.withUnsafeBytes { pointer in
-            try write(buffer: pointer)
-        }
-    }
-    
-    @discardableResult
     public func write<T: ContiguousBytes>(data: T) throws -> Int {
         return try data.withUnsafeBytes { pointer in
             try write(buffer: pointer)
