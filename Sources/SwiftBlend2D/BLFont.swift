@@ -90,7 +90,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
     
     @discardableResult
-    func mapTextToGlyphs(_ buf: BLGlyphBuffer) -> BLGlyphMappingState {
+    public func mapTextToGlyphs(_ buf: BLGlyphBuffer) -> BLGlyphMappingState {
         var state = BLGlyphMappingState()
         blFontMapTextToGlyphs(&object, &buf.object, &state)
         return state
@@ -126,8 +126,8 @@ public class BLFont: BLBaseClass<BLFontCore> {
         return value
     }
     
-    public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> BLBoxI {
-        var out = BLBoxI()
+    public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> [BLBoxI] {
+        var out: [BLBoxI] = .init(repeating: .empty, count: glyphRun.size)
         blFontGetGlyphBounds(&object,
                              glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
                              Int(glyphRun.glyphAdvance),
@@ -137,8 +137,8 @@ public class BLFont: BLBaseClass<BLFontCore> {
         return out
     }
     
-    public func getGlyphAdvances(_ glyphRun: BLGlyphRun) -> BLGlyphPlacement {
-        var out = BLGlyphPlacement()
+    public func getGlyphAdvances(_ glyphRun: BLGlyphRun) -> [BLGlyphPlacement] {
+        var out: [BLGlyphPlacement] = .init(repeating: BLGlyphPlacement(), count: glyphRun.size)
         blFontGetGlyphAdvances(&object,
                                glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
                                Int(glyphRun.glyphAdvance),
