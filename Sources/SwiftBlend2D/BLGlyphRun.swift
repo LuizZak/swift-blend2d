@@ -4,37 +4,6 @@ public extension BLGlyphRun {
     var isEmpty: Bool {
         return size == 0
     }
-    
-    mutating func setGlyphData(_ glyphIds: UnsafeMutablePointer<UInt16>) {
-        setGlyphData(glyphIds, advance: MemoryLayout<UInt16>.size)
-    }
-    mutating func setGlyphData(_ itemData: UnsafeMutablePointer<UInt32>) {
-        setGlyphData(itemData, advance: MemoryLayout<UInt32>.size)
-    }
-
-    mutating func setGlyphData(_ data: UnsafeMutableRawPointer, advance: Int) {
-        glyphData = data
-        glyphAdvance = Int8(advance)
-    }
-
-    mutating func resetGlyphIdData() {
-        glyphData = nil
-        glyphAdvance = 0
-    }
-
-    mutating func setPlacementData<T>(_ data: UnsafeMutablePointer<T>) {
-        setPlacementData(data, advance: MemoryLayout<T>.stride)
-    }
-
-    mutating func setPlacementData(_ data: UnsafeMutableRawPointer, advance: Int) {
-        placementData = data
-        placementAdvance = Int8(advance)
-    }
-
-    mutating func resetPlacementData() {
-        placementData = nil
-        placementAdvance = 0
-    }
 }
 
 /// A helper to iterate over a `BLGlyphRun`.
