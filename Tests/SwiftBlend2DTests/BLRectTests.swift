@@ -132,4 +132,15 @@ class BLRectTests: XCTestCase {
         XCTAssertFalse(rect1.intersects(rect3))
         XCTAssert(rect2.intersects(rect3))
     }
+    
+    func testLocation() {
+        var rect = BLRect(x: 0, y: 0, w: 10, h: 15)
+        
+        rect.location = BLPoint(x: 20, y: 25)
+        
+        XCTAssertEqual(rect.x, 20)
+        XCTAssertEqual(rect.y, 25)
+        XCTAssertEqual(rect.w, 10)
+        XCTAssertEqual(rect.h, 15)
+    }
 }

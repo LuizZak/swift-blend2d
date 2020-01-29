@@ -50,6 +50,16 @@ public extension BLRectI {
             (x, y) = (newValue.x - w / 2, newValue.y - h / 2)
         }
     }
+    
+    @inlinable
+    var location: BLPointI {
+        get {
+            return BLPointI(x: x, y: y)
+        }
+        set {
+            (x, y) = (newValue.x, newValue.y)
+        }
+    }
 
     @inlinable
     var size: BLSizeI {
