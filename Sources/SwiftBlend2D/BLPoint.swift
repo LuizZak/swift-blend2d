@@ -33,6 +33,24 @@ public extension BLPoint {
     func dot(_ other: BLPoint) -> Double {
         return x * other.x + y * other.y
     }
+    
+    /// Returns the distance between this and another point
+    @inlinable
+    func distance(to other: BLPoint) -> Double {
+        let dx = x - other.x
+        let dy = y - other.y
+        
+        return sqrt(dx * dx + dy * dy)
+    }
+    
+    /// Returns the distance (squared) between this and another point
+    @inlinable
+    func distanceSquared(to other: BLPoint) -> Double {
+        let dx = x - other.x
+        let dy = y - other.y
+        
+        return dx * dx + dy * dy
+    }
 }
 
 // MARK: - Operators - BLPoint
