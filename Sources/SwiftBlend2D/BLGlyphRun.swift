@@ -36,8 +36,8 @@ public extension BLGlyphRun {
 /// }
 /// ```
 public struct BLGlyphRunIterator {
-    var index: Int
-    var size: Int
+    public private(set) var index: Int
+    public private(set) var size: Int
     var glyphIdData: UnsafeMutableRawPointer?
     var placementData: UnsafeMutableRawPointer?
     var glyphIdAdvance: Int
@@ -83,7 +83,7 @@ public struct BLGlyphRunIterator {
     }
     
     public mutating func advance() {
-        if index >= size {
+        if atEnd {
             return
         }
         
