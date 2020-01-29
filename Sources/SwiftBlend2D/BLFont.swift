@@ -128,6 +128,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     
     public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> [BLBoxI] {
         var out: [BLBoxI] = .init(repeating: .empty, count: glyphRun.size)
+        
         blFontGetGlyphBounds(&object,
                              glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
                              Int(glyphRun.glyphAdvance),
@@ -138,7 +139,9 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
     
     public func getGlyphAdvances(_ glyphRun: BLGlyphRun) -> [BLGlyphPlacement] {
-        var out: [BLGlyphPlacement] = .init(repeating: BLGlyphPlacement(), count: glyphRun.size)
+        var out: [BLGlyphPlacement] = .init(repeating: BLGlyphPlacement(),
+                                            count: glyphRun.size)
+        
         blFontGetGlyphAdvances(&object,
                                glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
                                Int(glyphRun.glyphAdvance),
