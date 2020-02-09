@@ -23,4 +23,20 @@ class BLFormatInfoTests: XCTestCase {
         XCTAssertEqual(BLFormatInfo.xrgb32, blFormatInfo.2)
         XCTAssertEqual(BLFormatInfo.a8, blFormatInfo.3)
     }
+    
+    func testInitQuery() {
+        XCTAssertNil(BLFormatInfo(query: .none))
+        XCTAssertEqual(BLFormatInfo(query: .a8), BLFormatInfo.a8)
+        XCTAssertEqual(BLFormatInfo(query: .prgb32), BLFormatInfo.prgb32)
+        XCTAssertEqual(BLFormatInfo(query: .xrgb32), BLFormatInfo.xrgb32)
+    }
+    
+    func testSanitize() throws {
+        var format = BLFormatInfo.a8
+        try format.sanitize()
+        
+        var invalidFormat = BLFormatInfo()
+        
+        XCTAssertThrowsError(try invalidFormat.sanitize())
+    }
 }
