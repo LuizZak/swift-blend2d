@@ -90,9 +90,9 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
     
     @discardableResult
-    public func mapTextToGlyphs(_ buf: BLGlyphBuffer) -> BLGlyphMappingState {
+    public func mapTextToGlyphs(_ buffer: BLGlyphBuffer) -> BLGlyphMappingState {
         var state = BLGlyphMappingState()
-        blFontMapTextToGlyphs(&object, &buf.object, &state)
+        blFontMapTextToGlyphs(&object, &buffer.object, &state)
         return state
     }
     
@@ -113,7 +113,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
 
     @inlinable
-    public func getTextMetrics(_ string: String) -> BLTextMetrics {
+    public func getTextMetrics<S: StringProtocol>(_ string: S) -> BLTextMetrics {
         let buffer = BLGlyphBuffer()
         buffer.setText(string)
         return getTextMetrics(buffer)

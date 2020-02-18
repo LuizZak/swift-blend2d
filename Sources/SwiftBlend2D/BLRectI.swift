@@ -2,6 +2,11 @@ import blend2d
 
 public extension BLRectI {
     @inlinable
+    static var empty: BLRect {
+        return BLRect(x: 0, y: 0, w: 0, h: 0)
+    }
+
+    @inlinable
     var topLeft: BLPointI {
         return BLPointI(x: x, y: y)
     }
@@ -71,6 +76,11 @@ public extension BLRectI {
         }
     }
 
+    @inlinable
+    var asBLBoxI: BLBoxI {
+        return BLBoxI(x: Int(x), y: Int(y), width: Int(w), height: Int(h))
+    }
+
     init(location: BLPointI, size: BLSizeI) {
         self.init(x: location.x, y: location.y, w: size.w, h: size.h)
     }
@@ -91,6 +101,11 @@ public extension BLRectI {
     @inlinable
     func resized(width: Int, height: Int) -> BLRectI {
         return BLRectI(x: x, y: y, w: Int32(width), h: Int32(height))
+    }
+    
+    @inlinable
+    func offsetBy(x: Int, y: Int) -> BLRectI {
+        return BLRectI(x: self.x + Int32(x), y: self.y + Int32(y), w: w, h: h)
     }
 
     @inlinable

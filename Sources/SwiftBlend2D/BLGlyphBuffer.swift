@@ -3,7 +3,7 @@ import blend2d
 public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     @inlinable
     public var glyphRun: BLGlyphRun {
-        return object.impl.pointee.glyphRun
+        return blGlyphBufferGetGlyphRun(&object).pointee
     }
 
     /// Gets the glyph ids from this buffer.

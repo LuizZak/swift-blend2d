@@ -821,6 +821,18 @@ public extension BLExtendMode {
     static let reflectXRepeatY = BL_EXTEND_MODE_REFLECT_X_REPEAT_Y
 }
 
+/// Blend2D runtime limits.
+///
+/// - note: These constanst are used across Blend2D, but they are not designed
+/// to be ABI stable. New versions of Blend2D can increase certain limits without
+/// notice. Use runtime to query the limits dynamically, see `BLRuntimeBuildInfo`.
+public extension BLRuntimeLimits {
+    /// Maximum width and height of an image.
+    static let imageSize = BL_RUNTIME_MAX_IMAGE_SIZE
+    /// Maximum number of threads for asynchronous operations (including rendering).
+    static let threadCount = BL_RUNTIME_MAX_THREAD_COUNT
+}
+
 public extension BLRuntimeInfoType {
     /// Blend2D build information.
     static let build = BL_RUNTIME_INFO_TYPE_BUILD
@@ -828,6 +840,60 @@ public extension BLRuntimeInfoType {
     static let memory = BL_RUNTIME_INFO_TYPE_MEMORY
     /// Runtime information regarding memory used, reserved, etc...
     static let system = BL_RUNTIME_INFO_TYPE_SYSTEM
+}
+
+/// Blend2D runtime build type.
+public extension BLRuntimeBuildType {
+  /// Describes a Blend2D debug build.
+  static let debug = BL_RUNTIME_BUILD_TYPE_DEBUG
+  /// Describes a Blend2D release build.
+  static let release = BL_RUNTIME_BUILD_TYPE_RELEASE
+}
+
+/// CPU architecture that can be queried by `BLRuntime::querySystemInfo()`.
+public extension BLRuntimeCpuArch {
+    /// Unknown architecture.
+    static let unknown = BL_RUNTIME_CPU_ARCH_UNKNOWN
+    /// 32-bit or 64-bit X86 architecture.
+    static let x86 = BL_RUNTIME_CPU_ARCH_X86
+    /// 32-bit or 64-bit ARM architecture.
+    static let arm = BL_RUNTIME_CPU_ARCH_ARM
+    /// 32-bit or 64-bit MIPS architecture.
+    static let mips = BL_RUNTIME_CPU_ARCH_MIPS
+}
+
+/// CPU features Blend2D supports.
+public extension BLRuntimeCpuFeatures {
+    static let x86_sse2 = BL_RUNTIME_CPU_FEATURE_X86_SSE2
+    static let x86_sse3 = BL_RUNTIME_CPU_FEATURE_X86_SSE3
+    static let x86_ssse3 = BL_RUNTIME_CPU_FEATURE_X86_SSSE3
+    static let x86_sse4_1 = BL_RUNTIME_CPU_FEATURE_X86_SSE4_1
+    static let x86_sse4_2 = BL_RUNTIME_CPU_FEATURE_X86_SSE4_2
+    static let x86_avx = BL_RUNTIME_CPU_FEATURE_X86_AVX
+    static let x86_avx2 = BL_RUNTIME_CPU_FEATURE_X86_AVX2
+}
+
+/// Runtime cleanup flags that can be used through `BLRuntime::cleanup()`.
+public extension BLRuntimeCleanupFlags {
+    /// Cleanup object memory pool.
+    static let objectPool = BL_RUNTIME_CLEANUP_OBJECT_POOL
+    /// Cleanup zeroed memory pool.
+    static let zeroedPool = BL_RUNTIME_CLEANUP_ZEROED_POOL
+    /// Cleanup thread pool (would join unused threads).
+    static let threadPool = BL_RUNTIME_CLEANUP_THREAD_POOL
+
+    /// Cleanup everything.
+    static let everything = BL_RUNTIME_CLEANUP_EVERYTHING
+}
+
+/// Rendering context type.
+public extension BLContextType {
+    /// No rendering context.
+    static let none = BL_CONTEXT_TYPE_NONE
+    /// Dummy rendering context.
+    static let dummy = BL_CONTEXT_TYPE_DUMMY
+    /// Software-accelerated rendering context.
+    static let raster = BL_CONTEXT_TYPE_RASTER
 }
 
 public extension BLBooleanOp {
@@ -1127,7 +1193,7 @@ public extension BLFontFaceFlags {
     static let lastResortFont = BL_FONT_FACE_FLAG_LAST_RESORT_FONT
 }
 
-extension BLFontFaceDiagFlags {
+public extension BLFontFaceDiagFlags {
     /// Wront data in 'name' table.
     static let wrongNameData = BL_FONT_FACE_DIAG_WRONG_NAME_DATA
     /// Fixed data read from 'name' table and possibly fixed font family/subfamily name.
@@ -1151,8 +1217,19 @@ extension BLFontFaceDiagFlags {
     static let wrongGsubData = BL_FONT_FACE_DIAG_WRONG_GSUB_DATA
 }
 
+public extension BLFontOutlineType {
+    /// None.
+    static let none = BL_FONT_OUTLINE_TYPE_NONE
+    /// Truetype outlines.
+    static let truetype = BL_FONT_OUTLINE_TYPE_TRUETYPE
+    /// OpenType (CFF) outlines.
+    static let cff = BL_FONT_OUTLINE_TYPE_CFF
+    /// OpenType (CFF2) outlines (font variations support).
+    static let cff2 = BL_FONT_OUTLINE_TYPE_CFF2
+}
+
 /// Flags used by `BLPixelConverter::create()` function.
-extension BLPixelConverterCreateFlags {
+public extension BLPixelConverterCreateFlags {
     /// Specifies that the source palette in `BLFormatInfo` doesn't have to by
     /// copied by `BLPixelConverter`. The caller must ensure that the palette
     /// would stay valid until the pixel converter is destroyed.
@@ -1217,6 +1294,177 @@ public extension BLPathFlags {
     static let dirty = BL_PATH_FLAG_DIRTY
 }
 
+/// Placement of glyphs stored in a `BLGlyphRun`.
+public extension BLGlyphPlacementType {
+    /// No placement (custom handling by `BLPathSinkFunc`).
+    static let none = BL_GLYPH_PLACEMENT_TYPE_NONE
+    /// Each glyph has a BLGlyphPlacement (advance + offset).
+    static let advanceOffset = BL_GLYPH_PLACEMENT_TYPE_ADVANCE_OFFSET
+    /// Each glyph has a BLPoint offset in design-space units.
+    static let designUnits = BL_GLYPH_PLACEMENT_TYPE_DESIGN_UNITS
+    /// Each glyph has a BLPoint offset in user-space units.
+    static let userUnits = BL_GLYPH_PLACEMENT_TYPE_USER_UNITS
+    /// Each glyph has a BLPoint offset in absolute units.
+    static let absoluteUnits = BL_GLYPH_PLACEMENT_TYPE_ABSOLUTE_UNITS
+}
+
+public extension BLGlyphRunFlags {
+    /// Glyph-run contains USC-4 string and not glyphs (glyph-buffer only).
+    static let ucs4Content = BL_GLYPH_RUN_FLAG_UCS4_CONTENT
+    /// Glyph-run was created from text that was not a valid unicode.
+    static let invalidText = BL_GLYPH_RUN_FLAG_INVALID_TEXT
+    /// Not the whole text was mapped to glyphs (contains undefined glyphs).
+    static let undefinedGlyphs = BL_GLYPH_RUN_FLAG_UNDEFINED_GLYPHS
+    /// Encountered invalid font-data during text / glyph processing.
+    static let invalidFontData = BL_GLYPH_RUN_FLAG_INVALID_FONT_DATA
+}
+
+public extension BLFontDataFlags {
+    /// Font data references a font-collection.
+    static let collection = BL_FONT_DATA_FLAG_COLLECTION
+}
+
+/// Text direction.
+public extension BLTextDirection {
+    /// Left-to-right direction.
+    static let ltr = BL_TEXT_DIRECTION_LTR
+    /// Right-to-left direction.
+    static let rtl = BL_TEXT_DIRECTION_RTL
+}
+
+/// Text orientation.
+public extension BLTextOrientation {
+    /// Horizontal orientation.
+    static let horizontal = BL_TEXT_ORIENTATION_HORIZONTAL
+    /// Vertical orientation.
+    static let vertical = BL_TEXT_ORIENTATION_VERTICAL
+}
+
+/// Font string identifiers used by OpenType 'name' table.
+public extension BLFontStringId {
+    /// Copyright notice.
+    static let copyrightNotice = BL_FONT_STRING_COPYRIGHT_NOTICE
+    /// Font family name.
+    static let familyName = BL_FONT_STRING_FAMILY_NAME
+    /// Font subfamily name.
+    static let subfamilyName = BL_FONT_STRING_SUBFAMILY_NAME
+    /// Unique font identifier.
+    static let uniqueIdentifier = BL_FONT_STRING_UNIQUE_IDENTIFIER
+    /// Full font name that reflects all family and relevant subfamily descriptors.
+    static let fullName = BL_FONT_STRING_FULL_NAME
+    /// Version string. Should begin with the synta `Version <number>.<number>`.
+    static let versionString = BL_FONT_STRING_VERSION_STRING
+    /// PostScript name for the font.
+    static let postScriptName = BL_FONT_STRING_POST_SCRIPT_NAME
+    /// Trademark notice/information for this font.
+    static let trademark = BL_FONT_STRING_TRADEMARK
+    /// Manufacturer name.
+    static let manufacturerName = BL_FONT_STRING_MANUFACTURER_NAME
+    /// Name of the designer of the typeface.
+    static let designerName = BL_FONT_STRING_DESIGNER_NAME
+    /// Description of the typeface.
+    static let description = BL_FONT_STRING_DESCRIPTION
+    /// URL of font vendor.
+    static let vendorUrl = BL_FONT_STRING_VENDOR_URL
+    /// URL of typeface designer.
+    static let designerUrl = BL_FONT_STRING_DESIGNER_URL
+    /// Description of how the font may be legally used.
+    static let licenseDescription = BL_FONT_STRING_LICENSE_DESCRIPTION
+    /// URL where additional licensing information can be found.
+    static let licenseInfoUrl = BL_FONT_STRING_LICENSE_INFO_URL
+    /// Reserved.
+    static let reserved = BL_FONT_STRING_RESERVED
+    /// Typographic family name.
+    static let typographicFamilyName = BL_FONT_STRING_TYPOGRAPHIC_FAMILY_NAME
+    /// Typographic subfamily name.
+    static let typographicSubfamilyName = BL_FONT_STRING_TYPOGRAPHIC_SUBFAMILY_NAME
+    /// Compatible full name (MAC only).
+    static let compatibleFullName = BL_FONT_STRING_COMPATIBLE_FULL_NAME
+    /// Sample text - font name or any other text from the designer.
+    static let sampleText = BL_FONT_STRING_SAMPLE_TEXT
+    /// PostScript CID findfont name.
+    static let postScriptCidName = BL_FONT_STRING_POST_SCRIPT_CID_NAME
+    /// WWS family name.
+    static let wwsFamilyName = BL_FONT_STRING_WWS_FAMILY_NAME
+    /// WWS subfamily name.
+    static let wwsSubfamilyName = BL_FONT_STRING_WWS_SUBFAMILY_NAME
+    /// Light background palette.
+    static let lightBackgroundPalette = BL_FONT_STRING_LIGHT_BACKGROUND_PALETTE
+    /// Dark background palette.
+    static let darkBackgroundPalette = BL_FONT_STRING_DARK_BACKGROUND_PALETTE
+    /// Variations PostScript name prefix.
+    static let variationsPostScriptPrefix = BL_FONT_STRING_VARIATIONS_POST_SCRIPT_PREFIX
+}
+
+/// Rendering context create-flags.
+public extension BLContextCreateFlags {
+    /// When creating an asynchronous rendering context that uses threads for
+    /// rendering, the rendering context can sometimes allocate less threads
+    /// than specified if the built-in thread-pool doesn't have enough threads
+    /// available. This flag will force the thread-pool to override the thread
+    /// limit temporarily to fulfill the thread count requirement.
+    ///
+    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount == 0`.
+    static let forceThreads = BL_CONTEXT_CREATE_FLAG_FORCE_THREADS
+
+    /// Fallback to synchronous rendering in case that acquiring threads from
+    /// thread-pool failed. This flag only makes sense when asynchronous mode
+    /// was specified by having non-zero thread count. In that case if the
+    /// rendering context fails to acquire at least one thread it would fallback
+    /// to synchronous mode instead.
+    ///
+    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount == 0`.
+    static let fallbackToSync = BL_CONTEXT_CREATE_FLAG_FALLBACK_TO_SYNC
+
+    /// If this flag is specified and asynchronous rendering is enabled then
+    /// the context would create its own isolated thread-pool, which is useful
+    /// for debugging purposes.
+    ///
+    /// Do not use this flag in production as rendering contexts with isolated
+    /// thread-pool have to create and destroy all threads they use. This flag
+    /// is only useful for testing, debugging, and isolated benchmarking.
+    static let isolatedThreads = BL_CONTEXT_CREATE_FLAG_ISOLATED_THREADS
+
+    /// If this flag is specified and JIT pipeline generation enabled then the
+    /// rendering context would create its own isolated JIT runtime. which is
+    /// useful for debugging purposes. This flag will be ignored if JIT pipeline
+    /// generation is either not supported or was disabled by other flags.
+    ///
+    /// Do not use this flag in production as rendering contexts with isolated
+    /// JIT runtime do not use global pipeline cache, that's it, after the
+    /// rendering context is destroyed the JIT runtime is destroyed with it with
+    /// all compiled pipelines. This flag is only useful for testing, debugging,
+    /// and isolated benchmarking.
+    static let isolatedJit = BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT
+
+    /// Override CPU features when creating isolated context.
+    static let overrideCpuFeatures = BL_CONTEXT_CREATE_FLAG_OVERRIDE_CPU_FEATURES
+}
+
+/// Clip mode.
+public extension BLClipMode {
+    /// Clipping to a rectangle that is aligned to the pixel grid.
+    static let alignedRect = BL_CLIP_MODE_ALIGNED_RECT
+    /// Clipping to a rectangle that is not aligned to pixel grid.
+    static let unalignedRect = BL_CLIP_MODE_UNALIGNED_RECT
+    /// Clipping to a non-rectangular area that is defined by using mask.
+    static let mask = BL_CLIP_MODE_MASK
+}
+
+/// Flags used by `BLImageInfo`.
+public extension BLImageInfoFlags {
+  /// Progressive mode.
+  static let progressive = BL_IMAGE_INFO_FLAG_PROGRESSIVE
+}
+
+/// Mode that specifies how to construct offset curves.
+public extension BLOffsetMode {
+  /// Use default mode (decided by Blend2D).
+  static let `default` = BL_OFFSET_MODE_DEFAULT
+  /// Iterative offset construction.
+  static let iterative = BL_OFFSET_MODE_ITERATIVE
+}
+
 extension BLImageCodecFeatures: OptionSet { }
 extension BLPathFlags: OptionSet { }
 extension BLContextCreateFlags: OptionSet { }
@@ -1227,3 +1475,6 @@ extension BLFontFaceDiagFlags: OptionSet { }
 extension BLFormatFlags: OptionSet { }
 extension BLFileOpenFlags: OptionSet { }
 extension BLFileReadFlags: OptionSet { }
+extension BLFontDataFlags: OptionSet { }
+extension BLImageInfoFlags: OptionSet { }
+extension BLPixelConverterCreateFlags: OptionSet { }

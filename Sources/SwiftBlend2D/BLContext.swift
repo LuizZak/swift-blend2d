@@ -763,7 +763,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
         var point = point
 
         return text.withCString { cString -> BLResult in
-            return blContextStrokeTextD(&object, &point, &font.object, cString, text.utf8.count - 1, BLTextEncoding.utf8.rawValue)
+            return blContextStrokeTextD(&object, &point, &font.object, cString, text.utf8.count, BLTextEncoding.utf8.rawValue)
         }
     }
     
@@ -1164,9 +1164,21 @@ public extension BLContext {
     /// core values are actually saved in `save()`, others will only be saved if
     /// they are modified. This means that consecutive calls to `save()` and
     /// `restore()` do almost nothing.
+    @inlinable
+    func save() {
+        blContextSave(&object, nil)
+    }
+    
+    /// Saves the current rendering context state, returning a cookie that must
+    /// be provided on the next `restore()` call.
+    ///
+    /// Blend2D uses optimizations that make `save()` a cheap operation. Only
+    /// core values are actually saved in `save()`, others will only be saved if
+    /// they are modified. This means that consecutive calls to `save()` and
+    /// `restore()` do almost nothing.
     @discardableResult
     @inlinable
-    func save() -> BLContextCookie {
+    func saveWithCookie() -> BLContextCookie {
         var cookie = BLContextCookie()
         blContextSave(&object, &cookie)
         return cookie

@@ -26,13 +26,13 @@ public extension BLContext.CreateOptions {
     struct CPUFeature: OptionSet {
         public static let empty: CPUFeature = []
         
-        public static let x86_SSE2 = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_SSE2.rawValue)
-        public static let x86_SSE3 = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_SSE3.rawValue)
-        public static let x86_SSSE3 = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_SSSE3.rawValue)
-        public static let x86_SSE4_1 = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_SSE4_1.rawValue)
-        public static let x86_SSE4_2 = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_SSE4_2.rawValue)
-        public static let x86_AVX = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_AVX.rawValue)
-        public static let x86_AVX2 = CPUFeature(rawValue: BL_RUNTIME_CPU_FEATURE_X86_AVX2.rawValue)
+        public static let x86_SSE2 = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_sse2.rawValue)
+        public static let x86_SSE3 = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_sse3.rawValue)
+        public static let x86_SSSE3 = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_ssse3.rawValue)
+        public static let x86_SSE4_1 = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_sse4_1.rawValue)
+        public static let x86_SSE4_2 = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_sse4_2.rawValue)
+        public static let x86_AVX = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_avx.rawValue)
+        public static let x86_AVX2 = CPUFeature(rawValue: BLRuntimeCpuFeatures.x86_avx2.rawValue)
         
         public var rawValue: UInt32
         
@@ -53,7 +53,7 @@ public extension BLContext.CreateOptions {
         /// requirement.
         ///
         /// NOTE: This flag is ignored if `BLContext.CreateOptions.threadCount == 0`.
-        public static let forceThreads = Flag(rawValue: BL_CONTEXT_CREATE_FLAG_FORCE_THREADS.rawValue)
+        public static let forceThreads = Flag(rawValue: BLContextCreateFlags.forceThreads.rawValue)
         
         /// Fallback to synchronous rendering in case that acquiring threads
         /// from thread-pool failed. This flag only makes sense when asynchronous
@@ -63,7 +63,7 @@ public extension BLContext.CreateOptions {
         /// fallback to synchronous mode instead.
         ///
         /// NOTE: This flag is ignored if `BLContext.CreateOptions.threadCount == 0`.
-        public static let fallbackToSync = Flag(rawValue: BL_CONTEXT_CREATE_FLAG_FALLBACK_TO_SYNC.rawValue)
+        public static let fallbackToSync = Flag(rawValue: BLContextCreateFlags.fallbackToSync.rawValue)
         
         /// If this flag is specified and asynchronous rendering is enabled then
         /// the context would create its own isolated thread-pool, which is
@@ -73,7 +73,7 @@ public extension BLContext.CreateOptions {
         /// isolated thread-pool have to create and destroy all threads they use.
         /// This flag is only useful for testing, debugging, and isolated
         /// benchmarking.
-        public static let isolatedThreads = Flag(rawValue: BL_CONTEXT_CREATE_FLAG_ISOLATED_THREADS.rawValue)
+        public static let isolatedThreads = Flag(rawValue: BLContextCreateFlags.isolatedThreads.rawValue)
         
         /// If this flag is specified and JIT pipeline generation enabled then
         /// the rendering context would create its own isolated JIT runtime.
@@ -86,7 +86,7 @@ public extension BLContext.CreateOptions {
         /// rendering context is destroyed the JIT runtime is destroyed with it
         /// with all compiled pipelines. This flag is only useful for testing,
         /// debugging, and isolated benchmarking.
-        public static let isolatedJit = Flag(rawValue: BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT.rawValue)
+        public static let isolatedJit = Flag(rawValue: BLContextCreateFlags.isolatedJit.rawValue)
         
         /// Override CPU features when creating isolated context.
         public static let overrideCpuFeatures = Flag(rawValue: BL_CONTEXT_CREATE_FLAG_OVERRIDE_CPU_FEATURES.rawValue)

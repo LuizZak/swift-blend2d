@@ -7,6 +7,12 @@ public extension BLMatrix2D {
     }
 }
 
+extension BLMatrix2D: CustomStringConvertible {
+    public var description: String {
+        return "{ m00: \(m00), m01: \(m01), m10: \(m10), m11: \(m11), m20: \(m20), m21: \(m21) }"
+    }
+}
+
 extension BLMatrix2D: Equatable {
     @inlinable
     public static func ==(lhs: BLMatrix2D, rhs: BLMatrix2D) -> Bool {
@@ -229,10 +235,10 @@ public extension BLMatrix2D {
     @inlinable
     @discardableResult
     mutating func translate(x: Double, y: Double) -> BLResult {
-        self.m20 += x * self.m00 + y * self.m10
-        self.m21 += x * self.m01 + y * self.m11
-        
-        return BL_SUCCESS.rawValue
+        var point = [
+            x, y
+        ]
+        return blMatrix2DApplyOp(&self, BLMatrix2DOp.translate.rawValue, &point)
     }
     
     @inlinable
@@ -254,12 +260,10 @@ public extension BLMatrix2D {
     @inlinable
     @discardableResult
     mutating func scale(x: Double, y: Double) -> BLResult {
-        self.m00 *= x
-        self.m01 *= x
-        self.m10 *= y
-        self.m11 *= y
-        
-        return BL_SUCCESS.rawValue
+        var point = [
+            x, y
+        ]
+        return blMatrix2DApplyOp(&self, BLMatrix2DOp.scale.rawValue, &point)
     }
     
     @inlinable
@@ -419,7 +423,7 @@ public extension BLMatrix2D {
         BLMatrix2D.invert(destination: &self, source: self)
     }
     
-    /// Map Points and Primitives
+    // Map Points and Primitives
     @inlinable
     func mapPoint(x: Double, y: Double) -> BLPoint {
         return BLPoint(x: x * m00 + y * m10 + m20, y: x * m01 + y * m11 + m21)
@@ -473,7 +477,7 @@ public extension BLMatrix2D {
 
         let transformed = mapPolygon(points)
 
-        return BLBox(boundsForPoints: transformed).asRectangle
+        return BLBox(boundsForPoints: transformed).asBLRect
     }
     
     /// Inverts `source` matrix and stores the result in `desination`.

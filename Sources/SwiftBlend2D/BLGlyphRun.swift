@@ -39,7 +39,7 @@ public struct BLGlyphRunIterator {
     public private(set) var index: Int
     public private(set) var size: Int
     var glyphIdData: UnsafeMutableRawPointer?
-    var placementData: UnsafeMutableRawPointer?
+    var placementDataPointer: UnsafeMutableRawPointer?
     var glyphIdAdvance: Int
     var placementAdvance: Int
     
@@ -50,14 +50,33 @@ public struct BLGlyphRunIterator {
     }
     
     public var hasPlacement: Bool {
-        return placementData != nil
+        return placementDataPointer != nil
+    }
+
+    /// Placement data that depends on the stored placement data on the currently
+    /// iterating `BLGlyphRun`
+    public var placementData: PlacementData {
+        switch BLGlyphPlacementType(UInt32(glyphRun.placementType)) {
+        case .none:
+            return .none
+        case .advanceOffset:
+            return .advanceOffset(placement(as: BLGlyphPlacement.self)!)
+        case .designUnits:
+            return .designUnits(placement(as: BLPoint.self)!)
+        case .userUnits:
+            return .userUnits(placement(as: BLPoint.self)!)
+        case .absoluteUnits:
+            return .absoluteUnits(placement(as: BLPoint.self)!)
+        default:
+            return .none
+        }
     }
     
-    init(glyphRun: BLGlyphRun) {
+    public init(glyphRun: BLGlyphRun) {
         index = 0
         size = glyphRun.size
         glyphIdData = glyphRun.glyphData
-        placementData = glyphRun.placementData
+        placementDataPointer = glyphRun.placementData
         glyphIdAdvance = Int(glyphRun.glyphAdvance)
         placementAdvance = Int(glyphRun.placementAdvance)
         
@@ -79,7 +98,7 @@ public struct BLGlyphRunIterator {
     }
     
     public func placement<T>(as type: T.Type) -> T? {
-        return placementData?.load(as: type)
+        return placementDataPointer?.load(as: type)
     }
     
     public mutating func advance() {
@@ -89,6 +108,14 @@ public struct BLGlyphRunIterator {
         
         index += 1
         glyphIdData = glyphIdData.map { $0 + glyphIdAdvance }
-        placementData = placementData.map { $0 + placementAdvance }
+        placementDataPointer = placementDataPointer.map { $0 + placementAdvance }
+    }
+
+    public enum PlacementData {
+        case none
+        case advanceOffset(BLGlyphPlacement)
+        case designUnits(BLPoint)
+        case userUnits(BLPoint)
+        case absoluteUnits(BLPoint)
     }
 }

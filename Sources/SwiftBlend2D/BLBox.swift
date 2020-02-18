@@ -34,7 +34,7 @@ public extension BLBox {
     }
 
     @inlinable
-    var asRectangle: BLRect {
+    var asBLRect: BLRect {
         return BLRect(x: x0, y: y0, w: w, h: h)
     }
     
