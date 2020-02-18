@@ -56,15 +56,7 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     }
     
     public func setGlyphs(_ glyphs: [UInt32]) {
-        glyphs.withUnsafeBufferPointer { pointer -> Void in
-            guard let pointer = pointer.baseAddress else {
-                return
-            }
-            
-            blGlyphBufferSetGlyphs(&object,
-                                   pointer,
-                                   glyphs.count)
-        }
+        blGlyphBufferSetGlyphs(&object, glyphs, glyphs.count)
     }
 }
 

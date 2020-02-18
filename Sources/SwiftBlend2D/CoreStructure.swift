@@ -5,7 +5,7 @@ import blend2d
 ///
 /// In cases an initializer or deinitialzier take more parameters than 'self',
 /// Swift wrapper classes must be created from scratch without inheriting from
-/// 'BLBaseClass'
+/// `BLBaseClass`
 public protocol CoreStructure: BLArrayElement {
     static var initializer: (UnsafeMutablePointer<Self>?) -> BLResult { get }
     static var deinitializer: (UnsafeMutablePointer<Self>?) -> BLResult { get }
