@@ -31,9 +31,9 @@ class BLCircleTests: XCTestCase {
         XCTAssertEqual(circle.r, 3)
     }
 
-    func testExpandBy() {
+    func testExpandedBy() {
         let circle = BLCircle(cx: 2, cy: 2, r: 4)
-        let expanded = circle.expanding(by: 2)
+        let expanded = circle.expanded(by: 2)
 
         XCTAssertEqual(expanded.cx, 2)
         XCTAssertEqual(expanded.cy, 2)

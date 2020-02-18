@@ -152,4 +152,24 @@ class BLRectITests: XCTestCase {
         XCTAssertEqual(rect.w, 10)
         XCTAssertEqual(rect.h, 15)
     }
+
+    func testAsBox() {
+        let rect = BLRectI(x: 1, y: 2, w: 3, h: 5)
+        let box = rect.asBLBoxI
+
+        XCTAssertEqual(box.x0, 1)
+        XCTAssertEqual(box.y0, 2)
+        XCTAssertEqual(box.x1, 4)
+        XCTAssertEqual(box.y1, 7)
+    }
+    
+    func testOffsetBy() {
+        let rect = BLRectI(x: 1, y: 2, w: 3, h: 5)
+        let result = rect.offsetBy(x: 2, y: 3)
+        
+        XCTAssertEqual(result.x, 3)
+        XCTAssertEqual(result.y, 5)
+        XCTAssertEqual(result.w, 3)
+        XCTAssertEqual(result.h, 5)
+    }
 }

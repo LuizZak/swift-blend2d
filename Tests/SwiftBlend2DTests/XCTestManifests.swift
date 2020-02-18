@@ -65,8 +65,13 @@ extension BLBoxITests {
         ("testCenter", testCenter),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
+        ("testEmpty", testEmpty),
         ("testEquals", testEquals),
         ("testHeight", testHeight),
+        ("testInitBoundsForPoints", testInitBoundsForPoints),
+        ("testInitBoundsForPointsEmpty", testInitBoundsForPointsEmpty),
+        ("testInitBoundsForPointsWithSinglePoint", testInitBoundsForPointsWithSinglePoint),
+        ("testInitWithRoundedBox", testInitWithRoundedBox),
         ("testInitWithWidthAndHeight", testInitWithWidthAndHeight),
         ("testInset", testInset),
         ("testOffsetBy", testOffsetBy),
@@ -87,8 +92,13 @@ extension BLBoxTests {
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testContainsPointI", testContainsPointI),
+        ("testEmpty", testEmpty),
         ("testEquals", testEquals),
         ("testHeight", testHeight),
+        ("testInitBoundsForPoints", testInitBoundsForPoints),
+        ("testInitBoundsForPointsEmpty", testInitBoundsForPointsEmpty),
+        ("testInitBoundsForPointsWithSinglePoint", testInitBoundsForPointsWithSinglePoint),
+        ("testInitWithBoxI", testInitWithBoxI),
         ("testInitWithWidthAndHeight", testInitWithWidthAndHeight),
         ("testInset", testInset),
         ("testOffsetBy", testOffsetBy),
@@ -109,7 +119,7 @@ extension BLCircleTests {
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testEquals", testEquals),
-        ("testExpandBy", testExpandBy),
+        ("testExpandedBy", testExpandedBy),
         ("testInitWithCoordinates", testInitWithCoordinates),
         ("testInitWithPoint", testInitWithPoint),
     ]
@@ -309,6 +319,7 @@ extension BLPointITests {
         ("testDivideDoubleInverse", testDivideDoubleInverse),
         ("testDotProduct", testDotProduct),
         ("testEquals", testEquals),
+        ("testInitRoundingPoint", testInitRoundingPoint),
         ("testMultiply", testMultiply),
         ("testMultiplyAssign", testMultiplyAssign),
         ("testMultiplyAssignDouble", testMultiplyAssignDouble),
@@ -381,13 +392,20 @@ extension BLRectITests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLRectITests = [
+        ("testAsBox", testAsBox),
         ("testCenter", testCenter),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testContainsPointI", testContainsPointI),
+        ("testContainsRect", testContainsRect),
         ("testEquals", testEquals),
+        ("testInitWithLocationAndSize", testInitWithLocationAndSize),
+        ("testInitWithRoundedRect", testInitWithRoundedRect),
         ("testInset", testInset),
+        ("testIntersects", testIntersects),
+        ("testLocation", testLocation),
         ("testQuadrants", testQuadrants),
+        ("testResized", testResized),
         ("testSides", testSides),
         ("testSize", testSize),
     ]
@@ -398,13 +416,19 @@ extension BLRectTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLRectTests = [
+        ("testAsBox", testAsBox),
         ("testCenter", testCenter),
         ("testContains", testContains),
         ("testContainsPoint", testContainsPoint),
         ("testContainsPointI", testContainsPointI),
+        ("testContainsRect", testContainsRect),
         ("testEquals", testEquals),
+        ("testInitWithLocationAndSize", testInitWithLocationAndSize),
         ("testInset", testInset),
+        ("testIntersects", testIntersects),
+        ("testLocation", testLocation),
         ("testQuadrants", testQuadrants),
+        ("testResized", testResized),
         ("testSides", testSides),
         ("testSize", testSize),
     ]
@@ -415,6 +439,7 @@ extension BLRegionTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BLRegionTests = [
+        ("testArbitraryBoxesCrash", testArbitraryBoxesCrash),
         ("testRegionScan", testRegionScan),
         ("testSubtract", testSubtract),
     ]
@@ -426,6 +451,7 @@ extension BLRgba128Tests {
     // to regenerate.
     static let __allTests__BLRgba128Tests = [
         ("testEquals", testEquals),
+        ("testFadedTowards", testFadedTowards),
         ("testWithTransparency", testWithTransparency),
     ]
 }
@@ -436,6 +462,7 @@ extension BLRgba32Tests {
     // to regenerate.
     static let __allTests__BLRgba32Tests = [
         ("testEquals", testEquals),
+        ("testFadedTowards", testFadedTowards),
         ("testInitWithChannels", testInitWithChannels),
         ("testInitWithRgba64", testInitWithRgba64),
         ("testInitWithValue", testInitWithValue),

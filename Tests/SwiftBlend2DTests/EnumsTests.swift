@@ -15,6 +15,9 @@ class EnumsTestsTests: XCTestCase {
         isOptionSet(BLFormatFlags.self)
         isOptionSet(BLFileOpenFlags.self)
         isOptionSet(BLFileReadFlags.self)
+        isOptionSet(BLFontDataFlags.self)
+        isOptionSet(BLImageInfoFlags.self)
+        isOptionSet(BLPixelConverterCreateFlags.self)
     }
 
     func isOptionSet<T: OptionSet>(_ value: T.Type) { }
