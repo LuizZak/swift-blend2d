@@ -35,7 +35,7 @@ public extension BLBoxI {
 
     @inlinable
     var asBLRectI: BLRectI {
-        return BLRectI(x: x0, y: y0, w: x1 - x0, h: y1 - y0)
+        return BLRectI(boxI: self)
     }
     
     @inlinable
@@ -50,8 +50,13 @@ public extension BLBoxI {
     }
 
     @inlinable
-    init(x: Int, y: Int, width: Int, height: Int) {
-        self.init(x0: Int32(x), y0: Int32(y), x1: Int32(x + width), y1: Int32(y + height))
+    init(x: Int, y: Int, w: Int, h: Int) {
+        self.init(x0: Int32(x), y0: Int32(y), x1: Int32(x + w), y1: Int32(y + h))
+    }
+
+    @inlinable
+    init(rectI: BLRectI) {
+        self.init(x0: rectI.x, y0: rectI.y, x1: rectI.x + rectI.w, y1: rectI.y + rectI.h)
     }
 
     @inlinable
@@ -60,6 +65,14 @@ public extension BLBoxI {
                   y0: Int32(round(box.y0)),
                   x1: Int32(round(box.x1)),
                   y1: Int32(round(box.y1)))
+    }
+
+    @inlinable
+    init(roundingRect rect: BLRect) {
+        self.init(x0: Int32(round(rect.x)),
+                  y0: Int32(round(rect.y)),
+                  x1: Int32(round(rect.right)),
+                  y1: Int32(round(rect.bottom)))
     }
 
     @inlinable

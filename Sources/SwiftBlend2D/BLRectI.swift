@@ -78,7 +78,7 @@ public extension BLRectI {
 
     @inlinable
     var asBLBoxI: BLBoxI {
-        return BLBoxI(x: Int(x), y: Int(y), width: Int(w), height: Int(h))
+        return BLBoxI(rectI: self)
     }
 
     init(location: BLPointI, size: BLSizeI) {
@@ -94,8 +94,24 @@ public extension BLRectI {
     }
 
     @inlinable
+    init(roundingBox box: BLBox) {
+        self.init(x: Int32(round(box.x0)),
+                  y: Int32(round(box.y0)),
+                  w: Int32(round(box.w)),
+                  h: Int32(round(box.h)))
+    }
+
+    @inlinable
+    init(boxI: BLBoxI) {
+        self.init(x: boxI.x0, y: boxI.y0, w: boxI.x1 - boxI.x0, h: boxI.y1 - boxI.y0)
+    }
+
+    @inlinable
     func insetBy(x: Int, y: Int) -> BLRectI {
-        return BLRectI(x: self.x + Int32(x) / 2, y: self.y + Int32(y) / 2, w: w - Int32(x), h: h - Int32(y))
+        return BLRectI(x: self.x + Int32(x) / 2,
+                       y: self.y + Int32(y) / 2,
+                       w: w - Int32(x),
+                       h: h - Int32(y))
     }
 
     @inlinable

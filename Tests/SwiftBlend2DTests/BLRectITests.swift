@@ -172,4 +172,23 @@ class BLRectITests: XCTestCase {
         XCTAssertEqual(result.w, 3)
         XCTAssertEqual(result.h, 5)
     }
+
+    func testInitWithBLBoxI() {
+        let boxI = BLBoxI(x: 1, y: 2, w: 3, h: 5)
+        let result = BLRectI(boxI: boxI)
+
+        XCTAssertEqual(result.x, 1)
+        XCTAssertEqual(result.y, 2)
+        XCTAssertEqual(result.w, 3)
+        XCTAssertEqual(result.h, 5)
+    }
+
+    func testInitWithRoundedBLBox() {
+        let rect = BLRectI(roundingBox: BLBox(x: 10.4, y: 10.6, w: 20.4, h: 20.6))
+
+        XCTAssertEqual(rect.x, 10)
+        XCTAssertEqual(rect.y, 11)
+        XCTAssertEqual(rect.w, 20)
+        XCTAssertEqual(rect.h, 21)
+    }
 }

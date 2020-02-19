@@ -163,4 +163,34 @@ class BLRectTests: XCTestCase {
         XCTAssertEqual(result.w, 3)
         XCTAssertEqual(result.h, 5)
     }
+
+    func testInitWithBLRectI() {
+        let rect = BLRectI(x: 1, y: 2, w: 3, h: 5)
+        let result = BLRect(rect)
+
+        XCTAssertEqual(result.x, 1)
+        XCTAssertEqual(result.y, 2)
+        XCTAssertEqual(result.w, 3)
+        XCTAssertEqual(result.h, 5)
+    }
+
+    func testInitWithBLBox() {
+        let box = BLBox(x: 1, y: 2, w: 3, h: 5)
+        let result = BLRect(box: box)
+
+        XCTAssertEqual(result.x, 1)
+        XCTAssertEqual(result.y, 2)
+        XCTAssertEqual(result.w, 3)
+        XCTAssertEqual(result.h, 5)
+    }
+
+    func testInitWithBLBoxI() {
+        let boxI = BLBoxI(x: 1, y: 2, w: 3, h: 5)
+        let result = BLRect(boxI: boxI)
+
+        XCTAssertEqual(result.x, 1)
+        XCTAssertEqual(result.y, 2)
+        XCTAssertEqual(result.w, 3)
+        XCTAssertEqual(result.h, 5)
+    }
 }

@@ -78,11 +78,29 @@ public extension BLRect {
 
     @inlinable
     var asBLBox: BLBox {
-        return BLBox(x: x, y: y, width: w, height: h)
+        return BLBox(rect: self)
     }
 
     init(location: BLPoint, size: BLSize) {
         self.init(x: location.x, y: location.y, w: size.w, h: size.h)
+    }
+
+    @inlinable
+    init(_ rectI: BLRectI) {
+        self.init(x: Double(rectI.x), y: Double(rectI.y), w: Double(rectI.w), h: Double(rectI.h))
+    }
+
+    @inlinable
+    init(box: BLBox) {
+        self.init(x: box.x0, y: box.y0, w: box.w, h: box.h)
+    }
+
+    @inlinable
+    init(boxI: BLBoxI) {
+        self.init(x: Double(boxI.x0),
+                  y: Double(boxI.y0),
+                  w: Double(boxI.x1 - boxI.x0),
+                  h: Double(boxI.y1 - boxI.y0))
     }
 
     @inlinable

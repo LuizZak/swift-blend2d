@@ -52,7 +52,7 @@ class BLBoxITests: XCTestCase {
     }
     
     func testInitWithWidthAndHeight() {
-        let box = BLBoxI(x: 5, y: 5, width: 10, height: 10)
+        let box = BLBoxI(x: 5, y: 5, w: 10, h: 10)
         
         XCTAssertEqual(box.x0, 5)
         XCTAssertEqual(box.y0, 5)
@@ -162,5 +162,23 @@ class BLBoxITests: XCTestCase {
         XCTAssertEqual(box.y0, 11)
         XCTAssertEqual(box.x1, 20)
         XCTAssertEqual(box.y1, 21)
+    }
+
+    func testInitWithBLRect() {
+        let box = BLBoxI(roundingRect: BLRect(x: 10.1, y: 10.5, w: 20.3, h: 20.3))
+
+        XCTAssertEqual(box.x0, 10)
+        XCTAssertEqual(box.y0, 11)
+        XCTAssertEqual(box.x1, 30)
+        XCTAssertEqual(box.y1, 31)
+    }
+
+    func testInitWithBLRectI() {
+        let box = BLBoxI(rectI: BLRectI(x: 1, y: 2, w: 3, h: 5))
+
+        XCTAssertEqual(box.x0, 1)
+        XCTAssertEqual(box.y0, 2)
+        XCTAssertEqual(box.x1, 4)
+        XCTAssertEqual(box.y1, 7)
     }
 }
