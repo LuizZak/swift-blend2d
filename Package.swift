@@ -12,15 +12,10 @@ let package = Package(
             name: "SwiftBlend2DSample",
             targets: ["SwiftBlend2DSample"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master"))
+    ],
     targets: [
-        .target(
-            name: "CLibPNG",
-            linkerSettings: [
-                .linkedLibrary("z")
-            ]),
-        .target(
-            name: "LibPNG",
-            dependencies: ["CLibPNG"]),
         .target(
             name: "SwiftBlend2D",
             dependencies: ["blend2d"]),
@@ -54,9 +49,6 @@ let package = Package(
                 .define("BL_STATIC")
             ]
         ),
-        .testTarget(
-            name: "LibPNGTests",
-            dependencies: ["LibPNG"]),
         .testTarget(
             name: "SwiftBlend2DTests",
             dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit", "LibPNG"]),
