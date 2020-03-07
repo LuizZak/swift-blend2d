@@ -1,13 +1,14 @@
 import blend2d
 
 public extension BLTriangle {
+    private static let equilateralHeight = 0.866025404
+    private static let equilateralOffset = 0.14433756733333333
+    
     /// An equilateral triangle where each side is unit-length.
     ///
     /// The centroid of the triangle is as (0, 0)
     ///
     /// The first point is the top-most center point of the triangle.
-    private static let equilateralHeight = 0.866025404
-    private static let equilateralOffset = 0.14433756733333333
     static var unitEquilateral = BLTriangle(x0: 0,
                                             y0: -equilateralHeight / 2 - equilateralOffset,
                                             x1: 0.5,
