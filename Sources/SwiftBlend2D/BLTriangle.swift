@@ -4,9 +4,9 @@ public extension BLTriangle {
     private static let equilateralHeight = 0.866025404
     private static let equilateralOffset = 0.14433756733333333
     
-    /// An equilateral triangle where each side is unit-length.
+    /// An upright equilateral triangle where each side is unit-length.
     ///
-    /// The centroid of the triangle is as (0, 0)
+    /// The centroid of the triangle is at (0, 0).
     ///
     /// The first point is the top-most center point of the triangle.
     static var unitEquilateral = BLTriangle(x0: 0,
@@ -73,7 +73,28 @@ public extension BLTriangle {
     func scaledBy(_ scale: BLPoint) -> BLTriangle {
         let center = centroid
         
-        return BLTriangle(p0: (p0 - center) * scale, p1: (p1 - center) * scale, p2: (p2 - center) * scale)
+        return BLTriangle(p0: center + (p0 - center) * scale,
+                          p1: center + (p1 - center) * scale,
+                          p2: center + (p2 - center) * scale)
+    }
+    
+    /// Returns a new copy of this triangle with the vertices offset by a given
+    /// pair of coordinates.
+    @inlinable
+    func offsetBy(x: Double, y: Double) -> BLTriangle {
+        return BLTriangle(x0: x0 + x,
+                          y0: y0 + y,
+                          x1: x1 + x,
+                          y1: y1 + y,
+                          x2: x2 + x,
+                          y2: y2 + y)
+    }
+    
+    /// Returns a new copy of this triangle with the vertices offset by a given
+    /// point.
+    @inlinable
+    func offsetBy(_ vector: BLPoint) -> BLTriangle {
+        return offsetBy(x: vector.x, y: vector.y)
     }
 
     @inlinable

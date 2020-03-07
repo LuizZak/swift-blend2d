@@ -86,15 +86,27 @@ class BLTriangleTests: XCTestCase {
     }
     
     func testScaledBy() {
-        let unit = BLTriangle.unitEquilateral
+        let unit = BLTriangle.unitEquilateral.offsetBy(x: 1, y: 1)
         let result = unit.scaledBy(x: 1, y: 2)
         
-        XCTAssertEqual(result.centroid.x, 0, accuracy: 1e-10)
-        XCTAssertEqual(result.centroid.y, 0, accuracy: 1e-10)
+        XCTAssertEqual(result.centroid.x, 1, accuracy: 1e-10)
+        XCTAssertEqual(result.centroid.y, 1, accuracy: 1e-10)
         XCTAssertEqual(result.bounds.size.w, 1, accuracy: 1e-8)
         XCTAssertEqual(result.bounds.size.h, 0.866025404 * 2, accuracy: 1e-8)
         XCTAssertEqual(result.p0.distanceSquared(to: result.p1), 3.25, accuracy: 1e-8)
         XCTAssertEqual(result.p1.distanceSquared(to: result.p2), 1, accuracy: 1e-8)
         XCTAssertEqual(result.p2.distanceSquared(to: result.p0), 3.25, accuracy: 1e-8)
+    }
+    
+    func testOffsetBy() {
+        let triangle = BLTriangle(p0: .zero, p1: .one, p2: BLPoint(x: 0, y: 1))
+        let result = triangle.offsetBy(x: 3, y: 4)
+        
+        XCTAssertEqual(result.x0, 3)
+        XCTAssertEqual(result.y0, 4)
+        XCTAssertEqual(result.x1, 4)
+        XCTAssertEqual(result.y1, 5)
+        XCTAssertEqual(result.x2, 3)
+        XCTAssertEqual(result.y2, 5)
     }
 }
