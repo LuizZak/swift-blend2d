@@ -56,17 +56,21 @@ public struct BLGlyphRunIterator {
     /// Placement data that depends on the stored placement data on the currently
     /// iterating `BLGlyphRun`
     public var placementData: PlacementData {
+        guard let pointer = placementDataPointer else {
+            return .none
+        }
+        
         switch BLGlyphPlacementType(UInt32(glyphRun.placementType)) {
         case .none:
             return .none
         case .advanceOffset:
-            return .advanceOffset(placement(as: BLGlyphPlacement.self)!)
+            return .advanceOffset(pointer.load(as: BLGlyphPlacement.self))
         case .designUnits:
-            return .designUnits(placement(as: BLPoint.self)!)
+            return .designUnits(pointer.load(as: BLPoint.self))
         case .userUnits:
-            return .userUnits(placement(as: BLPoint.self)!)
+            return .userUnits(pointer.load(as: BLPoint.self))
         case .absoluteUnits:
-            return .absoluteUnits(placement(as: BLPoint.self)!)
+            return .absoluteUnits(pointer.load(as: BLPoint.self))
         default:
             return .none
         }

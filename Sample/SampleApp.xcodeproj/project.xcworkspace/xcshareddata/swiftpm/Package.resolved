@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "LibPNG",
+        "repositoryURL": "https://github.com/LuizZak/swift-libpng.git",
+        "state": {
+          "branch": "master",
+          "revision": "a847b56393a128f7bf4f60be269895cf8ed5e990",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
