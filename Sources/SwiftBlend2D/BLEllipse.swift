@@ -2,6 +2,13 @@ import blend2d
 
 public extension BLEllipse {
     @inlinable
+    var boundingBox: BLBox {
+        get {
+            return BLBox(x0: cx - rx, y0: cy - ry, x1: cx + rx, y1: cy + ry)
+        }
+    }
+    
+    @inlinable
     init(center: BLPoint, radius: BLPoint) {
         self.init(cx: center.x, cy: center.y, rx: radius.x, ry: radius.y)
     }

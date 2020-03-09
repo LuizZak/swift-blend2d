@@ -64,4 +64,14 @@ class BLEllipseTests: XCTestCase {
         XCTAssertFalse(ellipse.contains(BLPoint(x: 12, y: 10)))
         XCTAssertFalse(ellipse.contains(BLPoint(x: 12, y: 8)))
     }
+    
+    func testBoundingBox() {
+        let ellipse = BLEllipse(cx: 5, cy: 10, rx: 2, ry: 1)
+        let result = ellipse.boundingBox
+        
+        XCTAssertEqual(result.x0, 3)
+        XCTAssertEqual(result.y0, 9)
+        XCTAssertEqual(result.x1, 7)
+        XCTAssertEqual(result.y1, 11)
+    }
 }

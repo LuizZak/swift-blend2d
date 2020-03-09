@@ -69,10 +69,10 @@ class BLTriangleTests: XCTestCase {
         XCTAssertFalse(sut.contains(BLPoint(x: -1, y: 0)))
     }
     
-    func testBounds() {
+    func testBoundingBox() {
         let sut = BLTriangle(x0: -5, y0: -5, x1: 10, y1: 10, x2: -8, y2: 7)
         
-        XCTAssertEqual(sut.bounds, BLRect(x: -8.0, y: -5.0, w: 18.0, h: 15.0))
+        XCTAssertEqual(sut.boundingBox, BLBox(x: -8.0, y: -5.0, w: 18.0, h: 15.0))
     }
     
     func testUnitEquilateral() {
@@ -91,8 +91,8 @@ class BLTriangleTests: XCTestCase {
         
         XCTAssertEqual(result.centroid.x, 1, accuracy: 1e-10)
         XCTAssertEqual(result.centroid.y, 1, accuracy: 1e-10)
-        XCTAssertEqual(result.bounds.size.w, 1, accuracy: 1e-8)
-        XCTAssertEqual(result.bounds.size.h, 0.866025404 * 2, accuracy: 1e-8)
+        XCTAssertEqual(result.boundingBox.w, 1, accuracy: 1e-8)
+        XCTAssertEqual(result.boundingBox.h, 0.866025404 * 2, accuracy: 1e-8)
         XCTAssertEqual(result.p0.distanceSquared(to: result.p1), 3.25, accuracy: 1e-8)
         XCTAssertEqual(result.p1.distanceSquared(to: result.p2), 1, accuracy: 1e-8)
         XCTAssertEqual(result.p2.distanceSquared(to: result.p0), 3.25, accuracy: 1e-8)

@@ -40,11 +40,11 @@ public extension BLTriangle {
     /// Returns the minimal rectangle capable of containing all three points of
     /// this triangle
     @inlinable
-    var bounds: BLRect {
+    var boundingBox: BLBox {
         let min = p0.pointwiseMin(p1.pointwiseMin(p2))
         let max = p0.pointwiseMax(p1.pointwiseMax(p2))
         
-        return BLRect(x: min.x, y: min.y, w: max.x - min.x, h: max.y - min.y)
+        return BLBox(x0: min.x, y0: min.y, x1: max.x, y1: max.y)
     }
     
     @inlinable
