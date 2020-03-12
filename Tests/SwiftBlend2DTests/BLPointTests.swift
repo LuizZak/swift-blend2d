@@ -172,4 +172,12 @@ class BLPointTests: XCTestCase {
 
         XCTAssertEqual(p1.dot(p2), 1 * 3 + 2 * 4)
     }
+    
+    func testRotatedBy() {
+        let point = BLPoint(x: 0, y: 1)
+        let result = point.rotated(by: -.pi / 2)
+        
+        XCTAssertEqual(result.x, 1, accuracy: 1e-15)
+        XCTAssertEqual(result.y, 0, accuracy: 1e-15)
+    }
 }

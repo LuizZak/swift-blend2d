@@ -51,6 +51,16 @@ public extension BLPoint {
         
         return dx * dx + dy * dy
     }
+    
+    /// Returns a new point which represents this point's coordinates rotated
+    /// around a (0, 0) origin by a given radian amount
+    @inlinable
+    func rotated(by angleInRadians: Double) -> BLPoint {
+        let c = cos(angleInRadians)
+        let s = sin(angleInRadians)
+        
+        return BLPoint(x: (c * x) - (s * y), y: (s * x) + (c * y))
+    }
 }
 
 // MARK: - Operators - BLPoint

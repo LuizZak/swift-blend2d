@@ -109,4 +109,40 @@ class BLTriangleTests: XCTestCase {
         XCTAssertEqual(result.x2, 3)
         XCTAssertEqual(result.y2, 5)
     }
+    
+    func testRotatedBy() {
+        let triangle = BLTriangle(p0: BLPoint(x: 1, y: 0), p1: BLPoint(x: 0, y: 1), p2: .zero)
+        let result = triangle.rotated(by: .pi / 2, around: .zero)
+        
+        XCTAssertEqual(result.x0, 0, accuracy: 1e-10)
+        XCTAssertEqual(result.y0, 1, accuracy: 1e-10)
+        XCTAssertEqual(result.x1, -1, accuracy: 1e-10)
+        XCTAssertEqual(result.y1, 0, accuracy: 1e-10)
+        XCTAssertEqual(result.x2, 0, accuracy: 1e-10)
+        XCTAssertEqual(result.y2, 0, accuracy: 1e-10)
+    }
+    
+    func testRotatedByAroundCentroid() {
+        let triangle = BLTriangle.unitEquilateral
+        let result = triangle.rotated(by: .pi)
+        
+        XCTAssertEqual(result.x0, 0, accuracy: 1e-10)
+        XCTAssertEqual(result.y0, 0.5773502693333333, accuracy: 1e-10)
+        XCTAssertEqual(result.x1, -0.5, accuracy: 1e-10)
+        XCTAssertEqual(result.y1, -0.28867513466666656, accuracy: 1e-10)
+        XCTAssertEqual(result.x2, 0.5, accuracy: 1e-10)
+        XCTAssertEqual(result.y2, -0.28867513466666656, accuracy: 1e-10)
+    }
+    
+    func testTransformedBy() {
+        let triangle = BLTriangle(p0: BLPoint(x: 1, y: 0), p1: BLPoint(x: 0, y: 1), p2: .zero)
+        let result = triangle.transformed(by: BLMatrix2D.makeRotation(angle: .pi / 2) * BLMatrix2D.makeTranslation(x: 10, y: 5))
+        
+        XCTAssertEqual(result.x0, 10, accuracy: 1e-10)
+        XCTAssertEqual(result.y0, 6, accuracy: 1e-10)
+        XCTAssertEqual(result.x1, 9, accuracy: 1e-10)
+        XCTAssertEqual(result.y1, 5, accuracy: 1e-10)
+        XCTAssertEqual(result.x2, 10, accuracy: 1e-10)
+        XCTAssertEqual(result.y2, 5, accuracy: 1e-10)
+    }
 }

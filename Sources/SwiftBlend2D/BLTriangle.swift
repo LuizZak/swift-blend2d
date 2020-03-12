@@ -53,6 +53,29 @@ public extension BLTriangle {
                   x1: p1.x, y1: p1.y,
                   x2: p2.x, y2: p2.y)
     }
+
+    @inlinable
+    func contains(x: Double, y: Double) -> Bool {
+        func sign(_ p1x: Double, _ p1y: Double, _ p2x: Double,
+                  _ p2y: Double, _ p3x: Double, _ p3y: Double) -> Double {
+
+            return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y)
+        }
+
+        let d1 = sign(x, y, x0, y0, x1, y1)
+        let d2 = sign(x, y, x1, y1, x2, y2)
+        let d3 = sign(x, y, x2, y2, x0, y0)
+
+        let has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0)
+        let has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0)
+
+        return !(has_neg && has_pos)
+    }
+
+    @inlinable
+    func contains(_ point: BLPoint) -> Bool {
+        return contains(x: point.x, y: point.y)
+    }
     
     /// Returns a new triangle represented by the coordinates of this triangle,
     /// scaled by a given factor around the centroid.
@@ -96,28 +119,29 @@ public extension BLTriangle {
     func offsetBy(_ vector: BLPoint) -> BLTriangle {
         return offsetBy(x: vector.x, y: vector.y)
     }
-
+    
+    /// Returns a new copy of this triangle with the vertices rotated along the
+    /// centroid by a given radian amount
     @inlinable
-    func contains(x: Double, y: Double) -> Bool {
-        func sign(_ p1x: Double, _ p1y: Double, _ p2x: Double,
-                  _ p2y: Double, _ p3x: Double, _ p3y: Double) -> Double {
-
-            return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y)
-        }
-
-        let d1 = sign(x, y, x0, y0, x1, y1)
-        let d2 = sign(x, y, x1, y1, x2, y2)
-        let d3 = sign(x, y, x2, y2, x0, y0)
-
-        let has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0)
-        let has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0)
-
-        return !(has_neg && has_pos)
+    func rotated(by angleInRadians: Double) -> BLTriangle {
+        return rotated(by: angleInRadians, around: centroid)
     }
-
+    
+    /// Returns a new copy of this triangle with the vertices rotated along the
+    /// given point by a given radian amount
     @inlinable
-    func contains(_ point: BLPoint) -> Bool {
-        return contains(x: point.x, y: point.y)
+    func rotated(by angleInRadians: Double, around center: BLPoint) -> BLTriangle {
+        let newP0 = center + (p0 - center).rotated(by: angleInRadians)
+        let newP1 = center + (p1 - center).rotated(by: angleInRadians)
+        let newP2 = center + (p2 - center).rotated(by: angleInRadians)
+        
+        return BLTriangle(p0: newP0, p1: newP1, p2: newP2)
+    }
+    
+    /// Returns a new copy of this triangle with the vertices transformed around
+    /// by a given matrix
+    func transformed(by matrix: BLMatrix2D) -> BLTriangle {
+        return BLTriangle(p0: matrix.mapPoint(p0), p1: matrix.mapPoint(p1), p2: matrix.mapPoint(p2))
     }
 }
 
