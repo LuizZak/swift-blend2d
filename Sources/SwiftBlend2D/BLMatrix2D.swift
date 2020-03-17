@@ -452,32 +452,30 @@ public extension BLMatrix2D {
     /// containing all four mapped points.
     @inlinable
     func mapBox(_ box: BLBox) -> BLBox {
-        let points = [
-            box.topLeft,
-            box.topRight,
-            box.bottomLeft,
-            box.bottomRight
-        ]
+        var minimum = mapPoint(box.topLeft).pointwiseMin(mapPoint(box.topRight))
+        minimum = minimum.pointwiseMin(mapPoint(box.bottomLeft))
+        minimum = minimum.pointwiseMin(mapPoint(box.bottomRight))
 
-        let transformed = mapPolygon(points)
+        var maximum = mapPoint(box.topLeft).pointwiseMax(mapPoint(box.topRight))
+        maximum = maximum.pointwiseMax(mapPoint(box.bottomLeft))
+        maximum = maximum.pointwiseMax(mapPoint(box.bottomRight))
 
-        return BLBox(boundsForPoints: transformed)
+        return BLBox(x0: minimum.x, y0: minimum.y, x1: maximum.x, y1: maximum.y)
     }
 
     /// Maps the corners of a given rectangle into a newer minimal rectangle
     /// capable of containing all four mapped points.
     @inlinable
     func mapRect(_ rect: BLRect) -> BLRect {
-        let points = [
-            rect.topLeft,
-            rect.topRight,
-            rect.bottomLeft,
-            rect.bottomRight
-        ]
+        var minimum = mapPoint(rect.topLeft).pointwiseMin(mapPoint(rect.topRight))
+        minimum = minimum.pointwiseMin(mapPoint(rect.bottomLeft))
+        minimum = minimum.pointwiseMin(mapPoint(rect.bottomRight))
 
-        let transformed = mapPolygon(points)
+        var maximum = mapPoint(rect.topLeft).pointwiseMax(mapPoint(rect.topRight))
+        maximum = maximum.pointwiseMax(mapPoint(rect.bottomLeft))
+        maximum = maximum.pointwiseMax(mapPoint(rect.bottomRight))
 
-        return BLBox(boundsForPoints: transformed).asBLRect
+        return BLBox(x0: minimum.x, y0: minimum.y, x1: maximum.x, y1: maximum.y).asBLRect
     }
     
     /// Inverts `source` matrix and stores the result in `desination`.
