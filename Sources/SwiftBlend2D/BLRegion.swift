@@ -236,7 +236,7 @@ public struct BLRegion {
 }
 
 extension BLRegion: Equatable {
-    public static func ==(lhs: BLRegion, rhs: BLRegion) -> Bool {
+    public static func == (lhs: BLRegion, rhs: BLRegion) -> Bool {
         return blRegionEquals(&lhs.box.object, &rhs.box.object)
     }
 }

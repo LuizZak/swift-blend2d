@@ -122,7 +122,7 @@ public extension BLImageCodec {
 }
 
 extension BLImageCodec: Equatable {
-    public static func ==(lhs: BLImageCodec, rhs: BLImageCodec) -> Bool {
+    public static func == (lhs: BLImageCodec, rhs: BLImageCodec) -> Bool {
         return lhs.object.impl == rhs.object.impl
     }
 }

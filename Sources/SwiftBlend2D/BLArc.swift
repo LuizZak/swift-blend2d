@@ -9,7 +9,7 @@ public extension BLArc {
 
 extension BLArc: Equatable {
     @inlinable
-    public static func ==(lhs: BLArc, rhs: BLArc) -> Bool {
+    public static func == (lhs: BLArc, rhs: BLArc) -> Bool {
         return lhs.cx == rhs.cx
             && lhs.cy == rhs.cy
             && lhs.rx == rhs.rx

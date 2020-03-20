@@ -300,7 +300,7 @@ internal extension BLPattern {
 }
 
 extension BLPattern: Equatable {
-    public static func ==(lhs: BLPattern, rhs: BLPattern) -> Bool {
+    public static func == (lhs: BLPattern, rhs: BLPattern) -> Bool {
         return blPatternEquals(&lhs.box.object, &rhs.box.object)
     }
 }

@@ -33,7 +33,7 @@ public extension BLRandom {
 }
 
 extension BLRandom: Equatable {
-    public static func ==(lhs: BLRandom, rhs: BLRandom) -> Bool {
+    public static func == (lhs: BLRandom, rhs: BLRandom) -> Bool {
         return lhs.equals(rhs)
     }
 }

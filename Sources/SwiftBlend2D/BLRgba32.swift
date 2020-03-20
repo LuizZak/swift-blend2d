@@ -47,7 +47,7 @@ public extension BLRgba32 {
 
 extension BLRgba32: Equatable {
     @inlinable
-    public static func ==(lhs: BLRgba32, rhs: BLRgba32) -> Bool {
+    public static func == (lhs: BLRgba32, rhs: BLRgba32) -> Bool {
         return lhs.value == rhs.value
     }
 }

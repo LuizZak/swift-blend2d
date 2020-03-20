@@ -34,7 +34,7 @@ public extension BLFormatInfo {
 }
 
 extension BLFormatInfo: Equatable {
-    public static func ==(lhs: BLFormatInfo, rhs: BLFormatInfo) -> Bool {
+    public static func == (lhs: BLFormatInfo, rhs: BLFormatInfo) -> Bool {
         if lhs.depth != rhs.depth || lhs.flags != rhs.flags {
             return false
         }

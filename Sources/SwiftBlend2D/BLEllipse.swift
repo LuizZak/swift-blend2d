@@ -33,7 +33,7 @@ public extension BLEllipse {
 
 extension BLEllipse: Equatable {
     @inlinable
-    public static func ==(lhs: BLEllipse, rhs: BLEllipse) -> Bool {
+    public static func == (lhs: BLEllipse, rhs: BLEllipse) -> Bool {
         return lhs.cx == rhs.cx
             && lhs.cy == rhs.cy
             && lhs.rx == rhs.rx

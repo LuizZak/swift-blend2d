@@ -11,42 +11,42 @@ extension BLSize: Equatable {
 // MARK: - Operators
 public extension BLSize {
     @inlinable
-    static func +(lhs: BLSize, rhs: BLSize) -> BLSize {
+    static func + (lhs: BLSize, rhs: BLSize) -> BLSize {
         return BLSize(w: lhs.w + rhs.w, h: lhs.h + rhs.h)
     }
 
     @inlinable
-    static func -(lhs: BLSize, rhs: BLSize) -> BLSize {
+    static func - (lhs: BLSize, rhs: BLSize) -> BLSize {
         return BLSize(w: lhs.w - rhs.w, h: lhs.h - rhs.h)
     }
 
     @inlinable
-    static func *(lhs: BLSize, rhs: BLSize) -> BLSize {
+    static func * (lhs: BLSize, rhs: BLSize) -> BLSize {
         return BLSize(w: lhs.w * rhs.w, h: lhs.h * rhs.h)
     }
 
     @inlinable
-    static func /(lhs: BLSize, rhs: BLSize) -> BLSize {
+    static func / (lhs: BLSize, rhs: BLSize) -> BLSize {
         return BLSize(w: lhs.w / rhs.w, h: lhs.h / rhs.h)
     }
 
     @inlinable
-    static func +=(lhs: inout BLSize, rhs: BLSize) {
+    static func += (lhs: inout BLSize, rhs: BLSize) {
         lhs = lhs + rhs
     }
 
     @inlinable
-    static func -=(lhs: inout BLSize, rhs: BLSize) {
+    static func -= (lhs: inout BLSize, rhs: BLSize) {
         lhs = lhs - rhs
     }
 
     @inlinable
-    static func *=(lhs: inout BLSize, rhs: BLSize) {
+    static func *= (lhs: inout BLSize, rhs: BLSize) {
         lhs = lhs * rhs
     }
 
     @inlinable
-    static func /=(lhs: inout BLSize, rhs: BLSize) {
+    static func /= (lhs: inout BLSize, rhs: BLSize) {
         lhs = lhs / rhs
     }
 }

@@ -78,7 +78,7 @@ public extension BLRoundRect {
 
 extension BLRoundRect: Equatable {
     @inlinable
-    public static func ==(lhs: BLRoundRect, rhs: BLRoundRect) -> Bool {
+    public static func == (lhs: BLRoundRect, rhs: BLRoundRect) -> Bool {
         return lhs.x == rhs.x
             && lhs.y == rhs.y
             && lhs.w == rhs.w

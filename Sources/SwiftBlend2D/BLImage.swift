@@ -160,7 +160,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
 }
 
 extension BLImage: Equatable {
-    public static func ==(lhs: BLImage, rhs: BLImage) -> Bool {
+    public static func == (lhs: BLImage, rhs: BLImage) -> Bool {
         return blImageEquals(&lhs.object, &rhs.object)
     }
 }

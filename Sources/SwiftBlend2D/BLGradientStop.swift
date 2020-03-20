@@ -9,7 +9,7 @@ public extension BLGradientStop {
 
 extension BLGradientStop: Equatable {
     @inlinable
-    public static func ==(lhs: BLGradientStop, rhs: BLGradientStop) -> Bool {
+    public static func == (lhs: BLGradientStop, rhs: BLGradientStop) -> Bool {
         return lhs.offset == rhs.offset
             && lhs.rgba == rhs.rgba
     }

@@ -215,7 +215,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
 }
 
 extension BLFont: Equatable {
-    public static func ==(lhs: BLFont, rhs: BLFont) -> Bool {
+    public static func == (lhs: BLFont, rhs: BLFont) -> Bool {
         return lhs.object.impl == rhs.object.impl
     }
 }

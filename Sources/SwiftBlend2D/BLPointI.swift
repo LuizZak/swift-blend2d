@@ -22,47 +22,47 @@ public extension BLPointI {
 // MARK: - Operators
 public extension BLPointI {
     @inlinable
-    static prefix func -(lhs: BLPointI) -> BLPointI {
+    static prefix func - (lhs: BLPointI) -> BLPointI {
         return BLPointI(x: -lhs.x, y: -lhs.y)
     }
 
     @inlinable
-    static func +(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+    static func + (lhs: BLPointI, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }
     
     @inlinable
-    static func -(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+    static func - (lhs: BLPointI, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
     }
     
     @inlinable
-    static func *(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+    static func * (lhs: BLPointI, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
     }
     
     @inlinable
-    static func /(lhs: BLPointI, rhs: BLPointI) -> BLPointI {
+    static func / (lhs: BLPointI, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
     }
 
     @inlinable
-    static func +=(lhs: inout BLPointI, rhs: BLPointI) {
+    static func += (lhs: inout BLPointI, rhs: BLPointI) {
         lhs = lhs + rhs
     }
 
     @inlinable
-    static func -=(lhs: inout BLPointI, rhs: BLPointI) {
+    static func -= (lhs: inout BLPointI, rhs: BLPointI) {
         lhs = lhs - rhs
     }
 
     @inlinable
-    static func *=(lhs: inout BLPointI, rhs: BLPointI) {
+    static func *= (lhs: inout BLPointI, rhs: BLPointI) {
         lhs = lhs * rhs
     }
     
     @inlinable
-    static func /=(lhs: inout BLPointI, rhs: BLPointI) {
+    static func /= (lhs: inout BLPointI, rhs: BLPointI) {
         lhs = lhs / rhs
     }
 }
@@ -70,39 +70,39 @@ public extension BLPointI {
 // MARK: - Operators - Int
 public extension BLPointI {
     @inlinable
-    static func *(lhs: BLPointI, rhs: Int) -> BLPointI {
+    static func * (lhs: BLPointI, rhs: Int) -> BLPointI {
         return BLPointI(x: lhs.x * Int32(rhs), y: lhs.y * Int32(rhs))
     }
     
     @inlinable
-    static func /(lhs: BLPointI, rhs: Int) -> BLPointI {
+    static func / (lhs: BLPointI, rhs: Int) -> BLPointI {
         return BLPointI(x: lhs.x / Int32(rhs), y: lhs.y / Int32(rhs))
     }
     
     @inlinable
-    static func *(lhs: Int, rhs: BLPointI) -> BLPointI {
+    static func * (lhs: Int, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: Int32(lhs) * rhs.x, y: Int32(lhs) * rhs.y)
     }
     
     @inlinable
-    static func /(lhs: Int, rhs: BLPointI) -> BLPointI {
+    static func / (lhs: Int, rhs: BLPointI) -> BLPointI {
         return BLPointI(x: Int32(lhs) / rhs.x, y: Int32(lhs) / rhs.y)
     }
     
     @inlinable
-    static func *=(lhs: inout BLPointI, rhs: Int) {
+    static func *= (lhs: inout BLPointI, rhs: Int) {
         lhs = lhs * rhs
     }
     
     @inlinable
-    static func /=(lhs: inout BLPointI, rhs: Int) {
+    static func /= (lhs: inout BLPointI, rhs: Int) {
         lhs = lhs / rhs
     }
 }
 
 extension BLPointI: Equatable {
     @inlinable
-    public static func ==(lhs: BLPointI, rhs: BLPointI) -> Bool {
+    public static func == (lhs: BLPointI, rhs: BLPointI) -> Bool {
         return lhs.x == rhs.x && lhs.y == rhs.y
     }
 }

@@ -139,7 +139,7 @@ public extension BLBoxI {
 
 extension BLBoxI: Equatable {
     @inlinable
-    public static func ==(lhs: BLBoxI, rhs: BLBoxI) -> Bool {
+    public static func == (lhs: BLBoxI, rhs: BLBoxI) -> Bool {
         return lhs.x0 == rhs.x0
             && lhs.y0 == rhs.y0
             && lhs.x1 == rhs.x1

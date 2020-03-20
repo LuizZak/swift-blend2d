@@ -44,7 +44,7 @@ public extension BLCircle {
 
 extension BLCircle: Equatable {
     @inlinable
-    public static func ==(lhs: BLCircle, rhs: BLCircle) -> Bool {
+    public static func == (lhs: BLCircle, rhs: BLCircle) -> Bool {
         return lhs.cx == rhs.cx
             && lhs.cy == rhs.cy
             && lhs.r == rhs.r

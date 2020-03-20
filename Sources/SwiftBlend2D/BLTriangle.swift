@@ -147,7 +147,7 @@ public extension BLTriangle {
 
 extension BLTriangle: Equatable {
     @inlinable
-    public static func ==(lhs: BLTriangle, rhs: BLTriangle) -> Bool {
+    public static func == (lhs: BLTriangle, rhs: BLTriangle) -> Bool {
         return lhs.x0 == rhs.x0
             && lhs.y0 == rhs.y0
             && lhs.x1 == rhs.x1

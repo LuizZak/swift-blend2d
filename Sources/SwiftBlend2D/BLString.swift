@@ -69,7 +69,7 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
 }
 
 extension BLString: Equatable {
-    public static func ==(lhs: BLString, rhs: BLString) -> Bool {
+    public static func == (lhs: BLString, rhs: BLString) -> Bool {
         return blStringEquals(&lhs.object, &rhs.object)
     }
 }
