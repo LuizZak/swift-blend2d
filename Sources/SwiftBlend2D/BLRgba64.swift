@@ -8,7 +8,7 @@ public extension BLRgba64 {
     @inlinable
     var isTransparent: Bool { return value <= 0x0000FFFFFFFFFFFF }
     
-    @inlinable
+//    @inlinable
     init(argb: UInt64) {
         self.init(.init(value: argb))
     }
