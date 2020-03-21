@@ -13,7 +13,7 @@ public extension BLRgba64 {
         self.init(.init(value: argb))
     }
     
-    @inlinable
+//    @inlinable
     init(r: UInt32, g: UInt32, b: UInt32, a: UInt32 = 0xFFFF) {
         self.init(.init(.init(b: b, g: g, r: r, a: a)))
     }
