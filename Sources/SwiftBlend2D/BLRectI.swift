@@ -161,6 +161,7 @@ public extension BLRectI {
     }
 }
 
+// MARK: - Equatable
 extension BLRectI: Equatable {
     @inlinable
     public static func == (lhs: BLRectI, rhs: BLRectI) -> Bool {
@@ -171,6 +172,18 @@ extension BLRectI: Equatable {
     }
 }
 
+// MARK: - Hashable
+extension BLRectI: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(x)
+        hasher.combine(y)
+        hasher.combine(w)
+        hasher.combine(y)
+    }
+}
+
+// MARK: - CustomStringConvertible
 extension BLRectI: CustomStringConvertible {
     public var description: String {
         return "BLRectI(x: \(x), y: \(y), w: \(w), h: \(h))"

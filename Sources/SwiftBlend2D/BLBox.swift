@@ -132,6 +132,7 @@ public extension BLBox {
     }
 }
 
+// MAKK: - Equatable
 extension BLBox: Equatable {
     @inlinable
     public static func == (lhs: BLBox, rhs: BLBox) -> Bool {
@@ -142,6 +143,18 @@ extension BLBox: Equatable {
     }
 }
 
+// MARK: - Hashable
+extension BLBox: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(x0)
+        hasher.combine(y0)
+        hasher.combine(x1)
+        hasher.combine(y1)
+    }
+}
+
+// MARK: - CustomStringConvertible
 extension BLBox: CustomStringConvertible {
     public var description: String {
         return "BLBox(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"

@@ -31,6 +31,7 @@ public extension BLEllipse {
     }
 }
 
+// MARK: - Equatable
 extension BLEllipse: Equatable {
     @inlinable
     public static func == (lhs: BLEllipse, rhs: BLEllipse) -> Bool {
@@ -41,6 +42,18 @@ extension BLEllipse: Equatable {
     }
 }
 
+// MARK: - Hashable
+extension BLEllipse: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(cx)
+        hasher.combine(cy)
+        hasher.combine(rx)
+        hasher.combine(ry)
+    }
+}
+
+// MARK: - CustomStringConvertible
 extension BLEllipse: CustomStringConvertible {
     public var description: String {
         return "BLEllipse(cx: \(cx), cy: \(cy), rx: \(rx), rx: \(ry))"

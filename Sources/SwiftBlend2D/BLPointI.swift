@@ -100,10 +100,20 @@ public extension BLPointI {
     }
 }
 
+// MARK: - Equatable
 extension BLPointI: Equatable {
     @inlinable
     public static func == (lhs: BLPointI, rhs: BLPointI) -> Bool {
         return lhs.x == rhs.x && lhs.y == rhs.y
+    }
+}
+
+// MARK: - Hashable
+extension BLPointI: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(x)
+        hasher.combine(y)
     }
 }
 

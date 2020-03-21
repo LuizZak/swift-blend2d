@@ -7,6 +7,7 @@ public extension BLArc {
     }
 }
 
+// MARK: - Equatable
 extension BLArc: Equatable {
     @inlinable
     public static func == (lhs: BLArc, rhs: BLArc) -> Bool {
@@ -19,6 +20,20 @@ extension BLArc: Equatable {
     }
 }
 
+// MARK: - Hashable
+extension BLArc: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(cx)
+        hasher.combine(cy)
+        hasher.combine(rx)
+        hasher.combine(ry)
+        hasher.combine(start)
+        hasher.combine(sweep)
+    }
+}
+
+// MARK: - CustomStringConvertible
 extension BLArc: CustomStringConvertible {
     public var description: String {
         return "BLArc(cx: \(cx), cy: \(cy), rx: \(rx), ry: \(ry), start: \(start), sweep: \(sweep))"

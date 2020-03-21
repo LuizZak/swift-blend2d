@@ -1,10 +1,26 @@
 import blend2d
 
+// MARK: - Equatable
 extension BLSize: Equatable {
     @inlinable
     public static func == (lhs: BLSize, rhs: BLSize) -> Bool {
         return lhs.w == rhs.w
             && lhs.h == rhs.h
+    }
+}
+
+// MARK: - Hashable
+extension BLSize: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(w)
+        hasher.combine(h)
+    }
+}
+
+// MARK: - CustomStringConvertible
+extension BLSize: CustomStringConvertible {
+    public var description: String {
+        return "BLSize(w: \(w), h: \(h))"
     }
 }
 

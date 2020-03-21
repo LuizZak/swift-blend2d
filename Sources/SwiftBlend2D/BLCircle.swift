@@ -42,6 +42,7 @@ public extension BLCircle {
     }
 }
 
+// MARK: - Equatable
 extension BLCircle: Equatable {
     @inlinable
     public static func == (lhs: BLCircle, rhs: BLCircle) -> Bool {
@@ -51,6 +52,17 @@ extension BLCircle: Equatable {
     }
 }
 
+// MARK: - Hashable
+extension BLCircle: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(cx)
+        hasher.combine(cy)
+        hasher.combine(r)
+    }
+}
+
+// MARK: - CustomStringConvertible
 extension BLCircle: CustomStringConvertible {
     public var description: String {
         return "BLCircle(cx: \(cx), cy: \(cy), r: \(r))"
