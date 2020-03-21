@@ -166,8 +166,8 @@ public extension BLPoint {
     }
 }
 
-public extension BLPoint: CustomStringConvertible {
-    var description: String {
+extension BLPoint: CustomStringConvertible {
+    public var description: String {
         return "BLPoint(x: \(x), y: \(y))"
     }
 }
