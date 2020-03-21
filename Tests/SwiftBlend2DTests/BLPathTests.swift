@@ -37,4 +37,10 @@ class BLPathTests: XCTestCase {
             BLRange(start: 5, end: 9)
         ])
     }
+    
+    func testEquatePathToItselfDoesNotTriggerExclusiveAccessCrash() {
+        let path = BLPath()
+        
+        XCTAssertEqual(path, path)
+    }
 }

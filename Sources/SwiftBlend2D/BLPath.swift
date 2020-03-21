@@ -745,6 +745,13 @@ public extension BLPath {
     }
 }
 
+extension BLPath: Equatable {
+    public static func == (lhs: BLPath, rhs: BLPath) -> Bool {
+        var rhsObject = rhs.object
+        return blPathEquals(&lhs.object, &rhsObject)
+    }
+}
+
 extension BLPathCore: CoreStructure {
     public static let initializer = blPathInit
     public static let deinitializer = blPathReset
