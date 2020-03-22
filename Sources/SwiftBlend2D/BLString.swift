@@ -7,6 +7,14 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
         return blStringGetSize(&object) - 1
     }
     
+    /// Returns the character at a given index on this string.
+    ///
+    /// - precondition: index < size
+    public subscript(index: Int) -> Int8 {
+        precondition(index < size)
+        return object.impl.pointee.data[index]
+    }
+    
     public override init() {
         super.init { object -> BLResult in
             blStringInit(object)
@@ -71,6 +79,27 @@ public final class BLString: BLBaseClass<BLStringCore>, ExpressibleByStringLiter
 extension BLString: Equatable {
     public static func == (lhs: BLString, rhs: BLString) -> Bool {
         return blStringEquals(&lhs.object, &rhs.object)
+    }
+}
+
+extension BLString: Sequence {
+    public func makeIterator() -> Iterator {
+        return Iterator(string: self, index: 0)
+    }
+    
+    public struct Iterator: IteratorProtocol {
+        let string: BLString
+        var index: Int
+        
+        public mutating func next() -> Int8? {
+            if index == string.size {
+                return nil
+            }
+            
+            defer { index += 1 }
+            
+            return string[index]
+        }
     }
 }
 
