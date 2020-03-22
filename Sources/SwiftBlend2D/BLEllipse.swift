@@ -56,6 +56,6 @@ extension BLEllipse: Hashable {
 // MARK: - CustomStringConvertible
 extension BLEllipse: CustomStringConvertible {
     public var description: String {
-        return "BLEllipse(cx: \(cx), cy: \(cy), rx: \(rx), rx: \(ry))"
+        return "BLEllipse(cx: \(cx), cy: \(cy), rx: \(rx), ry: \(ry))"
     }
 }

@@ -141,7 +141,9 @@ public extension BLTriangle {
     /// Returns a new copy of this triangle with the vertices transformed around
     /// by a given matrix
     func transformed(by matrix: BLMatrix2D) -> BLTriangle {
-        return BLTriangle(p0: matrix.mapPoint(p0), p1: matrix.mapPoint(p1), p2: matrix.mapPoint(p2))
+        return BLTriangle(p0: matrix.mapPoint(p0),
+                          p1: matrix.mapPoint(p1),
+                          p2: matrix.mapPoint(p2))
     }
 }
 

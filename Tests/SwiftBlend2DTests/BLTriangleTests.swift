@@ -163,4 +163,11 @@ class BLTriangleTests: XCTestCase {
         XCTAssertEqual(result.x2, 10, accuracy: 1e-10)
         XCTAssertEqual(result.y2, 5, accuracy: 1e-10)
     }
+    
+    func testDescription() {
+        let triangle = BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5)
+        
+        XCTAssertEqual(triangle.description,
+                       "BLTriangle(x0: 0.0, y0: 1.0, x1: 2.0, y1: 3.0, x2: 4.0, y2: 5.0)")
+    }
 }

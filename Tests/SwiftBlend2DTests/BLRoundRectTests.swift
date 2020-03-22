@@ -99,4 +99,11 @@ class BLRoundRectTests: XCTestCase {
 
         XCTAssertEqual(rect, BLRoundRect(x: 3.5, y: 4, w: 3, h: 4, rx: 2, ry: 2))
     }
+    
+    func testDescription() {
+        let rect = BLRoundRect(x: 1, y: 2, w: 3, h: 4, rx: 5, ry: 6)
+        
+        XCTAssertEqual(rect.description,
+                       "BLRoundRect(x: 1.0, y: 2.0, w: 3.0, h: 4.0, rx: 5.0, ry: 6.0)")
+    }
 }

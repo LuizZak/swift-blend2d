@@ -207,4 +207,11 @@ class BLRectTests: XCTestCase {
         XCTAssertEqual(result.w, 3)
         XCTAssertEqual(result.h, 5)
     }
+    
+    func testDescription() {
+        let rect = BLRect(x: 0, y: 1, w: 2, h: 3)
+        
+        XCTAssertEqual(rect.description,
+                       "BLRect(x: 0.0, y: 1.0, w: 2.0, h: 3.0)")
+    }
 }

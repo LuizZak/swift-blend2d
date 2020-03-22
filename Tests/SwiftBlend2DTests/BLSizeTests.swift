@@ -74,4 +74,11 @@ class BLSizeTests: XCTestCase {
         XCTAssertEqual(lhs.w, 1 / 3)
         XCTAssertEqual(lhs.h, 0.5)
     }
+    
+    func testDescription() {
+        let size = BLSize(w: 1, h: 2)
+        
+        XCTAssertEqual(size.description,
+                       "BLSize(w: 1.0, h: 2.0)")
+    }
 }

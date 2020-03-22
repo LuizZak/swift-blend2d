@@ -60,4 +60,11 @@ class BLArcTests: XCTestCase {
         XCTAssertEqual(arc.start, 5)
         XCTAssertEqual(arc.sweep, 6)
     }
+    
+    func testDescription() {
+        let arc = BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6)
+        
+        XCTAssertEqual(arc.description,
+                       "BLArc(cx: 1.0, cy: 2.0, rx: 3.0, ry: 4.0, start: 5.0, sweep: 6.0)")
+    }
 }

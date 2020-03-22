@@ -186,4 +186,11 @@ class BLPointTests: XCTestCase {
         XCTAssertEqual(result.x, 1, accuracy: 1e-15)
         XCTAssertEqual(result.y, 0, accuracy: 1e-15)
     }
+    
+    func testDescription() {
+        let point = BLPoint(x: 1, y: 2)
+        
+        XCTAssertEqual(point.description,
+                       "BLPoint(x: 1.0, y: 2.0)")
+    }
 }

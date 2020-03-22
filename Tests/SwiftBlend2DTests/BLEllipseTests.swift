@@ -88,4 +88,11 @@ class BLEllipseTests: XCTestCase {
         XCTAssertEqual(result.x1, 7)
         XCTAssertEqual(result.y1, 11)
     }
+    
+    func testDescription() {
+        let ellipse = BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4)
+        
+        XCTAssertEqual(ellipse.description,
+                       "BLEllipse(cx: 1.0, cy: 2.0, rx: 3.0, ry: 4.0)")
+    }
 }

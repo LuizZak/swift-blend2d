@@ -110,4 +110,11 @@ class BLLineTests: XCTestCase {
         XCTAssertEqual(line.x1, 2)
         XCTAssertEqual(line.y1, 8)
     }
+    
+    func testDescription() {
+        let line = BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
+        
+        XCTAssertEqual(line.description,
+                       "BLLine(x0: 0.0, y0: 1.0, x1: 2.0, y1: 3.0)")
+    }
 }

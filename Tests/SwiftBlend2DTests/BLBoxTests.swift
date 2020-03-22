@@ -191,4 +191,11 @@ class BLBoxTests: XCTestCase {
         XCTAssertEqual(result.x1, 4)
         XCTAssertEqual(result.y1, 7)
     }
+    
+    func testDescription() {
+        let box = BLBox(x0: 1, y0: 2, x1: 3, y1: 4)
+        
+        XCTAssertEqual(box.description,
+                       "BLBox(x0: 1.0, y0: 2.0, x1: 3.0, y1: 4.0)")
+    }
 }
