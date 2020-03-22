@@ -1,10 +1,7 @@
 import blend2d
 
 public extension BLRect {
-    @inlinable
-    static var empty: BLRect {
-        return BLRect(x: 0, y: 0, w: 0, h: 0)
-    }
+    static let empty = BLRect(x: 0, y: 0, w: 0, h: 0)
 
     @inlinable
     var topLeft: BLPoint {

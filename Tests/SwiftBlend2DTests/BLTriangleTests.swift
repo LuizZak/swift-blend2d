@@ -128,6 +128,18 @@ class BLTriangleTests: XCTestCase {
         XCTAssertEqual(result.y2, 5)
     }
     
+    func testOffsetByPoint() {
+        let triangle = BLTriangle(p0: .zero, p1: .one, p2: BLPoint(x: 0, y: 1))
+        let result = triangle.offsetBy(BLPoint(x: 3, y: 4))
+        
+        XCTAssertEqual(result.x0, 3)
+        XCTAssertEqual(result.y0, 4)
+        XCTAssertEqual(result.x1, 4)
+        XCTAssertEqual(result.y1, 5)
+        XCTAssertEqual(result.x2, 3)
+        XCTAssertEqual(result.y2, 5)
+    }
+    
     func testRotatedBy() {
         let triangle = BLTriangle(p0: BLPoint(x: 1, y: 0), p1: BLPoint(x: 0, y: 1), p2: .zero)
         let result = triangle.rotated(by: .pi / 2, around: .zero)

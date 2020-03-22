@@ -29,6 +29,13 @@ class BLPointTests: XCTestCase {
         XCTAssertEqual(one.y, 1)
     }
     
+    func testInitWithBLPointI() {
+        let point = BLPoint(BLPointI(x: 1, y: 2))
+        
+        XCTAssertEqual(point.x, 1)
+        XCTAssertEqual(point.y, 2)
+    }
+    
     func testNegate() {
         let result = -BLPoint(x: 1, y: 2)
         
@@ -185,6 +192,20 @@ class BLPointTests: XCTestCase {
         
         XCTAssertEqual(result.x, 1, accuracy: 1e-15)
         XCTAssertEqual(result.y, 0, accuracy: 1e-15)
+    }
+    
+    func testDistanceTo() {
+        let p1 = BLPoint(x: 1, y: 2)
+        let p2 = BLPoint(x: 3, y: 4)
+        
+        XCTAssertEqual(p1.distance(to: p2), 2.8284271247461903)
+    }
+    
+    func testDistanceSquaredTo() {
+        let p1 = BLPoint(x: 1, y: 2)
+        let p2 = BLPoint(x: 3, y: 4)
+        
+        XCTAssertEqual(p1.distanceSquared(to: p2), 8)
     }
     
     func testDescription() {

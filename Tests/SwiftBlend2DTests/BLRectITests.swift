@@ -157,7 +157,9 @@ class BLRectITests: XCTestCase {
     }
     
     func testLocation() {
-        var rect = BLRectI(x: 0, y: 0, w: 10, h: 15)
+        var rect = BLRectI(x: 1, y: 2, w: 10, h: 15)
+        
+        XCTAssertEqual(rect.location, BLPointI(x: 1, y: 2))
         
         rect.location = BLPointI(x: 20, y: 25)
         
