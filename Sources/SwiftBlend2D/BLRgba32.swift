@@ -54,6 +54,6 @@ extension BLRgba32: Equatable {
 
 extension BLRgba32: CustomStringConvertible {
     public var description: String {
-        return "{ a: \(a), r: \(r), g: \(g), b: \(b) }"
+        return "BLRgba32(r: \(r), g: \(g), b: \(b), a: \(a))"
     }
 }

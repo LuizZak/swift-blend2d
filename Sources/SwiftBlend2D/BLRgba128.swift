@@ -33,3 +33,9 @@ extension BLRgba128: Equatable {
             && lhs.a == rhs.a
     }
 }
+
+extension BLRgba128: CustomStringConvertible {
+    public var description: String {
+        return "BLRgba128(r: \(r), g: \(g), b: \(b), a: \(a))"
+    }
+}
