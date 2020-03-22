@@ -18,7 +18,7 @@ class BLStringTests: XCTestCase {
     }
     
     func testAppendString() {
-        let string = BLString(string: "abc")
+        var string = BLString(string: "abc")
         
         string += "defgh" as String
         
@@ -27,7 +27,7 @@ class BLStringTests: XCTestCase {
     }
     
     func testAppendStringToEmptyString() {
-        let string = BLString(string: "")
+        var string = BLString(string: "")
         
         string += "abcdefgh" as String
         
@@ -36,7 +36,7 @@ class BLStringTests: XCTestCase {
     }
     
     func testAppendBLString() {
-        let string = BLString(string: "abc")
+        var string = BLString(string: "abc")
         
         string += "defgh" as BLString
         
@@ -45,7 +45,7 @@ class BLStringTests: XCTestCase {
     }
     
     func testAppendBLStringToEmptyString() {
-        let string = BLString(string: "")
+        var string = BLString(string: "")
         
         string += "abcdefgh" as BLString
         
@@ -82,5 +82,25 @@ class BLStringTests: XCTestCase {
         XCTAssertEqual(iterator.next(), Int8(("b" as UnicodeScalar).value))
         XCTAssertEqual(iterator.next(), Int8(("c" as UnicodeScalar).value))
         XCTAssertNil(iterator.next())
+    }
+    
+    func testCollectionConformance() {
+        let string = BLString(string: "abc")
+        
+        XCTAssertEqual(string.startIndex, 0)
+        XCTAssertEqual(string.endIndex, 3)
+        XCTAssertEqual(string.index(after: 0), 1)
+        XCTAssertEqual(string.index(after: 1), 2)
+        XCTAssertEqual(string.index(after: 2), 3)
+    }
+    
+    func testCopyOnWrite() {
+        var string = BLString(string: "abc")
+        let copy = string
+        
+        string += "def"
+        
+        XCTAssertEqual(string.toString(), "abcdef")
+        XCTAssertEqual(copy.toString(), "abc")
     }
 }
