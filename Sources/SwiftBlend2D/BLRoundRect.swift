@@ -76,6 +76,7 @@ public extension BLRoundRect {
     }
 }
 
+// MARK: - Equatable
 extension BLRoundRect: Equatable {
     @inlinable
     public static func == (lhs: BLRoundRect, rhs: BLRoundRect) -> Bool {
@@ -88,6 +89,18 @@ extension BLRoundRect: Equatable {
     }
 }
 
+extension BLRoundRect: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(x)
+        hasher.combine(y)
+        hasher.combine(w)
+        hasher.combine(h)
+        hasher.combine(rx)
+        hasher.combine(ry)
+    }
+}
+
+// MARK: - CustomStringConvertible
 extension BLRoundRect: CustomStringConvertible {
     public var description: String {
         return "BLRoundRect(x: \(x), y: \(y), w: \(w), h: \(h), rx: \(rx), ry: \(ry))"

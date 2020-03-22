@@ -21,6 +21,24 @@ class BLRoundRectTests: XCTestCase {
                           BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue,
+                       BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+        
+        XCTAssertNotEqual(BLRoundRect(rect: BLRect(x: 9, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue,
+                          BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+        XCTAssertNotEqual(BLRoundRect(rect: BLRect(x: 0, y: 9, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue,
+                          BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+        XCTAssertNotEqual(BLRoundRect(rect: BLRect(x: 0, y: 1, w: 9, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue,
+                          BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+        XCTAssertNotEqual(BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 9), radius: BLPoint(x: 4, y: 5)).hashValue,
+                          BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+        XCTAssertNotEqual(BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 9, y: 5)).hashValue,
+                          BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+        XCTAssertNotEqual(BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 9)).hashValue,
+                          BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5)).hashValue)
+    }
+    
     func testInitWithRectAndPoint() {
         let sut = BLRoundRect(rect: BLRect(x: 0, y: 1, w: 2, h: 3), radius: BLPoint(x: 4, y: 5))
         

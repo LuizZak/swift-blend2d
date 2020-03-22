@@ -15,6 +15,18 @@ class BLCircleTests: XCTestCase {
                           BLCircle(cx: 1, cy: 2, r: 3))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLCircle(cx: 1, cy: 2, r: 3).hashValue,
+                       BLCircle(cx: 1, cy: 2, r: 3).hashValue)
+        
+        XCTAssertNotEqual(BLCircle(cx: 9, cy: 2, r: 3).hashValue,
+                          BLCircle(cx: 1, cy: 2, r: 3).hashValue)
+        XCTAssertNotEqual(BLCircle(cx: 1, cy: 9, r: 3).hashValue,
+                          BLCircle(cx: 1, cy: 2, r: 3).hashValue)
+        XCTAssertNotEqual(BLCircle(cx: 1, cy: 2, r: 9).hashValue,
+                          BLCircle(cx: 1, cy: 2, r: 3).hashValue)
+    }
+    
     func testInitWithCoordinates() {
         let circle = BLCircle(cx: 1, cy: 2, r: 3)
         

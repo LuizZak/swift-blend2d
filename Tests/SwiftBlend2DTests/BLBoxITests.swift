@@ -20,6 +20,14 @@ class BLBoxITests: XCTestCase {
         XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 1), BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
+        XCTAssertNotEqual(BLBoxI(x0: 1, y0: 0, x1: 0, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
+        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 1, x1: 0, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
+        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 1, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
+        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 1).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
+    }
+    
     func testReset() {
         var box = BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)
         

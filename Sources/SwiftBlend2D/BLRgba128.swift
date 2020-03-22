@@ -12,8 +12,7 @@ public extension BLRgba128 {
         return BLRgba128(r: r, g: g, b: b, a: alpha)
     }
 
-    func faded(towards otherColor: BLRgba128, factor: Double, blendAlpha: Bool = false) -> BLRgba128 {
-        let factor = Float(factor)
+    func faded(towards otherColor: BLRgba128, factor: Float, blendAlpha: Bool = false) -> BLRgba128 {
         let from = 1 - factor
 
         let a = blendAlpha ? self.a * from + otherColor.a * factor : self.a

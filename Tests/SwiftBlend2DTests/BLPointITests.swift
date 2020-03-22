@@ -9,6 +9,12 @@ class BLPointITests: XCTestCase {
         XCTAssertNotEqual(BLPointI(x: 0, y: 0), BLPointI(x: 0, y: 1))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLPointI(x: 0, y: 1).hashValue, BLPointI(x: 0, y: 1).hashValue)
+        XCTAssertNotEqual(BLPointI(x: 1, y: 1).hashValue, BLPointI(x: 0, y: 1).hashValue)
+        XCTAssertNotEqual(BLPointI(x: 0, y: 0).hashValue, BLPointI(x: 0, y: 1).hashValue)
+    }
+    
     func testZero() {
         let zero = BLPointI.zero
         

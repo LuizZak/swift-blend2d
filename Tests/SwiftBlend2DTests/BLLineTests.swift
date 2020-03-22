@@ -17,6 +17,20 @@ class BLLineTests: XCTestCase {
                           BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue,
+                       BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+        
+        XCTAssertNotEqual(BLLine(x0: 1, y0: 1, x1: 2, y1: 3).hashValue,
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+        XCTAssertNotEqual(BLLine(x0: 0, y0: 2, x1: 2, y1: 3).hashValue,
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 3, y1: 3).hashValue,
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 4).hashValue,
+                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+    }
+    
     func testInitWithPoints() {
         let line = BLLine(start: BLPoint(x: 0, y: 1), end: BLPoint(x: 2, y: 3))
         

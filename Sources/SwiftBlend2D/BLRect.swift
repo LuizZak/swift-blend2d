@@ -173,7 +173,7 @@ extension BLRect: Hashable {
         hasher.combine(x)
         hasher.combine(y)
         hasher.combine(w)
-        hasher.combine(y)
+        hasher.combine(h)
     }
 }
 

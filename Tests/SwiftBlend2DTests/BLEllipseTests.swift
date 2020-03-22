@@ -17,6 +17,20 @@ class BLEllipseTests: XCTestCase {
                           BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4).hashValue,
+                       BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4).hashValue)
+        
+        XCTAssertNotEqual(BLEllipse(cx: 9, cy: 2, rx: 3, ry: 4).hashValue,
+                          BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4).hashValue)
+        XCTAssertNotEqual(BLEllipse(cx: 1, cy: 9, rx: 3, ry: 4).hashValue,
+                          BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4).hashValue)
+        XCTAssertNotEqual(BLEllipse(cx: 1, cy: 2, rx: 9, ry: 4).hashValue,
+                          BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4).hashValue)
+        XCTAssertNotEqual(BLEllipse(cx: 1, cy: 2, rx: 3, ry: 9).hashValue,
+                          BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4).hashValue)
+    }
+    
     func testInitWithCoordinates() {
         let circle = BLEllipse(cx: 1, cy: 2, rx: 3, ry: 4)
         

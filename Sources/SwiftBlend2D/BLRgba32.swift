@@ -33,13 +33,13 @@ public extension BLRgba32 {
         return BLRgba32(r: r, g: g, b: b, a: alpha)
     }
 
-    func faded(towards otherColor: BLRgba32, factor: Double, blendAlpha: Bool = false) -> BLRgba32 {
+    func faded(towards otherColor: BLRgba32, factor: Float, blendAlpha: Bool = false) -> BLRgba32 {
         let from = 1 - factor
 
-        let a = UInt32(blendAlpha ? Double(self.a) * from + Double(otherColor.a) * factor : Double(self.a))
-        let r = UInt32(Double(self.r) * from + Double(otherColor.r) * factor)
-        let g = UInt32(Double(self.g) * from + Double(otherColor.g) * factor)
-        let b = UInt32(Double(self.b) * from + Double(otherColor.b) * factor)
+        let a = UInt32(blendAlpha ? Float(self.a) * from + Float(otherColor.a) * factor : Float(self.a))
+        let r = UInt32(Float(self.r) * from + Float(otherColor.r) * factor)
+        let g = UInt32(Float(self.g) * from + Float(otherColor.g) * factor)
+        let b = UInt32(Float(self.b) * from + Float(otherColor.b) * factor)
 
         return BLRgba32(r: r, g: g, b: b, a: a)
     }

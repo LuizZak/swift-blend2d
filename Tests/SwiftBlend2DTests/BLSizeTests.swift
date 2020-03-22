@@ -8,6 +8,12 @@ class BLSizeTests: XCTestCase {
         XCTAssertNotEqual(BLSize(w: 0, h: 48), BLSize(w: 32, h: 48))
         XCTAssertNotEqual(BLSize(w: 32, h: 0), BLSize(w: 32, h: 48))
     }
+    
+    func testHashable() {
+        XCTAssertEqual(BLSize(w: 32, h: 48).hashValue, BLSize(w: 32, h: 48).hashValue)
+        XCTAssertNotEqual(BLSize(w: 0, h: 48).hashValue, BLSize(w: 32, h: 48).hashValue)
+        XCTAssertNotEqual(BLSize(w: 32, h: 0).hashValue, BLSize(w: 32, h: 48).hashValue)
+    }
 
     func testAdd() {
         let result = BLSize(w: 1, h: 2) + BLSize(w: 3, h: 4)

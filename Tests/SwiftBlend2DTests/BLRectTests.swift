@@ -16,6 +16,20 @@ class BLRectTests: XCTestCase {
         XCTAssertNotEqual(BLRect(x: 0, y: 1, w: 2, h: 9),
                           BLRect(x: 0, y: 1, w: 2, h: 3))
     }
+    
+    func testHashable() {
+        XCTAssertEqual(BLRect(x: 0, y: 1, w: 2, h: 3).hashValue,
+                       BLRect(x: 0, y: 1, w: 2, h: 3).hashValue)
+        
+        XCTAssertNotEqual(BLRect(x: 9, y: 1, w: 2, h: 3).hashValue,
+                          BLRect(x: 0, y: 1, w: 2, h: 3).hashValue)
+        XCTAssertNotEqual(BLRect(x: 0, y: 9, w: 2, h: 3).hashValue,
+                          BLRect(x: 0, y: 1, w: 2, h: 3).hashValue)
+        XCTAssertNotEqual(BLRect(x: 0, y: 1, w: 9, h: 3).hashValue,
+                          BLRect(x: 0, y: 1, w: 2, h: 3).hashValue)
+        XCTAssertNotEqual(BLRect(x: 0, y: 1, w: 2, h: 9).hashValue,
+                          BLRect(x: 0, y: 1, w: 2, h: 3).hashValue)
+    }
 
     func testInset() {
         let rect = BLRect(x: 0, y: 0, w: 10, h: 10)

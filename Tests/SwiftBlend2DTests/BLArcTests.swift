@@ -21,6 +21,24 @@ class BLArcTests: XCTestCase {
                           BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6))
     }
     
+    func testHashable() {
+        XCTAssertEqual(BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue,
+                       BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+        
+        XCTAssertNotEqual(BLArc(cx: 9, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue,
+                          BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+        XCTAssertNotEqual(BLArc(cx: 1, cy: 9, rx: 3, ry: 4, start: 5, sweep: 6).hashValue,
+                          BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+        XCTAssertNotEqual(BLArc(cx: 1, cy: 2, rx: 9, ry: 4, start: 5, sweep: 6).hashValue,
+                          BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+        XCTAssertNotEqual(BLArc(cx: 1, cy: 2, rx: 3, ry: 9, start: 5, sweep: 6).hashValue,
+                          BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+        XCTAssertNotEqual(BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 9, sweep: 6).hashValue,
+                          BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+        XCTAssertNotEqual(BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 9).hashValue,
+                          BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6).hashValue)
+    }
+    
     func testInitWithCoordinates() {
         let arc = BLArc(cx: 1, cy: 2, rx: 3, ry: 4, start: 5, sweep: 6)
         
