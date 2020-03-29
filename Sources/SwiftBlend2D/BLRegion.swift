@@ -133,9 +133,10 @@ public struct BLRegion {
     public mutating func combine(box: BLBoxI, operation: BLBooleanOp) -> BLResult {
         ensureUnique()
         
-        var box = box
-        var object = self.box.object
-        return blRegionCombineRB(&self.box.object, &object, &box, operation.rawValue)
+        return withUnsafePointer(to: box) { box in
+            var object = self.box.object
+            return blRegionCombineRB(&self.box.object, &object, box, operation.rawValue)
+        }
     }
     
     /// Translates the region by the given point `pt`.
