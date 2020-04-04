@@ -5,17 +5,35 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Returns target size in abstract units (pixels in case of `BLImage`).
     @inlinable
     public var targetSize: BLSize {
-        return object.impl.pointee.targetSize
+        return object.impl.pointee.state.pointee.targetSize
     }
     /// Returns target width in abstract units (pixels in case of `BLImage`).
     @inlinable
     public var targetWidth: Double {
-        return object.impl.pointee.targetSize.w
+        return object.impl.pointee.state.pointee.targetSize.w
     }
     /// Returns target height in abstract units (pixels in case of `BLImage`).
     @inlinable
     public var targetHeight: Double {
-        return object.impl.pointee.targetSize.h
+        return object.impl.pointee.state.pointee.targetSize.h
+    }
+    
+    /// Returns the target image or null if there is no target image.
+    ///
+    /// - note: The rendering context doesn't own the image, but it increases its
+    /// writer count, which means that the image will not be destroyed even when
+    /// user destroys it during the rendering (in such case it will be destroyed
+    /// after the rendering ends when the writer count goes to zero). This means
+    /// that the rendering context must hold the image and not the pointer to
+    /// the `BLImage` passed to either the constructor or `begin()` function. So
+    /// the returned pointer is not the same as the pointer passed to `begin()`,
+    /// but it points to the same impl.
+    public var targetImage: BLImage? {
+        if let img = blContextGetTargetImage(&object) {
+            return BLImage(weakAssign: img.pointee)
+        }
+        
+        return nil
     }
 
     /// Returns the type of this context.
