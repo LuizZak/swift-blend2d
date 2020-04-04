@@ -1,5 +1,9 @@
 import blend2d
 
+public extension BLSizeI {
+    static let zero = BLSizeI(w: 0, h: 0)
+}
+
 // MARK: - Equatable
 extension BLSizeI: Equatable {
     @inlinable

@@ -5,17 +5,19 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Returns target size in abstract units (pixels in case of `BLImage`).
     @inlinable
     public var targetSize: BLSize {
-        return object.impl.pointee.state.pointee.targetSize
+        var size = BLSize.zero
+        blContextGetTargetSize(&object, &size)
+        return size
     }
     /// Returns target width in abstract units (pixels in case of `BLImage`).
     @inlinable
     public var targetWidth: Double {
-        return object.impl.pointee.state.pointee.targetSize.w
+        return targetSize.w
     }
     /// Returns target height in abstract units (pixels in case of `BLImage`).
     @inlinable
     public var targetHeight: Double {
-        return object.impl.pointee.state.pointee.targetSize.h
+        return targetSize.h
     }
     
     /// Returns the target image or null if there is no target image.
@@ -39,7 +41,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Returns the type of this context.
     @inlinable
     public var contextType: BLContextType {
-        return BLContextType(object.impl.pointee.contextType)
+        return BLContextType(blContextGetType(&object))
     }
 
     /// Returns meta-matrix.
