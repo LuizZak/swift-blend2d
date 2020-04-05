@@ -151,16 +151,18 @@ public class BLContext: BLBaseClass<BLContextCore> {
             return .solid(BLRgba64(argb: value))
             
         case .gradient:
-            var gradient: BLGradientCore?
+            var gradient = BLGradientCore()
+            blGradientInit(&gradient)
             blContextGetFillStyle(&object, &gradient)
             
-            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient!)))
+            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient)))
             
         case .pattern:
-            var pattern: BLPatternCore?
+            var pattern = BLPatternCore()
+            blPatternInit(&pattern)
             blContextGetFillStyle(&object, &pattern)
             
-            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern!)))
+            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern)))
             
         default:
             return .none
@@ -205,16 +207,18 @@ public class BLContext: BLBaseClass<BLContextCore> {
             return .solid(BLRgba64(argb: value))
             
         case .gradient:
-            var gradient: BLGradientCore?
+            var gradient = BLGradientCore()
+            blGradientInit(&gradient)
             blContextGetStrokeStyle(&object, &gradient)
             
-            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient!)))
+            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient)))
             
         case .pattern:
-            var pattern: BLPatternCore?
+            var pattern = BLPatternCore()
+            blPatternInit(&pattern)
             blContextGetStrokeStyle(&object, &pattern)
             
-            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern!)))
+            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern)))
             
         default:
             return .none
