@@ -54,5 +54,3 @@ There are more examples that reproduce each [sample from Blend2D's homepage](htt
 The source code for SwiftBlend2D is distributed under the [MIT license](https://tldrlegal.com/license/mit-license).
 
 The incorporated source code from [Blend2D](https://blend2d.com) is licensed under the [zlib license](https://tldrlegal.com/license/zlib-libpng-license-(zlib)).
-
-A modified source code for [libpng](https://libpng.org), which is included in this project, is licensed under the _PNG Reference Library License version 1_.
