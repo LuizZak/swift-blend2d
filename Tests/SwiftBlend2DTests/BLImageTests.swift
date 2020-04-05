@@ -10,13 +10,13 @@ class BLImageTests: XCTestCase {
     }
     
     func testInitWithSize() {
-        let image = BLImage(width: 32, height: 32, format: BL_FORMAT_PRGB32)
+        let image = BLImage(width: 32, height: 32, format: .prgb32)
         
         assertIsNonDefaultPointer(image.object)
     }
     
     func testSize() {
-        let image = BLImage(width: 32, height: 48, format: BL_FORMAT_PRGB32)
+        let image = BLImage(width: 32, height: 48, format: .prgb32)
         
         XCTAssertEqual(image.size, BLSizeI(w: 32, h: 48))
         XCTAssertEqual(image.width, 32)
@@ -24,7 +24,7 @@ class BLImageTests: XCTestCase {
     }
     
     func testWriteToData() throws {
-        let image = BLImage(width: 1, height: 1, format: BL_FORMAT_PRGB32)
+        let image = BLImage(width: 1, height: 1, format: .prgb32)
         let context = BLContext(image: image)!
         context.setFillStyleRgba32(0xFFFF00FF)
         context.fillAll()

@@ -8,7 +8,7 @@ class BLContextTests: XCTestCase {
     }
     
     func testInitWithImage() {
-        let image = BLImage(width: 32, height: 32, format: BL_FORMAT_PRGB32)
+        let image = BLImage(width: 2, height: 2, format: .prgb32)
         
         XCTAssertNotNil(BLContext(image: image))
     }
@@ -28,7 +28,6 @@ class BLContextTests: XCTestCase {
         switch result {
         case .gradient(let gradient):
             XCTAssertEqual(2, gradient.box.object.impl.pointee.refCount)
-            
         default:
             XCTFail("Expected gradient style")
         }
@@ -44,7 +43,6 @@ class BLContextTests: XCTestCase {
         switch result {
         case .pattern(let pattern):
             XCTAssertEqual(2, pattern.box.object.impl.pointee.refCount)
-            
         default:
             XCTFail("Expected pattern style")
         }
@@ -59,7 +57,6 @@ class BLContextTests: XCTestCase {
         switch result {
         case .gradient(let gradient):
             XCTAssertEqual(2, gradient.box.object.impl.pointee.refCount)
-            
         default:
             XCTFail("Expected gradient style")
         }
@@ -75,7 +72,6 @@ class BLContextTests: XCTestCase {
         switch result {
         case .pattern(let pattern):
             XCTAssertEqual(2, pattern.box.object.impl.pointee.refCount)
-            
         default:
             XCTFail("Expected pattern style")
         }
@@ -84,7 +80,7 @@ class BLContextTests: XCTestCase {
 
 extension BLContextTests {
     func makeSut() -> BLContext {
-        let img = BLImage(width: 32, height: 32, format: .prgb32)
+        let img = BLImage(width: 2, height: 2, format: .prgb32)
         return BLContext(image: img)!
     }
 }
