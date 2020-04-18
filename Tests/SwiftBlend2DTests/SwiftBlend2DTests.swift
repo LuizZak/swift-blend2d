@@ -485,13 +485,6 @@ extension SwiftBlend2DTests {
         for y in 0..<diffImage.rows.count {
             for x in stride(from: 0, to: diffImage.rowLength, by: 4) {
                 diffImage.rows[y].withUnsafeMutableBufferPointer { pointer -> Void in
-                    let factor: UInt8 = 3
-                    let base = 255 - 255 / factor
-                    
-                    pointer[x] = base + pointer[x] / factor
-                    pointer[x + 1] = base + pointer[x + 1] / factor
-                    pointer[x + 2] = base + pointer[x + 2] / factor
-                    
                     // Color pixel red if two images differ here
                     if image1.rows[y][x] != image2.rows[y][x]
                         || image1.rows[y][x + 1] != image2.rows[y][x + 1]
@@ -502,6 +495,13 @@ extension SwiftBlend2DTests {
                         pointer[x + 1] = 0
                         pointer[x + 2] = 0
                         pointer[x + 3] = 255
+                    } else {
+                        let factor: UInt8 = 3
+                        let base = 255 - 255 / factor
+                        
+                        pointer[x] = base + pointer[x] / factor
+                        pointer[x + 1] = base + pointer[x + 1] / factor
+                        pointer[x + 2] = base + pointer[x + 2] / factor
                     }
                 }
             }

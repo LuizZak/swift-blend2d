@@ -166,7 +166,7 @@ struct BLRuntimeSystemInfo {
   //! Number of threads of the host CPU/CPUs.
   uint32_t threadCount;
 
-  //! Minimum stack size of threads.
+  //! Minimum stack size of system threads (operating system specific).
   uint32_t minThreadStackSize;
   //! Minimum stack size of worker threads used by Blend2D.
   uint32_t minWorkerStackSize;
@@ -248,10 +248,6 @@ static BL_INLINE BLResult message(const char* msg) noexcept {
 template<typename... Args>
 static BL_INLINE BLResult message(const char* fmt, Args&&... args) noexcept {
   return blRuntimeMessageFmt(fmt, std::forward<Args>(args)...);
-}
-
-static BL_INLINE uint32_t getTickCount() noexcept {
-  return blRuntimeGetTickCount();
 }
 
 } // {BLRuntime}

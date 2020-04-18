@@ -1402,18 +1402,32 @@ public extension BLContextCreateFlags {
     /// rendering, the rendering context can sometimes allocate less threads
     /// than specified if the built-in thread-pool doesn't have enough threads
     /// available. This flag will force the thread-pool to override the thread
-    /// limit temporarily to fulfill the thread count requirement.
+    /// limit temporarily to allocate at least one thread.
     ///
-    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount == 0`.
-    static let forceThreads = BL_CONTEXT_CREATE_FLAG_FORCE_THREADS
+    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
+    /// If it's specified with `BL_CONTEXT_CREATE_FLAG_FORCE_ALL_THREADS` then
+    /// the latter has a precedence.
+    static let forceOneThread = BL_CONTEXT_CREATE_FLAG_FORCE_ONE_THREAD
 
-    /// Fallback to synchronous rendering in case that acquiring threads from
-    /// thread-pool failed. This flag only makes sense when asynchronous mode
-    /// was specified by having non-zero thread count. In that case if the
-    /// rendering context fails to acquire at least one thread it would fallback
-    /// to synchronous mode instead.
+    /// When creating an asynchronous rendering context that uses threads for
+    /// rendering, the rendering context can sometimes allocate less threads
+    /// than specified if the built-in thread-pool doesn't have enough threads
+    /// available. This flag will force the thread-pool to override the thread
+    /// limit temporarily to fulfill the thread count requirement completely.
     ///
-    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount == 0`.
+    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
+    static let forceAllThreads = BL_CONTEXT_CREATE_FLAG_FORCE_ALL_THREADS
+
+    /// Fallbacks to a synchronous rendering in case that acquiring threads
+    /// from the thread-pool failed. This flag only makes sense when the
+    /// asynchronous mode was specified by having `threadCount` greater than 0.
+    /// If the rendering context fails to acquire at least one thread it would
+    /// fallback to synchronous mode instead of staying asynchronous with no
+    /// worker threads, which is possible.
+    ///
+    /// - note: If this flag is specified with `threadCount == 1` it means to
+    /// immedialy fallback to synchronous rendering. It's only practical to
+    /// use this flag with 2 threads and higher.
     static let fallbackToSync = BL_CONTEXT_CREATE_FLAG_FALLBACK_TO_SYNC
 
     /// If this flag is specified and asynchronous rendering is enabled then
@@ -1423,7 +1437,7 @@ public extension BLContextCreateFlags {
     /// Do not use this flag in production as rendering contexts with isolated
     /// thread-pool have to create and destroy all threads they use. This flag
     /// is only useful for testing, debugging, and isolated benchmarking.
-    static let isolatedThreads = BL_CONTEXT_CREATE_FLAG_ISOLATED_THREADS
+    static let isolatedThreadPool = BL_CONTEXT_CREATE_FLAG_ISOLATED_THREAD_POOL
 
     /// If this flag is specified and JIT pipeline generation enabled then the
     /// rendering context would create its own isolated JIT runtime. which is

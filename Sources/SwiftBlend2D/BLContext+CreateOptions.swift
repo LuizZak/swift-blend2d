@@ -16,7 +16,14 @@ public extension BLContext {
         /// If the number is `1` or greater it means to initialize the context
         /// for asynchronous rendering - in this case `threadCount` specifies
         /// how many threads can execute in parallel.
-        public var threadCount: Int = 0
+        public var threadCount: UInt32 = 0
+        
+        // TODO: To be documented, has no effect at the moment.
+        /// Maximum number of commands to be queued.
+        ///
+        /// If this parameter is zero the queue size will be determined automatically.
+        ///
+        public var commandQueueLimit: UInt32
     }
 }
 
@@ -45,51 +52,61 @@ public extension BLContext.CreateOptions {
     struct Flag: OptionSet {
         public static let empty: Flag = []
         
-        /// When creating an asynchronous rendering context that uses threads
-        /// for rendering, the rendering context can sometimes allocate less
-        /// threads than specified if the built-in thread-pool doesn't have
-        /// enough threads available. This flag will force the thread-pool to
-        /// override the thread limit temporarily to fulfill the thread count
-        /// requirement.
+        /// When creating an asynchronous rendering context that uses threads for
+        /// rendering, the rendering context can sometimes allocate less threads
+        /// than specified if the built-in thread-pool doesn't have enough threads
+        /// available. This flag will force the thread-pool to override the thread
+        /// limit temporarily to allocate at least one thread.
         ///
-        /// NOTE: This flag is ignored if `BLContext.CreateOptions.threadCount == 0`.
-        public static let forceThreads = Flag(rawValue: BLContextCreateFlags.forceThreads.rawValue)
-        
-        /// Fallback to synchronous rendering in case that acquiring threads
-        /// from thread-pool failed. This flag only makes sense when asynchronous
-        /// mode was specified by having non-zero thread count. In that case if
-        /// the
-        /// rendering context fails to acquire at least one thread it would
-        /// fallback to synchronous mode instead.
+        /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
+        /// If it's specified with `BL_CONTEXT_CREATE_FLAG_FORCE_ALL_THREADS` then
+        /// the latter has a precedence.
+        public static let forceOneThread = Flag(rawValue: BLContextCreateFlags.forceOneThread.rawValue)
+
+        /// When creating an asynchronous rendering context that uses threads for
+        /// rendering, the rendering context can sometimes allocate less threads
+        /// than specified if the built-in thread-pool doesn't have enough threads
+        /// available. This flag will force the thread-pool to override the thread
+        /// limit temporarily to fulfill the thread count requirement completely.
         ///
-        /// NOTE: This flag is ignored if `BLContext.CreateOptions.threadCount == 0`.
+        /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
+        public static let forceAllThreads = Flag(rawValue: BLContextCreateFlags.forceAllThreads.rawValue)
+
+        /// Fallbacks to a synchronous rendering in case that acquiring threads
+        /// from the thread-pool failed. This flag only makes sense when the
+        /// asynchronous mode was specified by having `threadCount` greater than 0.
+        /// If the rendering context fails to acquire at least one thread it would
+        /// fallback to synchronous mode instead of staying asynchronous with no
+        /// worker threads, which is possible.
+        ///
+        /// - note: If this flag is specified with `threadCount == 1` it means to
+        /// immedialy fallback to synchronous rendering. It's only practical to
+        /// use this flag with 2 threads and higher.
         public static let fallbackToSync = Flag(rawValue: BLContextCreateFlags.fallbackToSync.rawValue)
-        
+
         /// If this flag is specified and asynchronous rendering is enabled then
-        /// the context would create its own isolated thread-pool, which is
-        /// useful for debugging purposes.
+        /// the context would create its own isolated thread-pool, which is useful
+        /// for debugging purposes.
         ///
-        /// Do not use this flag in production as rendering contexts with
-        /// isolated thread-pool have to create and destroy all threads they use.
-        /// This flag is only useful for testing, debugging, and isolated
-        /// benchmarking.
-        public static let isolatedThreads = Flag(rawValue: BLContextCreateFlags.isolatedThreads.rawValue)
-        
-        /// If this flag is specified and JIT pipeline generation enabled then
-        /// the rendering context would create its own isolated JIT runtime.
-        /// which is useful for debugging purposes. This flag will be ignored if
-        /// JIT pipeline generation is either not supported or was disabled by
-        /// other flags.
+        /// Do not use this flag in production as rendering contexts with isolated
+        /// thread-pool have to create and destroy all threads they use. This flag
+        /// is only useful for testing, debugging, and isolated benchmarking.
+        public static let isolatedThreadPool = Flag(rawValue: BLContextCreateFlags.isolatedThreadPool.rawValue)
+
+        /// If this flag is specified and JIT pipeline generation enabled then the
+        /// rendering context would create its own isolated JIT runtime. which is
+        /// useful for debugging purposes. This flag will be ignored if JIT pipeline
+        /// generation is either not supported or was disabled by other flags.
         ///
         /// Do not use this flag in production as rendering contexts with isolated
         /// JIT runtime do not use global pipeline cache, that's it, after the
-        /// rendering context is destroyed the JIT runtime is destroyed with it
-        /// with all compiled pipelines. This flag is only useful for testing,
-        /// debugging, and isolated benchmarking.
+        /// rendering context is destroyed the JIT runtime is destroyed with it with
+        /// all compiled pipelines. This flag is only useful for testing, debugging,
+        /// and isolated benchmarking.
         public static let isolatedJit = Flag(rawValue: BLContextCreateFlags.isolatedJit.rawValue)
-        
+
         /// Override CPU features when creating isolated context.
-        public static let overrideCpuFeatures = Flag(rawValue: BL_CONTEXT_CREATE_FLAG_OVERRIDE_CPU_FEATURES.rawValue)
+        public static let overrideCpuFeatures = Flag(rawValue: BLContextCreateFlags.overrideCpuFeatures.rawValue)
         
         public var rawValue: UInt32
         
@@ -103,8 +120,9 @@ extension BLContext.CreateOptions {
     @inlinable
     func toBLContextCreateInfo() -> BLContextCreateInfo {
         return BLContextCreateInfo(flags: flags.rawValue,
-                                   threadCount: UInt32(threadCount),
+                                   threadCount: threadCount,
                                    cpuFeatures: cpuFeatures.rawValue,
-                                   reserved: (0, 0, 0, 0, 0))
+                                   commandQueueLimit: commandQueueLimit,
+                                   reserved: (0, 0, 0, 0))
     }
 }

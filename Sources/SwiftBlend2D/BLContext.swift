@@ -138,31 +138,32 @@ public class BLContext: BLBaseClass<BLContextCore> {
     
     /// Gets an enumeration specifying the fill style and their current associated
     /// values.
-    @inlinable
     public var fillStyle: OpStyle {
         switch fillStyleType {
         case .none:
             return .none
             
         case .solid:
-            var value: UInt64 = 0
-            blContextGetFillStyleRgba64(&object, &value)
+            let value = BLStyle()
+            blContextGetFillStyle(&object, &value.object)
             
-            return .solid(BLRgba64(argb: value))
+            return .solid(value.object.rgba)
             
         case .gradient:
-            var gradient = BLGradientCore()
-            blGradientInit(&gradient)
-            blContextGetFillStyle(&object, &gradient)
+            let value = BLStyle()
+            blContextGetFillStyle(&object, &value.object)
             
-            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient)))
+            let gradient = BLGradient(box: BLBaseClass(weakAssign: value.object.gradient))
+            
+            return .gradient(gradient)
             
         case .pattern:
-            var pattern = BLPatternCore()
-            blPatternInit(&pattern)
-            blContextGetFillStyle(&object, &pattern)
+            let value = BLStyle()
+            blContextGetFillStyle(&object, &value.object)
             
-            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern)))
+            let pattern = BLPattern(box: BLBaseClass(weakAssign: value.object.pattern))
+            
+            return .pattern(pattern)
             
         default:
             return .none
@@ -194,31 +195,32 @@ public class BLContext: BLBaseClass<BLContextCore> {
     
     /// Gets an enumeration specifying the stroke style and their current associated
     /// values.
-    @inlinable
     public var strokeStyle: OpStyle {
         switch strokeStyleType {
         case .none:
             return .none
             
         case .solid:
-            var value: UInt64 = 0
-            blContextGetStrokeStyleRgba64(&object, &value)
+            let value = BLStyle()
+            blContextGetStrokeStyle(&object, &value.object)
             
-            return .solid(BLRgba64(argb: value))
+            return .solid(value.object.rgba)
             
         case .gradient:
-            var gradient = BLGradientCore()
-            blGradientInit(&gradient)
-            blContextGetStrokeStyle(&object, &gradient)
+            let value = BLStyle()
+            blContextGetStrokeStyle(&object, &value.object)
             
-            return .gradient(BLGradient(box: BLBaseClass<BLGradientCore>(strongAssign: gradient)))
+            let gradient = BLGradient(box: BLBaseClass<BLGradientCore>(weakAssign: value.object.gradient))
+            
+            return .gradient(gradient)
             
         case .pattern:
-            var pattern = BLPatternCore()
-            blPatternInit(&pattern)
-            blContextGetStrokeStyle(&object, &pattern)
+            let value = BLStyle()
+            blContextGetStrokeStyle(&object, &value.object)
             
-            return .pattern(BLPattern(box: BLBaseClass<BLPatternCore>(strongAssign: pattern)))
+            let pattern = BLPattern(box: BLBaseClass<BLPatternCore>(weakAssign: value.object.pattern))
+            
+            return .pattern(pattern)
             
         default:
             return .none
@@ -332,13 +334,21 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @discardableResult
     @inlinable
     public func setFillStyle(_ gradient: BLGradient) -> BLResult {
-        return blContextSetFillStyle(&object, &gradient.box.object)
+        let style = BLStyle(gradient: gradient)
+        return blContextSetFillStyle(&object, &style.object)
     }
 
     @discardableResult
     @inlinable
     public func setFillStyle(_ pattern: BLPattern) -> BLResult {
-        return blContextSetFillStyle(&object, &pattern.box.object)
+        let style = BLStyle(pattern: pattern)
+        return blContextSetFillStyle(&object, &style.object)
+    }
+    
+    @discardableResult
+    @inlinable
+    public func setFillStyle(_ style: BLStyle) -> BLResult {
+        return blContextSetFillStyle(&object, &style.object)
     }
 
     @discardableResult
@@ -454,13 +464,22 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @discardableResult
     @inlinable
     public func setStrokeStyle(_ gradient: BLGradient) -> BLResult {
-         return blContextSetStrokeStyle(&object, &gradient.box.object)
+        let style = BLStyle(gradient: gradient)
+        return blContextSetStrokeStyle(&object, &style.object)
     }
 
     @discardableResult
     @inlinable
     public func setStrokeStyle(_ pattern: BLPattern) -> BLResult {
-        return blContextSetStrokeStyle(&object, &pattern.box.object)
+        let style = BLStyle(pattern: pattern)
+        return blContextSetStrokeStyle(&object, &style.object)
+    }
+    
+    @discardableResult
+    @inlinable
+    public func setStrokeStyle(_ style: BLStyleCore) -> BLResult {
+        var style = style
+        return blContextSetStrokeStyle(&object, &style)
     }
 
     @discardableResult
@@ -1247,7 +1266,7 @@ public extension BLContext {
 public extension BLContext {
     enum OpStyle {
         case none
-        case solid(BLRgba64)
+        case solid(BLRgba)
         case gradient(BLGradient)
         case pattern(BLPattern)
     }

@@ -27,7 +27,7 @@ class BLContextTests: XCTestCase {
         
         switch result {
         case .gradient(let gradient):
-            XCTAssertEqual(2, gradient.box.object.impl.pointee.refCount)
+            XCTAssertEqual(1, gradient.box.object.impl.pointee.refCount)
         default:
             XCTFail("Expected gradient style")
         }
@@ -42,7 +42,7 @@ class BLContextTests: XCTestCase {
         
         switch result {
         case .pattern(let pattern):
-            XCTAssertEqual(2, pattern.box.object.impl.pointee.refCount)
+            XCTAssertEqual(1, pattern.box.object.impl.pointee.refCount)
         default:
             XCTFail("Expected pattern style")
         }
@@ -56,7 +56,7 @@ class BLContextTests: XCTestCase {
         
         switch result {
         case .gradient(let gradient):
-            XCTAssertEqual(2, gradient.box.object.impl.pointee.refCount)
+            XCTAssertEqual(1, gradient.box.object.impl.pointee.refCount)
         default:
             XCTFail("Expected gradient style")
         }
@@ -71,7 +71,7 @@ class BLContextTests: XCTestCase {
         
         switch result {
         case .pattern(let pattern):
-            XCTAssertEqual(2, pattern.box.object.impl.pointee.refCount)
+            XCTAssertEqual(1, pattern.box.object.impl.pointee.refCount)
         default:
             XCTFail("Expected pattern style")
         }
