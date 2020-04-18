@@ -4,7 +4,7 @@ import blend2d
 /// `BLPattern` or `BLGradient`.
 public class BLStyle: BLBaseClass<BLStyleCore> {
     public var type: BLStyleType {
-        return blStyleGetType(&object)
+        return BLStyleType(rawValue: blStyleGetType(&object))
     }
     
     public override init() {
