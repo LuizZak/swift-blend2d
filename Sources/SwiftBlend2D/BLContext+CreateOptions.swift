@@ -2,11 +2,11 @@ import blend2d
 
 public extension BLContext {
     struct CreateOptions {
-        public var flags: Flag = .empty
+        public var flags: Flag
         
         // CPU features to use in isolated JIT runtime (if supported), only used
         // when `flags` contains `.overrideCpuFeatures`.
-        public var cpuFeatures: CPUFeature = .empty
+        public var cpuFeatures: CPUFeature
         
         /// Number of threads to acquire from thread-pool and use for rendering.
         ///
@@ -16,7 +16,7 @@ public extension BLContext {
         /// If the number is `1` or greater it means to initialize the context
         /// for asynchronous rendering - in this case `threadCount` specifies
         /// how many threads can execute in parallel.
-        public var threadCount: UInt32 = 0
+        public var threadCount: UInt32
         
         // TODO: To be documented, has no effect at the moment.
         /// Maximum number of commands to be queued.
@@ -24,6 +24,17 @@ public extension BLContext {
         /// If this parameter is zero the queue size will be determined automatically.
         ///
         public var commandQueueLimit: UInt32
+        
+        public init(flags: Flag = .empty,
+                    cpuFeatures: CPUFeature = .empty,
+                    threadCount: UInt32 = 0,
+                    commandQueueLimit: UInt32 = 0) {
+            
+            self.flags = flags
+            self.cpuFeatures = cpuFeatures
+            self.threadCount = threadCount
+            self.commandQueueLimit = commandQueueLimit
+        }
     }
 }
 
