@@ -57,3 +57,9 @@ extension BLRgba32: CustomStringConvertible {
         return "BLRgba32(r: \(r), g: \(g), b: \(b), a: \(a))"
     }
 }
+
+public extension BLRgba32 {
+    var asBLRgba: BLRgba {
+        return BLRgba(self)
+    }
+}

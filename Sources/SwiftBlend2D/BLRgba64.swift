@@ -60,3 +60,9 @@ extension BLRgba64: CustomStringConvertible {
         return "BLRgba64(r: \(r), g: \(g), b: \(b), a: \(a))"
     }
 }
+
+public extension BLRgba64 {
+    var asBLRgba: BLRgba {
+        return BLRgba(self)
+    }
+}
