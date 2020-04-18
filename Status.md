@@ -82,6 +82,7 @@ This may change at any moment.
 `BLSizeI` | ✅ Done | Size specified as [w, h] using int as a storage type |
 `BLString` | 🕒 Partial | |
 `BLStrokeOptions` | 🕒 Partial | `(Missing Swift tests)` |
+`BLStyle` | 🕒 Partial | `(Missing Swift tests)` |
 `BLTextMetrics` | ℹ️ No work required | Text metrics |
 `BLTriangle` | ✅ Done | Triangle data speciied as [x0, y0, x1, y1, x2, y2] using double as a storage type |
 `BLVariant` | ❌ Unstarted | |

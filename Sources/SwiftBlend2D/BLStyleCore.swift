@@ -1,6 +1,12 @@
 import blend2d
 
+/// Holds either RGBA color in floating point format or other style object like
+/// `BLPattern` or `BLGradient`.
 public class BLStyle: BLBaseClass<BLStyleCore> {
+    public var style: BLStyleType {
+        return blStyleGetType(&object)
+    }
+    
     public override init() {
         super.init()
     }
@@ -23,6 +29,12 @@ public class BLStyle: BLBaseClass<BLStyleCore> {
                 blStyleInitRgba(pointer, rgbPtr)
             }
         }
+    }
+}
+
+extension BLStyle: Equatable {
+    public static func == (lhs: BLStyle, rhs: BLStyle) -> Bool {
+        return blStyleEquals(&lhs.object, &rhs.object)
     }
 }
 
