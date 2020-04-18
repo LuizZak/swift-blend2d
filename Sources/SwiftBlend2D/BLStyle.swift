@@ -3,7 +3,7 @@ import blend2d
 /// Holds either RGBA color in floating point format or other style object like
 /// `BLPattern` or `BLGradient`.
 public class BLStyle: BLBaseClass<BLStyleCore> {
-    public var style: BLStyleType {
+    public var type: BLStyleType {
         return blStyleGetType(&object)
     }
     
