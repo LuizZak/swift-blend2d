@@ -47,12 +47,16 @@ class BLRegionTests: XCTestCase {
         )
     }
     
-    func xtestIsRegionValidAssertionCrash() {
+    func testIsRegionValidAssertionCrash() {
         var region = BLRegion()
         region.combine(box: BLBoxI(x0: 174, y0: 92, x1: 506, y1: 463), operation: .or)
         region.combine(box: BLBoxI(x0: 189, y0: 466, x1: 482, y1: 478), operation: .or)
         region.combine(box: BLBoxI(x0: 189, y0: 478, x1: 482, y1: 484), operation: .or)
-
         region.combine(box: BLBoxI(x0: 189, y0: 440, x1: 482, y1: 446), operation: .or)
+        
+        XCTAssertEqual(region.regionScans, [
+            BLBoxI(x0: 174, y0: 92, x1: 506, y1: 463),
+            BLBoxI(x0: 189, y0: 466, x1: 482, y1: 484)
+        ])
     }
 }
