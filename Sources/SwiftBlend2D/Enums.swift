@@ -157,6 +157,10 @@ public extension BLResultCode {
     /// Unsupported SOF marker (JPEG).
     static let jpegUnsupportedSof = BL_ERROR_JPEG_UNSUPPORTED_SOF
 
+    /// Font doesn't have any data as it's not initialized.
+    static let fontNotInitialized = BL_ERROR_FONT_NOT_INITIALIZED
+    /// Font or font-face was not matched (BLFontManager).
+    static let fontNoMatch = BL_ERROR_FONT_NO_MATCH
     /// Font has no character to glyph mapping data.
     static let fontNoCharacterMapping = BL_ERROR_FONT_NO_CHARACTER_MAPPING
     /// Font has missing an important table.
@@ -309,6 +313,10 @@ public extension BLResultCode {
             return "Multiple SOF markers (JPEG)."
         case .jpegUnsupportedSof:
             return "Unsupported SOF marker (JPEG)."
+        case .fontNotInitialized:
+            return "Font doesn't have any data as it's not initialized."
+        case .fontNoMatch:
+            return "Font or font-face was not matched (BLFontManager)."
         case .fontNoCharacterMapping:
             return "Font has no character to glyph mapping data."
         case .fontMissingImportantTable:
