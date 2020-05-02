@@ -41,8 +41,8 @@ struct BLRandom {
   //! \name Overloaded Operators
   //! \{
 
-  BL_INLINE bool operator==(const BLRandom& other) const noexcept { return  equals(other); }
-  BL_INLINE bool operator!=(const BLRandom& other) const noexcept { return !equals(other); }
+  BL_NODISCARD BL_INLINE bool operator==(const BLRandom& other) const noexcept { return  equals(other); }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLRandom& other) const noexcept { return !equals(other); }
 
   //! \}
 
@@ -58,6 +58,7 @@ struct BLRandom {
   //!
   //! Random number generator would only be equivalent to `other` if it was
   //! initialized from the same seed and has the same internal state.
+  BL_NODISCARD
   BL_INLINE bool equals(const BLRandom& other) const noexcept {
     return blEquals(this->data[0], other.data[0]) &
            blEquals(this->data[1], other.data[1]);
@@ -69,13 +70,16 @@ struct BLRandom {
   //! \{
 
   //! Returns the next pseudo-random `uint64_t` value and advances its state.
+  BL_NODISCARD
   BL_INLINE uint64_t nextUInt64() noexcept { return blRandomNextUInt64(this); }
 
   //! Returns the next pseudo-random `uint32_t` value and advances its state.
+  BL_NODISCARD
   BL_INLINE uint32_t nextUInt32() noexcept { return blRandomNextUInt32(this); }
 
   //! Returns the next pseudo-random `double` precision floating point in [0..1)
   //! range and advances its state.
+  BL_NODISCARD
   BL_INLINE double nextDouble() noexcept { return blRandomNextDouble(this); }
 
   //! \}

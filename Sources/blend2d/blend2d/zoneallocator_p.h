@@ -163,13 +163,19 @@ public:
 
   //! Tests whether this `BLZoneAllocator` is actually a `BLZoneAllocatorTmp` that
   //! uses temporary memory.
+  BL_NODISCARD
   BL_INLINE bool hasStaticBlock() const noexcept { return _hasStaticBlock != 0; }
 
   //! Returns the default block size.
+  BL_NODISCARD
   BL_INLINE size_t blockSize() const noexcept { return _blockSize; }
+
   //! Returns the default block alignment.
+  BL_NODISCARD
   BL_INLINE size_t blockAlignment() const noexcept { return size_t(1) << _blockAlignmentShift; }
+
   //! Returns the remaining size of the current block.
+  BL_NODISCARD
   BL_INLINE size_t remainingSize() const noexcept { return (size_t)(_end - _ptr); }
 
   //! Returns the current zone cursor (dangerous).
@@ -177,9 +183,12 @@ public:
   //! This is a function that can be used to get exclusive access to the current
   //! block's memory buffer.
   template<typename T = uint8_t>
+  BL_NODISCARD
   BL_INLINE T* ptr() noexcept { return reinterpret_cast<T*>(_ptr); }
+
   //! Returns the end of the current zone block, only useful if you use `ptr()`.
   template<typename T = uint8_t>
+  BL_NODISCARD
   BL_INLINE T* end() noexcept { return reinterpret_cast<T*>(_end); }
 
   // NOTE: The following two functions `setPtr()` and `setEnd()` can be used
@@ -214,6 +223,7 @@ public:
   //! \note This function doesn't respect any alignment. If you need to ensure
   //! there is enough room for an aligned allocation you need to call `align()`
   //! before calling `ensure()`.
+  BL_NODISCARD
   BL_INLINE BLResult ensure(size_t size) noexcept {
     if (size <= remainingSize())
       return BL_SUCCESS;
@@ -241,6 +251,7 @@ public:
   //! \{
 
   //! Internal alloc function.
+  BL_NODISCARD
   BL_HIDDEN void* _alloc(size_t size, size_t alignment) noexcept;
 
   //! Allocates the requested memory specified by `size`.
@@ -273,6 +284,7 @@ public:
   //! // Reset or destroy `BLZoneAllocator`.
   //! zone.reset();
   //! ```
+  BL_NODISCARD
   BL_INLINE void* alloc(size_t size) noexcept {
     if (BL_UNLIKELY(size > remainingSize()))
       return _alloc(size, 1);
@@ -285,6 +297,7 @@ public:
   //! Allocates the requested memory specified by `size` and `alignment`.
   //!
   //! Performs the same operation as `BLZoneAllocator::alloc(size)` with `alignment` applied.
+  BL_NODISCARD
   BL_INLINE void* alloc(size_t size, size_t alignment) noexcept {
     BL_ASSERT(blIsPowerOf2(alignment));
     uint8_t* ptr = blAlignUp(_ptr, alignment);
@@ -299,6 +312,7 @@ public:
   //! Allocates the requested memory specified by `size` without doing any checks.
   //!
   //! Can only be called if `remainingSize()` returns size at least equal to `size`.
+  BL_NODISCARD
   BL_INLINE void* allocNoCheck(size_t size) noexcept {
     BL_ASSERT(remainingSize() >= size);
 
@@ -310,6 +324,7 @@ public:
   //! Allocates the requested memory specified by `size` and `alignment` without doing any checks.
   //!
   //! Performs the same operation as `BLZoneAllocator::allocNoCheck(size)` with `alignment` applied.
+  BL_NODISCARD
   BL_INLINE void* allocNoCheck(size_t size, size_t alignment) noexcept {
     BL_ASSERT(blIsPowerOf2(alignment));
 
@@ -324,15 +339,18 @@ public:
   //! it before returning its pointer.
   //!
   //! See `alloc()` for more details.
+  BL_NODISCARD
   BL_HIDDEN void* allocZeroed(size_t size, size_t alignment = 1) noexcept;
 
   //! Like `alloc()`, but the return pointer is casted to `T*`.
   template<typename T>
+  BL_NODISCARD
   BL_INLINE T* allocT(size_t size = sizeof(T), size_t alignment = alignof(T)) noexcept {
     return static_cast<T*>(alloc(size, alignment));
   }
 
   template<typename T>
+  BL_NODISCARD
   BL_INLINE T* allocNoAlignT(size_t size = sizeof(T)) noexcept {
     T* ptr = static_cast<T*>(alloc(size));
     BL_ASSERT(blIsAligned(ptr, alignof(T)));
@@ -341,18 +359,21 @@ public:
 
   //! Like `allocNoCheck()`, but the return pointer is casted to `T*`.
   template<typename T>
+  BL_NODISCARD
   BL_INLINE T* allocNoCheckT(size_t size = sizeof(T), size_t alignment = alignof(T)) noexcept {
     return static_cast<T*>(allocNoCheck(size, alignment));
   }
 
   //! Like `allocZeroed()`, but the return pointer is casted to `T*`.
   template<typename T>
+  BL_NODISCARD
   BL_INLINE T* allocZeroedT(size_t size = sizeof(T), size_t alignment = alignof(T)) noexcept {
     return static_cast<T*>(allocZeroed(size, alignment));
   }
 
   //! Like `new(std::nothrow) T(...)`, but allocated by `BLZoneAllocator`.
   template<typename T>
+  BL_NODISCARD
   BL_INLINE T* newT() noexcept {
     void* p = alloc(sizeof(T), alignof(T));
     if (BL_UNLIKELY(!p))
@@ -362,6 +383,7 @@ public:
 
   //! Like `new(std::nothrow) T(...)`, but allocated by `BLZoneAllocator`.
   template<typename T, typename... Args>
+  BL_NODISCARD
   BL_INLINE T* newT(Args&&... args) noexcept {
     void* p = alloc(sizeof(T), alignof(T));
     if (BL_UNLIKELY(!p))
@@ -375,6 +397,7 @@ public:
   //! \{
 
   //! Stores the current state to `state`.
+  BL_NODISCARD
   BL_INLINE StatePtr saveState() noexcept {
     return _ptr;
   }
@@ -408,6 +431,7 @@ public:
 
   //! Returns a past block - a block used before the current one, or null if this
   //! is the first block. Use together with `reusePastBlock()`.
+  BL_NODISCARD
   BL_INLINE Block* pastBlock() const noexcept { return _block->prev; }
 
   //! Moves the passed block after the current block and makes the block after
@@ -479,6 +503,7 @@ public:
   BL_INLINE void reset() noexcept { _pool = nullptr; }
 
   //! Ensures that there is at least one object in the pool.
+  BL_NODISCARD
   BL_INLINE bool ensure(BLZoneAllocator& zone) noexcept {
     if (_pool) return true;
 
@@ -491,6 +516,7 @@ public:
   }
 
   //! Allocates a memory (or reuse the existing allocation) of `size` (in byts).
+  BL_NODISCARD
   BL_INLINE T* alloc(BLZoneAllocator& zone) noexcept {
     Link* p = _pool;
     if (BL_UNLIKELY(p == nullptr))
@@ -500,6 +526,7 @@ public:
   }
 
   //! Like `alloc()`, but can be only called after `ensure()` returned `true`.
+  BL_NODISCARD
   BL_INLINE T* allocEnsured() noexcept {
     Link* p = _pool;
     BL_ASSERT(p != nullptr);

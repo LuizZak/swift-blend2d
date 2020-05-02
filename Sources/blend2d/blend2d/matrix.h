@@ -160,25 +160,39 @@ struct BLMatrix2D {
   //! \{
 
   //! Creates a new matrix initialized to identity.
+  BL_NODISCARD
   static constexpr BLMatrix2D makeIdentity() noexcept { return BLMatrix2D(1.0, 0.0, 0.0, 1.0, 0.0, 0.0); }
 
   //! \overload
+  BL_NODISCARD
   static constexpr BLMatrix2D makeTranslation(double x, double y) noexcept { return BLMatrix2D(1.0, 0.0, 0.0, 1.0, x, y); }
+
   //! Creates a new matrix initialized to translation.
+  BL_NODISCARD
   static constexpr BLMatrix2D makeTranslation(const BLPointI& p) noexcept { return BLMatrix2D(1.0, 0.0, 0.0, 1.0, double(p.x), double(p.y)); }
-  //! \overload
-  static constexpr BLMatrix2D makeTranslation(const BLPoint& p) noexcept { return BLMatrix2D(1.0, 0.0, 0.0, 1.0, p.x, p.y); }
 
   //! \overload
-  static constexpr BLMatrix2D makeScaling(double xy) noexcept { return BLMatrix2D(xy, 0.0, 0.0, xy, 0.0, 0.0); }
-  //! \overload
-  static constexpr BLMatrix2D makeScaling(double x, double y) noexcept { return BLMatrix2D(x, 0.0, 0.0, y, 0.0, 0.0); }
-  //! \overload
-  static constexpr BLMatrix2D makeScaling(const BLPointI& p) noexcept { return BLMatrix2D(double(p.x), 0.0, 0.0, double(p.y), 0.0, 0.0); }
+  BL_NODISCARD
+  static constexpr BLMatrix2D makeTranslation(const BLPoint& p) noexcept { return BLMatrix2D(1.0, 0.0, 0.0, 1.0, p.x, p.y); }
+
   //! Creates a new matrix initialized to scaling.
+  BL_NODISCARD
+  static constexpr BLMatrix2D makeScaling(double xy) noexcept { return BLMatrix2D(xy, 0.0, 0.0, xy, 0.0, 0.0); }
+
+  //! \overload
+  BL_NODISCARD
+  static constexpr BLMatrix2D makeScaling(double x, double y) noexcept { return BLMatrix2D(x, 0.0, 0.0, y, 0.0, 0.0); }
+
+  //! \overload
+  BL_NODISCARD
+  static constexpr BLMatrix2D makeScaling(const BLPointI& p) noexcept { return BLMatrix2D(double(p.x), 0.0, 0.0, double(p.y), 0.0, 0.0); }
+
+  //! \overload
+  BL_NODISCARD
   static constexpr BLMatrix2D makeScaling(const BLPoint& p) noexcept { return BLMatrix2D(p.x, 0.0, 0.0, p.y, 0.0, 0.0); }
 
   //! Creates a new matrix initialized to rotation.
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeRotation(double angle) noexcept {
     BLMatrix2D result;
     result.resetToRotation(angle, 0.0, 0.0);
@@ -186,6 +200,7 @@ struct BLMatrix2D {
   }
 
   //! \overload
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeRotation(double angle, double x, double y) noexcept {
     BLMatrix2D result;
     result.resetToRotation(angle, x, y);
@@ -193,6 +208,7 @@ struct BLMatrix2D {
   }
 
   //! \overload
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeRotation(double angle, const BLPoint& p) noexcept {
     BLMatrix2D result;
     result.resetToRotation(angle, p.x, p.y);
@@ -200,22 +216,27 @@ struct BLMatrix2D {
   }
 
   //! Create a new skewing matrix.
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeSkewing(double x, double y) noexcept {
     BLMatrix2D result;
     result.resetToSkewing(x, y);
     return result;
   }
+
   //! \overload
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeSkewing(const BLPoint& p) noexcept {
     BLMatrix2D result;
     result.resetToSkewing(p.x, p.y);
     return result;
   }
 
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeSinCos(double sin, double cos, double tx = 0.0, double ty = 0.0) noexcept {
     return BLMatrix2D(cos, sin, -sin, cos, tx, ty);
   }
 
+  BL_NODISCARD
   static BL_INLINE BLMatrix2D makeSinCos(double sin, double cos, const BLPoint& t) noexcept {
     return makeSinCos(sin, cos, t.x, t.y);
   }
@@ -287,14 +308,15 @@ struct BLMatrix2D {
   //! \name Overloaded Operators
   //! \{
 
-  BL_INLINE bool operator==(const BLMatrix2D& other) const noexcept { return  equals(other); }
-  BL_INLINE bool operator!=(const BLMatrix2D& other) const noexcept { return !equals(other); }
+  BL_NODISCARD BL_INLINE bool operator==(const BLMatrix2D& other) const noexcept { return  equals(other); }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLMatrix2D& other) const noexcept { return !equals(other); }
 
   //! \}
 
   //! \name Common Functionality
   //! \{
 
+  BL_NODISCARD
   BL_INLINE bool equals(const BLMatrix2D& other) const noexcept {
     return blEquals(this->m00, other.m00) &
            blEquals(this->m01, other.m01) &
@@ -310,9 +332,11 @@ struct BLMatrix2D {
   //! \{
 
   //! Returns the matrix type, see `BLMatrix2DType`.
+  BL_NODISCARD
   BL_INLINE uint32_t type() const noexcept { return blMatrix2DGetType(this); }
 
   //! Calculates the matrix determinant.
+  BL_NODISCARD
   BL_INLINE double determinant() noexcept { return this->m00 * this->m11 - this->m01 * this->m10; }
 
   //! \}

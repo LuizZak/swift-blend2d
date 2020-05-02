@@ -362,7 +362,7 @@ struct BLAnalyticRasterizer : public BLAnalyticRasterizerState {
   }
 
   // --------------------------------------------------------------------------
-  // [advance]
+  // [Advance]
   // --------------------------------------------------------------------------
 
   BL_INLINE void advanceToY(int yTarget) noexcept {

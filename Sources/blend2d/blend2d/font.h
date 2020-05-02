@@ -247,8 +247,8 @@ struct BLFontFaceImpl {
 
   //! Font-face information.
   BLFontFaceInfo faceInfo;
-  //! Unique face id assigned by Blend2D for caching.
-  uint64_t faceUniqueId;
+  //! Unique identifier assigned by Blend2D that can be used for caching.
+  BLUniqueId uniqueId;
 
   //! Font data.
   BL_TYPED_MEMBER(BLFontDataCore, BLFontData, data);
@@ -432,7 +432,7 @@ public:
   BL_INLINE uint32_t diagFlags() const noexcept { return impl->faceInfo.diagFlags; }
 
   //! Returns a unique identifier describing this `BLFontFace`.
-  BL_INLINE uint64_t faceUniqueId() const noexcept { return impl->faceUniqueId; }
+  BL_INLINE BLUniqueId uniqueId() const noexcept { return impl->uniqueId; }
 
   //! Returns `BLFontData` associated with this font-face.
   BL_INLINE const BLFontData& data() const noexcept { return impl->data; }

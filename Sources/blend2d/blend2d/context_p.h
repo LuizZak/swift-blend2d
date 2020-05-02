@@ -55,7 +55,6 @@ static BL_INLINE void blContextStateDestroy(BLContextState* self) noexcept {
 }
 
 BL_HIDDEN extern BLWrap<BLContextState> blNullContextState;
-BL_HIDDEN extern BLAtomicUInt64Generator blContextIdGenerator;
 
 //! \}
 //! \endcond

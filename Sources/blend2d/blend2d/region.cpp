@@ -342,8 +342,8 @@ NonConforming:
     BLOverflowFlag of = 0;
     int w = data->w;
     int h = data->h;
-    blAddOverflow(data->x, w, &of);
-    blAddOverflow(data->y, h, &of);
+    (void)blAddOverflow(data->x, w, &of);
+    (void)blAddOverflow(data->y, h, &of);
     if (BL_UNLIKELY(of | (w <= 0) | (h <= 0)))
       return BL_DATA_ANALYSIS_INVALID_VALUE;
   } while (++data != end);

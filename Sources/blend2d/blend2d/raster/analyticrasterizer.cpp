@@ -34,7 +34,7 @@ UNIT(analytic_rasterizer) {
   int h = 1000;
 
   uint32_t maxBandHeight = 64;
-  uint32_t edgeCount = BrokenAPI::hasArg("--quick") ? 5000 : 1000000;
+  uint32_t edgeCount = BrokenAPI::hasArg("--quick") ? 5000 : 100000;
 
   for (uint32_t bandHeightShift = 0; bandHeightShift < blBitCtz(maxBandHeight); bandHeightShift++) {
     uint32_t bandHeight = 1 << bandHeightShift;

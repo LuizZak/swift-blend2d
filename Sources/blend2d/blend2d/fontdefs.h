@@ -726,6 +726,26 @@ struct BLFontFaceInfo {
 };
 
 // ============================================================================
+// [BLFontQueryProperties]
+// ============================================================================
+
+//! Properties that can be used to query \ref BLFont and \ref BLFontFace.
+//!
+//! \sa BLFontManager.
+struct BLFontQueryProperties {
+  //! Font style.
+  uint32_t style;
+  //! Font weight.
+  uint32_t weight;
+
+  // --------------------------------------------------------------------------
+  #ifdef __cplusplus
+  BL_INLINE void reset() noexcept { memset(this, 0, sizeof(*this)); }
+  #endif
+  // --------------------------------------------------------------------------
+};
+
+// ============================================================================
 // [BLFontTable]
 // ============================================================================
 

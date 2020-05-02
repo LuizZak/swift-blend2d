@@ -23,15 +23,28 @@
 
 class BLInternalFontManagerImpl : public BLFontManagerImpl {
 public:
+  BL_NONCOPYABLE(BLInternalFontManagerImpl)
+
   class FamiliesMapNode : public BLZoneHashNode {
   public:
+    BL_NONCOPYABLE(FamiliesMapNode)
+
+    BLString familyName;
+    BLArray<BLFontFace> faces;
+
     BL_INLINE FamiliesMapNode(uint32_t hashCode, const BLString& familyName) noexcept
       : BLZoneHashNode(hashCode),
         familyName(familyName),
         faces() {}
+    BL_INLINE ~FamiliesMapNode() noexcept {}
+  };
 
-    BLString familyName;
-    BLArray<BLFontFace> faces;
+  struct FamilyMatcher {
+    BLStringView _family;
+    uint32_t _hashCode;
+
+    BL_INLINE uint32_t hashCode() const noexcept { return _hashCode; }
+    BL_INLINE bool matches(const FamiliesMapNode* node) const noexcept { return node->familyName.equals(_family); }
   };
 
   class SubstitutionMapNode : public BLZoneHashNode {
@@ -52,14 +65,23 @@ public:
   BLZoneAllocator zone;
   BLZoneHashMap<FamiliesMapNode> familiesMap;
   BLZoneHashMap<SubstitutionMapNode> substitutionMap;
+  size_t faceCount;
 
-  BL_INLINE BLInternalFontManagerImpl(const BLFontManagerVirt* virt_) noexcept
+  BL_INLINE BLInternalFontManagerImpl(const BLFontManagerVirt* virt_, uint16_t memPoolData_) noexcept
     : mutex(),
-      zone(4096),
+      zone(8192 - BLZoneAllocator::kBlockOverhead),
       familiesMap(),
       substitutionMap() {
     virt = virt_;
+    refCount = 1;
+    implType = uint8_t(BL_IMPL_TYPE_FONT_MANAGER);
+    implTraits = uint8_t(BL_IMPL_TRAIT_MUTABLE | BL_IMPL_TRAIT_VIRT);
+    memPoolData = memPoolData_;
+    memset(reserved, 0, sizeof(reserved));
+    faceCount = 0;
   }
+
+  BL_INLINE ~BLInternalFontManagerImpl() noexcept {}
 };
 
 template<>

@@ -4,6 +4,13 @@ if [[ "${@#-force}" = "$@" && -n $(git status --porcelain) ]]; then
     exit 1
 fi
 
+if [[ -z $BLEND2D_VERSION_TAG ]]; then
+    BLEND2D_VERSION_TAG=master
+fi
+if [[ -z $ASMJIT_VERSION_TAG ]]; then
+    ASMJIT_VERSION_TAG=master
+fi
+
 echo "Creating temporary path folder ./temp..."
 
 if [[ -d "temp" ]]; then
@@ -13,8 +20,8 @@ fi
 mkdir temp
 
 cd temp
-git clone https://github.com/blend2d/blend2d.git --depth=1
-git clone https://github.com/asmjit/asmjit --depth=1
+git clone https://github.com/blend2d/blend2d.git --depth=1 --branch=$BLEND2D_VERSION_TAG
+git clone https://github.com/asmjit/asmjit --depth=1 --branch=$ASMJIT_VERSION_TAG
 
 # Copy all Blend2D files over
 echo "Copying over Blend2D files..."

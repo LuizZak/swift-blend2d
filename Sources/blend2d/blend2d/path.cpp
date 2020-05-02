@@ -658,7 +658,7 @@ public:
           break;
 
         default:
-          blTraceError(BL_ERROR_INVALID_GEOMETRY);
+          return blTraceError(BL_ERROR_INVALID_GEOMETRY);
       }
     }
 

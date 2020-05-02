@@ -365,11 +365,23 @@
 //! function, which is only used when assertions are enabled. This macro should
 //! be considered internal and it's not designed for Blend2D users.
 #if defined(__GNUC__)
-  #define BL_NORETURN __attribute__((noreturn))
+  #define BL_NORETURN __attribute__((__noreturn__))
 #elif defined(_MSC_VER)
   #define BL_NORETURN __declspec(noreturn)
 #else
   #define BL_NORETURN
+#endif
+
+//! \def BL_NODISCARD
+//!
+//! Tells the compiler to issue a warning in case that the return value of a
+//! function was not used.
+#if defined(__cplusplus) && __cplusplus >= 201703L
+  #define BL_NODISCARD [[nodiscard]]
+#elif defined(__GNUC__) && __GNUC__ >= 4
+  #define BL_NODISCARD __attribute__((__warn_unused_result__))
+#else
+  #define BL_NODISCARD
 #endif
 
 //! \def BL_NOEXCEPT
@@ -696,6 +708,7 @@ BL_DEFINE_STRUCT(BLGlyphRun);
 
 BL_DEFINE_STRUCT(BLFontUnicodeCoverage);
 BL_DEFINE_STRUCT(BLFontFaceInfo);
+BL_DEFINE_STRUCT(BLFontQueryProperties);
 BL_DEFINE_STRUCT(BLFontFeature);
 BL_DEFINE_STRUCT(BLFontDesignMetrics);
 BL_DEFINE_STRUCT(BLFontMatrix);
@@ -792,6 +805,19 @@ typedef uintptr_t BLBitWord;
 //! Blend2D uses `BLTag` in public and internal APIs to distinguish between a
 //! regular `uint32_t` and tag.
 typedef uint32_t BLTag;
+
+//! \ingroup blend2d_api_globals
+//!
+//! Unique identifier that can be used for caching purposes.
+//!
+//! Some objects such as \ref BLImage and \ref BLFontFace have assigned an
+//! unique identifier that can be used to identify such objects for caching
+//! purposes. This identifier is never zero, so zero can be safely used as
+//! "uncached".
+//!
+//! \note Unique identifier is per-process. It's implemented as an increasing
+//! global or thread-local counter in a way that identifiers would not collide.
+typedef uint64_t BLUniqueId;
 
 //! \ingroup blend2d_api_globals
 //!
@@ -900,6 +926,7 @@ BL_DEFINE_ENUM(BLResultCode) {
   BL_ERROR_JPEG_UNSUPPORTED_SOF,         //!< Unsupported SOF marker (JPEG).
 
   BL_ERROR_FONT_NOT_INITIALIZED,         //!< Font doesn't have any data as it's not initialized.
+  BL_ERROR_FONT_NO_MATCH,                //!< Font or font-face was not matched (BLFontManager).
   BL_ERROR_FONT_NO_CHARACTER_MAPPING,    //!< Font has no character to glyph mapping data.
   BL_ERROR_FONT_MISSING_IMPORTANT_TABLE, //!< Font has missing an important table.
   BL_ERROR_FONT_FEATURE_NOT_AVAILABLE,   //!< Font feature is not available.
@@ -1137,6 +1164,7 @@ inline void* operator new(std::size_t, const BLInternal::PlacementNew& p) {
 //! each error goes through this function.
 //!
 //! It's a zero-cost solution that doesn't affect release builds in any way.
+BL_NODISCARD
 static inline BLResult blTraceError(BLResult result) BL_NOEXCEPT_C { return result; }
 
 //! \}
@@ -1164,6 +1192,7 @@ static inline BLResult blTraceError(BLResult result) BL_NOEXCEPT_C { return resu
 //! and `In` must be the same otherwise the compilation would fail. Bit casting
 //! is used by `blEquals` to implement bit equality for floating point types.
 template<typename Out, typename In>
+BL_NODISCARD
 static BL_INLINE Out blBitCast(const In& x) noexcept {
   static_assert(sizeof(Out) == sizeof(In),
                 "The size of 'In' and 'Out' types must match");
@@ -1173,41 +1202,50 @@ static BL_INLINE Out blBitCast(const In& x) noexcept {
 
 //! Returns an absolute value of `a`.
 template<typename T>
+BL_NODISCARD
 BL_INLINE constexpr T blAbs(const T& a) noexcept { return T(a < 0 ? -a : a); }
 
 //! Returns a minimum value of `a` and `b`.
 template<typename T>
+BL_NODISCARD
 BL_INLINE constexpr T blMin(const T& a, const T& b) noexcept { return T(b < a ? b : a); }
 
 //! Returns a maximum value of `a` and `b`.
 template<typename T>
+BL_NODISCARD
 BL_INLINE constexpr T blMax(const T& a, const T& b) noexcept { return T(a < b ? b : a); }
 
 //! Clamps `a` to a range defined as `[b, c]`.
 template<typename T>
+BL_NODISCARD
 BL_INLINE constexpr T blClamp(const T& a, const T& b, const T& c) noexcept { return blMin(c, blMax(b, a)); }
 
 //! Returns a minimum value of all arguments passed.
 template<typename T, typename... Args>
+BL_NODISCARD
 BL_INLINE constexpr T blMin(const T& a, const T& b, Args&&... args) noexcept { return blMin(blMin(a, b), std::forward<Args>(args)...); }
 
 //! Returns a maximum value of all arguments passed.
 template<typename T, typename... Args>
+BL_NODISCARD
 BL_INLINE constexpr T blMax(const T& a, const T& b, Args&&... args) noexcept { return blMax(blMax(a, b), std::forward<Args>(args)...); }
 
 //! Returns `true` if `a` and `b` equals at binary level.
 //!
 //! For example `blEquals(NaN, NaN) == true`.
 template<typename T>
+BL_NODISCARD
 BL_INLINE bool blEquals(const T& a, const T& b) noexcept { return a == b; }
 
 //! \cond
 template<>
+BL_NODISCARD
 BL_INLINE bool blEquals(const float& a, const float& b) noexcept {
   return blBitCast<uint32_t>(a) == blBitCast<uint32_t>(b);
 }
 
 template<>
+BL_NODISCARD
 BL_INLINE bool blEquals(const double& a, const double& b) noexcept {
   return blBitCast<uint64_t>(a) == blBitCast<uint64_t>(b);
 }
@@ -1231,24 +1269,28 @@ BL_INLINE bool blEquals(const double& a, const double& b) noexcept {
 //! Intended to be used by C++ users that work with C API as well (by either
 //! providing it directly or using some other code that uses Blend2D C API).
 template<typename T>
+BL_NODISCARD
 static BL_INLINE constexpr typename BLInternal::DownCast<T>::Type& blDownCast(T& ref) noexcept {
   return reinterpret_cast<typename BLInternal::DownCast<T>::Type&>(ref);
 }
 
 //! \overload
 template<typename T>
+BL_NODISCARD
 static BL_INLINE constexpr const typename BLInternal::DownCast<T>::Type& blDownCast(const T& ref) noexcept {
   return reinterpret_cast<const typename BLInternal::DownCast<T>::Type&>(ref);
 }
 
 //! \overload
 template<typename T>
+BL_NODISCARD
 static BL_INLINE constexpr typename BLInternal::DownCast<T>::Type* blDownCast(T* ptr) noexcept {
   return reinterpret_cast<typename BLInternal::DownCast<T>::Type*>(ptr);
 }
 
 //! \overload
 template<typename T>
+BL_NODISCARD
 static BL_INLINE constexpr const typename BLInternal::DownCast<T>::Type* blDownCast(const T* ptr) noexcept {
   return reinterpret_cast<const typename BLInternal::DownCast<T>::Type*>(ptr);
 }
@@ -1284,6 +1326,7 @@ struct BLRange {
     : start(start),
       end(end) {}
 
+  BL_NODISCARD
   static constexpr BLRange everything() noexcept { return BLRange(0, SIZE_MAX); }
 
   //! Reset the range to [0, 0).
@@ -1295,13 +1338,14 @@ struct BLRange {
     this->end = end;
   }
 
+  BL_NODISCARD
   BL_INLINE bool equals(const BLRange& other) const noexcept {
     return blEquals(this->start, other.start) &
            blEquals(this->end  , other.end  ) ;
   }
 
-  BL_INLINE bool operator==(const BLRange& other) const noexcept { return  equals(other); }
-  BL_INLINE bool operator!=(const BLRange& other) const noexcept { return !equals(other); }
+  BL_NODISCARD BL_INLINE bool operator==(const BLRange& other) const noexcept { return  equals(other); }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLRange& other) const noexcept { return !equals(other); }
 
   BL_DIAGNOSTIC_POP
   #endif
@@ -1652,10 +1696,18 @@ BL_API BLResult BL_CDECL blFontFaceGetUnicodeCoverage(const BLFontFaceCore* self
 //!
 //! \{
 BL_API BLResult BL_CDECL blFontManagerInit(BLFontManagerCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerInitNew(BLFontManagerCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blFontManagerDestroy(BLFontManagerCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blFontManagerReset(BLFontManagerCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blFontManagerAssignMove(BLFontManagerCore* self, BLFontManagerCore* other) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blFontManagerAssignWeak(BLFontManagerCore* self, const BLFontManagerCore* other) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerCreate(BLFontManagerCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerGetFaceCount(const BLFontManagerCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerGetFamilyCount(const BLFontManagerCore* self) BL_NOEXCEPT_C;
+BL_API bool BL_CDECL blFontManagerHasFace(const BLFontManagerCore* self, const BLFontFaceCore* face) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerAddFace(BLFontManagerCore* self, const BLFontFaceCore* face) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerQueryFace(const BLFontManagerCore* self, const char* name, size_t nameSize, const BLFontQueryProperties* properties, BLFontFaceCore* out) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blFontManagerQueryFacesByFamilyName(const BLFontManagerCore* self, const char* name, size_t nameSize, BLArrayCore* out) BL_NOEXCEPT_C;
 BL_API bool BL_CDECL blFontManagerEquals(const BLFontManagerCore* a, const BLFontManagerCore* b) BL_NOEXCEPT_C;
 //! \}
 
@@ -1994,6 +2046,7 @@ BL_API BLResult BL_CDECL blResultFromPosixError(int e) BL_NOEXCEPT_C;
 //!
 //! \{
 BL_API BLResult BL_CDECL blStringInit(BLStringCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blStringInitWithData(BLStringCore* self, const char* str, size_t size) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blStringDestroy(BLStringCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blStringReset(BLStringCore* self) BL_NOEXCEPT_C;
 BL_API size_t BL_CDECL blStringGetSize(const BLStringCore* self) BL_NOEXCEPT_C BL_PURE;

@@ -15,6 +15,26 @@
 //! \{
 
 // ============================================================================
+// [blHashString]
+// ============================================================================
+
+static constexpr uint32_t blHashRound(uint32_t hash, uint32_t c) noexcept { return hash * 65599u + c; }
+
+// Gets a hash of the given string `data` of size `size`. Size must be valid
+// as this function doesn't check for a null terminator and allows it in the
+// middle of the string.
+static BL_INLINE uint32_t blHashString(const char* data, size_t size) noexcept {
+  uint32_t hashCode = 0;
+  for (uint32_t i = 0; i < size; i++)
+    hashCode = blHashRound(hashCode, uint8_t(data[i]));
+  return hashCode;
+}
+
+static BL_INLINE uint32_t blHashString(const BLStringView& view) noexcept {
+  return blHashString(view.data, view.size);
+}
+
+// ============================================================================
 // [BLZoneHashNode]
 // ============================================================================
 
@@ -207,6 +227,11 @@ public:
   BL_INLINE BLZoneHashMap(BLZoneHashMap&& other) noexcept
     : BLZoneHashMap(other) {}
 
+  BL_INLINE ~BLZoneHashMap() noexcept {
+    if (!std::is_trivially_destructible<NodeT>::value)
+      _destroy();
+  }
+
   //! \}
 
   //! \name Utilities
@@ -214,6 +239,20 @@ public:
 
   BL_INLINE void swap(BLZoneHashMap& other) noexcept {
     BLZoneHashBase::_swap(other);
+  }
+
+  void _destroy() noexcept {
+    for (size_t i = 0; i < _bucketCount; i++) {
+      NodeT* node = static_cast<NodeT*>(_data[i]);
+      if (node) {
+        do {
+          NodeT* next = static_cast<NodeT*>(node->_hashNext);
+          blCallDtor(*node);
+          node = next;
+        } while (node);
+        _data[i] = nullptr;
+      }
+    }
   }
 
   //! \}

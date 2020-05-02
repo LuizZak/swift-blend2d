@@ -1234,7 +1234,7 @@ static BLResult BL_CDECL blRasterContextImplSetApproximationOptions(BLContextImp
                   offsetMode >= BL_OFFSET_MODE_COUNT ||
                   blIsNaN(flattenTolerance) ||
                   blIsNaN(offsetParameter)))
-    blTraceError(BL_ERROR_INVALID_VALUE);
+    return blTraceError(BL_ERROR_INVALID_VALUE);
 
   blRasterContextImplBeforeConfigChange(ctxI);
   ctxI->contextFlags &= ~(BL_RASTER_CONTEXT_STATE_CONFIG     |

@@ -56,8 +56,8 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         return BLFontFaceDiagFlags(object.impl.pointee.faceInfo.diagFlags)
     }
     /// Gets a unique identifier describing this BLFontFace.
-    public var faceUniqueId: UInt64 {
-        return object.impl.pointee.faceUniqueId
+    public var faceUniqueId: BLUniqueId {
+        return object.impl.pointee.uniqueId
     }
 
     /// Gets full name as UTF-8 null-terminated string.

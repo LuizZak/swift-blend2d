@@ -226,8 +226,8 @@ public:
   BL_INLINE BLImage& operator=(BLImage&& other) noexcept { blImageAssignMove(this, &other); return *this; }
   BL_INLINE BLImage& operator=(const BLImage& other) noexcept { blImageAssignWeak(this, &other); return *this; }
 
-  BL_INLINE bool operator==(const BLImage& other) const noexcept { return  equals(other); }
-  BL_INLINE bool operator!=(const BLImage& other) const noexcept { return !equals(other); }
+  BL_NODISCARD BL_INLINE bool operator==(const BLImage& other) const noexcept { return  equals(other); }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLImage& other) const noexcept { return !equals(other); }
 
   //! \}
 
@@ -244,10 +244,14 @@ public:
   BL_INLINE BLResult assignDeep(const BLImage& other) noexcept { return blImageAssignDeep(this, &other); }
 
   //! Tests whether the image is a built-in null instance.
+  BL_NODISCARD
   BL_INLINE bool isNone() const noexcept { return (impl->implTraits & BL_IMPL_TRAIT_NULL) != 0; }
+
   //! Tests whether the image is empty (has no size).
+  BL_NODISCARD
   BL_INLINE bool empty() const noexcept { return impl->format == BL_FORMAT_NONE; }
 
+  BL_NODISCARD
   BL_INLINE bool equals(const BLImage& other) const noexcept { return blImageEquals(this, &other); }
 
   //! \}
@@ -280,12 +284,19 @@ public:
   //! \{
 
   //! Returns image width.
+  BL_NODISCARD
   BL_INLINE int width() const noexcept { return impl->size.w; }
+
   //! Returns image height.
+  BL_NODISCARD
   BL_INLINE int height() const noexcept { return impl->size.h; }
+
   //! Returns image size.
+  BL_NODISCARD
   BL_INLINE const BLSizeI& size() const noexcept { return impl->size; }
+
   //! Returns image format, see `BLFormat`.
+  BL_NODISCARD
   BL_INLINE uint32_t format() const noexcept { return impl->format; }
 
   BL_INLINE BLResult getData(BLImageData* dataOut) const noexcept { return blImageGetData(this, dataOut); }
@@ -352,6 +363,7 @@ public:
 
   //! \}
 
+  BL_NODISCARD
   static BL_INLINE const BLImage& none() noexcept { return reinterpret_cast<const BLImage*>(blNone)[kImplType]; }
 
   static BL_INLINE BLResult scale(BLImage& dst, const BLImage& src, const BLSizeI& size, uint32_t filter, const BLImageScaleOptions* options = nullptr) noexcept {

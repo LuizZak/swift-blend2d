@@ -59,6 +59,7 @@ public:
   // [Allocation]
   // --------------------------------------------------------------------------
 
+  BL_NODISCARD
   BL_INLINE BLResult ensure(size_t minimumSize) noexcept {
     if (minimumSize <= size)
       return BL_SUCCESS;

@@ -105,8 +105,8 @@ public:
   BL_INLINE BLRegion& operator=(BLRegion&& other) noexcept { blRegionAssignMove(this, &other); return *this; }
   BL_INLINE BLRegion& operator=(const BLRegion& other) noexcept { blRegionAssignWeak(this, &other); return *this; }
 
-  BL_INLINE bool operator==(const BLRegion& other) const noexcept { return  equals(other); }
-  BL_INLINE bool operator!=(const BLRegion& other) const noexcept { return !equals(other); }
+  BL_NODISCARD BL_INLINE bool operator==(const BLRegion& other) const noexcept { return  equals(other); }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLRegion& other) const noexcept { return !equals(other); }
 
   //! \}
 
@@ -126,11 +126,15 @@ public:
   BL_INLINE BLResult assign(const BLRectI* data, size_t n) noexcept { return blRegionAssignRectIArray(this, data, n); }
 
   //! Tests whether the region is a built-in null instance.
+  BL_NODISCARD
   BL_INLINE bool isNone() const noexcept { return (impl->implTraits & BL_IMPL_TRAIT_NULL) != 0; }
+
   //! Tests whether the region is empty.
+  BL_NODISCARD
   BL_INLINE bool empty() const noexcept { return impl->size == 0; }
 
   //! Tests whether this region and `other` are equal.
+  BL_NODISCARD
   BL_INLINE bool equals(const BLRegion& other) const noexcept { return blRegionEquals(this, &other); }
 
   //! \}
@@ -141,23 +145,43 @@ public:
   //! Returns the type of the region, see `BLRegionType`.
   //!
   //! This inline method has also a C API equivalent `blRegionGetType()`.
+  BL_NODISCARD
   BL_INLINE uint32_t type() const noexcept { return uint32_t(blMin<size_t>(impl->size, BL_REGION_TYPE_COMPLEX)); }
 
   //! Tests whether the region is one rectangle.
+  BL_NODISCARD
   BL_INLINE bool isRect() const noexcept { return impl->size == 1; }
+
   //! Tests whether the region is complex.
+  BL_NODISCARD
   BL_INLINE bool isComplex() const noexcept { return impl->size > 1; }
 
   //! Returns the region size.
+  BL_NODISCARD
   BL_INLINE size_t size() const noexcept { return impl->size; }
+
   //! Returns the region capacity.
+  BL_NODISCARD
   BL_INLINE size_t capacity() const noexcept { return impl->capacity; }
+
   //! Returns a const pointer to the region data.
+  BL_NODISCARD
   BL_INLINE const BLBoxI* data() const noexcept { return impl->data; }
+
+  //! Returns a const pointer to the beginning of region data (iterator compatibility).
+  BL_NODISCARD
+  BL_INLINE const BLBoxI* begin() const noexcept { return impl->data; }
+
+  //! Returns a const pointer to the end of region data (iterator compatibility).
+  BL_NODISCARD
+  BL_INLINE const BLBoxI* end() const noexcept { return impl->data + impl->size; }
+
   //! Returns the region's bounding box.
+  BL_NODISCARD
   BL_INLINE const BLBoxI& boundingBox() const noexcept { return impl->boundingBox; }
 
   //! Returns the region data as `BLRegionView`.
+  BL_NODISCARD
   BL_INLINE const BLRegionView& view() const noexcept { return impl->view; }
 
   //! \}
@@ -191,8 +215,11 @@ public:
   //! \{
 
   //! Tests if a given point `pt` is in region, returns `BLHitTest`.
+  BL_NODISCARD
   BL_INLINE uint32_t hitTest(const BLPointI& pt) const noexcept { return blRegionHitTest(this, &pt); }
+
   //! Tests if a given `box` is in region, returns `BLHitTest`.
+  BL_NODISCARD
   BL_INLINE uint32_t hitTest(const BLBoxI& box) const noexcept { return blRegionHitTestBoxI(this, &box); }
 
   //! \}

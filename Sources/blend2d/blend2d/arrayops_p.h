@@ -18,6 +18,7 @@
 // ============================================================================
 
 template<typename T, typename V>
+BL_NODISCARD
 static BL_INLINE size_t blBinarySearch(const T* array, size_t size, const V& value) noexcept {
   if (!size)
     return SIZE_MAX;
@@ -37,6 +38,7 @@ static BL_INLINE size_t blBinarySearch(const T* array, size_t size, const V& val
 }
 
 template<typename T, typename V>
+BL_NODISCARD
 static BL_INLINE size_t blBinarySearchClosestFirst(const T* array, size_t size, const V& value) noexcept {
   if (!size)
     return 0;
@@ -56,6 +58,7 @@ static BL_INLINE size_t blBinarySearchClosestFirst(const T* array, size_t size, 
 }
 
 template<typename T, typename V>
+BL_NODISCARD
 static BL_INLINE size_t blBinarySearchClosestLast(const T* array, size_t size, const V& value) noexcept {
   if (!size)
     return 0;

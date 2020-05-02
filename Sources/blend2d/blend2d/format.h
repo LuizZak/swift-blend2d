@@ -133,6 +133,9 @@ struct BLFormatInfo {
   // --------------------------------------------------------------------------
   #ifdef __cplusplus
 
+  BL_NODISCARD BL_INLINE bool operator==(const BLFormatInfo& other) const noexcept { return memcmp(this, &other, sizeof(*this)) == 0; }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLFormatInfo& other) const noexcept { return memcmp(this, &other, sizeof(*this)) != 0; }
+
   BL_INLINE void reset() noexcept { memset(this, 0, sizeof(*this)); }
 
   BL_INLINE void init(uint32_t depth_, uint32_t flags_, const uint8_t sizes_[4], const uint8_t shifts_[4]) noexcept {
@@ -174,10 +177,6 @@ struct BLFormatInfo {
   //! is implicitly performed for formats where a single component matches one
   //! byte, etc...
   BL_INLINE BLResult sanitize() noexcept { return blFormatInfoSanitize(this); }
-
-  BL_INLINE bool operator==(const BLFormatInfo& other) const noexcept { return memcmp(this, &other, sizeof(*this)) == 0; }
-  BL_INLINE bool operator!=(const BLFormatInfo& other) const noexcept { return memcmp(this, &other, sizeof(*this)) != 0; }
-
   #endif
   // --------------------------------------------------------------------------
 };

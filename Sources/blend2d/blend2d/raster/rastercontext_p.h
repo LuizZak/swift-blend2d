@@ -30,6 +30,7 @@
 #include "../raster/rasterworkdata_p.h"
 #include "../raster/rasterworkermanager_p.h"
 #include "../raster/rasterworkqueue_p.h"
+#include "../threading/uniqueidgenerator_p.h"
 
 #if !defined(BL_BUILD_NO_JIT)
   #include "../pipegen/pipegenruntime_p.h"
@@ -325,7 +326,7 @@ public:
       precisionInfo {},
       syncWorkData(this),
       pipeProvider(),
-      contextOriginId(blContextIdGenerator.next()),
+      contextOriginId(blGenerateUniqueId(BL_UNIQUE_ID_DOMAIN_CONTEXT)),
       stateIdCounter(0),
       renderingMode(uint8_t(BL_RASTER_RENDERING_MODE_SYNC)),
       workerMgrInitialized(false),

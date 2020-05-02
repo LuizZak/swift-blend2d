@@ -130,6 +130,7 @@ public:
   }
 
   //! Returns `true` if the converter is initialized.
+  BL_NODISCARD
   BL_INLINE bool isInitialized() const noexcept {
     // Internal flags are non-zero when the pixel converter is initialized.
     return internalFlags != 0;

@@ -17,7 +17,7 @@
 #include "./unicode_p.h"
 #include "./opentype/otcore_p.h"
 #include "./opentype/otface_p.h"
-#include "./threading/atomic_p.h"
+#include "./threading/uniqueidgenerator_p.h"
 
 // ============================================================================
 // [Global Variables]
@@ -30,7 +30,6 @@ static BLWrap<BLInternalFontFaceImpl> blNullFontFaceImpl;
 static BLWrap<BLFontDataImpl> blNullFontDataImpl;
 
 static BLFontFaceVirt blNullFontFaceVirt;
-static BLAtomicUInt64Generator blFontFaceIdGenerator;
 
 // ============================================================================
 // [BLFontData - Null]
@@ -542,7 +541,7 @@ BLResult blFontFaceCreateFromData(BLFontFaceCore* self, const BLFontDataCore* fo
 
   BLOTFaceImpl* newI;
   BL_PROPAGATE(blOTFaceImplNew(&newI, blDownCast(fontData), faceIndex));
-  newI->faceUniqueId = blFontFaceIdGenerator.next();
+  newI->uniqueId = blGenerateUniqueId(BL_UNIQUE_ID_DOMAIN_ANY);
 
   BLInternalFontFaceImpl* oldI = blInternalCast(self->impl);
   self->impl = newI;
@@ -1032,7 +1031,7 @@ BLResult blFontGetGlyphRunOutlines(const BLFontCore* self, const BLGlyphRun* gly
 }
 
 // ============================================================================
-// [Runtime Init]
+// [BLFont - Runtime Init]
 // ============================================================================
 
 void blFontRtInit(BLRuntimeContext* rt) noexcept {

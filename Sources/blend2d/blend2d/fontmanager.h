@@ -49,7 +49,7 @@ struct BLFontManagerCore {
 // ============================================================================
 
 #ifdef __cplusplus
-//! Font data [C++ API].
+//! Font manager [C++ API].
 class BLFontManager : public BLFontManagerCore {
 public:
   //! \cond INTERNAL
@@ -70,8 +70,6 @@ public:
   //! \name Overloaded Operators
   //! \{
 
-  BL_INLINE explicit operator bool() const noexcept { return !isNone(); }
-
   BL_INLINE BLFontManager& operator=(BLFontManager&& other) noexcept { blFontManagerAssignMove(this, &other); return *this; }
   BL_INLINE BLFontManager& operator=(const BLFontManager& other) noexcept { blFontManagerAssignWeak(this, &other); return *this; }
 
@@ -90,10 +88,10 @@ public:
   BL_INLINE BLResult assign(const BLFontManager& other) noexcept { return blFontManagerAssignWeak(this, &other); }
 
   //! Tests whether the font-data is a built-in null instance.
+  BL_NODISCARD
   BL_INLINE bool isNone() const noexcept { return (impl->implTraits & BL_IMPL_TRAIT_NULL) != 0; }
-  //! Tests whether the font-data is empty (which the same as `isNone()` in this case).
-  BL_INLINE bool empty() const noexcept { return isNone(); }
 
+  BL_NODISCARD
   BL_INLINE bool equals(const BLFontManager& other) const noexcept { return blFontManagerEquals(this, &other); }
 
   //! \}
@@ -101,18 +99,65 @@ public:
   //! \name Create Functionality
   //! \{
 
+  BL_INLINE BLResult create() noexcept { return blFontManagerCreate(this); }
+
   //! \}
 
-  //! \name Query Functionality
+  //! Returns the number of BLFontFace instances the font manager holds.
+  BL_NODISCARD
+  BL_INLINE size_t faceCount() const noexcept { return blFontManagerGetFaceCount(this); }
+
+  //! Returns the number of unique font families the font manager holds.
+  BL_NODISCARD
+  BL_INLINE size_t familyCount() const noexcept { return blFontManagerGetFamilyCount(this); }
+
+  //! \name Face Management
   //! \{
 
+  //! Tests whether the font manager contains the given font `face`.
+  BL_NODISCARD
+  BL_INLINE bool hasFace(const BLFontFace& face) const noexcept {
+    return blFontManagerHasFace(this, &face);
+  }
+
+  //! Adds a font `face` to the font manager.
+  //!
+  //! Important conditions:
+  //!   * `BL_SUCCESS` is returned if the `face` was successfully added to font manager
+  //!     or if font manager already held it.
+  //!   * `BL_ERROR_FONT_NOT_INITIALIZED` is returned if the font `face` is invalid.
+  //!   * `BL_ERROR_OUT_OF_MEMORY` is returned if memory allocation failed.
+  BL_INLINE BLResult addFace(const BLFontFace& face) noexcept {
+    return blFontManagerAddFace(this, &face);
+  }
+
+  BL_INLINE BLResult queryFace(const char* name, BLFontFace& out) const noexcept {
+    return blFontManagerQueryFace(this, name, SIZE_MAX, nullptr, &out);
+  }
+
+  BL_INLINE BLResult queryFace(const BLStringView& name, BLFontFace& out) const noexcept {
+    return blFontManagerQueryFace(this, name.data, name.size, nullptr, &out);
+  }
+
+  BL_INLINE BLResult queryFace(const char* name, const BLFontQueryProperties& properties, BLFontFace& out) const noexcept {
+    return blFontManagerQueryFace(this, name, SIZE_MAX, &properties, &out);
+  }
+
+  BL_INLINE BLResult queryFace(const BLStringView& name, const BLFontQueryProperties& properties, BLFontFace& out) const noexcept {
+    return blFontManagerQueryFace(this, name.data, name.size, &properties, &out);
+  }
+
+  BL_INLINE BLResult queryFacesByFamilyName(const char* name, BLArray<BLFontFace>& out) const noexcept {
+    return blFontManagerQueryFacesByFamilyName(this, name, SIZE_MAX, &out);
+  }
+
+  BL_INLINE BLResult queryFacesByFamilyName(const BLStringView& name, BLArray<BLFontFace>& out) const noexcept {
+    return blFontManagerQueryFacesByFamilyName(this, name.data, name.size, &out);
+  }
+
   //! \}
 
-  //! \name Accessors
-  //! \{
-
-  //! \}
-
+  BL_NODISCARD
   static BL_INLINE const BLFontManager& none() noexcept { return reinterpret_cast<const BLFontManager*>(blNone)[kImplType]; }
 };
 #endif

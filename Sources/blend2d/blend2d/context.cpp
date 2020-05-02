@@ -15,7 +15,6 @@
 // ============================================================================
 
 BLWrap<BLContextState> blNullContextState;
-BLAtomicUInt64Generator blContextIdGenerator;
 
 static BLContextVirt blNullContextVirt;
 static BLWrap<BLContextImpl> blNullContextImpl;

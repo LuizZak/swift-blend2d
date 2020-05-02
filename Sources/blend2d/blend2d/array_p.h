@@ -33,10 +33,12 @@ static BL_INLINE BLResult blArrayImplRelease(BLArrayImpl* impl) noexcept {
 
 namespace {
 
+BL_NODISCARD
 constexpr size_t blContainerSizeOf(size_t baseSize, size_t itemSize, size_t n) noexcept {
   return baseSize + n * itemSize;
 }
 
+BL_NODISCARD
 constexpr size_t blContainerCapacityOf(size_t baseSize, size_t itemSize, size_t implSize) noexcept {
   return (implSize - baseSize) / itemSize;
 }
@@ -45,10 +47,12 @@ constexpr size_t blContainerCapacityOf(size_t baseSize, size_t itemSize, size_t 
 //! This is really a theoretical capacity that will never be reached in practice
 //! is it would mean that all addressable memory will be used by the data and
 //! mapped into a single continuous region, which is impossible.
+BL_NODISCARD
 constexpr size_t blContainerMaximumCapacity(size_t baseSize, size_t itemSize) noexcept {
   return blContainerCapacityOf(baseSize, itemSize, SIZE_MAX);
 }
 
+BL_NODISCARD
 BL_INLINE size_t blContainerFittingCapacity(size_t baseSize, size_t itemSize, size_t n) noexcept {
   size_t nInBytes  = blAlignUp(baseSize + n * itemSize, 32);
   size_t capacity = (nInBytes - baseSize) / itemSize;
@@ -57,6 +61,7 @@ BL_INLINE size_t blContainerFittingCapacity(size_t baseSize, size_t itemSize, si
   return capacity;
 }
 
+BL_NODISCARD
 BL_INLINE size_t blContainerGrowingCapacity(size_t baseSize, size_t itemSize, size_t n, size_t minSizeInBytes) noexcept {
   size_t nInBytes  = baseSize + n * itemSize;
   size_t optInBytes;

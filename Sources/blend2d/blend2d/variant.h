@@ -213,9 +213,11 @@ public:
   BL_INLINE BLVariant& operator=(const BLVariant& other) noexcept { blVariantAssignWeak(this, &other); return *this; }
 
   //! Tests whether the variant is a built-in null instance (of any impl-type).
+  BL_NODISCARD
   BL_INLINE bool isNone() const noexcept { return (impl->implTraits & BL_IMPL_TRAIT_NULL) != 0; }
 
   //! Returns the type of the object, see `BLImplType` for more details.
+  BL_NODISCARD
   BL_INLINE uint32_t implType() const noexcept { return impl->implType; }
 
   BL_INLINE BLResult reset() noexcept { return blVariantReset(this); }
@@ -225,8 +227,10 @@ public:
   BL_INLINE BLResult assign(BLVariant&& other) noexcept { return blVariantAssignMove(this, &other); }
   BL_INLINE BLResult assign(const BLVariant& other) noexcept { return blVariantAssignWeak(this, &other); }
 
+  BL_NODISCARD
   BL_INLINE bool equals(const BLVariant& other) const noexcept { return blVariantEquals(this, &other); }
 
+  BL_NODISCARD
   static BL_INLINE const BLVariant& none() noexcept { return reinterpret_cast<const BLVariant*>(blNone)[BL_IMPL_TYPE_NULL]; }
 };
 #endif

@@ -120,8 +120,8 @@ public:
   BL_INLINE BLStyle& operator=(const BLPattern& pattern) noexcept { blStyleAssignObject(this, &pattern); return *this; }
   BL_INLINE BLStyle& operator=(const BLGradient& gradient) noexcept { blStyleAssignObject(this, &gradient); return *this; }
 
-  BL_INLINE bool operator==(const BLStyle& other) const noexcept { return  equals(other); }
-  BL_INLINE bool operator!=(const BLStyle& other) const noexcept { return !equals(other); }
+  BL_NODISCARD BL_INLINE bool operator==(const BLStyle& other) const noexcept { return  equals(other); }
+  BL_NODISCARD BL_INLINE bool operator!=(const BLStyle& other) const noexcept { return !equals(other); }
 
   //! \}
 
@@ -169,6 +169,7 @@ public:
   //! \name Accessors
   //! \{
 
+  BL_NODISCARD
   BL_INLINE uint32_t type() const noexcept {
     uint32_t result = data.type;
     if (!_isTagged())
@@ -179,14 +180,23 @@ public:
   //! Returns true if this style doesn't hold anything (neither color nor object).
   //!
   //! \note This is a perfectly valid style that just doesn't specify anything.
+  BL_NODISCARD
   BL_INLINE bool isNone() const noexcept { return _isTagged(BL_STYLE_TYPE_NONE); }
+
   //! Returns true if this style is a solid color.
+  BL_NODISCARD
   BL_INLINE bool isSolid() const noexcept { return !_isTagged(); }
+
   //! Returns true if this style holds an object like `BLGradient` or `BLPattern`.
+  BL_NODISCARD
   BL_INLINE bool isObject() const noexcept { return (data.type > BL_STYLE_TYPE_SOLID) & _isTagged(); }
+
   //! Returns true if this style holds `BLPattern` object.
+  BL_NODISCARD
   BL_INLINE bool isPattern() const noexcept { return _isTagged(BL_STYLE_TYPE_PATTERN); }
+
   //! Returns true if this style holds `BLGradient` object.
+  BL_NODISCARD
   BL_INLINE bool isGradient() const noexcept { return _isTagged(BL_STYLE_TYPE_GRADIENT); }
 
   BL_INLINE BLResult getRgba(BLRgba* out) const noexcept { return blStyleGetRgba(this, out); }
@@ -195,26 +205,31 @@ public:
   BL_INLINE BLResult getGradient(BLPattern* out) const noexcept { return blStyleGetObject(this, out); }
   BL_INLINE BLResult getGradient(BLGradient* out) const noexcept { return blStyleGetObject(this, out); }
 
+  BL_NODISCARD
   BL_INLINE const BLRgba& asRgba() const noexcept {
     BL_ASSERT(isSolid());
     return rgba;
   }
 
+  BL_NODISCARD
   BL_INLINE BLPattern& asPattern() noexcept {
     BL_ASSERT(isPattern());
     return blDownCast(pattern);
   }
 
+  BL_NODISCARD
   BL_INLINE const BLPattern& asPattern() const noexcept {
     BL_ASSERT(isPattern());
     return blDownCast(pattern);
   }
 
+  BL_NODISCARD
   BL_INLINE BLGradient& asGradient() noexcept {
     BL_ASSERT(isGradient());
     return blDownCast(gradient);
   }
 
+  BL_NODISCARD
   BL_INLINE const BLGradient& asGradient() const noexcept {
     BL_ASSERT(isGradient());
     return blDownCast(gradient);
@@ -225,6 +240,7 @@ public:
   //! \name Equality & Comparison
   //! \{
 
+  BL_NODISCARD
   BL_INLINE bool equals(const BLStyle& other) const noexcept { return blStyleEquals(this, &other); }
 
   //! \}
@@ -233,11 +249,13 @@ public:
   //! \name Internals
   //! \{
 
+  BL_NODISCARD
   BL_INLINE bool _isTagged() const noexcept {
     uint32_t kTag = blBitCast<uint32_t>(std::numeric_limits<float>::quiet_NaN());
     return data.tag == kTag;
   }
 
+  BL_NODISCARD
   BL_INLINE bool _isTagged(uint32_t styleType) const noexcept {
     uint32_t kTag = blBitCast<uint32_t>(std::numeric_limits<float>::quiet_NaN());
     if (sizeof(void*) >= 8) {
