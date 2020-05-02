@@ -4,9 +4,7 @@
 // [License]
 // Zlib - See LICENSE.md file in the package.
 
-#define ASMJIT_EXPORTS
-
-#include "../core/build.h"
+#include "../core/api-build_p.h"
 #if defined(ASMJIT_BUILD_X86) && !defined(ASMJIT_NO_COMPILER)
 
 #include "../core/cpuinfo.h"
@@ -274,9 +272,9 @@ Error X86RACFGBuilder::onInst(InstNode* inst, uint32_t& controlType, RAInstBuild
               uint32_t outRewriteMask = 0;
 
               if (flags & RATiedReg::kUse)
-                useRewriteMask = Support::bitMask(inst->getRewriteIndex(&mem._mem.indexId));
+                useRewriteMask = Support::bitMask(inst->getRewriteIndex(&mem._data[Operand::kDataMemIndexId]));
               else
-                outRewriteMask = Support::bitMask(inst->getRewriteIndex(&mem._mem.indexId));
+                outRewriteMask = Support::bitMask(inst->getRewriteIndex(&mem._data[Operand::kDataMemIndexId]));
 
               ASMJIT_PROPAGATE(ib.add(workReg, RATiedReg::kUse | RATiedReg::kRead, allocable, useId, useRewriteMask, outId, outRewriteMask));
             }

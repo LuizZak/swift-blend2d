@@ -4,8 +4,7 @@
 // [License]
 // Zlib - See LICENSE.md file in the package.
 
-#define ASMJIT_EXPORTS
-
+#include "../core/api-build_p.h"
 #include "../core/operand.h"
 
 ASMJIT_BEGIN_NAMESPACE
@@ -33,7 +32,8 @@ UNIT(operand) {
   EXPECT(a.isImm() == false);
   EXPECT(a.isLabel() == false);
   EXPECT(a == b);
-  EXPECT(a._data64 == 0);
+  EXPECT(a._data[0] == 0);
+  EXPECT(a._data[1] == 0);
 
   INFO("Checking basic functionality of Label");
   Label label;
@@ -43,7 +43,8 @@ UNIT(operand) {
   INFO("Checking basic functionality of BaseReg");
   EXPECT(BaseReg().isReg() == true);
   EXPECT(BaseReg().isValid() == false);
-  EXPECT(BaseReg()._data64 == 0);
+  EXPECT(BaseReg()._data[0] == 0);
+  EXPECT(BaseReg()._data[1] == 0);
   EXPECT(dummy.as<BaseReg>().isValid() == false);
 
   // Create some register (not specific to any architecture).
@@ -63,7 +64,8 @@ UNIT(operand) {
   EXPECT(r1.size()      == 8);
   EXPECT(r1.id()        == 5);
   EXPECT(r1.isReg(1, 5) == true); // RegType and Id.
-  EXPECT(r1._data64     == 0);
+  EXPECT(r1._data[0]    == 0);
+  EXPECT(r1._data[1]    == 0);
 
   // The same type of register having different id.
   BaseReg r2(r1, 6);
@@ -107,6 +109,8 @@ UNIT(operand) {
 
   INFO("Checking basic functionality of Imm");
   EXPECT(Imm(-1).i64() == int64_t(-1));
+  EXPECT(imm(-1).i64() == int64_t(-1));
+  EXPECT(imm(0xFFFFFFFF).i64() == int64_t(0xFFFFFFFF));
 }
 #endif
 

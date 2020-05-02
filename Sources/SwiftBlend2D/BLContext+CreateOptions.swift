@@ -63,26 +63,6 @@ public extension BLContext.CreateOptions {
     struct Flag: OptionSet {
         public static let empty: Flag = []
         
-        /// When creating an asynchronous rendering context that uses threads for
-        /// rendering, the rendering context can sometimes allocate less threads
-        /// than specified if the built-in thread-pool doesn't have enough threads
-        /// available. This flag will force the thread-pool to override the thread
-        /// limit temporarily to allocate at least one thread.
-        ///
-        /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
-        /// If it's specified with `BL_CONTEXT_CREATE_FLAG_FORCE_ALL_THREADS` then
-        /// the latter has a precedence.
-        public static let forceOneThread = Flag(rawValue: BLContextCreateFlags.forceOneThread.rawValue)
-
-        /// When creating an asynchronous rendering context that uses threads for
-        /// rendering, the rendering context can sometimes allocate less threads
-        /// than specified if the built-in thread-pool doesn't have enough threads
-        /// available. This flag will force the thread-pool to override the thread
-        /// limit temporarily to fulfill the thread count requirement completely.
-        ///
-        /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
-        public static let forceAllThreads = Flag(rawValue: BLContextCreateFlags.forceAllThreads.rawValue)
-
         /// Fallbacks to a synchronous rendering in case that acquiring threads
         /// from the thread-pool failed. This flag only makes sense when the
         /// asynchronous mode was specified by having `threadCount` greater than 0.

@@ -2778,7 +2778,7 @@ static BLResult blRasterContextImplStrokeGlyphRunInternal(
   BLRasterCoreCommandSerializerAsync& serializer,
   const BLPoint* pt, const BLFontCore* font, const BLGlyphRun* glyphRun) noexcept {
 
-  return blRasterContextImplEnqueueFillOrStrokeGlyphRun<BL_RASTER_COMMAND_CATEGORY_CORE, BL_CONTEXT_OP_TYPE_FILL>(ctxI, serializer, pt, font, glyphRun);
+  return blRasterContextImplEnqueueFillOrStrokeGlyphRun<BL_RASTER_COMMAND_CATEGORY_CORE, BL_CONTEXT_OP_TYPE_STROKE>(ctxI, serializer, pt, font, glyphRun);
 }
 
 template<uint32_t RenderingMode>
@@ -3315,8 +3315,12 @@ static BLResult blRasterContextImplAttach(BLRasterContextImpl* ctxI, BLImageCore
     if (options->threadCount) {
       ctxI->ensureWorkerMgr();
       result = ctxI->workerMgr->init(ctxI, options);
-      if (result != BL_SUCCESS) break;
-      ctxI->renderingMode = BL_RASTER_RENDERING_MODE_ASYNC;
+
+      if (result != BL_SUCCESS)
+        break;
+
+      if (ctxI->workerMgr->isActive())
+        ctxI->renderingMode = BL_RASTER_RENDERING_MODE_ASYNC;
     }
 
     // Step 3: Initialize pipeline runtime (JIT or fixed).
