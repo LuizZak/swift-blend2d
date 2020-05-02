@@ -29,7 +29,7 @@ This may change at any moment.
 `BLFontFace` | ✅ Done | Font face [C++ API] `(Missing Swift tests)` |
 `BLFontFaceInfo` | ℹ️ No work required | Information of BLFontFace `(Would be nice to convert enum fields into Swift enums, however)` |
 `BLFontFeature` | ℹ️ No work required | |
-`BLFontManager` | ❌ Unstarted | |
+`BLFontManager` | 🕒 Partial | `(in Beta 14 release)` |
 `BLFontMatrix` | ℹ️ No work required | |
 `BLFontMetrics` | ℹ️ No work required | Scaled BLFontDesignMetrics based on font size and other properties |
 `BLFontPanose` | ℹ️ No work required | Font PANOSE classification |
