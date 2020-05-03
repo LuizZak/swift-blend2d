@@ -1,8 +1,20 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Copyright (c) 2017-2020 The Blend2D Authors
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #ifndef BLEND2D_API_H
 #define BLEND2D_API_H
@@ -513,13 +525,9 @@
 
 #if defined(BL_DOXYGEN)
   // Only for doxygen to make these members nicer.
-  #define BL_TYPED_MEMBER(CORE_TYPE, CPP_TYPE, NAME) CPP_TYPE NAME;
   #define BL_HAS_TYPED_MEMBERS(...)
-
+  #define BL_TYPED_MEMBER(CORE_TYPE, CPP_TYPE, NAME) CPP_TYPE NAME;
 #elif defined(__cplusplus)
-  // Union prevents C++ compiler from constructing / destructing its members.
-  #define BL_TYPED_MEMBER(CORE_TYPE, CPP_TYPE, NAME) union { CPP_TYPE NAME; }
-
   // However, we have to provide default constructors, destructor, and
   // copy-assignment to pay for such union {}.
   #define BL_HAS_TYPED_MEMBERS(...)                                           \
@@ -533,9 +541,11 @@
       memcpy(this, &other, sizeof(__VA_ARGS__));                              \
       return *this;                                                           \
     }
+  // Union prevents C++ compiler from constructing / destructing its members.
+  #define BL_TYPED_MEMBER(CORE_TYPE, CPP_TYPE, NAME) union { CPP_TYPE NAME; }
 #else
-  #define BL_TYPED_MEMBER(CORE_TYPE, CPP_TYPE, NAME) CORE_TYPE NAME
   #define BL_HAS_TYPED_MEMBERS(...)
+  #define BL_TYPED_MEMBER(CORE_TYPE, CPP_TYPE, NAME) CORE_TYPE NAME
 #endif
 
 //! \}
@@ -615,7 +625,7 @@ BL_DEFINE_STRUCT(BLFileCore);
 
 BL_DEFINE_STRUCT(BLRuntimeBuildInfo);
 BL_DEFINE_STRUCT(BLRuntimeSystemInfo);
-BL_DEFINE_STRUCT(BLRuntimeMemoryInfo);
+BL_DEFINE_STRUCT(BLRuntimeResourceInfo);
 
 BL_DEFINE_STRUCT(BLStringCore);
 BL_DEFINE_STRUCT(BLStringImpl);

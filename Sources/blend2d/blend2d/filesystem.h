@@ -1,8 +1,20 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Copyright (c) 2017-2020 The Blend2D Authors
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #ifndef BLEND2D_FILESYSTEM_H
 #define BLEND2D_FILESYSTEM_H
@@ -91,7 +103,7 @@ BL_DEFINE_ENUM(BLFileOpenFlags) {
 //!
 //! \note Seek constants should be compatible with constants used by both POSIX
 //! and Windows API.
-BL_DEFINE_ENUM(BLFileSeek) {
+BL_DEFINE_ENUM(BLFileSeekType) {
   //! Seek from the beginning of the file (SEEK_SET).
   BL_FILE_SEEK_SET = 0,
   //! Seek from the current position (SEEK_CUR).
@@ -199,19 +211,11 @@ public:
   //! Tests whether the file is open.
   BL_INLINE bool isOpen() const noexcept { return handle != -1; }
 
-  //! Returns the file handle and sets to invalid. After this operation you
-  //! will be the sole owner of the handle and you will be responsible for
-  //! closing it.
-  BL_INLINE intptr_t takeHandle() noexcept {
-    intptr_t h = this->handle;
-    this->handle = -1;
-    return h;
-  }
-
   BL_INLINE BLResult open(const char* fileName, uint32_t openFlags) noexcept {
     return blFileOpen(this, fileName, openFlags);
   }
 
+  //! Closes the file (if open) and sets the file handle to -1.
   BL_INLINE BLResult close() noexcept {
     return blFileClose(this);
   }

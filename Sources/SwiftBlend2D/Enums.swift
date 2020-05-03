@@ -750,7 +750,7 @@ public extension BLFileOpenFlags {
     static let openDeleteExclusive = BL_FILE_OPEN_DELETE_EXCLUSIVE
 }
 
-public extension BLFileSeek {
+public extension BLFileSeekType {
     /// Seek from the beginning of the file (SEEK_SET).
     static let set = BL_FILE_SEEK_SET
     /// Seek from the current position (SEEK_CUR).
@@ -844,8 +844,9 @@ public extension BLRuntimeLimits {
 public extension BLRuntimeInfoType {
     /// Blend2D build information.
     static let build = BL_RUNTIME_INFO_TYPE_BUILD
-    /// System information (includes CPU architecture, features, cores, etc...).
-    static let memory = BL_RUNTIME_INFO_TYPE_MEMORY
+    /// Resources information (includes Blend2D memory consumption, file handles
+    /// used, etc...)
+    static let resource = BL_RUNTIME_INFO_TYPE_RESOURCE
     /// Runtime information regarding memory used, reserved, etc...
     static let system = BL_RUNTIME_INFO_TYPE_SYSTEM
 }
