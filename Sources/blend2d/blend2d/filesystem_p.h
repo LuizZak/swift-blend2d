@@ -54,7 +54,7 @@ public:
     : _data(nullptr),
       _size(0)
 #if defined(_WIN32)
-      , _fileMappingHandle(INVALID_HANDLE_VALUE),
+      , _fileMappingHandle(INVALID_HANDLE_VALUE)
 #endif
   {}
 

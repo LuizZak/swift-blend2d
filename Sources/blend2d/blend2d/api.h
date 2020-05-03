@@ -390,7 +390,8 @@
 //! function was not used.
 #if defined(__cplusplus) && __cplusplus >= 201703L
   #define BL_NODISCARD [[nodiscard]]
-#elif defined(__GNUC__) && __GNUC__ >= 4
+#elif defined(__clang__)
+  // GCC's behavior doesn't respect casting to void so we only support clang.
   #define BL_NODISCARD __attribute__((__warn_unused_result__))
 #else
   #define BL_NODISCARD
