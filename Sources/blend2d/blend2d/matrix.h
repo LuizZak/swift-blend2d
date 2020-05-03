@@ -1,3 +1,8 @@
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
+//
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
 // Copyright (c) 2017-2020 The Blend2D Authors
 //
 // This software is provided 'as-is', without any express or implied
@@ -16,8 +21,8 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_MATRIX_H
-#define BLEND2D_MATRIX_H
+#ifndef BLEND2D_MATRIX_H_INCLUDED
+#define BLEND2D_MATRIX_H_INCLUDED
 
 #include "./geometry.h"
 
@@ -480,4 +485,4 @@ extern BL_API BLMapPointDArrayFunc blMatrix2DMapPointDArrayFuncs[BL_MATRIX2D_TYP
 
 BL_DIAGNOSTIC_POP
 
-#endif // BLEND2D_MATRIX_H
+#endif // BLEND2D_MATRIX_H_INCLUDED

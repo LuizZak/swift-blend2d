@@ -1,3 +1,8 @@
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
+//
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
 // Copyright (c) 2017-2020 The Blend2D Authors
 //
 // This software is provided 'as-is', without any express or implied
@@ -16,8 +21,8 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_RASTER_RASTERCONTEXTSTATE_P_H
-#define BLEND2D_RASTER_RASTERCONTEXTSTATE_P_H
+#ifndef BLEND2D_RASTER_RASTERCONTEXTSTATE_P_H_INCLUDED
+#define BLEND2D_RASTER_RASTERCONTEXTSTATE_P_H_INCLUDED
 
 #include "../geometry.h"
 #include "../matrix_p.h"
@@ -173,4 +178,4 @@ struct BLRasterSharedExtendedStrokeState : public BLRasterSharedBaseStrokeState 
 //! \}
 //! \endcond
 
-#endif // BLEND2D_RASTER_RASTERCONTEXTSTATE_P_H
+#endif // BLEND2D_RASTER_RASTERCONTEXTSTATE_P_H_INCLUDED

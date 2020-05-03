@@ -1,3 +1,8 @@
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
+//
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
 // Copyright (c) 2017-2020 The Blend2D Authors
 //
 // This software is provided 'as-is', without any express or implied
@@ -16,8 +21,8 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_SIMD_X86_P_H
-#define BLEND2D_SIMD_X86_P_H
+#ifndef BLEND2D_SIMD_X86_P_H_INCLUDED
+#define BLEND2D_SIMD_X86_P_H_INCLUDED
 
 #include "./support_p.h"
 #include "./tables_p.h"
@@ -1335,4 +1340,4 @@ BL_INLINE Vec256D v_cmp_lt_f64(const Vec256D& x, const Vec256D& y) noexcept { re
 //! \}
 //! \endcond
 
-#endif // BLEND2D_SIMD_X86_P_H
+#endif // BLEND2D_SIMD_X86_P_H_INCLUDED

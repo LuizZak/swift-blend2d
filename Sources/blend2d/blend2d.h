@@ -1,3 +1,8 @@
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
+//
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
 // Copyright (c) 2017-2020 The Blend2D Authors
 //
 // This software is provided 'as-is', without any express or implied
@@ -16,16 +21,18 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-// This is a public header file designed to be used by Blend2D users.
-// It includes all the necessary files to use Blend2D library from C
-// and C++ and it's the only header that is guaranteed to stay.
+// ----------------------------------------------------------------------------
+// This is a public header file designed to be used by Blend2D users. It
+// includes all the necessary files required to use Blend2D library from both
+// C and C++ and it's the only header that is guaranteed to always be provided.
 //
-// Never include directly header files placed in "blend2d" directory.
-// Headers that end with "_p" suffix are private and should never be
-// included as they are not part of public API.
+// Never include directly header files placed in "blend2d" directory. Headers
+// that end with "_p" suffix are private and should never be  included as they
+// are not part of public API and they are not part of blend2d-dev packages.
+// ----------------------------------------------------------------------------
 
-#ifndef BLEND2D_H
-#define BLEND2D_H
+#ifndef BLEND2D_H_INCLUDED
+#define BLEND2D_H_INCLUDED
 
 #if defined(_MSC_VER)
   #pragma warning(push)
@@ -66,4 +73,4 @@
   #pragma warning(pop)
 #endif
 
-#endif // BLEND2D_H
+#endif // BLEND2D_H_INCLUDED

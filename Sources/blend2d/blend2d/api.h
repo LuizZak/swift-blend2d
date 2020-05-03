@@ -1,3 +1,8 @@
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
+//
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
 // Copyright (c) 2017-2020 The Blend2D Authors
 //
 // This software is provided 'as-is', without any express or implied
@@ -16,13 +21,13 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_API_H
-#define BLEND2D_API_H
+#ifndef BLEND2D_API_H_INCLUDED
+#define BLEND2D_API_H_INCLUDED
 
 // This header can only be included by either <blend2d.h> or by Blend2D headers
 // during the build. Prevent users including <blend2d/...> headers by accident
 // and prevent not including "blend2d/api-build_p.h" during the Blend2D build.
-#if !defined(BLEND2D_H) && !defined(BLEND2D_API_BUILD_P_H)
+#if !defined(BLEND2D_H_INCLUDED) && !defined(BLEND2D_API_BUILD_P_H_INCLUDED)
   #pragma message("Include either <blend2d.h> or <blend2d-impl.h> to use Blend2D library")
 #endif
 
@@ -421,9 +426,9 @@
 
 //! \def BL_PURE
 //!
-//! Function attribute that describes functions that have no side effect. The
-//! macro expands to `__attribute__((__pure__))` when compiling with GCC or
-//! Clang if the attribute is supported, otherwise it expands to nothing.
+//! Function attribute that describes functions that have no side effects.
+//! The macro expands to `__attribute__((__pure__))` when compiling with GCC
+//! or Clang if the attribute is supported, otherwise it expands to nothing.
 #if defined(__clang_major__) && __clang_major__ >= 6
   #define BL_PURE __attribute__((__pure__))
 #elif defined(__GNUC__) && __GNUC__ >= 6
@@ -1532,7 +1537,7 @@ BL_API BLResult BL_CDECL blContextDestroy(BLContextCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blContextReset(BLContextCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blContextAssignMove(BLContextCore* self, BLContextCore* other) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blContextAssignWeak(BLContextCore* self, const BLContextCore* other) BL_NOEXCEPT_C;
-BL_API uint32_t BL_CDECL blContextGetType(const BLContextCore* self) BL_NOEXCEPT_C;
+BL_API uint32_t BL_CDECL blContextGetType(const BLContextCore* self) BL_NOEXCEPT_C BL_PURE;
 BL_API BLResult BL_CDECL blContextGetTargetSize(const BLContextCore* self, BLSize* targetSizeOut) BL_NOEXCEPT_C;
 BL_API BLImageCore* BL_CDECL blContextGetTargetImage(const BLContextCore* self) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blContextBegin(BLContextCore* self, BLImageCore* image, const BLContextCreateInfo* options) BL_NOEXCEPT_C;
@@ -2122,7 +2127,7 @@ BL_API BLResult BL_CDECL blStyleAssignRgba(BLStyleCore* self, const BLRgba* rgba
 BL_API BLResult BL_CDECL blStyleAssignRgba32(BLStyleCore* self, uint32_t rgba32) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blStyleAssignRgba64(BLStyleCore* self, uint64_t rgba64) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blStyleAssignObject(BLStyleCore* self, const void* object) BL_NOEXCEPT_C;
-BL_API uint32_t BL_CDECL blStyleGetType(const BLStyleCore* self) BL_NOEXCEPT_C;
+BL_API uint32_t BL_CDECL blStyleGetType(const BLStyleCore* self) BL_NOEXCEPT_C BL_PURE;
 BL_API BLResult BL_CDECL blStyleGetRgba(const BLStyleCore* self, BLRgba* rgbaOut) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blStyleGetRgba32(const BLStyleCore* self, uint32_t* rgba32Out) BL_NOEXCEPT_C;
 BL_API BLResult BL_CDECL blStyleGetRgba64(const BLStyleCore* self, uint64_t* rgba64Out) BL_NOEXCEPT_C;
@@ -2154,4 +2159,4 @@ BL_API bool BL_CDECL blVariantEquals(const void* a, const void* b) BL_NOEXCEPT_C
 
 //! \}
 
-#endif // BLEND2D_API_H
+#endif // BLEND2D_API_H_INCLUDED
