@@ -1,8 +1,25 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #include "./api-build_p.h"
 #ifdef BL_BUILD_OPT_SSSE3
@@ -30,28 +47,28 @@ BLResult bl_convert_copy_shufb_8888_ssse3(
   srcStride -= uintptr_t(w) * 4;
 
   const BLPixelConverterData::ShufbData& d = blPixelConverterGetData(self)->shufbData;
-  I128 fillMask = vseti128u32(d.fillMask);
-  I128 predicate = vloadi128u(d.shufbPredicate);
+  Vec128I fillMask = v_fill_i128_u32(d.fillMask);
+  Vec128I predicate = v_loadu_i128(d.shufbPredicate);
 
   for (uint32_t y = h; y != 0; y--) {
     uint32_t i = w;
 
     while_nounroll (i >= 16) {
-      I128 p0, p1, p2, p3;
-      p0 = vloadi128u(srcData +  0);
-      p1 = vloadi128u(srcData + 16);
-      p2 = vloadi128u(srcData + 32);
-      p3 = vloadi128u(srcData + 48);
+      Vec128I p0, p1, p2, p3;
+      p0 = v_loadu_i128(srcData +  0);
+      p1 = v_loadu_i128(srcData + 16);
+      p2 = v_loadu_i128(srcData + 32);
+      p3 = v_loadu_i128(srcData + 48);
 
-      p0 = vor(vpshufb(p0, predicate), fillMask);
-      p1 = vor(vpshufb(p1, predicate), fillMask);
-      p2 = vor(vpshufb(p2, predicate), fillMask);
-      p3 = vor(vpshufb(p3, predicate), fillMask);
+      p0 = v_or(v_shuffle_i8(p0, predicate), fillMask);
+      p1 = v_or(v_shuffle_i8(p1, predicate), fillMask);
+      p2 = v_or(v_shuffle_i8(p2, predicate), fillMask);
+      p3 = v_or(v_shuffle_i8(p3, predicate), fillMask);
 
-      vstorei128u(dstData +  0, p0);
-      vstorei128u(dstData + 16, p1);
-      vstorei128u(dstData + 32, p2);
-      vstorei128u(dstData + 48, p3);
+      v_storeu_i128(dstData +  0, p0);
+      v_storeu_i128(dstData + 16, p1);
+      v_storeu_i128(dstData + 32, p2);
+      v_storeu_i128(dstData + 48, p3);
 
       dstData += 64;
       srcData += 64;
@@ -59,8 +76,8 @@ BLResult bl_convert_copy_shufb_8888_ssse3(
     }
 
     while_nounroll (i >= 4) {
-      I128 p0 = vloadi128u(srcData);
-      vstorei128u(dstData, vor(vpshufb(p0, predicate), fillMask));
+      Vec128I p0 = v_loadu_i128(srcData);
+      v_storeu_i128(dstData, v_or(v_shuffle_i8(p0, predicate), fillMask));
 
       dstData += 16;
       srcData += 16;
@@ -68,8 +85,8 @@ BLResult bl_convert_copy_shufb_8888_ssse3(
     }
 
     while_nounroll (i) {
-      I128 p0 = vloadi128_32(srcData);
-      vstorei32(dstData, vor(vpshufb(p0, predicate), fillMask));
+      Vec128I p0 = v_load_i32(srcData);
+      v_store_i32(dstData, v_or(v_shuffle_i8(p0, predicate), fillMask));
 
       dstData += 4;
       srcData += 4;
@@ -101,31 +118,31 @@ BLResult bl_convert_rgb32_from_rgb24_shufb_ssse3(
   srcStride -= uintptr_t(w) * 3;
 
   const BLPixelConverterData::ShufbData& d = blPixelConverterGetData(self)->shufbData;
-  I128 fillMask = vseti128u32(d.fillMask);
-  I128 predicate = vloadi128u(d.shufbPredicate);
+  Vec128I fillMask = v_fill_i128_u32(d.fillMask);
+  Vec128I predicate = v_loadu_i128(d.shufbPredicate);
 
   for (uint32_t y = h; y != 0; y--) {
     uint32_t i = w;
 
     while_nounroll (i >= 16) {
-      I128 p0, p1, p2, p3;
-      p0 = vloadi128u(srcData +  0);                 // [x5|z4 y4 x4|z3 y3 x3 z2|y2 x2 z1 y1|x1 z0 y0 x0]
-      p1 = vloadi128u(srcData + 16);                 // [yA|xA|z9 y9|x9 z8 y8 x8|z7 y7 x7 z6|y6 x6 z5 y5]
-      p3 = vloadi128u(srcData + 32);                 // [zF yF xF zE|yE xE zD yD|xD zC yC xC|zB yB xB zA]
+      Vec128I p0, p1, p2, p3;
+      p0 = v_loadu_i128(srcData +  0);                 // [x5|z4 y4 x4|z3 y3 x3 z2|y2 x2 z1 y1|x1 z0 y0 x0]
+      p1 = v_loadu_i128(srcData + 16);                 // [yA|xA|z9 y9|x9 z8 y8 x8|z7 y7 x7 z6|y6 x6 z5 y5]
+      p3 = v_loadu_i128(srcData + 32);                 // [zF yF xF zE|yE xE zD yD|xD zC yC xC|zB yB xB zA]
 
-      p2 = vpalignr<8>(p3, p1);                      // [-- -- -- --|zB yB xB zA|yA|xA|z9 y9|x9 z8 y8 x8]
-      p1 = vpalignr<12>(p1, p0);                     // [-- -- -- --|z7 y7 x7 z6|y6 x6 z5 y5|x5|z4 y4 x4]
-      p3 = vsrli128b<4>(p3);                         // [-- -- -- --|zF yF xF zE|yE xE zD yD|xD zC yC xC]
+      p2 = v_alignr_i8<8>(p3, p1);                      // [-- -- -- --|zB yB xB zA|yA|xA|z9 y9|x9 z8 y8 x8]
+      p1 = v_alignr_i8<12>(p1, p0);                     // [-- -- -- --|z7 y7 x7 z6|y6 x6 z5 y5|x5|z4 y4 x4]
+      p3 = v_srlb_i128<4>(p3);                         // [-- -- -- --|zF yF xF zE|yE xE zD yD|xD zC yC xC]
 
-      p0 = vor(vpshufb(p0, predicate), fillMask);
-      p1 = vor(vpshufb(p1, predicate), fillMask);
-      p2 = vor(vpshufb(p2, predicate), fillMask);
-      p3 = vor(vpshufb(p3, predicate), fillMask);
+      p0 = v_or(v_shuffle_i8(p0, predicate), fillMask);
+      p1 = v_or(v_shuffle_i8(p1, predicate), fillMask);
+      p2 = v_or(v_shuffle_i8(p2, predicate), fillMask);
+      p3 = v_or(v_shuffle_i8(p3, predicate), fillMask);
 
-      vstorei128u(dstData +  0, p0);
-      vstorei128u(dstData + 16, p1);
-      vstorei128u(dstData + 32, p2);
-      vstorei128u(dstData + 48, p3);
+      v_storeu_i128(dstData +  0, p0);
+      v_storeu_i128(dstData + 16, p1);
+      v_storeu_i128(dstData + 32, p2);
+      v_storeu_i128(dstData + 48, p3);
 
       dstData += 64;
       srcData += 48;
@@ -133,17 +150,17 @@ BLResult bl_convert_rgb32_from_rgb24_shufb_ssse3(
     }
 
     if (i >= 8) {
-      I128 p0, p1;
+      Vec128I p0, p1;
 
-      p0 = vloadi128u  (srcData +  0);               // [x5|z4 y4 x4|z3 y3 x3 z2|y2 x2 z1 y1|x1 z0 y0 x0]
-      p1 = vloadi128_64(srcData + 16);               // [-- -- -- --|-- -- -- --|z7 y7 x7 z6|y6 x6 z5 y5]
-      p1 = vpalignr<12>(p1, p0);                     // [-- -- -- --|z7 y7 x7 z6|y6 x6 z5 y5|x5|z4 y4 x4]
+      p0 = v_loadu_i128  (srcData +  0);               // [x5|z4 y4 x4|z3 y3 x3 z2|y2 x2 z1 y1|x1 z0 y0 x0]
+      p1 = v_load_i64(srcData + 16);               // [-- -- -- --|-- -- -- --|z7 y7 x7 z6|y6 x6 z5 y5]
+      p1 = v_alignr_i8<12>(p1, p0);                     // [-- -- -- --|z7 y7 x7 z6|y6 x6 z5 y5|x5|z4 y4 x4]
 
-      p0 = vor(vpshufb(p0, predicate), fillMask);
-      p1 = vor(vpshufb(p1, predicate), fillMask);
+      p0 = v_or(v_shuffle_i8(p0, predicate), fillMask);
+      p1 = v_or(v_shuffle_i8(p1, predicate), fillMask);
 
-      vstorei128u(dstData +  0, p0);
-      vstorei128u(dstData + 16, p1);
+      v_storeu_i128(dstData +  0, p0);
+      v_storeu_i128(dstData + 16, p1);
 
       dstData += 32;
       srcData += 24;
@@ -151,13 +168,13 @@ BLResult bl_convert_rgb32_from_rgb24_shufb_ssse3(
     }
 
     if (i >= 4) {
-      I128 p0, p1;
+      Vec128I p0, p1;
 
-      p0 = vloadi128_64(srcData +  0);               // [-- -- -- --|-- -- -- --|y2 x2 z1 y1|x1 z0 y0 x0]
-      p1 = vloadi128_32(srcData +  8);               // [-- -- -- --|-- -- -- --|-- -- -- --|z3 y3 x3 z2]
-      p0 = vunpackli64(p0, p1);                      // [-- -- -- --|z3 y3 x3 z2|y2 x2 z1 y1|x1 z0 y0 x0]
+      p0 = v_load_i64(srcData +  0);               // [-- -- -- --|-- -- -- --|y2 x2 z1 y1|x1 z0 y0 x0]
+      p1 = v_load_i32(srcData +  8);               // [-- -- -- --|-- -- -- --|-- -- -- --|z3 y3 x3 z2]
+      p0 = v_interleave_lo_i64(p0, p1);                      // [-- -- -- --|z3 y3 x3 z2|y2 x2 z1 y1|x1 z0 y0 x0]
 
-      vstorei128u(dstData, vor(vpshufb(p0, predicate), fillMask));
+      v_storeu_i128(dstData, v_or(v_shuffle_i8(p0, predicate), fillMask));
 
       dstData += 16;
       srcData += 12;
@@ -168,8 +185,8 @@ BLResult bl_convert_rgb32_from_rgb24_shufb_ssse3(
       uint32_t yx = blMemReadU16u(srcData + 0);
       uint32_t z  = blMemReadU8(srcData + 2);
 
-      I128 p0 = vcvtu32i128((z << 16) | yx);
-      vstorei32(dstData, vor(vpshufb(p0, predicate), fillMask));
+      Vec128I p0 = v_i128_from_u32((z << 16) | yx);
+      v_store_i32(dstData, v_or(v_shuffle_i8(p0, predicate), fillMask));
 
       dstData += 4;
       srcData += 3;
@@ -202,11 +219,11 @@ static BL_INLINE BLResult bl_convert_premultiply_8888_shufb_template_ssse3(
   srcStride -= uintptr_t(w) * 4u;
 
   const BLPixelConverterData::ShufbData& d = blPixelConverterGetData(self)->shufbData;
-  I128 zero = vzeroi128();
-  I128 a255 = vseti128u64(uint64_t(0xFFu) << (A_Shift * 2));
+  Vec128I zero = v_zero_i128();
+  Vec128I a255 = v_fill_i128_u64(uint64_t(0xFFu) << (A_Shift * 2));
 
-  I128 fillMask = vseti128u32(d.fillMask);
-  I128 predicate = vloadi128u(d.shufbPredicate);
+  Vec128I fillMask = v_fill_i128_u32(d.fillMask);
+  Vec128I predicate = v_loadu_i128(d.shufbPredicate);
 
   // Alpha byte-index that can be used by instructions that perform shuffling.
   constexpr uint32_t AI = A_Shift / 8u;
@@ -215,22 +232,22 @@ static BL_INLINE BLResult bl_convert_premultiply_8888_shufb_template_ssse3(
     uint32_t i = w;
 
     while_nounroll (i >= 4) {
-      I128 p0, p1;
+      Vec128I p0, p1;
 
-      p0 = vloadi128u(srcData);
-      p0 = vpshufb(p0, predicate);
+      p0 = v_loadu_i128(srcData);
+      p0 = v_shuffle_i8(p0, predicate);
 
-      p1 = vunpackhi8(p0, zero);
-      p0 = vunpackli8(p0, zero);
+      p1 = v_interleave_hi_i8(p0, zero);
+      p0 = v_interleave_lo_i8(p0, zero);
 
-      p0 = vmuli16(vor(p0, a255), vswizi16<AI, AI, AI, AI>(p0));
-      p1 = vmuli16(vor(p1, a255), vswizi16<AI, AI, AI, AI>(p1));
+      p0 = v_mul_i16(v_or(p0, a255), v_swizzle_i16<AI, AI, AI, AI>(p0));
+      p1 = v_mul_i16(v_or(p1, a255), v_swizzle_i16<AI, AI, AI, AI>(p1));
 
-      p0 = vdiv255u16(p0);
-      p1 = vdiv255u16(p1);
-      p0 = vpacki16u8(p0, p1);
-      p0 = vor(p0, fillMask);
-      vstorei128u(dstData, p0);
+      p0 = v_div255_u16(p0);
+      p1 = v_div255_u16(p1);
+      p0 = v_packs_i16_u8(p0, p1);
+      p0 = v_or(p0, fillMask);
+      v_storeu_i128(dstData, p0);
 
       dstData += 16;
       srcData += 16;
@@ -238,16 +255,16 @@ static BL_INLINE BLResult bl_convert_premultiply_8888_shufb_template_ssse3(
     }
 
     while_nounroll (i) {
-      I128 p0;
+      Vec128I p0;
 
-      p0 = vloadi128_32(srcData);
-      p0 = vpshufb(p0, predicate);
-      p0 = vunpackli8(p0, zero);
-      p0 = vmuli16(vor(p0, a255), vswizi16<AI, AI, AI, AI>(p0));
-      p0 = vdiv255u16(p0);
-      p0 = vpacki16u8(p0, p0);
-      p0 = vor(p0, fillMask);
-      vstorei32(dstData, p0);
+      p0 = v_load_i32(srcData);
+      p0 = v_shuffle_i8(p0, predicate);
+      p0 = v_interleave_lo_i8(p0, zero);
+      p0 = v_mul_i16(v_or(p0, a255), v_swizzle_i16<AI, AI, AI, AI>(p0));
+      p0 = v_div255_u16(p0);
+      p0 = v_packs_i16_u8(p0, p0);
+      p0 = v_or(p0, fillMask);
+      v_store_i32(dstData, p0);
 
       dstData += 4;
       srcData += 4;

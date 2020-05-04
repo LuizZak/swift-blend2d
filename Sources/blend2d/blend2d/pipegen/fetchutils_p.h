@@ -1,11 +1,28 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_PIPEGEN_FETCHUTILS_P_H
-#define BLEND2D_PIPEGEN_FETCHUTILS_P_H
+#ifndef BLEND2D_PIPEGEN_FETCHUTILS_P_H_INCLUDED
+#define BLEND2D_PIPEGEN_FETCHUTILS_P_H_INCLUDED
 
 #include "../pipegen/pipecompiler_p.h"
 
@@ -255,15 +272,15 @@ namespace FetchUtils {
     cc->shl(pixAcc, 8);              // [Px0y0, Px0y1, Px1y0, 0    ]
     cc->mov(pixAcc.r8(), row1m);     // [Px0y0, Px0y1, Px1y0, Px1y1]
 
-    pc->vmovsi32(out, pixAcc);
-    pc->vswizi32(wTmp, weights, x86::Predicate::shuf(3, 3, 2, 2));
+    pc->s_mov_i32(out, pixAcc);
+    pc->v_swizzle_i32(wTmp, weights, x86::Predicate::shuf(3, 3, 2, 2));
 
     pc->vmovu8u16(out, out);
-    pc->vmaddi16(out, out, wTmp);
-    pc->vswizli16(wTmp, weights, x86::Predicate::shuf(1, 1, 0, 0));
-    pc->vmulhu16(out, out, wTmp);
-    pc->vswizi32(wTmp, out, x86::Predicate::shuf(3, 2, 0, 1));
-    pc->vaddi32(out, out, wTmp);
+    pc->v_madd_i16_i32(out, out, wTmp);
+    pc->v_swizzle_lo_i16(wTmp, weights, x86::Predicate::shuf(1, 1, 0, 0));
+    pc->v_mulh_u16(out, out, wTmp);
+    pc->v_swizzle_i32(wTmp, out, x86::Predicate::shuf(3, 2, 0, 1));
+    pc->v_add_i32(out, out, wTmp);
   }
 
   //! Fetch 1xPRGB pixel by doing a bilinear interpolation with its neighbors.
@@ -301,37 +318,37 @@ namespace FetchUtils {
     cc->add(pixSrcRow1, pixels);
 
     extractor.extract(pixSrcOff, 0);
-    pc->vloadi32(pixTop, x86::ptr(pixSrcRow0, pixSrcOff, 2));
-    pc->vloadi32(pixBot, x86::ptr(pixSrcRow1, pixSrcOff, 2));
+    pc->v_load_i32(pixTop, x86::ptr(pixSrcRow0, pixSrcOff, 2));
+    pc->v_load_i32(pixBot, x86::ptr(pixSrcRow1, pixSrcOff, 2));
     extractor.extract(pixSrcOff, 1);
 
     if (pc->hasSSE4_1()) {
-      pc->vinsertu32_(pixTop, pixTop, x86::ptr(pixSrcRow0, pixSrcOff, 2), 1);
-      pc->vinsertu32_(pixBot, pixBot, x86::ptr(pixSrcRow1, pixSrcOff, 2), 1);
+      pc->v_insert_u32_(pixTop, pixTop, x86::ptr(pixSrcRow0, pixSrcOff, 2), 1);
+      pc->v_insert_u32_(pixBot, pixBot, x86::ptr(pixSrcRow1, pixSrcOff, 2), 1);
     }
     else {
-      pc->vloadi32(pixTmp0, x86::ptr(pixSrcRow0, pixSrcOff, 2));
-      pc->vloadi32(pixTmp1, x86::ptr(pixSrcRow1, pixSrcOff, 2));
+      pc->v_load_i32(pixTmp0, x86::ptr(pixSrcRow0, pixSrcOff, 2));
+      pc->v_load_i32(pixTmp1, x86::ptr(pixSrcRow1, pixSrcOff, 2));
 
-      pc->vunpackli32(pixTop, pixTop, pixTmp0);
-      pc->vunpackli32(pixBot, pixBot, pixTmp1);
+      pc->v_interleave_lo_i32(pixTop, pixTop, pixTmp0);
+      pc->v_interleave_lo_i32(pixBot, pixBot, pixTmp1);
     }
 
-    pc->vswizi32(pixTmp0, weights, x86::Predicate::shuf(3, 3, 3, 3));
+    pc->v_swizzle_i32(pixTmp0, weights, x86::Predicate::shuf(3, 3, 3, 3));
     pc->vmovu8u16(pixTop, pixTop);
 
-    pc->vswizi32(pixTmp1, weights, x86::Predicate::shuf(2, 2, 2, 2));
+    pc->v_swizzle_i32(pixTmp1, weights, x86::Predicate::shuf(2, 2, 2, 2));
     pc->vmovu8u16(pixBot, pixBot);
 
-    pc->vmulu16(pixTop, pixTop, pixTmp0);
-    pc->vmulu16(pixBot, pixBot, pixTmp1);
-    pc->vaddi16(pixBot, pixBot, pixTop);
+    pc->v_mul_u16(pixTop, pixTop, pixTmp0);
+    pc->v_mul_u16(pixBot, pixBot, pixTmp1);
+    pc->v_add_i16(pixBot, pixBot, pixTop);
 
-    pc->vswizi32(pixTop, weights, x86::Predicate::shuf(0, 0, 1, 1));
-    pc->vmulhu16(pixTop, pixTop, pixBot);
+    pc->v_swizzle_i32(pixTop, weights, x86::Predicate::shuf(0, 0, 1, 1));
+    pc->v_mulh_u16(pixTop, pixTop, pixBot);
 
-    pc->vswizi32(pixTmp0, pixTop, x86::Predicate::shuf(1, 0, 3, 2));
-    pc->vaddi16(pixTmp0, pixTmp0, pixTop);
+    pc->v_swizzle_i32(pixTmp0, pixTop, x86::Predicate::shuf(1, 0, 3, 2));
+    pc->v_add_i16(pixTmp0, pixTmp0, pixTop);
   }
 }
 
@@ -340,4 +357,4 @@ namespace FetchUtils {
 //! \}
 //! \endcond
 
-#endif // BLEND2D_PIPEGEN_FETCHUTILS_P_H
+#endif // BLEND2D_PIPEGEN_FETCHUTILS_P_H_INCLUDED

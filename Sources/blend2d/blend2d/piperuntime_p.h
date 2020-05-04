@@ -1,11 +1,28 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_PIPE_P_H
-#define BLEND2D_PIPE_P_H
+#ifndef BLEND2D_PIPE_P_H_INCLUDED
+#define BLEND2D_PIPE_P_H_INCLUDED
 
 #include "./api-internal_p.h"
 #include "./pipedefs_p.h"
@@ -151,27 +168,27 @@ struct BLPipeLookupCache {
     static_assert(N == 4 || N == 8 || N == 16, "This code is written for N == 4|8|16");
     using namespace SIMD;
 
-    I128 vSign = vseti128u32(signature);
+    Vec128I vSign = v_fill_i128_u32(signature);
 
     switch (N) {
       case 4: {
-        I128 vec0 = vcmpeqi32(vloadi128u(_signatures + 0), vSign);
-        return BitMatch { uint32_t(_mm_movemask_ps(vcast<F128>(vec0))) };
+        Vec128I vec0 = v_cmp_eq_i32(v_loadu_i128(_signatures + 0), vSign);
+        return BitMatch { uint32_t(_mm_movemask_ps(v_cast<Vec128F>(vec0))) };
       }
 
       case 8: {
-        I128 vec0 = vcmpeqi32(vloadi128u(_signatures + 0), vSign);
-        I128 vec1 = vcmpeqi32(vloadi128u(_signatures + 4), vSign);
-        I128 vecm = vpacki16i8(vpacki32i16(vec0, vec1));
+        Vec128I vec0 = v_cmp_eq_i32(v_loadu_i128(_signatures + 0), vSign);
+        Vec128I vec1 = v_cmp_eq_i32(v_loadu_i128(_signatures + 4), vSign);
+        Vec128I vecm = v_packs_i16_i8(v_packs_i32_i16(vec0, vec1));
         return BitMatch { uint32_t(_mm_movemask_epi8(vecm)) };
       }
 
       case 16: {
-        I128 vec0 = vcmpeqi32(vloadi128u(_signatures + 0), vSign);
-        I128 vec1 = vcmpeqi32(vloadi128u(_signatures + 4), vSign);
-        I128 vec2 = vcmpeqi32(vloadi128u(_signatures + 8), vSign);
-        I128 vec3 = vcmpeqi32(vloadi128u(_signatures + 12), vSign);
-        I128 vecm = vpacki16i8(vpacki32i16(vec0, vec1), vpacki32i16(vec2, vec3));
+        Vec128I vec0 = v_cmp_eq_i32(v_loadu_i128(_signatures + 0), vSign);
+        Vec128I vec1 = v_cmp_eq_i32(v_loadu_i128(_signatures + 4), vSign);
+        Vec128I vec2 = v_cmp_eq_i32(v_loadu_i128(_signatures + 8), vSign);
+        Vec128I vec3 = v_cmp_eq_i32(v_loadu_i128(_signatures + 12), vSign);
+        Vec128I vecm = v_packs_i16_i8(v_packs_i32_i16(vec0, vec1), v_packs_i32_i16(vec2, vec3));
         return BitMatch { uint32_t(_mm_movemask_epi8(vecm)) };
       }
 
@@ -220,4 +237,4 @@ struct BLPipeLookupCache {
 //! \}
 //! \endcond
 
-#endif // BLEND2D_PIPE_P_H
+#endif // BLEND2D_PIPE_P_H_INCLUDED

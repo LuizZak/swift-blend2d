@@ -1,11 +1,28 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_PIXELOPS_P_H
-#define BLEND2D_PIXELOPS_P_H
+#ifndef BLEND2D_PIXELOPS_P_H_INCLUDED
+#define BLEND2D_PIXELOPS_P_H_INCLUDED
 
 #include "./api-internal_p.h"
 #include "./rgba_p.h"
@@ -103,14 +120,14 @@ static BL_INLINE uint32_t prgb32_8888_from_argb32_8888(uint32_t val32, uint32_t 
 #if BL_TARGET_SIMD_I
   using namespace SIMD;
 
-  I128 p0 = vcvtu32i128(val32);
-  I128 a0 = vcvtu32i128(_a | 0x00FF0000u);
+  Vec128I p0 = v_i128_from_u32(val32);
+  Vec128I a0 = v_i128_from_u32(_a | 0x00FF0000u);
 
-  p0 = vmovli64u8u16(p0);
-  a0 = vswizli16<1, 0, 0, 0>(a0);
-  p0 = vdiv255u16(vmuli16(p0, a0));
-  p0 = vpackzzwb(p0);
-  return vcvti128u32(p0);
+  p0 = v_unpack_lo_u8_u16(p0);
+  a0 = v_swizzle_lo_i16<1, 0, 0, 0>(a0);
+  p0 = v_div255_u16(v_mul_i16(p0, a0));
+  p0 = v_packz_u16_u8(p0);
+  return v_get_u32(p0);
 #else
   uint32_t rb = val32;
   uint32_t ag = val32;
@@ -136,13 +153,13 @@ static BL_INLINE uint32_t prgb32_8888_from_argb32_8888(uint32_t val32) noexcept 
 #if BL_TARGET_SIMD_I
   using namespace SIMD;
 
-  I128 p0 = vmovli64u8u16(vcvtu32i128(val32));
-  I128 a0 = vswizli16<3, 3, 3, 3>(p0);
+  Vec128I p0 = v_unpack_lo_u8_u16(v_i128_from_u32(val32));
+  Vec128I a0 = v_swizzle_lo_i16<3, 3, 3, 3>(p0);
 
-  p0 = vor(p0, v_const_as<I128>(blCommonTable.i128_00FF000000000000));
-  p0 = vdiv255u16(vmuli16(p0, a0));
-  p0 = vpackzzwb(p0);
-  return vcvti128u32(p0);
+  p0 = v_or(p0, v_const_as<Vec128I>(blCommonTable.i128_00FF000000000000));
+  p0 = v_div255_u16(v_mul_i16(p0, a0));
+  p0 = v_packz_u16_u8(p0);
+  return v_get_u32(p0);
 #else
   return prgb32_8888_from_argb32_8888(val32, val32 >> 24);
 #endif
@@ -173,4 +190,4 @@ static BL_INLINE uint32_t abgr32_8888_from_prgb32_8888(uint32_t val32) noexcept 
 //! \}
 //! \endcond
 
-#endif // BLEND2D_PIXELOPS_P_H
+#endif // BLEND2D_PIXELOPS_P_H_INCLUDED

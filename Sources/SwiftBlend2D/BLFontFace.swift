@@ -56,8 +56,8 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         return BLFontFaceDiagFlags(object.impl.pointee.faceInfo.diagFlags)
     }
     /// Gets a unique identifier describing this BLFontFace.
-    public var faceUniqueId: UInt64 {
-        return object.impl.pointee.faceUniqueId
+    public var faceUniqueId: BLUniqueId {
+        return object.impl.pointee.uniqueId
     }
 
     /// Gets full name as UTF-8 null-terminated string.
@@ -102,6 +102,10 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
 
     // MARK: - Initializers
     
+    override init() {
+        super.init()
+    }
+    
     /// Create Functionality
     /// Creates a new `BLFontFace` from file specified by `fileName`.
     ///
@@ -125,6 +129,12 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     
     public override init(weakAssign object: BLFontFaceCore) {
         super.init(weakAssign: object)
+    }
+}
+
+extension BLFontFace: Equatable {
+    public static func == (lhs: BLFontFace, rhs: BLFontFace) -> Bool {
+        return blFontFaceEquals(&lhs.object, &rhs.object)
     }
 }
 

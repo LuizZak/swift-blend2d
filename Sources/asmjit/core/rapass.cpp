@@ -1,12 +1,27 @@
-// [AsmJit]
-// Machine Code Generation for C++.
+// AsmJit - Machine code generation for C++
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official AsmJit Home Page: https://asmjit.com
+//  * Official Github Repository: https://github.com/asmjit/asmjit
+//
+// Copyright (c) 2008-2020 The AsmJit Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#define ASMJIT_EXPORTS
-
-#include "../core/build.h"
+#include "../core/api-build_p.h"
 #ifndef ASMJIT_NO_COMPILER
 
 #include "../core/ralocal_p.h"
@@ -1431,11 +1446,12 @@ Error RAPass::useTemporaryMem(BaseMem& out, uint32_t size, uint32_t alignment) n
   }
   else {
     ASMJIT_ASSERT(_temporaryMem.as<BaseMem>().isRegHome());
-    uint32_t virtId = _temporaryMem.as<BaseMem>().baseId();
 
+    uint32_t virtId = _temporaryMem.as<BaseMem>().baseId();
     VirtReg* virtReg = cc()->virtRegById(virtId);
-    virtReg->_virtSize = Support::max(virtReg->virtSize(), size);
-    virtReg->_alignment = uint8_t(Support::max(virtReg->alignment(), alignment));
+
+    cc()->setStackSize(virtId, Support::max(virtReg->virtSize(), size),
+                               Support::max(virtReg->alignment(), alignment));
   }
 
   out = _temporaryMem.as<BaseMem>();

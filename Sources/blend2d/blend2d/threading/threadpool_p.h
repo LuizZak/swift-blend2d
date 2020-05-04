@@ -1,11 +1,28 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_THREADING_THREADPOOL_P_H
-#define BLEND2D_THREADING_THREADPOOL_P_H
+#ifndef BLEND2D_THREADING_THREADPOOL_P_H_INCLUDED
+#define BLEND2D_THREADING_THREADPOOL_P_H_INCLUDED
 
 #include "../api-internal_p.h"
 #include "../bitarray_p.h"
@@ -27,22 +44,9 @@ struct BLThreadPoolVirt;
 // ============================================================================
 
 enum BLThreadPoolAcquireFlags : uint32_t {
-  //! Try to acquire the number of threads specified, if it's not possible then
-  //! don't acquire any threads and return.
-  //!
-  //! \note This flag has precedence over `BL_THREAD_POOL_ACQUIRE_FLAG_FORCE_ONE`
-  //! and `BL_THREAD_POOL_ACQUIRE_FLAG_FORCE_ALL`, so it doesn't matter if these
-  //! flags were specified or not when `BL_THREAD_POOL_ACQUIRE_FLAG_TRY` is used.
-  BL_THREAD_POOL_ACQUIRE_FLAG_TRY = 0x00000001u,
-
-  //! Force to acquire / create at least one thread.
-  BL_THREAD_POOL_ACQUIRE_FLAG_FORCE_ONE = 0x00000002u,
-
-  //! Force to acquire / create extra threads even when the thread-pool is full,
-  //! these threads will be then destroyed upon release. This mode ensures that
-  //! the user gets the number of threads asked for, but with a possible
-  //! overhead of creating additional threads when necessary.
-  BL_THREAD_POOL_ACQUIRE_FLAG_FORCE_ALL = 0x00000004u
+  //! Try to acquire `n` threads, and if it's not possible then don't acquire
+  //! any threads and return 0 with `BL_ERROR_THREAD_POOL_EXHAUSTED` reason.
+  BL_THREAD_POOL_ACQUIRE_FLAG_ALL_OR_NOTHING = 0x00000001u
 };
 
 // ============================================================================
@@ -56,7 +60,7 @@ struct BLThreadPoolVirt {
   uint32_t (BL_CDECL* pooledThreadCount)(const BLThreadPool* self) BL_NOEXCEPT;
   BLResult (BL_CDECL* setThreadAttributes)(BLThreadPool* self, const BLThreadAttributes* attributes) BL_NOEXCEPT;
   uint32_t (BL_CDECL* cleanup)(BLThreadPool* self) BL_NOEXCEPT;
-  uint32_t (BL_CDECL* acquireThreads)(BLThreadPool* self, BLThread** threads, uint32_t n, uint32_t flags) BL_NOEXCEPT;
+  uint32_t (BL_CDECL* acquireThreads)(BLThreadPool* self, BLThread** threads, uint32_t n, uint32_t flags, BLResult* reason) BL_NOEXCEPT;
   void     (BL_CDECL* releaseThreads)(BLThreadPool* self, BLThread** threads, uint32_t n) BL_NOEXCEPT;
 };
 
@@ -112,8 +116,8 @@ struct BLThreadPool {
   //! and if it's not possible then no threads will be acquired. If `exact` is
   //! `false` then the number of acquired threads can be less than `n` in case
   //! that acquiring `n` threads is not possible due to reaching `maxThreadCount()`.
-  BL_INLINE uint32_t acquireThreads(BLThread** threads, uint32_t n, uint32_t flags = 0) noexcept {
-    return virt->acquireThreads(this, threads, n, flags);
+  BL_INLINE uint32_t acquireThreads(BLThread** threads, uint32_t n, uint32_t flags, BLResult* reason) noexcept {
+    return virt->acquireThreads(this, threads, n, flags, reason);
   }
 
   //! Release `n` threads that were previously acquired by `acquireThreads()`.
@@ -134,4 +138,4 @@ BL_HIDDEN BLThreadPool* blThreadPoolCreate() noexcept;
 //! \}
 //! \endcond
 
-#endif // BLEND2D_THREADING_THREADPOOL_P_H
+#endif // BLEND2D_THREADING_THREADPOOL_P_H_INCLUDED

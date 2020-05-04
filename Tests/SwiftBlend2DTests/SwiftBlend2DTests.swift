@@ -67,7 +67,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.fillAll()
         
         // Read an image from file.
-        let texture = try BLImage(fromFile: "\(pathToResources())/texture.jpeg")
+        let texture = try BLImage(fromFile: pathToTestTexture())
         
         // Create a pattern and use it to fill a rounded-rect.
         let pattern = BLPattern(image: texture)
@@ -89,7 +89,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.fillAll()
         
         // Read an image from file.
-        let texture = try BLImage(fromFile: "\(pathToResources())/texture.jpeg")
+        let texture = try BLImage(fromFile: pathToTestTexture())
         
         // Rotate by 45 degrees about a point at [240, 240].
         ctx.rotate(angle: 0.785398, x: 240.0, y: 240.0)
@@ -169,7 +169,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.compOp = .sourceCopy
         ctx.fillAll()
         
-        let face = try BLFontFace(fromFile: "\(pathToResources())/NotoSans-Regular.ttf")
+        let face = try BLFontFace(fromFile: pathToTestFontFace())
         
         let font = BLFont(fromFace: face, size: 50)
         
@@ -192,7 +192,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.fillAll()
         ctx.setFillStyle(BLRgba32(argb: 0xFFFFFFFF))
 
-        let face = try BLFontFace(fromFile: "\(pathToResources())/NotoSans-Regular.ttf")
+        let face = try BLFontFace(fromFile: pathToTestFontFace())
         
         let font = BLFont(fromFace: face, size: 20.0)
         
@@ -509,50 +509,4 @@ extension SwiftBlend2DTests {
         
         return diffImage
     }
-}
-
-// TODO: Make this path shenanigans portable to Windows
-
-let rootPath: String = "/"
-let pathSeparator: Character = "/"
-
-func pathToSnapshots() -> String {
-    let file = #file
-
-    return rootPath + file.split(separator: pathSeparator).dropLast().joined(separator: String(pathSeparator)) + "\(pathSeparator)Snapshots"
-}
-
-func pathToSnapshotFailures() -> String {
-    let file = #file
-
-    return rootPath + file.split(separator: pathSeparator).dropLast().joined(separator: String(pathSeparator))
-        + "\(pathSeparator)SnapshotFailures" /* This path should be kept in .gitignore */
-}
-
-func pathToResources() -> String {
-    let file = #file
-    
-    return rootPath + file.split(separator: pathSeparator).dropLast(3).joined(separator: String(pathSeparator))
-        + "\(pathSeparator)Resources"
-}
-
-func pathExists(_ path: String, isDirectory: inout Bool) -> Bool {
-    var objcBool: ObjCBool = ObjCBool(false)
-    defer {
-        isDirectory = objcBool.boolValue
-    }
-    return FileManager.default.fileExists(atPath: path, isDirectory: &objcBool)
-}
-
-func createDirectory(atPath path: String) throws {
-    try FileManager.default.createDirectory(at: URL(fileURLWithPath: path),
-                                            withIntermediateDirectories: true,
-                                            attributes: nil)
-}
-
-func copyFile(source: String, dest: String) throws {
-    if FileManager.default.fileExists(atPath: dest) {
-        try FileManager.default.removeItem(atPath: dest)
-    }
-    try FileManager.default.copyItem(atPath: source, toPath: dest)
 }

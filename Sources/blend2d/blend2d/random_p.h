@@ -1,11 +1,28 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_RANDOM_P_H
-#define BLEND2D_RANDOM_P_H
+#ifndef BLEND2D_RANDOM_P_H_INCLUDED
+#define BLEND2D_RANDOM_P_H_INCLUDED
 
 #include "./random.h"
 #include "./simd_p.h"
@@ -77,27 +94,27 @@ BL_INLINE uint32_t blRandomNextUInt32Inline(BLRandom* self) noexcept {
 BL_INLINE __m128i blRandomNextUInt64AsI128Inline(BLRandom* self) noexcept {
   using namespace SIMD;
 
-  I128 x = vloadi128_64(&self->data[0]);
-  I128 y = vloadi128_64(&self->data[1]);
+  Vec128I x = v_load_i64(&self->data[0]);
+  Vec128I y = v_load_i64(&self->data[1]);
 
-  x = vxor(x, vslli64<BL_RANDOM_STEP1_SHL>(x));
-  y = vxor(y, vsrli64<BL_RANDOM_STEP3_SHR>(y));
-  x = vxor(x, vsrli64<BL_RANDOM_STEP2_SHR>(x));
-  x = vxor(x, y);
-  vstorei64(&self->data[0], y);
-  vstorei64(&self->data[1], x);
+  x = v_xor(x, v_sll_i64<BL_RANDOM_STEP1_SHL>(x));
+  y = v_xor(y, v_srl_i64<BL_RANDOM_STEP3_SHR>(y));
+  x = v_xor(x, v_srl_i64<BL_RANDOM_STEP2_SHR>(x));
+  x = v_xor(x, y);
+  v_store_i64(&self->data[0], y);
+  v_store_i64(&self->data[1], x);
 
-  return vaddi64(x, y);
+  return v_add_i64(x, y);
 }
 
 BL_INLINE double blRandomNextDoubleInline(BLRandom* self) noexcept {
   using namespace SIMD;
 
-  I128 kExpMsk128 = _mm_set_epi32(0x3FF00000, 0, 0x3FF00000, 0);
-  I128 x = blRandomNextUInt64AsI128Inline(self);
-  I128 y = vsrli64<BL_RANDOM_MANTISSA_SHIFT>(x);
-  I128 z = vor(y, kExpMsk128);
-  return vcvtd128d64(vcast<D128>(z)) - 1.0;
+  Vec128I kExpMsk128 = _mm_set_epi32(0x3FF00000, 0, 0x3FF00000, 0);
+  Vec128I x = blRandomNextUInt64AsI128Inline(self);
+  Vec128I y = v_srl_i64<BL_RANDOM_MANTISSA_SHIFT>(x);
+  Vec128I z = v_or(y, kExpMsk128);
+  return v_get_f64(v_cast<Vec128D>(z)) - 1.0;
 }
 #else
 BL_INLINE double blRandomNextDoubleInline(BLRandom* self) noexcept {
@@ -112,4 +129,4 @@ BL_INLINE double blRandomNextDoubleInline(BLRandom* self) noexcept {
 //! \}
 //! \endcond
 
-#endif // BLEND2D_RANDOM_P_H
+#endif // BLEND2D_RANDOM_P_H_INCLUDED

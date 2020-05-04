@@ -1,11 +1,28 @@
-// [AsmJit]
-// Machine Code Generation for C++.
+// AsmJit - Machine code generation for C++
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official AsmJit Home Page: https://asmjit.com
+//  * Official Github Repository: https://github.com/asmjit/asmjit
+//
+// Copyright (c) 2008-2020 The AsmJit Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef _ASMJIT_CORE_BUILD_H
-#define _ASMJIT_CORE_BUILD_H
+#ifndef ASMJIT_CORE_API_CONFIG_H_INCLUDED
+#define ASMJIT_CORE_API_CONFIG_H_INCLUDED
 
 // ============================================================================
 // [asmjit::Version]
@@ -96,25 +113,7 @@
 #include <type_traits>
 #include <utility>
 
-#if defined(_WIN32)
-  #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN
-    #define ASMJIT_UNDEF_WIN32_LEAN_AND_MEAN
-  #endif
-  #ifndef NOMINMAX
-    #define NOMINMAX
-    #define ASMJIT_UNDEF_NOMINMAX
-  #endif
-  #include <windows.h>
-  #ifdef ASMJIT_UNDEF_WIN32_LEAN_AND_MEAN
-    #undef WIN32_LEAN_AND_MEAN
-    #undef ASMJIT_UNDEF_WIN32_LEAN_AND_MEAN
-  #endif
-  #ifdef ASMJIT_UNDEF_NOMINMAX
-    #undef NOMINMAX
-    #undef ASMJIT_UNDEF_NOMINMAX
-  #endif
-#else
+#if !defined(_WIN32) && !defined(__EMSCRIPTEN__)
   #include <pthread.h>
 #endif
 
@@ -250,13 +249,6 @@
     #define ASMJIT_CXX_MSC ASMJIT_CXX_MAKE_VER(_MSC_VER / 100, (_MSC_FULL_VER / 100000) % 100, _MSC_FULL_VER % 100000)
   #endif
 
-  // SEVERE: VS2015 handles constexpr's incorrectly in case a struct contains a
-  //         union. There is no workaround known other than rewriting the whole
-  //         code. VS2017 has a similar bug, but it can be workarounded.
-  #if ASMJIT_CXX_MSC < ASMJIT_CXX_MAKE_VER(19, 10, 0)
-    #error "[asmjit] At least VS2017 is required due to a severe bug in VS2015's constexpr implementation"
-  #endif
-
 // Clang Compiler [Pretends to be GNU, so it must be checked before]:
 //   - https://clang.llvm.org/cxx_status.html
 #elif defined(__clang_major__) && defined(__clang_minor__) && defined(__clang_patchlevel__)
@@ -323,13 +315,13 @@
 // API (Export / Import).
 #if !defined(ASMJIT_STATIC)
   #if defined(_WIN32) && (defined(_MSC_VER) || defined(__MINGW32__))
-    #if defined(ASMJIT_EXPORTS)
+    #ifdef ASMJIT_EXPORTS
       #define ASMJIT_API __declspec(dllexport)
     #else
       #define ASMJIT_API __declspec(dllimport)
     #endif
   #elif defined(_WIN32) && defined(__GNUC__)
-    #if defined(ASMJIT_EXPORTS)
+    #ifdef ASMJIT_EXPORTS
       #define ASMJIT_API __attribute__((__dllexport__))
     #else
       #define ASMJIT_API __attribute__((__dllimport__))
@@ -404,6 +396,12 @@
   #define ASMJIT_ALIGN_TYPE(TYPE, N) __declspec(align(N)) TYPE
 #else
   #define ASMJIT_ALIGN_TYPE(TYPE, N) TYPE
+#endif
+
+#if defined(__GNUC__)
+  #define ASMJIT_MAY_ALIAS __attribute__((__may_alias__))
+#else
+  #define ASMJIT_MAY_ALIAS
 #endif
 
 // Annotations.
@@ -556,18 +554,4 @@
 #undef ASMJIT_CXX_MSC
 #undef ASMJIT_CXX_MAKE_VER
 
-// ============================================================================
-// [asmjit::Build - Globals - Unit Testing Boilerplate]
-// ============================================================================
-
-// IDE: Make sure '#ifdef'ed unit tests are properly highlighted.
-#if defined(__INTELLISENSE__) && !defined(ASMJIT_TEST)
-  #define ASMJIT_TEST
-#endif
-
-// IDE: Make sure '#ifdef'ed unit tests are not disabled by IDE.
-#if defined(ASMJIT_TEST)
-  #include "../../../test/broken.h"
-#endif
-
-#endif // _ASMJIT_CORE_BUILD_H
+#endif // ASMJIT_CORE_API_CONFIG_H_INCLUDED

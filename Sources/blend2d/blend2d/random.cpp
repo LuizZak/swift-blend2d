@@ -1,8 +1,25 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #include "./api-build_p.h"
 #include "./random_p.h"
@@ -44,12 +61,12 @@ UNIT(random) {
     BLRandom a(0);
     BLRandom b(0);
 
-    SIMD::I128 bLo = blRandomNextUInt64AsI128Inline(&b);
-    SIMD::I128 bHi = SIMD::vswizi32<2, 3, 0, 1>(bLo);
+    SIMD::Vec128I bLo = blRandomNextUInt64AsI128Inline(&b);
+    SIMD::Vec128I bHi = SIMD::v_swizzle_i32<2, 3, 0, 1>(bLo);
 
     uint64_t aVal = a.nextUInt64();
-    uint64_t bVal = (uint64_t(SIMD::vcvti128i32(bLo))      ) +
-                    (uint64_t(SIMD::vcvti128i32(bHi)) << 32) ;
+    uint64_t bVal = (uint64_t(SIMD::v_get_i32(bLo))      ) +
+                    (uint64_t(SIMD::v_get_i32(bHi)) << 32) ;
 
     EXPECT(aVal == bVal);
   }

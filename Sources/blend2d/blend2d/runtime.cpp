@@ -1,12 +1,32 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #include "./api-build_p.h"
 #include "./runtime_p.h"
 #include "./support_p.h"
+
+// PTHREAD_STACK_MIN would be defined either by <pthread.h> or <limits.h>.
+#include <limits.h>
 
 #ifndef BL_BUILD_NO_JIT
   #include <asmjit/asmjit.h>
@@ -17,6 +37,7 @@
 // ============================================================================
 
 BLRuntimeContext blRuntimeContext;
+BLRuntimeResourceLiveInfo blRuntimeResourceLiveInfo;
 
 // ============================================================================
 // [BLRuntime - Build Information]
@@ -148,7 +169,7 @@ static BL_INLINE void blRuntimeInitSystemInfo(BLRuntimeContext* rt) noexcept {
 #ifdef _WIN32
   SYSTEM_INFO si;
   GetSystemInfo(&si);
-  info.minThreadStackSize = si.dwAllocationGranularity;
+  info.threadStackSize = si.dwAllocationGranularity;
   info.allocationGranularity = si.dwAllocationGranularity;
 #else
   #if defined(_SC_PAGESIZE)
@@ -158,16 +179,21 @@ static BL_INLINE void blRuntimeInitSystemInfo(BLRuntimeContext* rt) noexcept {
   #endif
 
   #if defined(PTHREAD_STACK_MIN)
-  info.minThreadStackSize = uint32_t(PTHREAD_STACK_MIN);
+  info.threadStackSize = uint32_t(PTHREAD_STACK_MIN);
   #elif defined(_SC_THREAD_STACK_MIN)
-  info.minThreadStackSize = uint32_t(sysconf(_SC_THREAD_STACK_MIN));
+  info.threadStackSize = uint32_t(sysconf(_SC_THREAD_STACK_MIN));
   #else
   #pragma message("Missing 'BLRuntimeSystemInfo::minStackSize' implementation")
-  info.minThreadStackSize = blMax<uint32_t>(info.allocationGranularity, 65536u);
+  info.threadStackSize = blMax<uint32_t>(info.allocationGranularity, 65536u);
   #endif
 #endif
 
-  info.minWorkerStackSize = blAlignUp(blMax<uint32_t>(info.minThreadStackSize, 8192u), info.allocationGranularity);
+  // NOTE: It seems that on some archs 16kB stack-size is the bare minimum
+  // even when sysconf() or PTHREAD_STACK_MIN report a smaller value. Even
+  // if we don't need it we slighly increase the bare minimum to 32kB to
+  // make it safer especially on archs that has a bit register file.
+  info.threadStackSize = blAlignUp(
+    blMax<uint32_t>(info.threadStackSize, 32768), info.allocationGranularity);;
 }
 
 static BL_INLINE void blRuntimeInitOptimizationInfo(BLRuntimeContext* rt) noexcept {
@@ -220,31 +246,31 @@ BLResult blRuntimeInit() noexcept {
 
   // Call "Runtime Initialization" handlers.
   // - These would automatically install shutdown handlers when necessary.
-  blThreadRtInit(rt);
-  blThreadPoolRtInit(rt);
-  blZeroAllocatorRtInit(rt);
-  blMatrix2DRtInit(rt);
-  blArrayRtInit(rt);
-  blStringRtInit(rt);
-  blPathRtInit(rt);
-  blRegionRtInit(rt);
-  blImageRtInit(rt);
-  blImageCodecRtInit(rt);
-  blImageScalerRtInit(rt);
-  blPatternRtInit(rt);
-  blGradientRtInit(rt);
-  blFontRtInit(rt);
-  blFontManagerRtInit(rt);
+  blThreadOnInit(rt);
+  blThreadPoolOnInit(rt);
+  blZeroAllocatorOnInit(rt);
+  blMatrix2DOnInit(rt);
+  blArrayOnInit(rt);
+  blStringOnInit(rt);
+  blPathOnInit(rt);
+  blRegionOnInit(rt);
+  blImageOnInit(rt);
+  blImageCodecOnInit(rt);
+  blImageScalerOnInit(rt);
+  blPatternOnInit(rt);
+  blGradientOnInit(rt);
+  blFontOnInit(rt);
+  blFontManagerOnInit(rt);
 
 #if !defined(BL_BUILD_NO_FIXED_PIPE)
-  blFixedPipeRtInit(rt);
+  blFixedPipeOnInit(rt);
 #endif
 
 #if !defined(BL_BUILD_NO_JIT)
-  blPipeGenRtInit(rt);
+  blPipeGenOnInit(rt);
 #endif
 
-  blContextRtInit(rt);
+  blContextOnInit(rt);
 
   return BL_SUCCESS;
 }
@@ -256,6 +282,8 @@ BLResult blRuntimeShutdown() noexcept {
 
   rt->shutdownHandlers.callInReverseOrder(rt);
   rt->shutdownHandlers.reset();
+  rt->cleanupHandlers.reset();
+  rt->resourceInfoHandlers.reset();
 
   return BL_SUCCESS;
 }
@@ -298,10 +326,12 @@ BLResult blRuntimeQueryInfo(uint32_t infoType, void* infoOut) noexcept {
       return BL_SUCCESS;
     }
 
-    case BL_RUNTIME_INFO_TYPE_MEMORY: {
-      BLRuntimeMemoryInfo* memoryInfo = static_cast<BLRuntimeMemoryInfo*>(infoOut);
-      memoryInfo->reset();
-      rt->memoryInfoHandlers.call(rt, memoryInfo);
+    case BL_RUNTIME_INFO_TYPE_RESOURCE: {
+      BLRuntimeResourceInfo* resourceInfo = static_cast<BLRuntimeResourceInfo*>(infoOut);
+      resourceInfo->reset();
+      resourceInfo->fileHandleCount = blRuntimeResourceLiveInfo.fileHandleCount();
+      resourceInfo->fileMappingCount = blRuntimeResourceLiveInfo.fileMappingCount();
+      rt->resourceInfoHandlers.call(rt, resourceInfo);
       return BL_SUCCESS;
     }
 

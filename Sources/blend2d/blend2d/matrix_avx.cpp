@@ -1,8 +1,25 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #include "./api-build_p.h"
 #ifdef BL_TARGET_OPT_AVX
@@ -26,10 +43,10 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayIdentity_AVX(const BLMatrix2D* 
 
   size_t i = size;
   while (i >= 8) {
-    vstored256u(dst + 0, vloadd256u(src + 0));
-    vstored256u(dst + 2, vloadd256u(src + 2));
-    vstored256u(dst + 4, vloadd256u(src + 4));
-    vstored256u(dst + 6, vloadd256u(src + 6));
+    v_storeu_d256(dst + 0, v_loadu_d256(src + 0));
+    v_storeu_d256(dst + 2, v_loadu_d256(src + 2));
+    v_storeu_d256(dst + 4, v_loadu_d256(src + 4));
+    v_storeu_d256(dst + 6, v_loadu_d256(src + 6));
 
     i -= 8;
     dst += 8;
@@ -37,7 +54,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayIdentity_AVX(const BLMatrix2D* 
   }
 
   while (i >= 2) {
-    vstored256u(dst, vloadd256u(src));
+    v_storeu_d256(dst, v_loadu_d256(src));
 
     i -= 2;
     dst += 2;
@@ -45,7 +62,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayIdentity_AVX(const BLMatrix2D* 
   }
 
   if (i)
-    vstored128u(dst, vloadd128u(src));
+    v_storeu_d128(dst, v_loadu_d128(src));
 
   return BL_SUCCESS;
 }
@@ -54,13 +71,13 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayTranslate_AVX(const BLMatrix2D*
   using namespace SIMD;
 
   size_t i = size;
-  D256 m20_m21 = vbroadcastd256_128(&self->m20);
+  Vec256D m20_m21 = v_broadcast_d256_128(&self->m20);
 
   while (i >= 8) {
-    vstored256u(dst + 0, vaddpd(vloadd256u(src + 0), m20_m21));
-    vstored256u(dst + 2, vaddpd(vloadd256u(src + 2), m20_m21));
-    vstored256u(dst + 4, vaddpd(vloadd256u(src + 4), m20_m21));
-    vstored256u(dst + 6, vaddpd(vloadd256u(src + 6), m20_m21));
+    v_storeu_d256(dst + 0, v_add_f64(v_loadu_d256(src + 0), m20_m21));
+    v_storeu_d256(dst + 2, v_add_f64(v_loadu_d256(src + 2), m20_m21));
+    v_storeu_d256(dst + 4, v_add_f64(v_loadu_d256(src + 4), m20_m21));
+    v_storeu_d256(dst + 6, v_add_f64(v_loadu_d256(src + 6), m20_m21));
 
     i -= 8;
     dst += 8;
@@ -68,7 +85,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayTranslate_AVX(const BLMatrix2D*
   }
 
   while (i >= 2) {
-    vstored256u(dst, vaddpd(vloadd256u(src), m20_m21));
+    v_storeu_d256(dst, v_add_f64(v_loadu_d256(src), m20_m21));
 
     i -= 2;
     dst += 2;
@@ -76,7 +93,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayTranslate_AVX(const BLMatrix2D*
   }
 
   if (i)
-    vstored128u(dst, vaddpd(vloadd128u(src), vcast<D128>(m20_m21)));
+    v_storeu_d128(dst, v_add_f64(v_loadu_d128(src), v_cast<Vec128D>(m20_m21)));
 
   return BL_SUCCESS;
 }
@@ -85,14 +102,14 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayScale_AVX(const BLMatrix2D* sel
   using namespace SIMD;
 
   size_t i = size;
-  D256 m00_m11 = vdupld128(vsetd128(self->m11, self->m00));
-  D256 m20_m21 = vbroadcastd256_128(&self->m20);
+  Vec256D m00_m11 = v_dupl_d128(v_fill_d128(self->m11, self->m00));
+  Vec256D m20_m21 = v_broadcast_d256_128(&self->m20);
 
   while (i >= 8) {
-    vstored256u(dst + 0, vaddpd(vmulpd(vloadd256u(src + 0), m00_m11), m20_m21));
-    vstored256u(dst + 2, vaddpd(vmulpd(vloadd256u(src + 2), m00_m11), m20_m21));
-    vstored256u(dst + 4, vaddpd(vmulpd(vloadd256u(src + 4), m00_m11), m20_m21));
-    vstored256u(dst + 6, vaddpd(vmulpd(vloadd256u(src + 6), m00_m11), m20_m21));
+    v_storeu_d256(dst + 0, v_add_f64(v_mul_f64(v_loadu_d256(src + 0), m00_m11), m20_m21));
+    v_storeu_d256(dst + 2, v_add_f64(v_mul_f64(v_loadu_d256(src + 2), m00_m11), m20_m21));
+    v_storeu_d256(dst + 4, v_add_f64(v_mul_f64(v_loadu_d256(src + 4), m00_m11), m20_m21));
+    v_storeu_d256(dst + 6, v_add_f64(v_mul_f64(v_loadu_d256(src + 6), m00_m11), m20_m21));
 
     i -= 8;
     dst += 8;
@@ -100,7 +117,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayScale_AVX(const BLMatrix2D* sel
   }
 
   while (i >= 2) {
-    vstored256u(dst, vaddpd(vmulpd(vloadd256u(src), m00_m11), m20_m21));
+    v_storeu_d256(dst, v_add_f64(v_mul_f64(v_loadu_d256(src), m00_m11), m20_m21));
 
     i -= 2;
     dst += 2;
@@ -108,7 +125,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayScale_AVX(const BLMatrix2D* sel
   }
 
   if (i)
-    vstored128u(dst, vaddpd(vmulpd(vloadd128u(src), vcast<D128>(m00_m11)), vcast<D128>(m20_m21)));
+    v_storeu_d128(dst, v_add_f64(v_mul_f64(v_loadu_d128(src), v_cast<Vec128D>(m00_m11)), v_cast<Vec128D>(m20_m21)));
 
   return BL_SUCCESS;
 }
@@ -117,14 +134,14 @@ static BLResult BL_CDECL blMatrix2DMapPointDArraySwap_AVX(const BLMatrix2D* self
   using namespace SIMD;
 
   size_t i = size;
-  D256 m01_m10 = vdupld128(vsetd128(self->m01, self->m10));
-  D256 m20_m21 = vbroadcastd256_128(&self->m20);
+  Vec256D m01_m10 = v_dupl_d128(v_fill_d128(self->m01, self->m10));
+  Vec256D m20_m21 = v_broadcast_d256_128(&self->m20);
 
   while (i >= 8) {
-    vstored256u(dst + 0, vaddpd(vmulpd(vswapd64(vloadd256u(src + 0)), m01_m10), m20_m21));
-    vstored256u(dst + 2, vaddpd(vmulpd(vswapd64(vloadd256u(src + 2)), m01_m10), m20_m21));
-    vstored256u(dst + 4, vaddpd(vmulpd(vswapd64(vloadd256u(src + 4)), m01_m10), m20_m21));
-    vstored256u(dst + 6, vaddpd(vmulpd(vswapd64(vloadd256u(src + 6)), m01_m10), m20_m21));
+    v_storeu_d256(dst + 0, v_add_f64(v_mul_f64(v_swap_f64(v_loadu_d256(src + 0)), m01_m10), m20_m21));
+    v_storeu_d256(dst + 2, v_add_f64(v_mul_f64(v_swap_f64(v_loadu_d256(src + 2)), m01_m10), m20_m21));
+    v_storeu_d256(dst + 4, v_add_f64(v_mul_f64(v_swap_f64(v_loadu_d256(src + 4)), m01_m10), m20_m21));
+    v_storeu_d256(dst + 6, v_add_f64(v_mul_f64(v_swap_f64(v_loadu_d256(src + 6)), m01_m10), m20_m21));
 
     i -= 8;
     dst += 8;
@@ -132,7 +149,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArraySwap_AVX(const BLMatrix2D* self
   }
 
   while (i >= 2) {
-    vstored256u(dst, vaddpd(vmulpd(vswapd64(vloadd256u(src)), m01_m10), m20_m21));
+    v_storeu_d256(dst, v_add_f64(v_mul_f64(v_swap_f64(v_loadu_d256(src)), m01_m10), m20_m21));
 
     i -= 2;
     dst += 2;
@@ -140,7 +157,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArraySwap_AVX(const BLMatrix2D* self
   }
 
   if (i)
-    vstored128u(dst, vaddpd(vmulpd(vswapd64(vloadd128u(src)), vcast<D128>(m01_m10)), vcast<D128>(m20_m21)));
+    v_storeu_d128(dst, v_add_f64(v_mul_f64(v_swap_f64(v_loadu_d128(src)), v_cast<Vec128D>(m01_m10)), v_cast<Vec128D>(m20_m21)));
 
   return BL_SUCCESS;
 }
@@ -149,20 +166,20 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayAffine_AVX(const BLMatrix2D* se
   using namespace SIMD;
 
   size_t i = size;
-  D256 m00_m11 = vdupld128(vsetd128(self->m11, self->m00));
-  D256 m10_m01 = vdupld128(vsetd128(self->m01, self->m10));
-  D256 m20_m21 = vbroadcastd256_128(&self->m20);
+  Vec256D m00_m11 = v_dupl_d128(v_fill_d128(self->m11, self->m00));
+  Vec256D m10_m01 = v_dupl_d128(v_fill_d128(self->m01, self->m10));
+  Vec256D m20_m21 = v_broadcast_d256_128(&self->m20);
 
   while (i >= 8) {
-    D256 s0 = vloadd256u(src + 0);
-    D256 s1 = vloadd256u(src + 2);
-    D256 s2 = vloadd256u(src + 4);
-    D256 s3 = vloadd256u(src + 6);
+    Vec256D s0 = v_loadu_d256(src + 0);
+    Vec256D s1 = v_loadu_d256(src + 2);
+    Vec256D s2 = v_loadu_d256(src + 4);
+    Vec256D s3 = v_loadu_d256(src + 6);
 
-    vstored256u(dst + 0, vaddpd(vaddpd(vmulpd(s0, m00_m11), m20_m21), vmulpd(vswapd64(s0), m10_m01)));
-    vstored256u(dst + 2, vaddpd(vaddpd(vmulpd(s1, m00_m11), m20_m21), vmulpd(vswapd64(s1), m10_m01)));
-    vstored256u(dst + 4, vaddpd(vaddpd(vmulpd(s2, m00_m11), m20_m21), vmulpd(vswapd64(s2), m10_m01)));
-    vstored256u(dst + 6, vaddpd(vaddpd(vmulpd(s3, m00_m11), m20_m21), vmulpd(vswapd64(s3), m10_m01)));
+    v_storeu_d256(dst + 0, v_add_f64(v_add_f64(v_mul_f64(s0, m00_m11), m20_m21), v_mul_f64(v_swap_f64(s0), m10_m01)));
+    v_storeu_d256(dst + 2, v_add_f64(v_add_f64(v_mul_f64(s1, m00_m11), m20_m21), v_mul_f64(v_swap_f64(s1), m10_m01)));
+    v_storeu_d256(dst + 4, v_add_f64(v_add_f64(v_mul_f64(s2, m00_m11), m20_m21), v_mul_f64(v_swap_f64(s2), m10_m01)));
+    v_storeu_d256(dst + 6, v_add_f64(v_add_f64(v_mul_f64(s3, m00_m11), m20_m21), v_mul_f64(v_swap_f64(s3), m10_m01)));
 
     i -= 8;
     dst += 8;
@@ -170,8 +187,8 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayAffine_AVX(const BLMatrix2D* se
   }
 
   while (i >= 2) {
-    D256 s0 = vloadd256u(src);
-    vstored256u(dst, vaddpd(vaddpd(vmulpd(s0, m00_m11), m20_m21), vmulpd(vswapd64(s0), m10_m01)));
+    Vec256D s0 = v_loadu_d256(src);
+    v_storeu_d256(dst, v_add_f64(v_add_f64(v_mul_f64(s0, m00_m11), m20_m21), v_mul_f64(v_swap_f64(s0), m10_m01)));
 
     i -= 2;
     dst += 2;
@@ -179,8 +196,8 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayAffine_AVX(const BLMatrix2D* se
   }
 
   if (i) {
-    D128 s0 = vloadd128u(src);
-    vstored128u(dst, vaddpd(vaddpd(vmulpd(s0, vcast<D128>(m00_m11)), vcast<D128>(m20_m21)), vmulpd(vswapd64(s0), vcast<D128>(m10_m01))));
+    Vec128D s0 = v_loadu_d128(src);
+    v_storeu_d128(dst, v_add_f64(v_add_f64(v_mul_f64(s0, v_cast<Vec128D>(m00_m11)), v_cast<Vec128D>(m20_m21)), v_mul_f64(v_swap_f64(s0), v_cast<Vec128D>(m10_m01))));
   }
 
   return BL_SUCCESS;
@@ -190,7 +207,7 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayAffine_AVX(const BLMatrix2D* se
 // [BLMatrix2D - Runtime Init [AVX]]
 // ============================================================================
 
-void blMatrix2DRtInit_AVX(BLRuntimeContext* rt) noexcept {
+void blMatrix2DOnInit_AVX(BLRuntimeContext* rt) noexcept {
   BL_UNUSED(rt);
   BLMapPointDArrayFunc* funcs = blMatrix2DMapPointDArrayFuncs;
 

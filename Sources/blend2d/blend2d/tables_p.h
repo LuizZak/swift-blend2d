@@ -1,11 +1,28 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef BLEND2D_TABLES_P_H
-#define BLEND2D_TABLES_P_H
+#ifndef BLEND2D_TABLES_P_H_INCLUDED
+#define BLEND2D_TABLES_P_H_INCLUDED
 
 #include "./lookuptable_p.h"
 
@@ -48,7 +65,7 @@ struct alignas(32) BLCommonTable {
   };
 
   // --------------------------------------------------------------------------
-  // [I128 Constants]
+  // [Vec128I Constants]
   // --------------------------------------------------------------------------
 
   uint64_t i128_0000000000000000[2];     // 8xU16(0x0000).
@@ -93,7 +110,7 @@ struct alignas(32) BLCommonTable {
   uint32_t xmm_u32_4[4];                 // uint32_t(4).
 
   // --------------------------------------------------------------------------
-  // [F128 Constants]
+  // [Vec128F Constants]
   // --------------------------------------------------------------------------
 
   uint64_t f128_sgn[2];                  // Mask of all `float` bits containing a sign.
@@ -112,7 +129,7 @@ struct alignas(32) BLCommonTable {
   float f128_3_2_1_0[4];                 // Vector of `[3f, 2f, 1f, 0f]`.
 
   // --------------------------------------------------------------------------
-  // [D128 Constants]
+  // [Vec128D Constants]
   // --------------------------------------------------------------------------
 
   uint64_t d128_sgn[2];                  // Mask of all `double` bits containing a sign.
@@ -151,7 +168,7 @@ struct alignas(32) BLCommonTable {
   uint8_t alignment[32];
 
   // --------------------------------------------------------------------------
-  // [I256 Constants]
+  // [Vec256I Constants]
   // --------------------------------------------------------------------------
 
   uint64_t i256_007F007F007F007F[4];     // 16xU16(0x007F).
@@ -165,7 +182,7 @@ struct alignas(32) BLCommonTable {
   uint64_t i256_FFFFFFFFFFFFFFFF[4];     // 16xU16(0xFFFF).
 
   // --------------------------------------------------------------------------
-  // [I256 Load/Store Masks]
+  // [Vec256I Load/Store Masks]
   // --------------------------------------------------------------------------
 
   LoadStoreM32 load_store_m32[9]; // Index 0..9.
@@ -248,4 +265,4 @@ BL_HIDDEN extern const BLCommonTable blCommonTable;
 //! \}
 //! \endcond
 
-#endif // BLEND2D_TABLES_P_H
+#endif // BLEND2D_TABLES_P_H_INCLUDED

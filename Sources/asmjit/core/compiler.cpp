@@ -1,12 +1,27 @@
-// [AsmJit]
-// Machine Code Generation for C++.
+// AsmJit - Machine code generation for C++
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official AsmJit Home Page: https://asmjit.com
+//  * Official Github Repository: https://github.com/asmjit/asmjit
+//
+// Copyright (c) 2008-2020 The AsmJit Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
-#define ASMJIT_EXPORTS
-
-#include "../core/build.h"
+#include "../core/api-build_p.h"
 #ifndef ASMJIT_NO_COMPILER
 
 #include "../core/assembler.h"
@@ -14,6 +29,7 @@
 #include "../core/cpuinfo.h"
 #include "../core/logging.h"
 #include "../core/rapass_p.h"
+#include "../core/rastack_p.h"
 #include "../core/support.h"
 #include "../core/type.h"
 
@@ -444,6 +460,35 @@ Error BaseCompiler::_newStack(BaseMem& out, uint32_t size, uint32_t alignment, c
 
   // Set the memory operand to GPD/GPQ and its id to VirtReg.
   out = BaseMem(BaseMem::Decomposed { _gpRegInfo.type(), vReg->id(), BaseReg::kTypeNone, 0, 0, 0, BaseMem::kSignatureMemRegHomeFlag });
+  return kErrorOk;
+}
+
+Error BaseCompiler::setStackSize(uint32_t virtId, uint32_t newSize, uint32_t newAlignment) noexcept {
+  if (!isVirtIdValid(virtId))
+    return DebugUtils::errored(kErrorInvalidVirtId);
+
+  if (newAlignment && !Support::isPowerOf2(newAlignment))
+    return reportError(DebugUtils::errored(kErrorInvalidArgument));
+
+  if (newAlignment > 64)
+    newAlignment = 64;
+
+  VirtReg* vReg = virtRegById(virtId);
+  if (newSize)
+    vReg->_virtSize = newSize;
+
+  if (newAlignment)
+    vReg->_alignment = uint8_t(newAlignment);
+
+  // This is required if the RAPass is already running. There is a chance that
+  // a stack-slot has been already allocated and in that case it has to be
+  // updated as well, otherwise we would allocate wrong amount of memory.
+  RAWorkReg* workReg = vReg->_workReg;
+  if (workReg && workReg->_stackSlot) {
+    workReg->_stackSlot->_size = vReg->_virtSize;
+    workReg->_stackSlot->_alignment = vReg->_alignment;
+  }
+
   return kErrorOk;
 }
 

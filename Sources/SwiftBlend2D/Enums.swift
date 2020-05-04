@@ -157,6 +157,10 @@ public extension BLResultCode {
     /// Unsupported SOF marker (JPEG).
     static let jpegUnsupportedSof = BL_ERROR_JPEG_UNSUPPORTED_SOF
 
+    /// Font doesn't have any data as it's not initialized.
+    static let fontNotInitialized = BL_ERROR_FONT_NOT_INITIALIZED
+    /// Font or font-face was not matched (BLFontManager).
+    static let fontNoMatch = BL_ERROR_FONT_NO_MATCH
     /// Font has no character to glyph mapping data.
     static let fontNoCharacterMapping = BL_ERROR_FONT_NO_CHARACTER_MAPPING
     /// Font has missing an important table.
@@ -309,6 +313,10 @@ public extension BLResultCode {
             return "Multiple SOF markers (JPEG)."
         case .jpegUnsupportedSof:
             return "Unsupported SOF marker (JPEG)."
+        case .fontNotInitialized:
+            return "Font doesn't have any data as it's not initialized."
+        case .fontNoMatch:
+            return "Font or font-face was not matched (BLFontManager)."
         case .fontNoCharacterMapping:
             return "Font has no character to glyph mapping data."
         case .fontMissingImportantTable:
@@ -742,7 +750,7 @@ public extension BLFileOpenFlags {
     static let openDeleteExclusive = BL_FILE_OPEN_DELETE_EXCLUSIVE
 }
 
-public extension BLFileSeek {
+public extension BLFileSeekType {
     /// Seek from the beginning of the file (SEEK_SET).
     static let set = BL_FILE_SEEK_SET
     /// Seek from the current position (SEEK_CUR).
@@ -836,8 +844,9 @@ public extension BLRuntimeLimits {
 public extension BLRuntimeInfoType {
     /// Blend2D build information.
     static let build = BL_RUNTIME_INFO_TYPE_BUILD
-    /// System information (includes CPU architecture, features, cores, etc...).
-    static let memory = BL_RUNTIME_INFO_TYPE_MEMORY
+    /// Resources information (includes Blend2D memory consumption, file handles
+    /// used, etc...)
+    static let resource = BL_RUNTIME_INFO_TYPE_RESOURCE
     /// Runtime information regarding memory used, reserved, etc...
     static let system = BL_RUNTIME_INFO_TYPE_SYSTEM
 }
@@ -1398,26 +1407,6 @@ public extension BLFontStringId {
 
 /// Rendering context create-flags.
 public extension BLContextCreateFlags {
-    /// When creating an asynchronous rendering context that uses threads for
-    /// rendering, the rendering context can sometimes allocate less threads
-    /// than specified if the built-in thread-pool doesn't have enough threads
-    /// available. This flag will force the thread-pool to override the thread
-    /// limit temporarily to allocate at least one thread.
-    ///
-    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
-    /// If it's specified with `BL_CONTEXT_CREATE_FLAG_FORCE_ALL_THREADS` then
-    /// the latter has a precedence.
-    static let forceOneThread = BL_CONTEXT_CREATE_FLAG_FORCE_ONE_THREAD
-
-    /// When creating an asynchronous rendering context that uses threads for
-    /// rendering, the rendering context can sometimes allocate less threads
-    /// than specified if the built-in thread-pool doesn't have enough threads
-    /// available. This flag will force the thread-pool to override the thread
-    /// limit temporarily to fulfill the thread count requirement completely.
-    ///
-    /// - note: This flag is ignored if `BLContextCreateInfo::threadCount <= 1`.
-    static let forceAllThreads = BL_CONTEXT_CREATE_FLAG_FORCE_ALL_THREADS
-
     /// Fallbacks to a synchronous rendering in case that acquiring threads
     /// from the thread-pool failed. This flag only makes sense when the
     /// asynchronous mode was specified by having `threadCount` greater than 0.

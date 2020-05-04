@@ -1,8 +1,25 @@
-// [Blend2D]
-// 2D Vector Graphics Powered by a JIT Compiler.
+// Blend2D - 2D Vector Graphics Powered by a JIT Compiler
 //
-// [License]
-// Zlib - See LICENSE.md file in the package.
+//  * Official Blend2D Home Page: https://blend2d.com
+//  * Official Github Repository: https://github.com/blend2d/blend2d
+//
+// Copyright (c) 2017-2020 The Blend2D Authors
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
 
 #include "../api-build_p.h"
 #include "../pipedefs_p.h"
@@ -90,12 +107,23 @@ UNIT(analytic_rasterizer) {
 
       // We don't really care of the cell storage here, can be the same...
       a.init(cellStorage.bitPtrTop, cellStorage.bitStride,
-            cellStorage.cellPtrTop, cellStorage.cellStride, bandY0, bandHeight);
+             cellStorage.cellPtrTop, cellStorage.cellStride, bandY0, bandHeight);
       b.init(cellStorage.bitPtrTop, cellStorage.bitStride,
-            cellStorage.cellPtrTop, cellStorage.cellStride, bandY0, bandHeight);
+             cellStorage.cellPtrTop, cellStorage.cellStride, bandY0, bandHeight);
 
-      bool aPrepared = a.prepare(x0, y0, x1, y1);
-      bool bPrepared = b.prepare(x0, y0, x1, y1);
+      bool aPrepared = a.prepareRef(BLEdgePoint<int>{x0, y0}, BLEdgePoint<int>{x1, y1});
+      bool bPrepared = b.prepare(BLEdgePoint<int>{x0, y0}, BLEdgePoint<int>{x1, y1});
+
+      bool prepareMustMatch = blCheckRasterizerState(a, b);
+      EXPECT(prepareMustMatch,
+            "Rasterizer preparation failed [TestId=%u]:\n"
+            "    Line: int x0=%d, y0=%d, x1=%d, y1=%d;\n"
+            "    A: x0={%d.%d} y0={%d.%d} x1={%d.%d} y1={%d.%d} err={%d|%d} dlt={%d|%d} rem={%d|%d} lift={%d|%d} dx|dy={%d|%d}\n"
+            "    B: x0={%d.%d} y0={%d.%d} x1={%d.%d} y1={%d.%d} err={%d|%d} dlt={%d|%d} rem={%d|%d} lift={%d|%d} dx|dy={%d|%d}",
+            i,
+            x0, y0, x1, y1,
+            a._ex0, a._fx0, a._ey0, a._fy0, a._ex1, a._fx1, a._ey1, a._fy1, a._xErr, a._yErr, a._xDlt, a._yDlt, a._xRem, a._yRem, a._xLift, a._yLift, a._dx, a._dy,
+            b._ex0, b._fx0, b._ey0, b._fy0, b._ex1, b._fx1, b._ey1, b._fy1, b._xErr, b._yErr, b._xDlt, b._yDlt, b._xRem, b._yRem, b._xLift, b._yLift, b._dx, b._dy);
 
       EXPECT(aPrepared == true);
       EXPECT(bPrepared == true);

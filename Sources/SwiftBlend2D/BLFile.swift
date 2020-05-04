@@ -43,7 +43,7 @@ public final class BLFile: BLBaseClass<BLFileCore> {
     }
     
     @discardableResult
-    public func seek(offset: Int64, type: BLFileSeek) throws -> Int64 {
+    public func seek(offset: Int64, type: BLFileSeekType) throws -> Int64 {
         var positionOut: Int64 = 0
         try mapError {
             blFileSeek(&self.object, offset, type.rawValue, &positionOut)
