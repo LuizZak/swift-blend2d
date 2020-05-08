@@ -58,12 +58,7 @@ public struct BLRegion {
         box = BLBaseClass { pointer in
             blRegionInit(pointer)
             
-            return boxes.withUnsafeBufferPointer { boxes in
-                if let baseAddress = boxes.baseAddress {
-                    return blRegionAssignBoxIArray(pointer, baseAddress, boxes.count)
-                }
-                return BLResult(BL_SUCCESS.rawValue)
-            }
+            return blRegionAssignBoxIArray(pointer, boxes, boxes.count)
         }
     }
     
@@ -81,12 +76,7 @@ public struct BLRegion {
         box = BLBaseClass { pointer in
             blRegionInit(pointer)
             
-            return rectangles.withUnsafeBufferPointer { rectangles in
-                if let baseAddress = rectangles.baseAddress {
-                    return blRegionAssignRectIArray(pointer, baseAddress, rectangles.count)
-                }
-                return BLResult(BL_SUCCESS.rawValue)
-            }
+            return blRegionAssignRectIArray(pointer, rectangles, rectangles.count)
         }
     }
     
