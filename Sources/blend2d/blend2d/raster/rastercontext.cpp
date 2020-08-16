@@ -179,7 +179,7 @@ static BL_INLINE void blRasterContextInitStyleToDefault(BLRasterContextImpl* ctx
   style.styleFormat = ctxI->solidFormatTable[BL_RASTER_CONTEXT_SOLID_FORMAT_FRGB];
   style.alphaI = alphaI;
   style.source.solid = ctxI->solidFetchDataTable[BL_COMP_OP_SOLID_ID_OPAQUE_BLACK];
-  style.rgba64.value = 0xFFFF000000000000u;
+  style.assignRgba64(0xFFFF000000000000u);
   style.adjustedMatrix.reset();
 }
 
@@ -228,10 +228,9 @@ static BLResult BL_CDECL blRasterContextImplGetStyle(const BLContextImpl* baseIm
   // expect GetStyle() be called more than SetStyle().
   switch (style->styleType) {
     case BL_STYLE_TYPE_SOLID: {
-      uint32_t tag = style->tagging.tag;
-      if (tag == blBitCast<uint32_t>(blNaN<float>()) + 0)
+      if (style->isRgba32())
         blDownCast(styleOut)->rgba.reset(style->rgba32);
-      else if (tag == blBitCast<uint32_t>(blNaN<float>()) + 1)
+      else if (style->isRgba64())
         blDownCast(styleOut)->rgba.reset(style->rgba64);
       else
         blDownCast(styleOut)->rgba.reset(style->rgba);
@@ -285,8 +284,8 @@ static BLResult BL_CDECL blRasterContextImplSetStyleRgba(BLContextImpl* baseImpl
   BLRasterContextImpl* ctxI = static_cast<BLRasterContextImpl*>(baseImpl);
   BLRasterContextStyleData* style = &ctxI->internalState.style[kOpType];
 
-  BLRgba solid = *rgba;
-  if (!blStyleIsValidRgba(solid))
+  BLRgba norm = *rgba;
+  if (!blStyleIsValidRgba(norm))
     return blRasterContextImplSetStyleNone<kOpType>(ctxI);
 
   uint32_t contextFlags = ctxI->contextFlags;
@@ -296,15 +295,15 @@ static BLResult BL_CDECL blRasterContextImplSetStyleRgba(BLContextImpl* baseImpl
     blRasterContextBeforeStyleChange(ctxI, kOpType, style);
 
   contextFlags &= ~(styleFlags | (BL_RASTER_CONTEXT_NO_BASE_STYLE << kOpType));
-  solid = blClamp(solid, BLRgba(0.0f, 0.0f, 0.0f, 0.0f),
-                         BLRgba(1.0f, 1.0f, 1.0f, 1.0f));
-  style->rgba = solid;
+  norm = blClamp(norm, BLRgba(0.0f, 0.0f, 0.0f, 0.0f),
+                       BLRgba(1.0f, 1.0f, 1.0f, 1.0f));
+  style->assignRgba(norm);
 
   // Premultiply and convert to RGBA32.
-  float aScale = solid.a * 255.0f;
-  uint32_t r = uint32_t(blRoundToInt(solid.r * aScale));
-  uint32_t g = uint32_t(blRoundToInt(solid.g * aScale));
-  uint32_t b = uint32_t(blRoundToInt(solid.b * aScale));
+  float aScale = norm.a * 255.0f;
+  uint32_t r = uint32_t(blRoundToInt(norm.r * aScale));
+  uint32_t g = uint32_t(blRoundToInt(norm.g * aScale));
+  uint32_t b = uint32_t(blRoundToInt(norm.b * aScale));
   uint32_t a = uint32_t(blRoundToInt(aScale));
   uint32_t rgba32 = BLRgba32(r, g, b, a).value;
 
@@ -335,8 +334,7 @@ static BLResult BL_CDECL blRasterContextImplSetStyleRgba32(BLContextImpl* baseIm
   if (contextFlags & styleFlags)
     blRasterContextBeforeStyleChange(ctxI, kOpType, style);
 
-  style->rgba32.value = rgba32;
-  style->tagging.tag = blBitCast<uint32_t>(blNaN<float>()) + 0;
+  style->assignRgba32(rgba32);
 
   uint32_t solidFormatIndex = BL_RASTER_CONTEXT_SOLID_FORMAT_FRGB;
   if (!blRgba32IsFullyOpaque(rgba32)) {
@@ -367,8 +365,7 @@ static BLResult BL_CDECL blRasterContextImplSetStyleRgba64(BLContextImpl* baseIm
   if (contextFlags & styleFlags)
     blRasterContextBeforeStyleChange(ctxI, kOpType, style);
 
-  style->rgba64.value = rgba64;
-  style->tagging.tag = blBitCast<uint32_t>(blNaN<float>()) + 1;
+  style->assignRgba64(rgba64);
 
   uint32_t solidFormatIndex = BL_RASTER_CONTEXT_SOLID_FORMAT_FRGB;
   uint32_t rgba32 = blRgba32FromRgba64(rgba64);
@@ -1730,7 +1727,9 @@ static BL_INLINE BLRasterSharedFillState* blRasterContextImplEnsureFillState(BLR
   BLRasterSharedFillState* sharedFillState = ctxI->sharedFillState;
 
   if (!(ctxI->contextFlags & BL_RASTER_CONTEXT_SHARED_FILL_STATE)) {
-    sharedFillState = ctxI->workerMgr()._allocator.allocNoAlignT<BLRasterSharedFillState>();
+    sharedFillState = ctxI->workerMgr()._allocator.allocNoAlignT<BLRasterSharedFillState>(
+      blAlignUp(sizeof(BLRasterSharedFillState), BLRasterWorkerManager::kAllocatorAlignment));
+
     if (BL_UNLIKELY(!sharedFillState))
       return nullptr;
 
@@ -1751,8 +1750,8 @@ static const uint32_t blRasterSharedStrokeStateFlags[BL_STROKE_TRANSFORM_ORDER_C
 };
 
 static const uint32_t blRasterSharedStrokeStateSize[BL_STROKE_TRANSFORM_ORDER_COUNT] = {
-  uint32_t(sizeof(BLRasterSharedBaseStrokeState)),
-  uint32_t(sizeof(BLRasterSharedExtendedStrokeState))
+  uint32_t(blAlignUp(sizeof(BLRasterSharedBaseStrokeState), BLRasterWorkerManager::kAllocatorAlignment)),
+  uint32_t(blAlignUp(sizeof(BLRasterSharedExtendedStrokeState), BLRasterWorkerManager::kAllocatorAlignment))
 };
 
 static BL_INLINE BLRasterSharedBaseStrokeState* blRasterContextImplEnsureStrokeState(BLRasterContextImpl* ctxI) noexcept {
@@ -1976,15 +1975,14 @@ static BL_INLINE BLResult blRasterContextImplEnqueueFillOrStrokeGlyphRun(
   const BLPoint* pt, const BLFontCore* font, const BLGlyphRun* glyphRun) noexcept {
 
   size_t size = glyphRun->size;
-  size_t glyphDataSize = size * sizeof(uint32_t);
-  size_t placementDataSize = size * sizeof(BLGlyphPlacementRawData);
+  size_t glyphDataSize = blAlignUp(size * sizeof(uint32_t), BLRasterWorkerManager::kAllocatorAlignment);
+  size_t placementDataSize = blAlignUp(size * sizeof(BLGlyphPlacementRawData), BLRasterWorkerManager::kAllocatorAlignment);
 
-  uint32_t* glyphData = ctxI->workerMgr()._allocator.template allocT<uint32_t>(glyphDataSize, 8);
-  BLGlyphPlacementRawData* placementData = ctxI->workerMgr()._allocator.template allocT<BLGlyphPlacementRawData>(placementDataSize, 8);
+  uint32_t* glyphData = ctxI->workerMgr()._allocator.template allocNoAlignT<uint32_t>(glyphDataSize);
+  BLGlyphPlacementRawData* placementData = ctxI->workerMgr()._allocator.template allocNoAlignT<BLGlyphPlacementRawData>(placementDataSize);
 
-  if (BL_UNLIKELY(!glyphData || !placementData)) {
+  if (BL_UNLIKELY(!glyphData || !placementData))
     return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-  }
 
   BLGlyphRunIterator it(*glyphRun);
   uint32_t* dstGlyphData = glyphData;
@@ -1999,7 +1997,7 @@ static BL_INLINE BLResult blRasterContextImplEnqueueFillOrStrokeGlyphRun(
   serializer.initFillAnalyticAsync(BL_FILL_RULE_NON_ZERO, nullptr);
   return blRasterContextImplEnqueueCommandWithJob<Category, OpType, BLRasterJobData_TextOp>(
     ctxI, serializer,
-    sizeof(BLRasterJobData_TextOp),
+    blAlignUp(sizeof(BLRasterJobData_TextOp), BLRasterWorkerManager::kAllocatorAlignment),
     [&](BLRasterJobData_TextOp* job) {
       job->initCoordinates(*pt);
       job->initFont(*font);
@@ -2041,7 +2039,7 @@ static BL_INLINE BLResult blRasterContextImplEnqueueFillOrStrokeText(
     serializer.initFillAnalyticAsync(BL_FILL_RULE_NON_ZERO, nullptr);
     result = blRasterContextImplEnqueueCommandWithJob<Category, OpType, BLRasterJobData_TextOp>(
       ctxI, serializer,
-      sizeof(BLRasterJobData_TextOp),
+      blAlignUp(sizeof(BLRasterJobData_TextOp), BLRasterWorkerManager::kAllocatorAlignment),
       [&](BLRasterJobData_TextOp* job) {
         job->initCoordinates(*pt);
         job->initFont(*font);
@@ -2213,15 +2211,17 @@ static BL_INLINE BLResult blRasterContextImplFillUnsafeBox(
   const BLBox& box, const BLMatrix2D& m, uint32_t mType) noexcept {
 
   if (mType <= BL_MATRIX2D_TYPE_SWAP) {
-    BLBox finalBox = blMatrix2DMapBox(m, box);
-
-    if (!blIntersectBoxes(finalBox, finalBox, ctxI->finalClipBoxFixedD()))
-      return BL_SUCCESS;
+    BLBox finalBox;
+    blIntersectBoxes(finalBox, blMatrix2DMapBox(m, box), ctxI->finalClipBoxFixedD());
 
     BLBoxI finalBoxFixed(blTruncToInt(finalBox.x0),
                          blTruncToInt(finalBox.y0),
                          blTruncToInt(finalBox.x1),
                          blTruncToInt(finalBox.y1));
+
+    if (finalBoxFixed.x0 >= finalBoxFixed.x1 || finalBoxFixed.y0 >= finalBoxFixed.y1)
+      return BL_SUCCESS;
+
     return blRasterContextImplFillClippedBoxU<Category>(ctxI, serializer, finalBoxFixed);
   }
   else {
