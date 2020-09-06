@@ -1438,7 +1438,13 @@ public extension BLContextCreateFlags {
     /// rendering context is destroyed the JIT runtime is destroyed with it with
     /// all compiled pipelines. This flag is only useful for testing, debugging,
     /// and isolated benchmarking.
-    static let isolatedJit = BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT
+    static let isolatedJitRuntime = BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT_RUNTIME
+    
+    /// Enables logging to stderr of isolated runtime.
+    ///
+    /// - note: Must be used with `isolatedJitRuntime` otherwise it would have
+    /// no effect.
+    static let isolatedJitLogging = BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT_LOGGING
 
     /// Override CPU features when creating isolated context.
     static let overrideCpuFeatures = BL_CONTEXT_CREATE_FLAG_OVERRIDE_CPU_FEATURES
