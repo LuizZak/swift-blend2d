@@ -809,6 +809,20 @@ static ASMJIT_INLINE void rwZeroExtendNonVec(OpRWInfo& opRwInfo, const Reg& reg)
   }
 }
 
+static ASMJIT_INLINE Error rwHandleAVX512(const BaseInst& inst, InstRWInfo* out) noexcept {
+  if (inst.hasExtraReg() && inst.extraReg().type() == Reg::kTypeKReg && out->opCount() > 0) {
+    // AVX-512 instruction that uses a destination with {k} register (zeroing vs masking).
+    out->_extraReg.addOpFlags(OpRWInfo::kRead);
+    out->_extraReg.setReadByteMask(0xFF);
+    if (!inst.hasOption(Inst::kOptionZMask)) {
+      out->_operands[0].addOpFlags(OpRWInfo::kRead);
+      out->_operands[0]._readByteMask |= out->_operands[0]._writeByteMask;
+    }
+  }
+
+  return kErrorOk;
+}
+
 Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Operand_* operands, size_t opCount, InstRWInfo* out) noexcept {
   using namespace Status;
 
@@ -940,15 +954,15 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
       } while (it.hasNext());
     }
 
-    return kErrorOk;
+    return rwHandleAVX512(inst, out);
   }
 
   switch (instRwInfo.category) {
     case InstDB::RWInfo::kCategoryMov: {
-      // Special case for 'movhpd' instruction. Here there are some variants that
-      // we have to handle as mov can be used to move between GP, segment, control
-      // and debug registers. Moving between GP registers also allow to use memory
-      // operand.
+      // Special case for 'mov' instruction. Here there are some variants that
+      // we have to handle as 'mov' can be used to move between GP, segment,
+      // control and debug registers. Moving between GP registers also allow to
+      // use memory operand.
 
       if (opCount == 2) {
         if (operands[0].isReg() && operands[1].isReg()) {
@@ -1053,6 +1067,35 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
       break;
     }
 
+    case InstDB::RWInfo::kCategoryMovabs: {
+      if (opCount == 2) {
+        if (Reg::isGp(operands[0]) && operands[1].isMem()) {
+          const Reg& o0 = operands[0].as<Reg>();
+          out->_operands[0].reset(W | RegPhys, o0.size(), Gp::kIdAx);
+          out->_operands[1].reset(R | MibRead, o0.size());
+          rwZeroExtendGp(out->_operands[0], operands[0].as<Gp>(), nativeGpSize);
+          return kErrorOk;
+        }
+
+        if (operands[0].isMem() && Reg::isGp(operands[1])) {
+          const Reg& o1 = operands[1].as<Reg>();
+          out->_operands[0].reset(W | MibRead, o1.size());
+          out->_operands[1].reset(R | RegPhys, o1.size(), Gp::kIdAx);
+          return kErrorOk;
+        }
+
+        if (Reg::isGp(operands[0]) && operands[1].isImm()) {
+          const Reg& o0 = operands[0].as<Reg>();
+          out->_operands[0].reset(W, o0.size());
+          out->_operands[1].reset();
+
+          rwZeroExtendGp(out->_operands[0], operands[0].as<Gp>(), nativeGpSize);
+          return kErrorOk;
+        }
+      }
+      break;
+    }
+
     case InstDB::RWInfo::kCategoryImul: {
       // Special case for 'imul' instruction.
       //
@@ -1118,7 +1161,7 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
     case InstDB::RWInfo::kCategoryMovh64: {
       // Special case for 'movhpd|movhps' instructions. Note that this is only
       // required for legacy (non-AVX) variants as AVX instructions use either
-      // 2 or 3 operands that are use `kCategoryGeneric`.
+      // 2 or 3 operands that are in `kCategoryGeneric` category.
       if (opCount == 2) {
         if (BaseReg::isVec(operands[0]) && operands[1].isMem()) {
           out->_operands[0].reset(W, 8);
@@ -1132,6 +1175,46 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
           out->_operands[1].reset(R, 8);
           out->_operands[1].setReadByteMask(Support::lsbMask<uint64_t>(8) << 8);
           return kErrorOk;
+        }
+      }
+      break;
+    }
+
+    case InstDB::RWInfo::kCategoryPunpcklxx: {
+      // Special case for 'punpcklbw|punpckldq|punpcklwd' instructions.
+      if (opCount == 2) {
+        if (Reg::isXmm(operands[0])) {
+          out->_operands[0].reset(X, 16);
+          out->_operands[0].setReadByteMask(0x0F0Fu);
+          out->_operands[0].setWriteByteMask(0xFFFFu);
+          out->_operands[1].reset(R, 16);
+          out->_operands[1].setWriteByteMask(0x0F0Fu);
+
+          if (Reg::isXmm(operands[1])) {
+            return kErrorOk;
+          }
+
+          if (operands[1].isMem()) {
+            out->_operands[1].addOpFlags(MibRead);
+            return kErrorOk;
+          }
+        }
+
+        if (Reg::isMm(operands[0])) {
+          out->_operands[0].reset(X, 8);
+          out->_operands[0].setReadByteMask(0x0Fu);
+          out->_operands[0].setWriteByteMask(0xFFu);
+          out->_operands[1].reset(R, 4);
+          out->_operands[1].setReadByteMask(0x0Fu);
+
+          if (Reg::isMm(operands[1])) {
+            return kErrorOk;
+          }
+
+          if (operands[1].isMem()) {
+            out->_operands[1].addOpFlags(MibRead);
+            return kErrorOk;
+          }
         }
       }
       break;
@@ -1174,7 +1257,7 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
           out->_operands[1]._readByteMask &= 0x00FF00FF00FF00FFu;
 
           rwZeroExtendAvxVec(out->_operands[0], operands[0].as<Vec>());
-          return kErrorOk;
+          return rwHandleAVX512(inst, out);
         }
 
         if (BaseReg::isVec(operands[0]) && operands[1].isMem()) {
@@ -1185,7 +1268,7 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
           out->_operands[1].reset(R | MibRead, o1Size);
 
           rwZeroExtendAvxVec(out->_operands[0], operands[0].as<Vec>());
-          return kErrorOk;
+          return rwHandleAVX512(inst, out);
         }
       }
       break;
@@ -1259,7 +1342,7 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
           if (BaseReg::isVec(operands[0]))
             rwZeroExtendAvxVec(out->_operands[0], operands[0].as<Vec>());
 
-          return kErrorOk;
+          return rwHandleAVX512(inst, out);
         }
 
         if (operands[0].isReg() && operands[1].isMem()) {
@@ -1277,7 +1360,8 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
 
           out->_operands[0].reset(W | MibRead, size0);
           out->_operands[1].reset(R, size1);
-          return kErrorOk;
+
+          return rwHandleAVX512(inst, out);
         }
       }
       break;
@@ -1328,12 +1412,14 @@ Error InstInternal::queryRWInfo(uint32_t arch, const BaseInst& inst, const Opera
             out->_operands[1].addOpFlags(RegM);
             out->_operands[1].setRmSize(size1);
           }
-          return kErrorOk;
+
+          return rwHandleAVX512(inst, out);
         }
 
         if (operands[0].isReg() && operands[1].isMem()) {
           out->_operands[1].addOpFlags(MibRead);
-          return kErrorOk;
+
+          return rwHandleAVX512(inst, out);
         }
       }
       break;
@@ -1383,6 +1469,14 @@ static RegAnalysis InstInternal_regAnalysis(const Operand_* operands, size_t opC
   return RegAnalysis { mask, highVecUsed };
 }
 
+static ASMJIT_INLINE uint32_t InstInternal_usesAvx512(uint32_t instOptions, const RegOnly& extraReg, const RegAnalysis& regAnalysis) noexcept {
+  uint32_t hasEvex = instOptions & (Inst::kOptionEvex | Inst::_kOptionAvx512Mask);
+  uint32_t hasKMask = extraReg.type() == Reg::kTypeKReg;
+  uint32_t hasKOrZmm = regAnalysis.regTypeMask & Support::bitMask(Reg::kTypeZmm, Reg::kTypeKReg);
+
+  return hasEvex | hasKMask | hasKOrZmm;
+}
+
 Error InstInternal::queryFeatures(uint32_t arch, const BaseInst& inst, const Operand_* operands, size_t opCount, BaseFeatures* out) noexcept {
   // Only called when `arch` matches X86 family.
   DebugUtils::unused(arch);
@@ -1425,6 +1519,7 @@ Error InstInternal::queryFeatures(uint32_t arch, const BaseInst& inst, const Ope
           // The instruction doesn't use XMM register(s), thus it's MMX/MMX2 only.
           out->remove(Features::kSSE);
           out->remove(Features::kSSE2);
+          out->remove(Features::kSSE4_1);
         }
         else {
           out->remove(Features::kMMX);
@@ -1438,9 +1533,6 @@ Error InstInternal::queryFeatures(uint32_t arch, const BaseInst& inst, const Ope
         // can extract directly to memory. This instruction is, of course, not
         // compatible with MMX/SSE2 and would #UD if SSE4.1 is not supported.
         if (instId == Inst::kIdPextrw) {
-          ASMJIT_ASSERT(out->has(Features::kSSE2));
-          ASMJIT_ASSERT(out->has(Features::kSSE4_1));
-
           if (opCount >= 1 && operands[0].isMem())
             out->remove(Features::kSSE2);
           else
@@ -1492,10 +1584,7 @@ Error InstInternal::queryFeatures(uint32_t arch, const BaseInst& inst, const Ope
     if (out->has(Features::kAVX) || out->has(Features::kAVX2) || out->has(Features::kFMA) || out->has(Features::kF16C)) {
       // Only AVX512-F|BW|DQ allow to encode AVX/AVX2/FMA/F16C instructions
       if (out->has(Features::kAVX512_F) || out->has(Features::kAVX512_BW) || out->has(Features::kAVX512_DQ)) {
-        uint32_t hasEvex = options & (Inst::kOptionEvex | Inst::_kOptionAvx512Mask);
-        uint32_t hasKMask = inst.extraReg().type() == Reg::kTypeKReg;
-        uint32_t hasKOrZmm = regAnalysis.regTypeMask & Support::bitMask(Reg::kTypeZmm, Reg::kTypeKReg);
-
+        uint32_t usesAvx512 = InstInternal_usesAvx512(options, inst.extraReg(), regAnalysis);
         uint32_t mustUseEvex = 0;
 
         switch (instId) {
@@ -1516,18 +1605,35 @@ Error InstInternal::queryFeatures(uint32_t arch, const BaseInst& inst, const Ope
             mustUseEvex = opCount >= 2 && x86::Reg::isGp(operands[1]);
             break;
 
-          // Special case: VPERMPD only supports YMM predicate in AVX mode, immediate
-          // precicate is only supported by AVX512-F and newer.
+          // Special case: VPERMPD - AVX2 vs AVX512-F case.
           case Inst::kIdVpermpd:
             mustUseEvex = opCount >= 3 && !operands[2].isImm();
             break;
+
+          // Special case: VPERMQ - AVX2 vs AVX512-F case.
+          case Inst::kIdVpermq:
+            mustUseEvex = opCount >= 3 && (operands[1].isMem() || !operands[2].isImm());
+            break;
         }
 
-        if (!(hasEvex | mustUseEvex | hasKMask | hasKOrZmm | regAnalysis.highVecUsed))
+        if (!(usesAvx512 | mustUseEvex | regAnalysis.highVecUsed))
           out->remove(Features::kAVX512_F, Features::kAVX512_BW, Features::kAVX512_DQ, Features::kAVX512_VL);
         else
           out->remove(Features::kAVX, Features::kAVX2, Features::kFMA, Features::kF16C);
       }
+    }
+
+    // Handle AVX_VNNI vs AVX512_VNNI overlap.
+    if (out->has(Features::kAVX512_VNNI)) {
+      // By default the AVX512_VNNI instruction should be used, because it was
+      // introduced first. However, VEX|VEX3 prefix can be used to force AVX_VNNI
+      // instead.
+      uint32_t usesAvx512 = InstInternal_usesAvx512(options, inst.extraReg(), regAnalysis);
+
+      if (!usesAvx512 && (options & (Inst::kOptionVex | Inst::kOptionVex3)) != 0)
+        out->remove(Features::kAVX512_VNNI, Features::kAVX512_VL);
+      else
+        out->remove(Features::kAVX_VNNI);
     }
 
     // Clear AVX512_VL if ZMM register is used.

@@ -218,9 +218,8 @@ static constexpr T lsbMask(const CountT& n) noexcept {
   return (sizeof(U) < sizeof(uintptr_t))
     // Prevent undefined behavior by using a larger type than T.
     ? T(U((uintptr_t(1) << n) - uintptr_t(1)))
-    // Prevent undefined behavior by performing `n & (nBits - 1)` so it's always within the range.
-    : shr(sar(neg(T(n)), bitSizeOf<T>() - 1u),
-          neg(T(n)) & CountT(bitSizeOf<T>() - 1u));
+    // Prevent undefined behavior by checking `n` before shift.
+    : n ? T(shr(allOnes<T>(), bitSizeOf<T>() - size_t(n))) : T(0);
 }
 
 //! Tests whether the given value `x` has `n`th bit set.
@@ -1164,6 +1163,30 @@ public:
   }
 
   T _bitWord;
+};
+
+// ============================================================================
+// [asmjit::Support - BitWordFlipIterator]
+// ============================================================================
+
+template<typename T>
+class BitWordFlipIterator {
+public:
+  inline explicit BitWordFlipIterator(T bitWord) noexcept
+    : _bitWord(bitWord) {}
+
+  inline void init(T bitWord) noexcept { _bitWord = bitWord; }
+  inline bool hasNext() const noexcept { return _bitWord != 0; }
+
+  inline uint32_t nextAndFlip() noexcept {
+    ASMJIT_ASSERT(_bitWord != 0);
+    uint32_t index = ctz(_bitWord);
+    _bitWord ^= T(1u) << index;
+    return index;
+  }
+
+  T _bitWord;
+  T _xorMask;
 };
 
 // ============================================================================
