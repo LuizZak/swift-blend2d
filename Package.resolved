@@ -2,7 +2,7 @@
   "object": {
     "pins": [
       {
-        "package": "LibPNG",
+        "package": "swift-libpng",
         "repositoryURL": "https://github.com/LuizZak/swift-libpng.git",
         "state": {
           "branch": "master",
