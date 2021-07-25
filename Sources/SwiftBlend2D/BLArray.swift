@@ -116,7 +116,7 @@ public final class BLArray<Element: BLArrayElement> {
         blArrayRemoveIndex(&object, index)
     }
     
-    /// Returnsn whether the content of this array and `other` matches.
+    /// Returns whether the content of this array and `other` matches.
     public func equals(to other: BLArray) -> Bool {
         return blArrayEquals(&object, &other.object)
     }
