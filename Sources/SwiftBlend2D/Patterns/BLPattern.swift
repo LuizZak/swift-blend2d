@@ -16,6 +16,9 @@ public struct BLPattern {
     }
     
     // MARK: Transformations
+    
+    /// Whether this pattern has a transformation matrix different than
+    /// `BLMatrix2D.identity`.
     public var hasMatrix: Bool {
         return matrixType != .identity
     }

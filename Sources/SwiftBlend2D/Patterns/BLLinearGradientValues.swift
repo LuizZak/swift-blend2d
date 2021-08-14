@@ -1,8 +1,8 @@
 import blend2d
 
 public extension BLLinearGradientValues {
-    /// Creates a horizontal gradient from left to right that fills the given
-    /// box's width.
+    /// Creates a diagonal gradient from top-left to bottom-right that fills the
+    /// given box's width.
     @inlinable
     init(box: BLBox) {
         self.init(x0: box.x0, y0: box.y0, x1: box.x1, y1: box.y1)
