@@ -69,11 +69,22 @@ class BLLineTests: XCTestCase {
         XCTAssertEqual(line.end, BLPoint(x: 4, y: 5))
     }
     
-    func testMid() {
+    func testCenter() {
         XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 0).center, BLPoint(x: 0, y: 0))
         XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 100).center, BLPoint(x: 50, y: 50))
         XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 0).center, BLPoint(x: 50, y: 0))
         XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 100).center, BLPoint(x: 0, y: 50))
+    }
+    
+    func testCenter_set() {
+        var line = BLLine(x0: 0, y0: 0, x1: 20, y1: 20)
+        
+        line.center = BLPoint(x: 20, y: 20)
+        
+        XCTAssertEqual(line.x0, 10)
+        XCTAssertEqual(line.y0, 10)
+        XCTAssertEqual(line.x1, 30)
+        XCTAssertEqual(line.y1, 30)
     }
     
     func testLength() {

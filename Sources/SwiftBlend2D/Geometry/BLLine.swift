@@ -27,6 +27,12 @@ public extension BLLine {
         get {
             return BLPoint(x: (x0 + x1) / 2, y: (y0 + y1) / 2)
         }
+        set {
+            let old = center
+            
+            start = start - old + newValue
+            end = end - old + newValue
+        }
     }
     
     /// Returns the length of this line.
