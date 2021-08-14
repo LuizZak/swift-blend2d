@@ -58,6 +58,13 @@ public extension BLPoint {
         
         return BLPoint(x: (c * x) - (s * y), y: (s * x) + (c * y))
     }
+    
+    /// Returns a new point which represents this point's coordinates rotated
+    /// around a given center point by a given radian amount
+    @inlinable
+    func rotated(around center: BLPoint, by angleInRadians: Double) -> BLPoint {
+        return (self - center).rotated(by: angleInRadians) + center
+    }
 }
 
 // MARK: - Operators - BLPoint

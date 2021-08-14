@@ -68,6 +68,20 @@ class BLLineTests: XCTestCase {
 
         XCTAssertEqual(line.end, BLPoint(x: 4, y: 5))
     }
+    
+    func testMid() {
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 0).center, BLPoint(x: 0, y: 0))
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 100).center, BLPoint(x: 50, y: 50))
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 0).center, BLPoint(x: 50, y: 0))
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 100).center, BLPoint(x: 0, y: 50))
+    }
+    
+    func testLength() {
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 0).length, 0, accuracy: 1e-15)
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 0).length, 100, accuracy: 1e-15)
+        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 100).length, 100, accuracy: 1e-15)
+        XCTAssertEqual(BLLine(x0: 10, y0: 20, x1: 30, y1: 40).length, 28.284271247461902, accuracy: 1e-15)
+    }
 
     func testRotateLeft() {
         var line = BLLine(x0: 2, y0: 2, x1: 8, y1: 8)
@@ -93,6 +107,7 @@ class BLLineTests: XCTestCase {
 
     func testLeftRotated() {
         var line = BLLine(x0: 2, y0: 2, x1: 8, y1: 8)
+        
         line = line.leftRotated()
 
         XCTAssertEqual(line.x0, 2)
@@ -103,12 +118,24 @@ class BLLineTests: XCTestCase {
 
     func testRightRotated() {
         var line = BLLine(x0: 2, y0: 2, x1: 8, y1: 8)
+        
         line = line.rightRotated()
 
         XCTAssertEqual(line.x0, 8)
         XCTAssertEqual(line.y0, 2)
         XCTAssertEqual(line.x1, 2)
         XCTAssertEqual(line.y1, 8)
+    }
+    
+    func testRotatedBy() {
+        var line = BLLine(x0: 10, y0: 10, x1: 30, y1: 30)
+        
+        line = line.rotated(by: .pi)
+        
+        XCTAssertEqual(line.x0, 30, accuracy: 1e-15)
+        XCTAssertEqual(line.y0, 30, accuracy: 1e-15)
+        XCTAssertEqual(line.x1, 10, accuracy: 1e-14)
+        XCTAssertEqual(line.y1, 10, accuracy: 1e-14)
     }
     
     func testDescription() {

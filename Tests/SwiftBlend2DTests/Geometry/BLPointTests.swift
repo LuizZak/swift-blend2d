@@ -194,6 +194,14 @@ class BLPointTests: XCTestCase {
         XCTAssertEqual(result.y, 0, accuracy: 1e-15)
     }
     
+    func testRotatedAroundBy() {
+        let point = BLPoint(x: 0, y: 1)
+        let result = point.rotated(around: BLPoint(x: 1, y: 1), by: .pi / 2)
+        
+        XCTAssertEqual(result.x, 1, accuracy: 1e-15)
+        XCTAssertEqual(result.y, 0, accuracy: 1e-15)
+    }
+    
     func testDistanceTo() {
         let p1 = BLPoint(x: 1, y: 2)
         let p2 = BLPoint(x: 3, y: 4)

@@ -20,6 +20,23 @@ public extension BLLine {
             (x1, y1) = (newValue.x, newValue.y)
         }
     }
+    
+    /// The center point of this line
+    @inlinable
+    var center: BLPoint {
+        get {
+            return BLPoint(x: (x0 + x1) / 2, y: (y0 + y1) / 2)
+        }
+    }
+    
+    /// Returns the length of this line.
+    @inlinable
+    var length: Double {
+        let dx = x0 - x1
+        let dy = y0 - y1
+        
+        return sqrt(dx * dx + dy * dy)
+    }
 
     @inlinable
     init(start: BLPoint, end: BLPoint) {
@@ -80,6 +97,14 @@ public extension BLLine {
         var new = self
         new.rotateRight()
         return new
+    }
+    
+    /// Returns this line, rotated by a certain radian angle around its center
+    func rotated(by angle: Double) -> BLLine {
+        let center = self.center
+        
+        return BLLine(start: start.rotated(around: center, by: angle),
+                      end: end.rotated(around: center, by: angle))
     }
 }
 

@@ -124,16 +124,16 @@ public extension BLTriangle {
     /// centroid by a given radian amount
     @inlinable
     func rotated(by angleInRadians: Double) -> BLTriangle {
-        return rotated(by: angleInRadians, around: centroid)
+        return rotated(around: centroid, by: angleInRadians)
     }
     
     /// Returns a new copy of this triangle with the vertices rotated along the
     /// given point by a given radian amount
     @inlinable
-    func rotated(by angleInRadians: Double, around center: BLPoint) -> BLTriangle {
-        let newP0 = center + (p0 - center).rotated(by: angleInRadians)
-        let newP1 = center + (p1 - center).rotated(by: angleInRadians)
-        let newP2 = center + (p2 - center).rotated(by: angleInRadians)
+    func rotated(around center: BLPoint, by angleInRadians: Double) -> BLTriangle {
+        let newP0 = p0.rotated(around: center, by: angleInRadians)
+        let newP1 = p1.rotated(around: center, by: angleInRadians)
+        let newP2 = p2.rotated(around: center, by: angleInRadians)
         
         return BLTriangle(p0: newP0, p1: newP1, p2: newP2)
     }
