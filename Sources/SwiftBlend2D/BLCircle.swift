@@ -1,6 +1,9 @@
 import blend2d
 
 public extension BLCircle {
+    /// A circle with diameter 1 with center at (0, 0)
+    static let unitCircle = BLCircle(cx: 0, cy: 0, r: 0.5)
+    
     @inlinable
     var center: BLPoint {
         get {
@@ -15,6 +18,17 @@ public extension BLCircle {
     var boundingBox: BLBox {
         get {
             return BLBox(x0: cx - r, y0: cy - r, x1: cx + r, y1: cy + r)
+        }
+    }
+    
+    /// The diameter of this circle (r * 2)
+    @inlinable
+    var diameter: Double {
+        get {
+            return r * 2
+        }
+        set {
+            r = newValue / 2
         }
     }
     

@@ -3,6 +3,26 @@ import blend2d
 @testable import SwiftBlend2D
 
 class BLCircleTests: XCTestCase {
+    func testUnitCircle() {
+        XCTAssertEqual(BLCircle.unitCircle.cx, 0)
+        XCTAssertEqual(BLCircle.unitCircle.cy, 0)
+        XCTAssertEqual(BLCircle.unitCircle.r, 0.5)
+    }
+    
+    func testDiameter() {
+        let sut = BLCircle(cx: 0, cy: 0, r: 1)
+        
+        XCTAssertEqual(sut.diameter, 2)
+    }
+    
+    func testDiameter_set() {
+        var sut = BLCircle(cx: 0, cy: 0, r: 1)
+        
+        sut.diameter = 3
+        
+        XCTAssertEqual(sut.r, 1.5)
+    }
+    
     func testEquals() {
         XCTAssertEqual(BLCircle(cx: 1, cy: 2, r: 3),
                        BLCircle(cx: 1, cy: 2, r: 3))

@@ -9,7 +9,7 @@ public extension BLTriangle {
     /// The centroid of the triangle is at (0, 0).
     ///
     /// The first point is the top-most center point of the triangle.
-    static var unitEquilateral = BLTriangle(x0: 0,
+    static let unitEquilateral = BLTriangle(x0: 0,
                                             y0: -equilateralHeight / 2 - equilateralOffset,
                                             x1: 0.5,
                                             y1: equilateralHeight / 2 - equilateralOffset,
