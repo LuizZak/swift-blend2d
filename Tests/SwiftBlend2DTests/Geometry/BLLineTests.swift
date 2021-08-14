@@ -138,6 +138,17 @@ class BLLineTests: XCTestCase {
         XCTAssertEqual(line.y1, 10, accuracy: 1e-14)
     }
     
+    func testRotatedAroundBy() {
+        var line = BLLine(x0: 0, y0: 0, x1: 30, y1: 0)
+        
+        line = line.rotated(around: BLPoint(x: 15, y: 15), by: .pi / 2)
+        
+        XCTAssertEqual(line.x0, 30, accuracy: 1e-14)
+        XCTAssertEqual(line.y0, 0, accuracy: 1e-14)
+        XCTAssertEqual(line.x1, 30, accuracy: 1e-14)
+        XCTAssertEqual(line.y1, 30, accuracy: 1e-14)
+    }
+    
     func testDescription() {
         let line = BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
         

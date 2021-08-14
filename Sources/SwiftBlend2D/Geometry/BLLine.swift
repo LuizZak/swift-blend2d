@@ -99,10 +99,14 @@ public extension BLLine {
         return new
     }
     
-    /// Returns this line, rotated by a certain radian angle around its center
+    /// Returns this line, rotated by a certain radian angle around its center.
     func rotated(by angle: Double) -> BLLine {
-        let center = self.center
-        
+        return rotated(around: center, by: angle)
+    }
+    
+    /// Returns this line, rotated around a given center point by a certain radian
+    /// angle.
+    func rotated(around center: BLPoint, by angle: Double) -> BLLine {
         return BLLine(start: start.rotated(around: center, by: angle),
                       end: end.rotated(around: center, by: angle))
     }
