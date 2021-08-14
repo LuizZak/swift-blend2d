@@ -134,9 +134,9 @@ extension BLString: Collection {
     
     /// Returns the character at a given index on this string.
     ///
-    /// - precondition: index < size
+    /// - precondition: index >= 0 && index < size
     public subscript(index: Int) -> Int8 {
-        precondition(index < size)
+        precondition(index >= 0 && index < size)
         return box.object.impl.pointee.data[index]
     }
 }
