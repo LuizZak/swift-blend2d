@@ -18,6 +18,11 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         return Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     
+    /// Returns whether the image is a built-in null instance.
+    public var isNone: Bool {
+        return (UInt32(object.impl.pointee.implTraits) & BLImplTraits.null.rawValue) != 0
+    }
+    
     public var width: Int {
         return Int(object.impl.pointee.size.w)
     }

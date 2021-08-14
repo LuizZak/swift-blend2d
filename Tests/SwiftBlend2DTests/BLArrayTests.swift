@@ -9,6 +9,19 @@ class BLArrayTests: XCTestCase {
         XCTAssertEqual(sut.count, 0)
     }
     
+    func testIsEmpty() {
+        let sut = BLArray<Int>()
+        
+        XCTAssertTrue(sut.isEmpty)
+    }
+    
+    func testIsEmpty_nonEmptyArray_returnsFalse() {
+        let sut = BLArray<Int>()
+        sut.append(0)
+        
+        XCTAssertFalse(sut.isEmpty)
+    }
+    
     func testAppendU8() {
         let sut = BLArray<UInt8>()
         

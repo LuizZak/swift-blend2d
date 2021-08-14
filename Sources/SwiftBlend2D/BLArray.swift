@@ -14,6 +14,11 @@ public final class BLArray<Element: BLArrayElement> {
         return blArrayGetCapacity(&object)
     }
     
+    /// Returns whether the array is empty.
+    public var isEmpty: Bool {
+        return count == 0
+    }
+    
     public subscript(index: Int) -> Element {
         precondition(index >= 0 && index < count)
         
