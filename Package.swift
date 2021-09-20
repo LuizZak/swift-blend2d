@@ -35,7 +35,7 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
-                .linkedLibrary("pthread")
+                .linkedLibrary("pthread", .when(platforms: [.linux]))
             ]),
         .target(
             name: "blend2d",
