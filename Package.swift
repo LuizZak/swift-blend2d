@@ -53,5 +53,5 @@ let package = Package(
             name: "SwiftBlend2DTests",
             dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit", "LibPNG"]),
     ],
-    cxxLanguageStandard: .cxx11
+    cxxLanguageStandard: .cxx14
 )
