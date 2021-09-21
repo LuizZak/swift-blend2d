@@ -9,6 +9,8 @@ trigger:
 pr:
   - master
 
+
+
 jobs:
 - job: macOS
   pool:
@@ -35,3 +37,39 @@ jobs:
   - script: 'sudo apt-get install zlib1g-dev'
   - bash: 'swift --version'
   - bash: 'swift test'
+
+- job: Windows
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - script: '
+    REM Derived from: https://gist.github.com/devhawk/2d8cb579f179ed659e3862c860d846d6
+    set vswherepath="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+    for /f "usebackq delims=" %%i in (`%vswherepath% -latest -property installationPath`) do (
+        set vslatest="%%i"
+        if exist "%%i\VC\Auxiliary\Build\vcvars64.bat" (
+            set vcvars64="%%i\VC\Auxiliary\Build\vcvars64.bat"
+        )
+    )
+
+    @echo vslatest %vslatest%
+    @echo vcvars64 %vcvars64%
+
+    call %vcvars64%
+
+    REM Derived from: https://github.com/SDGGiesbrecht/SDGCornerstone/blob/955d54feae736122e2f6af4887c2cfaef468870a/.github/workflows/Windows.yaml
+    
+    copy %SDKROOT%\usr\share\ucrt.modulemap "%UniversalCRTSdkDir%\Include\%UCRTVersion%\ucrt\module.modulemap"
+    copy %SDKROOT%\usr\share\visualc.modulemap "%VCToolsInstallDir%\include\module.modulemap"
+    copy %SDKROOT%\usr\share\visualc.apinotes "%VCToolsInstallDir%\include\visualc.apinotes"
+    copy %SDKROOT%\usr\share\winsdk.modulemap "%UniversalCRTSdkDir%\Include\%UCRTVersion%\um\module.modulemap"
+
+    set Path=C:\Library\icu-67\usr\bin;%Path%
+    set Path=C:\Library\Developer\Toolchains\unknown-Asserts-development.xctoolchain\usr\bin;%Path%
+    set Path=C:\Library\Swift-development\bin;%Path%
+    set Path=C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\bin;%Path%
+    
+    swift test ^
+        -Xswiftc -I -Xswiftc C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\lib\swift\windows\x86_64 ^
+        -Xswiftc -L -Xswiftc C:\Library\Developer\Platforms\Windows.platform\Developer\Library\XCTest-development\usr\lib\swift\windows
+    '
