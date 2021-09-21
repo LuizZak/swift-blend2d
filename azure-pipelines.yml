@@ -14,14 +14,15 @@ jobs:
   - bash: 'brew install pkg-config'
   - bash: 'brew install libpng'
   - bash: 'sudo xcode-select -s /Applications/Xcode_11.4.app/Contents/Developer'
+  - bash: 'swift --version'
   - bash: 'swift test'
 
 - job: Linux
   container:
-    image: swift:5.2-bionic
+    image: swift:5.4.3
     options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-latest
   steps:
   - script: |
       /tmp/docker exec -t -u 0 ci-container \
@@ -29,4 +30,5 @@ jobs:
     displayName: Set up sudo
   - script: 'sudo apt-get update'
   - script: 'sudo apt-get install zlib1g-dev'
+  - bash: 'swift --version'
   - bash: 'swift test'
