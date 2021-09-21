@@ -1,3 +1,7 @@
+// TODO: Rewrite snapshot tests to use built-in Blend2D rendering to add support to Windows.
+
+#if canImport(LibPNG)
+
 import XCTest
 import Foundation
 import blend2d
@@ -510,3 +514,5 @@ extension SwiftBlend2DTests {
         return diffImage
     }
 }
+
+#endif

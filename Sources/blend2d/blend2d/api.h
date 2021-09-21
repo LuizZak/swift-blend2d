@@ -536,7 +536,7 @@
 #ifdef __cplusplus
   #define BL_DEFINE_ENUM(NAME) enum NAME : uint32_t
 #else
-  #define BL_DEFINE_ENUM(NAME) enum NAME
+  #define BL_DEFINE_ENUM(NAME) enum NAME : uint32_t
 #endif
 
 #if defined(_DOXYGEN)
@@ -2170,3 +2170,4 @@ BL_API bool BL_CDECL blVariantEquals(const void* a, const void* b) BL_NOEXCEPT_C
 //! \}
 
 #endif // BLEND2D_API_H_INCLUDED
+

@@ -1,1 +1,1 @@
-#import "../blend2d-impl.h"
+#include "../blend2d-impl.h"
