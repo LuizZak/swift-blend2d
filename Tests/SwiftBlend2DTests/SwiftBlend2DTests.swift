@@ -1,3 +1,5 @@
+#if canImport(LibPNG)
+
 import XCTest
 import Foundation
 import blend2d
@@ -510,3 +512,5 @@ extension SwiftBlend2DTests {
         return diffImage
     }
 }
+
+#endif

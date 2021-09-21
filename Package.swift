@@ -2,6 +2,24 @@
 
 import PackageDescription
 
+var dependencies: [Package.Dependency] = []
+var testTarget = Target.testTarget(
+    name: "SwiftBlend2DTests",
+    dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit"]
+)
+
+#if !os(Windows)
+
+testTarget.dependencies.append(
+    "LibPNG"
+)
+
+dependencies.append(
+    .package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master"))
+)
+
+#endif
+
 let package = Package(
     name: "SwiftBlend2D",
     products: [
@@ -12,9 +30,7 @@ let package = Package(
             name: "SwiftBlend2DSample",
             targets: ["SwiftBlend2DSample"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master"))
-    ],
+    dependencies: dependencies,
     targets: [
         .target(
             name: "SwiftBlend2D",
@@ -49,9 +65,7 @@ let package = Package(
                 .define("BL_STATIC")
             ]
         ),
-        .testTarget(
-            name: "SwiftBlend2DTests",
-            dependencies: ["TigerSample", "SwiftBlend2D", "blend2d", "asmjit", "LibPNG"]),
+        testTarget
     ],
     cxxLanguageStandard: .cxx14
 )
