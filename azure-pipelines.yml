@@ -43,9 +43,10 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   - script: |
+      @REM Following snippet derived from: https://gist.github.com/devhawk/2d8cb579f179ed659e3862c860d846d6
+      
       echo on
 
-      REM Derived from: https://gist.github.com/devhawk/2d8cb579f179ed659e3862c860d846d6
       set vswherepath="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
       for /f "usebackq delims=" %%i in (`%vswherepath% -latest -property installationPath`) do (
           set vslatest="%%i"
@@ -59,12 +60,14 @@ jobs:
       
       call %vcvars64%
       
-      REM Derived from: https://github.com/SDGGiesbrecht/SDGCornerstone/blob/955d54feae736122e2f6af4887c2cfaef468870a/.github/workflows/Windows.yaml
+      @REM Following snippet derived from: https://github.com/SDGGiesbrecht/SDGCornerstone/blob/955d54feae736122e2f6af4887c2cfaef468870a/.github/workflows/Windows.yaml
       
+      echo on
+
       curl --location ^
           https://swift.org/builds/swift-5.4.3-release/windows10/swift-5.4.3-RELEASE/swift-5.4.3-RELEASE-windows10.exe ^
           --output %TEMP%\swift-5.4.3-RELEASE-windows10.exe
-        %TEMP%\swift-5.4.3-RELEASE-windows10.exe /passive
+      %TEMP%\swift-5.4.3-RELEASE-windows10.exe /passive
 
       copy %SDKROOT%\usr\share\ucrt.modulemap "%UniversalCRTSdkDir%\Include\%UCRTVersion%\ucrt\module.modulemap"
       copy %SDKROOT%\usr\share\visualc.modulemap "%VCToolsInstallDir%\include\module.modulemap"
