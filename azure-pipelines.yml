@@ -4,7 +4,10 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
+  - master
+
+pr:
+  - master
 
 jobs:
 - job: macOS
