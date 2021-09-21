@@ -44,7 +44,7 @@ jobs:
   steps:
   - script: |
       @REM Following snippet derived from: https://gist.github.com/devhawk/2d8cb579f179ed659e3862c860d846d6
-      
+
       echo on
 
       set vswherepath="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -69,6 +69,8 @@ jobs:
           --output %TEMP%\swift-5.4.3-RELEASE-windows10.exe
       %TEMP%\swift-5.4.3-RELEASE-windows10.exe /passive
 
+      set SDKROOT=C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk
+      
       copy %SDKROOT%\usr\share\ucrt.modulemap "%UniversalCRTSdkDir%\Include\%UCRTVersion%\ucrt\module.modulemap"
       copy %SDKROOT%\usr\share\visualc.modulemap "%VCToolsInstallDir%\include\module.modulemap"
       copy %SDKROOT%\usr\share\visualc.apinotes "%VCToolsInstallDir%\include\visualc.apinotes"
