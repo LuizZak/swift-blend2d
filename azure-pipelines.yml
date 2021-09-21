@@ -43,6 +43,8 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   - script: |
+      echo on
+      
       REM Derived from: https://gist.github.com/devhawk/2d8cb579f179ed659e3862c860d846d6
       set vswherepath="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
       for /f "usebackq delims=" %%i in (`%vswherepath% -latest -property installationPath`) do (
