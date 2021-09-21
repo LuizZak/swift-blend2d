@@ -38,7 +38,7 @@ func pathToResources() -> String {
 func pathToTestTexture() -> String {
     let resources = resourcesFolderURL()
 
-    return fileIn(folder: resources, fileName: "texture", extension: "jpg").path
+    return fileIn(folder: resources, fileName: "texture", extension: "jpeg").path
 }
 
 func pathToTestFontFace() -> String {
@@ -52,7 +52,7 @@ func pathToTestFontFace() -> String {
 func cdToParentPath(_ path: URL, count: Int) -> URL {
     var newPath = path
     for _ in 0..<count {
-       newPath.deleteLastPathComponent() 
+       newPath.deleteLastPathComponent()
     }
 
     return newPath
