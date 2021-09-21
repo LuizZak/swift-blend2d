@@ -1,3 +1,5 @@
+// TODO: Rewrite snapshot tests to use built-in Blend2D rendering to add support to Windows.
+
 #if canImport(LibPNG)
 
 import XCTest
