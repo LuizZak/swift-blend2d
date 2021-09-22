@@ -57,8 +57,12 @@ blend2DCXXSettings.append(contentsOf: extraBlend2DFlags.map { .define($0) })
 
 #if os(Linux) || os(macOS)
 
-testTarget.dependencies.append("LibPNG")
-dependencies.append(.package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master")))
+dependencies.append(
+    .package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master"))
+)
+testTarget.dependencies.append(
+    .product(name: "LibPNG", package: "swift-libpng")
+)
 
 #endif
 
