@@ -9,10 +9,20 @@ class BLImageTests: XCTestCase {
         assertIsDefaultPointer(image.object)
     }
     
-    func testInitWithSize() {
-        let image = BLImage(width: 32, height: 32, format: .prgb32)
+    func testInitWithWithHeight() {
+        let image = BLImage(width: 32, height: 48, format: .prgb32)
         
         assertIsNonDefaultPointer(image.object)
+        XCTAssertEqual(image.width, 32)
+        XCTAssertEqual(image.height, 48)
+    }
+    
+    func testInitWithSize() {
+        let image = BLImage(size: BLSizeI(w: 32, h: 48), format: .prgb32)
+        
+        assertIsNonDefaultPointer(image.object)
+        XCTAssertEqual(image.width, 32)
+        XCTAssertEqual(image.height, 48)
     }
     
     func testSize() {

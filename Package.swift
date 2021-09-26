@@ -19,7 +19,6 @@ var armPlatforms: [Platform] = [
 
 // Environment-based build flags
 
-let hasEnv: (String) -> Bool = { ProcessInfo.processInfo.environment[$0] == "1" }
 // List of recognized Blend2D build flags to pass down if present in env variables.
 let knownBlend2DFlags: [String] = [
     "BL_BUILD_OPT_SSE3",
@@ -30,6 +29,7 @@ let knownBlend2DFlags: [String] = [
     "BL_BUILT_OPT_AVX2",
 ]
 
+let hasEnv: (String) -> Bool = { ProcessInfo.processInfo.environment[$0] == "1" }
 var extraBlend2DFlags = knownBlend2DFlags.filter { hasEnv($0) }
 
 // Package / Target Setup
