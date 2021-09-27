@@ -34,7 +34,7 @@ class BLImageTests: XCTestCase {
         ]
 
         pixels.withUnsafeMutableBufferPointer { pointer in
-            let size = BLSizeI(w: 4, h: 4)
+            let size = BLSizeI(w: 1, h: 4)
 
             let image = BLImage(fromUnownedData: pointer.baseAddress!, stride: 4, size: size, format: .prgb32)
 
@@ -55,7 +55,7 @@ class BLImageTests: XCTestCase {
             12, 13, 14, 15
         ]
         pixels.withUnsafeMutableBufferPointer { pointer in
-            let size = BLSizeI(w: 4, h: 4)
+            let size = BLSizeI(w: 1, h: 4)
 
             let image = BLImage(fromUnownedData: pointer.baseAddress!, stride: 4, size: size, format: .prgb32)
             pointer[5] = 0
