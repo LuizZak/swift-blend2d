@@ -59,9 +59,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     ///
     /// - Parameters:
     ///   - size: Size of the image. Both width and height must be greater than 
-    /// zero and less than or equal to BLImage.maximumWidth.
-    ///   - height: Height of image. Must be greater than zero and less than or
-    /// equal to BLImage.maximumHeight.
+    /// zero and less than or equal to (BLImage.maximumWidth, BLImage.maximumHeight).
     ///   - format: A valid image format to use for the image.
     public init(size: BLSizeI, format: BLFormat) {
         precondition(size.w > 0 && size.w <= Int32(BLImage.maximumWidth))
@@ -93,6 +91,42 @@ public final class BLImage: BLBaseClass<BLImageCore> {
             }
                 .addFileErrorMappings(filePath: filePath)
                 .execute()
+        }
+    }
+
+    /// Initializes a new image from a section of memory containing the 
+    /// appropriately formated pixel data.
+    ///
+    /// This type of initialization does not handle deallocation of image data
+    /// and should be handled separately by callers.
+    ///
+    /// - Parameters:
+    ///   - pixelData: A pointer to raw pixel data on memory.
+    ///   - stride: The stride, or number of bytes per row of pixels.
+    ///   - width: Width of image. Must be greater than zero and less than or
+    /// equal to BLImage.maximumWidth.
+    ///   - height: Height of image. Must be greater than zero and less than or
+    /// equal to BLImage.maximumHeight.
+    ///   - format: A valid image format to use for the image.
+    public convenience init(fromUnownedData pixelData: UnsafeMutableRawPointer, stride: Int, width: Int, height: Int, format: BLFormat) {
+        self.init(fromUnownedData: pixelData, stride: stride, size: .init(w: Int32(width), h: Int32(height)), format: format)
+    }
+
+    /// Initializes a new image from a section of memory containing the 
+    /// appropriately formated pixel data.
+    ///
+    /// This type of initialization does not handle deallocation of image data
+    /// and should be handled separately by callers.
+    ///
+    /// - Parameters:
+    ///   - pixelData: A pointer to raw pixel data on memory.
+    ///   - stride: The stride, or number of bytes per row of pixels.
+    ///   - size: Size of the image. Both width and height must be greater than 
+    /// zero and less than or equal to (BLImage.maximumWidth, BLImage.maximumHeight).
+    ///   - format: A valid image format to use for the image.
+    public init(fromUnownedData pixelData: UnsafeMutableRawPointer, stride: Int, size: BLSizeI, format: BLFormat) {
+        super.init {
+            blImageInitAsFromData($0, size.w, size.h, format.rawValue, pixelData, stride, nil, nil)
         }
     }
     

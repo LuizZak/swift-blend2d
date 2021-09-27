@@ -24,6 +24,50 @@ class BLImageTests: XCTestCase {
         XCTAssertEqual(image.width, 32)
         XCTAssertEqual(image.height, 48)
     }
+
+    func testInitFromUnownedMemory() throws {
+        var pixels: [UInt8] = [
+            0,  1,   2,  3,
+            4,  5,   6,  7,
+            8,  9,  10, 11,
+            12, 13, 14, 15
+        ]
+
+        pixels.withUnsafeMutableBufferPointer { pointer in
+            let size = BLSizeI(w: 4, h: 4)
+
+            let image = BLImage(fromUnownedData: pointer.baseAddress!, stride: 4, size: size, format: .prgb32)
+
+            let imageData = image.getImageData()
+            let pixelData = imageData.pixelData.assumingMemoryBound(to: UInt8.self)
+            XCTAssertEqual(Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)), Array(pointer))
+            XCTAssertEqual(imageData.size, size)
+            XCTAssertEqual(imageData.stride, 4)
+            XCTAssertEqual(imageData.format, BLFormat.prgb32.rawValue)
+        }
+    }
+
+    func testInitFromUnownedMemory_doesNotCopyData() throws {
+        var pixels: [UInt8] = [
+            0,  1,   2,  3,
+            4,  5,   6,  7,
+            8,  9,  10, 11,
+            12, 13, 14, 15
+        ]
+        pixels.withUnsafeMutableBufferPointer { pointer in
+            let size = BLSizeI(w: 4, h: 4)
+
+            let image = BLImage(fromUnownedData: pointer.baseAddress!, stride: 4, size: size, format: .prgb32)
+            pointer[5] = 0
+
+            let imageData = image.getImageData()
+            let pixelData = imageData.pixelData.assumingMemoryBound(to: UInt8.self)
+            XCTAssertEqual(Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)), Array(pointer))
+            XCTAssertEqual(imageData.size, size)
+            XCTAssertEqual(imageData.stride, 4)
+            XCTAssertEqual(imageData.format, BLFormat.prgb32.rawValue)
+        }
+    }
     
     func testSize() {
         let image = BLImage(width: 32, height: 48, format: .prgb32)
