@@ -6,7 +6,9 @@ import PackageDescription
 // Platform per-architecture
 
 var x86Platforms: [Platform] = [
-    .macOS,
+    // .macOS, // Currently macOS attempts to build for both x86_64 and arm64
+               // architectures, so we disable x86-specific flags outright here
+               // to allow builds to complete successfully.
     .linux,
     .windows
 ]
@@ -21,6 +23,7 @@ var armPlatforms: [Platform] = [
 
 // List of recognized Blend2D build flags to pass down if present in env variables.
 let knownBlend2DFlags: [String] = [
+    "BL_BUILD_OPT_SSE2",
     "BL_BUILD_OPT_SSE3",
     "BL_BUILD_OPT_SSSE3",
     "BL_BUILD_OPT_SSE4_1",
