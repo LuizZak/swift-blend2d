@@ -536,7 +536,7 @@
 #ifdef __cplusplus
   #define BL_DEFINE_ENUM(NAME) enum NAME : uint32_t
 #else
-  #define BL_DEFINE_ENUM(NAME) enum NAME
+  #define BL_DEFINE_ENUM(NAME) enum NAME : uint32_t
 #endif
 
 #if defined(_DOXYGEN)
