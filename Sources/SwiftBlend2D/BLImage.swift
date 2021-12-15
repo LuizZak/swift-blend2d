@@ -95,7 +95,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
 
     /// Initializes a new image from a section of memory containing the 
-    /// appropriately formated pixel data.
+    /// appropriately formatted pixel data.
     ///
     /// This type of initialization does not handle deallocation of image data
     /// and should be handled separately by callers.
@@ -113,7 +113,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
 
     /// Initializes a new image from a section of memory containing the 
-    /// appropriately formated pixel data.
+    /// appropriately formatted pixel data.
     ///
     /// This type of initialization does not handle deallocation of image data
     /// and should be handled separately by callers.
