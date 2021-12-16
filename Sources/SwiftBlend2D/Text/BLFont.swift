@@ -42,7 +42,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
     /// Gets the size of the font (as float).
     public var size: Float {
-        return object.impl.pointee.metrics.size
+        return metrics.size
     }
     /// Gets the "units per em" (UPEM) of the font's associated font-face.
     public var unitsPerEm: Int32 {
@@ -53,29 +53,29 @@ public class BLFont: BLBaseClass<BLFontCore> {
     ///
     /// Returns the same font-face, which was passed to `init(fromFace:size:)`.
     public var face: BLFontFace {
-        return BLFontFace(weakAssign: object.impl.pointee.face)
+        return BLFontFace(weakAssign: object.impl.face)
     }
 
     /// Gets font-features of the font.
     public var features: [BLFontFeature] {
-        return Array(BLArray<BLFontFeature>(weakAssign: object.impl.pointee.features))
+        return Array(BLArray<BLFontFeature>(weakAssign: object.impl.features))
     }
     /// Gets font-variations used by this font.
     public var variations: [BLFontVariation] {
-        return Array(BLArray<BLFontVariation>(weakAssign: object.impl.pointee.variations))
+        return Array(BLArray<BLFontVariation>(weakAssign: object.impl.variations))
     }
 
     /// Gets the weight of the font.
     public var weight: BLFontWeight {
-        return BLFontWeight(UInt32(object.impl.pointee.weight))
+        return BLFontWeight(BLFontWeight.RawValue(object.impl.weight))
     }
     /// Gets the stretch of the font.
     public var stretch: BLFontStretch {
-        return BLFontStretch(UInt32(object.impl.pointee.stretch))
+        return BLFontStretch(BLFontStretch.RawValue(object.impl.stretch))
     }
     /// Gets the style of the font.
     public var style: BLFontStyle {
-        return BLFontStyle(UInt32(object.impl.pointee.style))
+        return BLFontStyle(BLFontStyle.RawValue(object.impl.style))
     }
     
     public init(fromFace face: BLFontFace, size: Float) {
@@ -104,12 +104,12 @@ public class BLFont: BLBaseClass<BLFontCore> {
         blFontApplyKerning(&object, &buf.object)
     }
     
-    public func applyGSub(_ buf: BLGlyphBuffer, index: Int, lookups: BLBitWord) {
-        blFontApplyGSub(&object, &buf.object, index, lookups)
+    public func applyGSub(_ buf: BLGlyphBuffer, lookups: BLBitSet) {
+        blFontApplyGSub(&object, &buf.object, &lookups.object)
     }
     
-    public func applyGPos(_ buf: BLGlyphBuffer, index: Int, lookups: BLBitWord) {
-        blFontApplyGPos(&object, &buf.object, index, lookups)
+    public func applyGPos(_ buf: BLGlyphBuffer, lookups: BLBitSet) {
+        blFontApplyGPos(&object, &buf.object, &lookups.object)
     }
 
     @inlinable
@@ -155,7 +155,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
                                  userMatrix: BLMatrix2D? = nil) -> BLPath {
 
         return getGlyphOutlines(glyphId, userMatrix: userMatrix) { (_, _) -> BLResult in
-            return BL_SUCCESS.rawValue
+            return BLResult(BL_SUCCESS.rawValue)
         }
     }
 
@@ -178,7 +178,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
                                     userMatrix: BLMatrix2D? = nil) -> BLPath {
 
         return getGlyphRunOutlines(glyphRun, userMatrix: userMatrix) { (_, _) -> BLResult in
-            return BL_SUCCESS.rawValue
+            return BLResult(BL_SUCCESS.rawValue)
         }
     }
     
@@ -203,7 +203,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
 
         let pathSink: BLPathSinkFunc = { (path, outline, closure) -> BLResult in
             guard let glyphSinkInfo = outline?.load(as: BLGlyphOutlineSinkInfo.self) else {
-                return BL_SUCCESS.rawValue
+                return BLResult(BL_SUCCESS.rawValue)
             }
             let castSink = closure!.load(as: ((BLPath, BLGlyphOutlineSinkInfo) -> BLResult).self)
             return castSink(BLPath(pointer: path!), glyphSinkInfo)
@@ -216,7 +216,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
 
 extension BLFont: Equatable {
     public static func == (lhs: BLFont, rhs: BLFont) -> Bool {
-        return lhs.object.impl == rhs.object.impl
+        return lhs.object._d.impl == rhs.object._d.impl
     }
 }
 
@@ -224,4 +224,14 @@ extension BLFontCore: CoreStructure {
     public static let initializer = blFontInit
     public static let deinitializer = blFontReset
     public static let assignWeak = blFontAssignWeak
+
+    @usableFromInline
+    var impl: BLFontImpl {
+        get {
+            _d.impl!.load(as: BLFontImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLFontImpl.self)
+        }
+    }
 }

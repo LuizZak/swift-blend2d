@@ -11,7 +11,7 @@ func sample1WithCBindings() {
     var img = BLImageCore()
     
     blImageInit(&img)
-    blImageCreate(&img, 480, 480, BL_FORMAT_PRGB32.rawValue)
+    blImageCreate(&img, 480, 480, BL_FORMAT_PRGB32)
     
     // Attach a rendering context into `img`.
     var ctx = BLContextCore()
@@ -19,7 +19,7 @@ func sample1WithCBindings() {
     blContextInitAs(&ctx, &img, nil)
     
     // Clear the image.
-    blContextSetCompOp(&ctx, BL_COMP_OP_SRC_COPY.rawValue)
+    blContextSetCompOp(&ctx, BL_COMP_OP_SRC_COPY)
     blContextFillAll(&ctx)
     
     // Fill some path.
@@ -30,7 +30,7 @@ func sample1WithCBindings() {
     blPathCubicTo(&path, 642, 132, 587, -136, 25, 464)
     blPathCubicTo(&path, 882, 404, 144, 267, 27, 31)
     
-    blContextSetCompOp(&ctx, BL_COMP_OP_SRC_OVER.rawValue)
+    blContextSetCompOp(&ctx, BL_COMP_OP_SRC_OVER)
     blContextSetFillStyleRgba32(&ctx, 0xFFFFFFFF)
     blContextFillPathD(&ctx, &path)
     

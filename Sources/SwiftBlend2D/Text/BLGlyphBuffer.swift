@@ -48,10 +48,12 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     /// Passing `nil` to indicate the entire text string should be used.
     public func setText<S: StringProtocol>(_ text: S, length: Int? = nil) {
         text.withCString { pointer -> Void in
-            blGlyphBufferSetText(&object,
-                                 pointer,
-                                 length ?? text.utf8.count,
-                                 BLTextEncoding.utf8.rawValue)
+            blGlyphBufferSetText(
+                &object,
+                pointer,
+                length ?? text.utf8.count,
+                .utf8
+            )
         }
     }
     

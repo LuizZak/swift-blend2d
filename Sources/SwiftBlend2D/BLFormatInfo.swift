@@ -1,3 +1,4 @@
+import Foundation
 import blend2d
 
 public extension BLFormatInfo {
@@ -16,7 +17,7 @@ public extension BLFormatInfo {
     
     init?(query format: BLFormat) {
         self.init()
-        if blFormatInfoQuery(&self, format.rawValue) != BL_SUCCESS.rawValue {
+        if blFormatInfoQuery(&self, format) != BL_SUCCESS.rawValue {
             return nil
         }
     }
@@ -35,14 +36,10 @@ public extension BLFormatInfo {
 
 extension BLFormatInfo: Equatable {
     public static func == (lhs: BLFormatInfo, rhs: BLFormatInfo) -> Bool {
-        if lhs.depth != rhs.depth || lhs.flags != rhs.flags {
-            return false
+        return withUnsafePointer(to: lhs) { lhs_p in
+            withUnsafePointer(to: rhs) { rhs_p in
+                memcmp(lhs_p, rhs_p, MemoryLayout<Self>.size) == 0
+            }
         }
-        
-        if BLFormatFlags(lhs.flags).contains(.indexed) {
-            return lhs.palette == rhs.palette
-        }
-        
-        return lhs.shifts == rhs.shifts && lhs.sizes == rhs.sizes
     }
 }

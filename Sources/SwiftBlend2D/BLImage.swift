@@ -2,13 +2,6 @@ import Foundation
 import blend2d
 
 public final class BLImage: BLBaseClass<BLImageCore> {
-    public static var none: BLImage {
-        let image = BLImage()
-        blVariantInit(&image.object)
-        
-        return image
-    }
-    
     /// Maximum width of an image.
     public static var maximumWidth: Int {
         return Int(BLRuntimeBuildInfo.current.maxImageSize)
@@ -18,24 +11,19 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         return Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     
-    /// Returns whether the image is a built-in null instance.
-    public var isNone: Bool {
-        return (UInt32(object.impl.pointee.implTraits) & BLImplTraits.null.rawValue) != 0
-    }
-    
     public var width: Int {
-        return Int(object.impl.pointee.size.w)
+        return Int(object.impl.size.w)
     }
     public var height: Int {
-        return Int(object.impl.pointee.size.h)
+        return Int(object.impl.size.h)
     }
     public var size: BLSizeI {
-        return object.impl.pointee.size
+        return object.impl.size
     }
     
     /// The image format.
     public var format: BLFormat {
-        return BLFormat(rawValue: BLFormat.RawValue(object.impl.pointee.format))
+        return BLFormat(rawValue: BLFormat.RawValue(object.impl.format))
     }
     
     public override init() {
@@ -66,7 +54,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         precondition(size.h > 0 && size.h <= Int32(BLImage.maximumHeight))
         
         super.init {
-            blImageInitAs($0, size.w, size.h, format.rawValue)
+            blImageInitAs($0, size.w, size.h, format)
         }
     }
     
@@ -126,7 +114,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     ///   - format: A valid image format to use for the image.
     public init(fromUnownedData pixelData: UnsafeMutableRawPointer, stride: Int, size: BLSizeI, format: BLFormat) {
         super.init {
-            blImageInitAsFromData($0, size.w, size.h, format.rawValue, pixelData, stride, nil, nil)
+            blImageInitAsFromData($0, size.w, size.h, format, pixelData, stride, nil, nil)
         }
     }
     
@@ -147,7 +135,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         
         try resultToError(
             withUnsafeNullablePointer(to: options) {
-                blImageScale(&object, &objectCopy, &size, filter.rawValue, $0)
+                blImageScale(&object, &objectCopy, &size, UInt32(filter.rawValue), $0)
             }
         )
     }
@@ -235,4 +223,14 @@ extension BLImageCore: CoreStructure {
     public static let initializer = blImageInit
     public static let deinitializer = blImageReset
     public static let assignWeak = blImageAssignWeak
+
+    @usableFromInline
+    var impl: BLImageImpl {
+        get {
+            _d.impl!.load(as: BLImageImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLImageImpl.self)
+        }
+    }
 }

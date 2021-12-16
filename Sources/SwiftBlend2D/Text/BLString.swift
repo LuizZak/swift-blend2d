@@ -8,6 +8,10 @@ import blend2d
 public struct BLString: ExpressibleByStringLiteral {
     @usableFromInline
     var box: BLBaseClass<BLStringCore>
+
+    var data: UnsafePointer<CChar> {
+        return blStringGetData(&box.object)
+    }
     
     /// Size, in bytes, of the data of this BLString instance, minus trailing
     /// null-terminator character.
@@ -137,7 +141,7 @@ extension BLString: Collection {
     /// - precondition: index >= 0 && index < size
     public subscript(index: Int) -> Int8 {
         precondition(index >= 0 && index < size)
-        return box.object.impl.pointee.data[index]
+        return data[index]
     }
 }
 
@@ -145,6 +149,16 @@ extension BLStringCore: CoreStructure {
     public static let initializer = blStringInit
     public static let deinitializer = blStringReset
     public static let assignWeak = blStringAssignWeak
+
+    @usableFromInline
+    var impl: BLStringImpl {
+        get {
+            _d.impl!.load(as: BLStringImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLStringImpl.self)
+        }
+    }
 }
 
 internal extension BLStringCore {
@@ -156,11 +170,7 @@ internal extension BLStringCore {
         return asBLString.toString()
     }
     
-    var view: BLStringView {
-        return impl.pointee.view
-    }
-    
     var size: Int {
-        return impl.pointee.size
+        return impl.size
     }
 }

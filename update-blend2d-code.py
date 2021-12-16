@@ -131,31 +131,6 @@ def copy_asmjit_files(clone_path: Path, target_path: Path):
 
     copy_repo_files(clone_path.joinpath("src").joinpath("asmjit"), target_path)
 
-def fix_blend2d_build(target_path: Path):
-    print("Patching blend2d/api.h...")
-
-    api_file_path = target_path.joinpath("blend2d", "api.h")
-
-    if not api_file_path.exists():
-        print(f"Warning: Could not locate {api_file_path} to patch.")
-        return
-    
-    search_line="  #define BL_DEFINE_ENUM(NAME) enum NAME\n"
-    replace_with="  #define BL_DEFINE_ENUM(NAME) enum NAME : uint32_t\n"
-
-    with api_file_path.open('r+') as file:
-        lines = file.readlines()
-        for (line_index, line) in enumerate(lines):
-            if line == search_line:
-                lines[line_index] = replace_with
-                print(f"Found line to patch @ {api_file_path}:{line_index + 1}")
-                break
-
-        file.truncate()
-        file.seek(0)
-        file.writelines(lines)
-
-
 def update_code(blend2d_tag: str | None, asmjit_tag: str | None, force: bool) -> int:
     if (not force) and len(git_output('status', '--porcelain', echo=False).strip()) > 0:
         print("Current git repo's state is not committed! Please commit and try again.")
@@ -171,9 +146,6 @@ def update_code(blend2d_tag: str | None, asmjit_tag: str | None, force: bool) ->
     # Copy files
     copy_blend2d_files(blend2d_clone_path, BLEND2D_TARGET_PATH)
     copy_asmjit_files(asmjit_clone_path, ASMJIT_TARGET_PATH)
-
-    # Fix a known build issue located in blend2d/api.h
-    fix_blend2d_build(BLEND2D_TARGET_PATH)
 
     print("Success!")
 

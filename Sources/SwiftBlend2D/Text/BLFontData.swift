@@ -7,28 +7,28 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
     }
 
     @inlinable
-    internal init(weakAssign impl: UnsafeMutablePointer<BLFontDataImpl>) {
-        super.init(weakAssign: BLFontDataCore(impl: impl))
+    internal override init(weakAssign object: BLFontDataCore) {
+        super.init(weakAssign: object)
     }
     
     public func listTags(faceIndex: UInt32) throws -> [BLTag] {
         let array = BLArray<UInt32>()
         
         try resultToError(
-            object.impl.pointee.virt.pointee.listTags(object.impl, faceIndex, &array.object)
+            blFontDataListTags(&object, faceIndex, &array.object)
         )
         
         return array.unsafeAsArray(of: BLTag.self)
     }
     
     public func queryTable(faceIndex: UInt32, fontTable: inout BLFontTable, tag: BLTag) -> Int {
-        var tag = tag
-        
-        return object.impl.pointee.virt.pointee.queryTables(object.impl, faceIndex, &fontTable, &tag, 1)
+        self.queryTables(faceIndex: faceIndex, fontTable: &fontTable, tags: [tag])
     }
     
     public func queryTables(faceIndex: UInt32, fontTable: inout BLFontTable, tags: [BLTag]) -> Int {
-        return object.impl.pointee.virt.pointee.queryTables(object.impl, faceIndex, &fontTable, tags, tags.count)
+        var tags = tags
+
+        return blFontDataQueryTables(&object, faceIndex, &fontTable, &tags, tags.count)
     }
 }
 
@@ -36,4 +36,14 @@ extension BLFontDataCore: CoreStructure {
     public static let initializer = blFontDataInit
     public static let deinitializer = blFontDataReset
     public static let assignWeak = blFontDataAssignWeak
+
+    @usableFromInline
+    var impl: BLFontDataImpl {
+        get {
+            _d.impl!.load(as: BLFontDataImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLFontDataImpl.self)
+        }
+    }
 }

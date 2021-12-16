@@ -28,12 +28,12 @@ public final class BLArray<Element: BLArrayElement> {
     /// Initializes a new array object.
     @inlinable
     public init() {
-        blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
+        blArrayInit(&object, Element.arrayImplementationType.arrayType)
     }
     
     @inlinable
-    public init(array: [Element]) {
-        blArrayInit(&object, Element.arrayImplementationType.arrayType.rawValue)
+    public convenience init(array: [Element]) {
+        self.init()
         
         array.withUnsafeBufferPointer { pointer in
             append(contentsOf: pointer)
@@ -42,20 +42,30 @@ public final class BLArray<Element: BLArrayElement> {
 
     @inlinable
     init(weakAssign object: BLArrayCore) {
-        assert(Element.arrayImplementationType.arrayType.rawValue == object.impl.pointee.implType,
-               "Cannot weak assign arrays of different types")
-        
-        blArrayInit(&self.object, Element.arrayImplementationType.arrayType.rawValue)
-        
-        withUnsafePointer(to: object) { pointer -> Void in
+        blArrayInit(&self.object, Element.arrayImplementationType.arrayType)
+
+        var object = object
+        withUnsafeMutablePointer(to: &object) { pointer in
+            assert(
+                blArrayGetItemSize(pointer) == blArrayGetItemSize(&self.object),
+                "Cannot weak assign arrays of different item sizes"
+            )
+
             blArrayAssignWeak(&self.object, pointer)
         }
     }
 
     @inlinable
     init(object: BLArrayCore) {
-        assert(Element.arrayImplementationType.arrayType.rawValue == object.impl.pointee.implType,
-               "Cannot weak assign arrays of different types")
+        let check = BLArray<Element>()
+
+        var object = object
+        withUnsafeMutablePointer(to: &object) { pointer in
+            assert(
+                blArrayGetItemSize(pointer) == blArrayGetItemSize(&check.object),
+                "Cannot assign arrays of different item sizes"
+            )
+        }
         
         self.object = object
     }
@@ -133,14 +143,14 @@ public final class BLArray<Element: BLArrayElement> {
         }
     }
     
-    func append(contentsOf pointer: UnsafePointer<Element>, lengthInBytes: Int) {
-        blArrayAppendView(&object, pointer, lengthInBytes)
+    func append(contentsOf pointer: UnsafePointer<Element>, count: Int) {
+        blArrayAppendData(&object, pointer, count)
     }
     
     @inlinable
     func append(contentsOf pointer: UnsafeBufferPointer<Element>) {
         if let base = pointer.baseAddress {
-            blArrayAppendView(&object, base, pointer.count)
+            blArrayAppendData(&object, base, pointer.count)
         }
     }
     
@@ -149,7 +159,7 @@ public final class BLArray<Element: BLArrayElement> {
         
         array.withTemporaryView { view in
             if let pointer = view.pointee.data {
-                append(contentsOf: pointer, lengthInBytes: view.pointee.size)
+                append(contentsOf: pointer, count: array.count)
             }
         }
     }
@@ -178,6 +188,18 @@ extension BLArray: Sequence {
     }
 }
 
+extension BLArrayCore {
+    @usableFromInline
+    var impl: BLArrayImpl {
+        get {
+            _d.impl!.load(as: BLArrayImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLArrayImpl.self)
+        }
+    }
+}
+
 /// A protocol that is used to parameterize `BLArray` instances.
 public protocol BLArrayElement {
     /// Returns a `BLImplType` for the array of elements corresponding to `Self`
@@ -186,10 +208,10 @@ public protocol BLArrayElement {
 
 public struct BLArrayType {
     @usableFromInline
-    var arrayType: BLImplType
+    var arrayType: BLObjectType
     
     @usableFromInline
-    init(arrayType: BLImplType) {
+    init(arrayType: BLObjectType) {
         self.arrayType = arrayType
     }
 }
@@ -197,61 +219,61 @@ public struct BLArrayType {
 extension Float: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfFloat32)
+        return BLArrayType(arrayType: .arrayFloat32)
     }
 }
 extension Double: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfFloat64)
+        return BLArrayType(arrayType: .arrayFloat64)
     }
 }
 extension UInt8: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfUInt8)
+        return BLArrayType(arrayType: .arrayUInt8)
     }
 }
 extension UInt16: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfUInt16)
+        return BLArrayType(arrayType: .arrayUInt16)
     }
 }
 extension UInt32: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfUInt32)
+        return BLArrayType(arrayType: .arrayUInt32)
     }
 }
 extension UInt64: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfUInt64)
+        return BLArrayType(arrayType: .arrayUInt64)
     }
 }
 extension Int8: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfInt8)
+        return BLArrayType(arrayType: .arrayInt8)
     }
 }
 extension Int16: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfInt16)
+        return BLArrayType(arrayType: .arrayInt16)
     }
 }
 extension Int32: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfInt32)
+        return BLArrayType(arrayType: .arrayInt32)
     }
 }
 extension Int64: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfInt64)
+        return BLArrayType(arrayType: .arrayInt64)
     }
 }
 extension Int: BLArrayElement {
@@ -273,12 +295,12 @@ extension UInt: BLArrayElement {
 extension BLFontFeature: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfStruct_8)
+        return BLArrayType(arrayType: .arrayStruct8)
     }
 }
 extension BLFontVariation: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfStruct_8)
+        return BLArrayType(arrayType: .arrayStruct8)
     }
 }

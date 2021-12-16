@@ -6,7 +6,7 @@ public class BLPixelConverter: BLBaseClass<BLPixelConverterCore> {
         
         var source = source
         var destination = destination
-        blPixelConverterCreate(&object, &destination, &source, flags.rawValue)
+        blPixelConverterCreate(&object, &destination, &source, flags)
     }
     
     @discardableResult

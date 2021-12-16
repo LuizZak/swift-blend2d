@@ -69,9 +69,11 @@ public struct BLStrokeOptions {
             blArrayClear(&box.object.dashArray)
             
             newValue.withTemporaryView { view in
-                if let pointer = view.pointee.data {
-                    blArrayAppendView(&box.object.dashArray, pointer, view.pointee.size)
+                guard let pointer = view.pointee.data else {
+                    return
                 }
+                
+                blArrayAppendData(&box.object.dashArray, pointer, newValue.count)
             }
         }
     }

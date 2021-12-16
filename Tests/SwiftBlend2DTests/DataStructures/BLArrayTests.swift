@@ -51,6 +51,7 @@ class BLArrayTests: XCTestCase {
         XCTAssert(sut.capacity <= 32)
     }
     
+    /*
     func testWeakAssign() {
         let array = BLArray<Int32>()
         // Append an item to force creation of a new backing array structure
@@ -59,12 +60,13 @@ class BLArrayTests: XCTestCase {
         do {
             let weak = BLArray<Int32>(weakAssign: array.object)
             withExtendedLifetime(weak) {
-                XCTAssertEqual(array.object.impl.pointee.refCount, 2)
+                XCTAssertEqual(array.object.impl.refCount, 2)
             }
         }
         
-        XCTAssertEqual(array.object.impl.pointee.refCount, 1)
+        XCTAssertEqual(array.object.impl.refCount, 1)
     }
+    */
     
     func testInitWithArray() {
         let array = BLArray<Int>(array: [1, 2, 3])

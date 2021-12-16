@@ -7,11 +7,11 @@ public struct BLPattern {
     /// Pattern extend mode.
     public var extendMode: BLExtendMode {
         get {
-            return BLExtendMode(rawValue: UInt32(box.object.impl.pointee.extendMode))
+            return blPatternGetExtendMode(&box.object)
         }
         set {
             ensureUnique()
-            blPatternSetExtendMode(&box.object, newValue.rawValue)
+            blPatternSetExtendMode(&box.object, newValue)
         }
     }
     
@@ -25,26 +25,26 @@ public struct BLPattern {
     
     /// Type of the transformation matrix.
     public var matrixType: BLMatrix2DType {
-        return BLMatrix2DType(UInt32(box.object.impl.pointee.matrixType))
+        return blPatternGetMatrixType(&box.object)
     }
     
     /// Gradient transformation matrix.
     public var matrix: BLMatrix2D {
         get {
-            return box.object.impl.pointee.matrix
+            return box.object.impl.matrix
         }
         set {
             ensureUnique()
-            box.object.impl.pointee.matrix = newValue
+            box.object.impl.matrix = newValue
         }
     }
     
     public var image: BLImage {
-        return BLImage(weakAssign: box.object.impl.pointee.image)
+        return BLImage(weakAssign: box.object.impl.image)
     }
     
     public var area: BLRectI {
-        return box.object.impl.pointee.area
+        return box.object.impl.area
     }
     
     public init() {
@@ -55,7 +55,7 @@ public struct BLPattern {
         box = BLBaseClass { pointer in
             return withUnsafeNullablePointer(to: area) { area in
                 withUnsafeNullablePointer(to: matrix) { matrix in
-                    blPatternInitAs(pointer, &image.object, area, extendMode.rawValue, matrix)
+                    blPatternInitAs(pointer, &image.object, area, extendMode, matrix)
                 }
             }
         }
@@ -89,7 +89,7 @@ public struct BLPattern {
 
     @discardableResult
     mutating func resetImage() -> BLResult {
-        return setImage(BLImage.none)
+        return blPatternResetImage(&box.object)
     }
 
     @discardableResult
@@ -111,7 +111,7 @@ public extension BLPattern {
     @discardableResult
     mutating func resetMatrix() -> BLResult {
         ensureUnique()
-        return blPatternApplyMatrixOp(&box.object, BLMatrix2DOp.reset.rawValue, nil)
+        return blPatternApplyMatrixOp(&box.object, .reset, nil)
     }
     @inlinable
     @discardableResult
@@ -261,7 +261,7 @@ internal extension BLPattern {
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blPatternApplyMatrixOp(&box.object, opType.rawValue, pointer)
+            blPatternApplyMatrixOp(&box.object, opType, pointer)
         }
     }
     
@@ -270,7 +270,7 @@ internal extension BLPattern {
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blPatternApplyMatrixOp(&box.object, opType.rawValue, pointer)
+            blPatternApplyMatrixOp(&box.object, opType, pointer)
         }
     }
     
@@ -279,7 +279,7 @@ internal extension BLPattern {
     mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blPatternApplyMatrixOp(&box.object, opType.rawValue, pointer)
+            blPatternApplyMatrixOp(&box.object, opType, pointer)
         }
     }
     
@@ -288,7 +288,7 @@ internal extension BLPattern {
     mutating func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
         ensureUnique()
         return args.withUnsafeBytes { pointer in
-            blPatternApplyMatrixOp(&box.object, opType.rawValue, pointer.baseAddress)
+            blPatternApplyMatrixOp(&box.object, opType, pointer.baseAddress)
         }
     }
     
@@ -297,7 +297,7 @@ internal extension BLPattern {
     mutating func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
         ensureUnique()
         return args.map { Double($0) }.withUnsafeBytes { pointer in
-            blPatternApplyMatrixOp(&box.object, opType.rawValue, pointer.baseAddress)
+            blPatternApplyMatrixOp(&box.object, opType, pointer.baseAddress)
         }
     }
 }
@@ -312,4 +312,14 @@ extension BLPatternCore: CoreStructure {
     public static let initializer = blPatternInit
     public static let deinitializer = blPatternReset
     public static let assignWeak = blPatternAssignWeak
+    
+    @usableFromInline
+    var impl: BLPatternImpl {
+        get {
+            _d.impl!.load(as: BLPatternImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLPatternImpl.self)
+        }
+    }
 }

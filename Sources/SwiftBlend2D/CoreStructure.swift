@@ -16,6 +16,6 @@ public protocol CoreStructure: BLArrayElement {
 
 public extension CoreStructure {
     static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayOfVar)
+        return BLArrayType(arrayType: .arrayObject)
     }
 }

@@ -394,7 +394,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
                      _ direction: BLGeometryDirection) -> BLResult {
 
         return withUnsafeNullablePointer(to: matrix) { matrix in
-            blPathAddGeometry(&object, geometryType.rawValue, data, matrix, direction.rawValue)
+            blPathAddGeometry(&object, geometryType, data, matrix, direction)
         }
     }
 
@@ -422,7 +422,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     public func addBox(_ box: BLBox, direction: BLGeometryDirection = .cw) -> BLResult {
         var box = box
 
-        return blPathAddBoxD(&object, &box, direction.rawValue)
+        return blPathAddBoxD(&object, &box, direction)
     }
     
     /// Adds a closed rectangle to the path specified by `box`.
@@ -431,7 +431,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     public func addBox(_ box: BLBoxI, direction: BLGeometryDirection = .cw) -> BLResult {
         var box = box
 
-        return blPathAddBoxI(&object, &box, direction.rawValue)
+        return blPathAddBoxI(&object, &box, direction)
     }
     
     /// Adds a closed rectangle to the path specified by `rect`.
@@ -440,7 +440,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     public func addRect(_ rect: BLRect, direction: BLGeometryDirection = .cw) -> BLResult {
         var rect = rect
 
-        return blPathAddRectD(&object, &rect, direction.rawValue)
+        return blPathAddRectD(&object, &rect, direction)
     }
     
     /// Adds a closed rectangle to the path specified by `rect`.
@@ -449,7 +449,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     public func addRect(_ rect: BLRectI, direction: BLGeometryDirection = .cw) -> BLResult {
         var rect = rect
 
-        return blPathAddRectI(&object, &rect, direction.rawValue)
+        return blPathAddRectI(&object, &rect, direction)
     }
     
     /// Adds a closed rounded ractangle to the path.
@@ -504,7 +504,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
                                 reverseMode: BLPathReverseMode = .complete) -> BLResult {
         
         return withUnsafeNullablePointer(to: range) {
-            blPathAddReversedPath(&object, &other.object, $0, reverseMode.rawValue)
+            blPathAddReversedPath(&object, &other.object, $0, reverseMode)
         }
     }
 
@@ -595,12 +595,12 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public func hitTest(point: BLPoint, fillRule: BLFillRule) -> BLHitTest {
         var point = point
-        return BLHitTest(blPathHitTest(&object, &point, fillRule.rawValue))
+        return BLHitTest(BLHitTest.RawValue(blPathHitTest(&object, &point, UInt32(fillRule.rawValue))))
     }
 }
 
 public extension BLPath {
-    /// Adds a closed rounded ractangle to the path.
+    /// Adds a closed rounded rectangle to the path.
     @discardableResult
     @inlinable
     func addRoundRect(_ rr: BLRoundRect, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
@@ -710,14 +710,6 @@ public extension BLPath {
     func addRectArray(_ array: [BLRect], _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
         var array = array
         return addGeometry(.arrayViewRectD, &array, m, dir)
-    }
-
-    /// Adds a closed region (converted to set of rectangles).
-    @discardableResult
-    @inlinable
-    func addRegion(_ region: BLRegion, _ m: BLMatrix2D? = nil, _ dir: BLGeometryDirection = .cw) -> BLResult {
-        var region = region
-        return addGeometry(.region, &region, m, dir)
     }
 
     /// Adds other `path` translated by `p` and sliced by the given `range` to

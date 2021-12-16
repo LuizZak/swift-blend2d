@@ -5,38 +5,38 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
 
     /// Gets `BLFontData` associated with this font-face.
     public var data: BLFontData {
-        return BLFontData(weakAssign: object.impl.pointee.data.impl)
+        return BLFontData(weakAssign: object.impl.data)
     }
     
     // MARK: Properties
 
     /// Returns font weight (returns default weight in case this is a variable font).
     public var weight: UInt16 {
-        return object.impl.pointee.weight
+        return object.impl.weight
     }
     /// Returns font stretch (returns default weight in case this is a variable font).
     public var stretch: UInt8 {
-        return object.impl.pointee.stretch
+        return object.impl.stretch
     }
     /// Returns font style.
     public var style: UInt8 {
-        return object.impl.pointee.style
+        return object.impl.style
     }
     /// Returns font-face information as `BLFontFaceInfo`.
     public var faceInfo: BLFontFaceInfo {
-        return object.impl.pointee.faceInfo
+        return object.impl.faceInfo
     }
     /// Gets font-face type.
     public var faceType: BLFontFaceType {
-        return BLFontFaceType(UInt32(object.impl.pointee.faceInfo.faceType))
+        return BLFontFaceType(BLFontFaceType.RawValue(object.impl.faceInfo.faceType))
     }
     /// Gets font-face type.
     public var outlineType: BLFontOutlineType {
-        return BLFontOutlineType(UInt32(object.impl.pointee.faceInfo.outlineType))
+        return BLFontOutlineType(BLFontFaceType.RawValue(object.impl.faceInfo.outlineType))
     }
     /// Gets a number of glyphs the face provides.
     public var glyphCount: UInt16 {
-        return object.impl.pointee.faceInfo.glyphCount
+        return object.impl.faceInfo.glyphCount
     }
     /// Gets a zero-based index of this font-face.
     ///
@@ -45,59 +45,67 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     /// the index of this face in that collection. If the face is not part of a
     /// collection then the returned value would always be zero.
     public var faceIndex: UInt32 {
-        return object.impl.pointee.faceInfo.faceIndex
+        return object.impl.faceInfo.faceIndex
     }
     /// Gets font-face flags.
     public var faceFlags: BLFontFaceFlags {
-        return BLFontFaceFlags(object.impl.pointee.faceInfo.faceFlags)
+        return BLFontFaceFlags(BLFontFaceFlags.RawValue(object.impl.faceInfo.faceFlags))
     }
     /// Gets font-face diagnostics flags.
     public var diagFlags: BLFontFaceDiagFlags {
-        return BLFontFaceDiagFlags(object.impl.pointee.faceInfo.diagFlags)
+        return BLFontFaceDiagFlags(BLFontFaceDiagFlags.RawValue(object.impl.faceInfo.diagFlags))
     }
     /// Gets a unique identifier describing this BLFontFace.
     public var faceUniqueId: BLUniqueId {
-        return object.impl.pointee.uniqueId
+        return object.impl.uniqueId
     }
 
     /// Gets full name as UTF-8 null-terminated string.
     public var fullName: BLString {
-        return BLString(weakAssign: object.impl.pointee.fullName)
+        return BLString(weakAssign: object.impl.fullName)
     }
     /// Gets family name as UTF-8 null-terminated string.
     public var familyName: BLString {
-        return BLString(weakAssign: object.impl.pointee.familyName)
+        return BLString(weakAssign: object.impl.familyName)
     }
     /// Gets subfamily name as UTF-8 null-terminated string.
     public var subfamilyName: BLString {
-        return BLString(weakAssign: object.impl.pointee.subfamilyName)
+        return BLString(weakAssign: object.impl.subfamilyName)
     }
     /// Gets manufacturer name as UTF-8 null-terminated string.
     public var postScriptName: BLString {
-        return BLString(weakAssign: object.impl.pointee.postScriptName)
+        return BLString(weakAssign: object.impl.postScriptName)
     }
 
     // TODO: This property is commented out in Blend2D's source code
     /// Returns feature-set of this `BLFontFace`.
     //    public var featureSet: FontFeatureSet {
-    //        return object.impl.pointee.featureSet
+    //        return object.impl.featureSet
     //    }
 
     /// Returns design metrics of this `BLFontFace`.
     public var designMetrics: BLFontDesignMetrics {
-        return object.impl.pointee.designMetrics
+        var metrics = BLFontDesignMetrics()
+        blFontFaceGetDesignMetrics(&object, &metrics)
+        return metrics
     }
     /// Returns units per em, which are part of font's design metrics.
     public var unitsPerEm: Int32 {
-        return object.impl.pointee.designMetrics.unitsPerEm
+        return designMetrics.unitsPerEm
     }
     /// Returns PANOSE classification of this `BLFontFace`.
     public var panose: BLFontPanose {
-        return object.impl.pointee.panose
+        return object.impl.panose
     }
     /// Returns unicode coverage of this `BLFontFace`.
     public var unicodeCoverage: BLFontUnicodeCoverage {
-        return object.impl.pointee.unicodeCoverage
+        return object.impl.unicodeCoverage
+    }
+
+    var info: BLFontFaceInfo {
+        var info = BLFontFaceInfo()
+        blFontFaceGetFaceInfo(&object, &info)
+        return info
     }
 
     // MARK: - Initializers
@@ -121,7 +129,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         try super.init { pointer -> BLResult in
             blFontFaceInit(pointer)
 
-            return try mapError { blFontFaceCreateFromFile(pointer, filePath, readFlags.rawValue) }
+            return try mapError { blFontFaceCreateFromFile(pointer, filePath, readFlags) }
                 .addFileErrorMappings(filePath: filePath)
                 .execute()
         }
@@ -142,4 +150,14 @@ extension BLFontFaceCore: CoreStructure {
     public static let initializer = blFontFaceInit
     public static let deinitializer = blFontFaceReset
     public static let assignWeak = blFontFaceAssignWeak
+
+    @usableFromInline
+    var impl: BLFontFaceImpl {
+        get {
+            _d.impl!.load(as: BLFontFaceImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLFontFaceImpl.self)
+        }
+    }
 }

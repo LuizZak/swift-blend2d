@@ -7,15 +7,51 @@ public extension BLRgba32 {
     /// Get whether the color is fully-transparent (alpha equals 0).
     @inlinable
     var isTransparent: Bool { return value <= 0x00FFFFFF }
+
+    var r: UInt32 {
+        get {
+            (value >> 16) & 0xFF
+        }
+        set {
+            value = (value & 0xFF00FFFF) | (newValue << 16)
+        }
+    }
+
+    var g: UInt32 {
+        get {
+            (value >> 8) & 0xFF
+        }
+        set {
+            value = (value & 0xFFFF00FF) | (newValue <<  8)
+        }
+    }
+
+    var b: UInt32 {
+        get {
+            (value >> 8) & 0xFF
+        }
+        set {
+            value = (value & 0xFFFFFF00) | (newValue <<  0)
+        }
+    }
+
+    var a: UInt32 {
+        get {
+            value >> 24
+        }
+        set {
+            value = (value & 0x00FFFFFF) | (newValue << 24)
+        }
+    }
     
     @inlinable
     init(argb: UInt32) {
-        self.init(.init(value: argb))
+        self.init(value: argb)
     }
     
     //@inlinable
     init(r: UInt32, g: UInt32, b: UInt32, a: UInt32 = 0xFF) {
-        self.init(.init(.init(b: b, g: g, r: r, a: a)))
+        self.init(value: (r << 16) | (g << 8) | b | (a << 24))
     }
     
     @inlinable

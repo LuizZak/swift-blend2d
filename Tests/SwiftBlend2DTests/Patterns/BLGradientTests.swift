@@ -18,11 +18,11 @@ class BLGradientTests: XCTestCase {
         var copy = linear
         
         XCTAssert(linear.box === copy.box)
-        XCTAssert(linear.box.object.impl == copy.box.object.impl)
+        XCTAssert(linear.box.object._d.impl == copy.box.object._d.impl)
         
         copy.setValue(.commonX0, 10)
         
-        XCTAssert(linear.box.object.impl != copy.box.object.impl)
+        XCTAssert(linear.box.object._d.impl != copy.box.object._d.impl)
     }
 
     func testSetGradientValues() {

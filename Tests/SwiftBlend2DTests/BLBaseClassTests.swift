@@ -21,7 +21,7 @@ class BLBaseClassTests: XCTestCase {
         var pointer: UnsafeMutablePointer<MockStructure>?
         _ = BLBaseClass<MockStructure> { p -> BLResult in
             pointer = p
-            return BL_SUCCESS.rawValue
+            return BLResult(BL_SUCCESS.rawValue)
         }
         
         XCTAssertNotNil(pointer)
@@ -84,16 +84,16 @@ private final class MockStructure: CoreStructure {
     
     static var initializer: (UnsafeMutablePointer<MockStructure>?) -> BLResult = {
         latestInitializer = $0
-        return BL_SUCCESS.rawValue
+        return BLResult(BL_SUCCESS.rawValue)
     }
     
     static var deinitializer: (UnsafeMutablePointer<MockStructure>?) -> BLResult = {
         latestDeinitializer = $0
-        return BL_SUCCESS.rawValue
+        return BLResult(BL_SUCCESS.rawValue)
     }
     
     static var assignWeak: (UnsafeMutablePointer<MockStructure>?, UnsafePointer<MockStructure>?) -> BLResult = {
         latestAssignWeak = ($0, $1)
-        return BL_SUCCESS.rawValue
+        return BLResult(BL_SUCCESS.rawValue)
     }
 }

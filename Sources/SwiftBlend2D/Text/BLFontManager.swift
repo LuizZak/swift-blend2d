@@ -44,8 +44,6 @@ public class BLFontManager: BLBaseClass<BLFontManagerCore> {
 }
 
 extension BLFontManagerCore: CoreStructure {
-    public static var arrayImplementationType: BLArrayType = .init(arrayType: .arrayOfVar)
-    
     public static var initializer = blFontManagerInit
     public static var assignWeak = blFontManagerAssignWeak
     public static var deinitializer = blFontManagerReset

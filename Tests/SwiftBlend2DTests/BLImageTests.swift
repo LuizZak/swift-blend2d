@@ -2,17 +2,10 @@ import XCTest
 import blend2d
 @testable import SwiftBlend2D
 
-class BLImageTests: XCTestCase {
-    func testInitDefault() {
-        let image = BLImage()
-        
-        assertIsDefaultPointer(image.object)
-    }
-    
+class BLImageTests: XCTestCase {    
     func testInitWithWithHeight() {
         let image = BLImage(width: 32, height: 48, format: .prgb32)
         
-        assertIsNonDefaultPointer(image.object)
         XCTAssertEqual(image.width, 32)
         XCTAssertEqual(image.height, 48)
     }
@@ -20,7 +13,6 @@ class BLImageTests: XCTestCase {
     func testInitWithSize() {
         let image = BLImage(size: BLSizeI(w: 32, h: 48), format: .prgb32)
         
-        assertIsNonDefaultPointer(image.object)
         XCTAssertEqual(image.width, 32)
         XCTAssertEqual(image.height, 48)
     }
@@ -43,7 +35,7 @@ class BLImageTests: XCTestCase {
             XCTAssertEqual(Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)), Array(pointer))
             XCTAssertEqual(imageData.size, size)
             XCTAssertEqual(imageData.stride, 4)
-            XCTAssertEqual(imageData.format, BLFormat.prgb32.rawValue)
+            XCTAssertEqual(BLFormat(BLFormat.RawValue(imageData.format)), BLFormat.prgb32)
         }
     }
 
@@ -65,7 +57,7 @@ class BLImageTests: XCTestCase {
             XCTAssertEqual(Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)), Array(pointer))
             XCTAssertEqual(imageData.size, size)
             XCTAssertEqual(imageData.stride, 4)
-            XCTAssertEqual(imageData.format, BLFormat.prgb32.rawValue)
+            XCTAssertEqual(BLFormat(BLFormat.RawValue(imageData.format)), BLFormat.prgb32)
         }
     }
     
@@ -124,44 +116,5 @@ class BLImageTests: XCTestCase {
         
         XCTAssertEqual(image.width, 1)
         XCTAssertEqual(image.height, 1)
-    }
-}
-
-extension BLImageTests {
-    
-    static var nilImageImpl: UnsafeMutablePointer<BLImageImpl> {
-        var imageCore = BLImageCore()
-        blImageInit(&imageCore)
-        return imageCore.impl
-    }
-    
-    func assertIsNonDefaultPointer(_ imageCore: BLImageCore,
-                                   file: StaticString = #file,
-                                   line: UInt = #line) {
-        if imageCore.impl == nil {
-            XCTFail("""
-                Provided image core has a nil-pointer to its inner BLImageImpl value.
-                Did you forget to invoke blImageInit()?
-                """, file: file, line: line)
-        } else if imageCore.impl == BLImageTests.nilImageImpl {
-            XCTFail("""
-                Expected image implementation to not point to \(BLImageTests.nilImageImpl) (default image implementation).
-                """, file: file, line: line)
-        }
-    }
-    
-    func assertIsDefaultPointer(_ imageCore: BLImageCore,
-                                file: StaticString = #file,
-                                line: UInt = #line) {
-
-        XCTAssertNotNil(imageCore.impl, """
-            Provided image core has a nil-pointer to its inner BLImageImpl value.
-            Did you forget to invoke blImageInit()?
-            """, file: file, line: line)
-
-        XCTAssertEqual(imageCore.impl, BLImageTests.nilImageImpl, """
-            Expected image implementation to point to \(BLImageTests.nilImageImpl) \
-            (default image implementation), but found a pointer to \(imageCore.impl as Any) instead.
-            """, file: file, line: line)
     }
 }

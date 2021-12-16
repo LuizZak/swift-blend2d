@@ -4,7 +4,7 @@ public extension BLRuntimeResourceInfo {
     /// Gets the runtime build info for the resource information
     static var current: BLRuntimeResourceInfo = {
         var info = BLRuntimeResourceInfo()
-        blRuntimeQueryInfo(BLRuntimeInfoType.resource.rawValue, &info)
+        blRuntimeQueryInfo(BLRuntimeInfoType.resource, &info)
         
         return info
     }()

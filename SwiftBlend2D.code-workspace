@@ -52,12 +52,24 @@
 				"args": [
 					"update-blend2d-code.py"
 				]
-			}
+			},
+			{
+				"label": "Generate Swift Types",
+				"type": "shell",
+				"command": "python generate_types.py",
+				"args": [
+					"-o", "${workspaceFolder:SwiftBlend2D}\\Sources\\SwiftBlend2D\\Generated"
+				],
+				"options": {
+					"cwd": "${workspaceFolder:SwiftBlend2D}"
+				}
+			},
 		]
 	},
 	"folders": [
 		{
-			"path": "."
+			"path": "./",
+			"name": "SwiftBlend2D"
 		},
 		{
 			"name": "Swift Package Dependencies",
@@ -107,9 +119,39 @@
 		"ShortcutMenuBar.userButton01Command": "workbench.action.tasks.runTask|Build (debug)",
 		"ShortcutMenuBar.userButton02Command": "workbench.action.tasks.runTask|Test",
 		"ShortcutMenuBar.userButton03Command": "workbench.action.tasks.runTask|Update Blend2D",
+		"ShortcutMenuBar.userButton04Command": "workbench.action.tasks.runTask|Generate Swift Types",
 		"cSpell.words": [
-			"swiftpm",
+			"asmjit",
+			"msvc",
+			"swiftpm"
 		],
+		"C_Cpp.default.includePath": [
+			"${workspaceFolder}/Sources/asmjit/**",
+			"${workspaceFolder}/Sources/blend2d/**"
+		],
+		"C_Cpp.default.defines": [
+			"_DEBUG",
+			"UNICODE",
+			"_UNICODE"
+		],
+		"C_Cpp.default.windowsSdkVersion": "10.0.18362.0",
+		"C_Cpp.default.compilerPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Preview\\VC\\Tools\\MSVC\\14.29.30132\\bin\\Hostx64\\x64\\cl.exe",
+		"C_Cpp.default.cStandard": "c11",
+		"C_Cpp.default.cppStandard": "c++17",
+		"C_Cpp.default.intelliSenseMode": "windows-msvc-x64",
+
+		"python.formatting.provider": "black",
+    	"python.linting.enabled": true,
+		"python.linting.flake8Enabled": true,
+		"python.linting.flake8Args": ["--ignore=E203,E225,E302,E501,W293,W503"],
+
+		"[python]": {
+			"editor.formatOnSave": true
+		},
+		"files.associations": {
+			"iterator": "cpp",
+			"xutility": "cpp"
+		},
 	},
 	"extensions": {
 		"recommendations": [

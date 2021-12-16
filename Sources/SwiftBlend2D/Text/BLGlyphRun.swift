@@ -60,7 +60,7 @@ public struct BLGlyphRunIterator {
             return .none
         }
         
-        switch BLGlyphPlacementType(UInt32(glyphRun.placementType)) {
+        switch BLGlyphPlacementType(BLGlyphPlacementType.RawValue(glyphRun.placementType)) {
         case .none:
             return .none
         case .advanceOffset:

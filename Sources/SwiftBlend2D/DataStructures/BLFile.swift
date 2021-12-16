@@ -33,7 +33,7 @@ public final class BLFile: BLBaseClass<BLFileCore> {
     public func open(fileAt path: String, flags: BLFileOpenFlags) throws {
         try path.withCString { pointer -> Void in
             try mapError {
-                blFileOpen(&self.object, pointer, flags.rawValue)
+                blFileOpen(&self.object, pointer, flags)
             }
                 .addFileErrorMappings(filePath: path)
                 .execute()
@@ -46,7 +46,7 @@ public final class BLFile: BLBaseClass<BLFileCore> {
     public func seek(offset: Int64, type: BLFileSeekType) throws -> Int64 {
         var positionOut: Int64 = 0
         try mapError {
-            blFileSeek(&self.object, offset, type.rawValue, &positionOut)
+            blFileSeek(&self.object, offset, type, &positionOut)
         }
             .addFileErrorMappings(filePath: currentFilePath)
             .execute()

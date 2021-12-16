@@ -19,17 +19,17 @@ public extension SwiftBlend2DError {
         @inlinable
         public init(filePath: String) {
             super.init(description: "No such file or directory \(filePath)",
-                       resultCode: .noEntry)
+                       resultCode: .errorNoEntry)
         }
 
         @inlinable
         public init(fileNotOpenAtPath filePath: String?) {
             if let filePath = filePath {
                 super.init(description: "File is no longer open at path \(filePath)",
-                           resultCode: .invalidHandle)
+                           resultCode: .errorInvalidHandle)
             } else {
                 super.init(description: "No file open",
-                           resultCode: .invalidHandle)
+                           resultCode: .errorInvalidHandle)
             }
         }
     }
@@ -44,7 +44,7 @@ func mapError(_ operation: @escaping () -> BLResult) -> SwiftBlend2DErrorMapper 
 @discardableResult
 func resultToError(_ operation: @autoclosure () -> BLResult) throws -> BLResult {
     let value = operation()
-    let statusCode = BLResultCode(rawValue: value)
+    let statusCode = BLResultCode(BLResultCode.RawValue(value))
     
     if statusCode != .success {
         throw statusCode

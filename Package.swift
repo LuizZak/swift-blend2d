@@ -111,6 +111,11 @@ let package = Package(
             exclude: [
                 "blend2d.natvis"
             ],
+            cSettings: [
+                .define("NDEBUG", .when(configuration: .release)),
+                .define("BL_EMBED"),
+                .define("BL_STATIC")
+            ],
             cxxSettings: blend2DCXXSettings
         ),
         testTarget

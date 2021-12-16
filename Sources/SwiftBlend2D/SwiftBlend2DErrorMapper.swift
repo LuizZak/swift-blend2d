@@ -22,7 +22,7 @@ class SwiftBlend2DErrorMapper {
 
     @inlinable
     func map(blend2DError errorCode: BLResultCode, swiftError: @autoclosure @escaping () -> SwiftBlend2DError) -> SwiftBlend2DErrorMapper {
-        mappings[errorCode.rawValue] = swiftError
+        mappings[BLResult(errorCode.rawValue)] = swiftError
         return self
     }
 
@@ -32,7 +32,7 @@ class SwiftBlend2DErrorMapper {
     /// If `filePath` is `nil`, a non-specific file error is generated, instead.
     @inlinable
     func addFileErrorMappings(filePath: String?) -> SwiftBlend2DErrorMapper {
-        return map(blend2DError: .invalidHandle, swiftError: SwiftBlend2DError.FileError(fileNotOpenAtPath: filePath))
+        return map(blend2DError: .errorInvalidHandle, swiftError: SwiftBlend2DError.FileError(fileNotOpenAtPath: filePath))
     }
 
     @discardableResult
@@ -54,6 +54,6 @@ class SwiftBlend2DErrorMapper {
             throw mapping()
         }
 
-        throw BLResultCode(rawValue: result)
+        throw BLResultCode(BLResultCode.RawValue(result))
     }
 }

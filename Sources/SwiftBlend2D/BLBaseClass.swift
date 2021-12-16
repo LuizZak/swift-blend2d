@@ -79,5 +79,5 @@ public class BLBaseClass<T: CoreStructure> {
 /// conformance for types that do not have matching weak assignment functions in
 /// Blend2D.
 func emptyAssignWeak<T>(type: T.Type) -> (UnsafeMutablePointer<T>?, UnsafePointer<T>?) -> BLResult {
-    return { _, _ in BL_SUCCESS.rawValue }
+    return { _, _ in BLResult(BL_SUCCESS.rawValue) }
 }

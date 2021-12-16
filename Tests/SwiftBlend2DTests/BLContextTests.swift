@@ -19,6 +19,7 @@ class BLContextTests: XCTestCase {
         XCTAssertNil(BLContext(image: image))
     }
     
+    /*
     func testGetStrokeStyleGradientRefCount() {
         let sut = makeSut()
         sut.setStrokeStyle(BLGradient(linear: BLLinearGradientValues(box: .empty)))
@@ -76,6 +77,7 @@ class BLContextTests: XCTestCase {
             XCTFail("Expected pattern style")
         }
     }
+    */
 }
 
 extension BLContextTests {

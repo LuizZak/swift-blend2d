@@ -4,27 +4,27 @@ import Foundation
 public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     /// Returns image codec name (i.e, "PNG", "JPEG", etc...).
     public var name: String {
-        return String(cString: object.impl.pointee.name)
+        return BLString(weakAssign: object.impl.name).toString()
     }
     
     /// Returns the image codec vendor (i.e. "Blend2D" for all built-in codecs).
     public var vendor: String {
-        return String(cString: object.impl.pointee.vendor)
+        return BLString(weakAssign: object.impl.vendor).toString()
     }
     
     /// Returns a mime-type associated with the image codec's format.
     public var mimeType: String {
-        return String(cString: object.impl.pointee.mimeType)
+        return BLString(weakAssign: object.impl.mimeType).toString()
     }
 
     /// Known file extensions used by this image codec separated by "|".
     public var extensions: [String] {
-        return String(cString: object.impl.pointee.extensions).split(separator: "|").map(String.init)
+        return BLString(weakAssign: object.impl.extensions).toString().split(separator: "|").map(String.init)
     }
     
     /// Returns image codec flags, see `BLImageCodecFeatures`.
     public var features: BLImageCodecFeatures {
-        return BLImageCodecFeatures(rawValue: object.impl.pointee.features)
+        return BLImageCodecFeatures(BLImageCodecFeatures.RawValue(object.impl.features))
     }
     
     public override init() {
@@ -33,7 +33,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     
     public init(builtInCodec: BuiltInImageCodec) {
         let codecCore = BLImageCodec._builtInCodecs.first {
-            String(cString: $0.impl!.pointee.name) == builtInCodec.rawValue
+            BLString(weakAssign: $0.impl.name).toString() == builtInCodec.rawValue
         }
         
         if let codecCore = codecCore {
@@ -63,6 +63,10 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
             return blImageCodecFindByData(&object, pointer, data.count, nil)
         }
         
+        guard let result = result else {
+            return nil
+        }
+
         if result != BL_SUCCESS.rawValue {
             return nil
         }
@@ -123,7 +127,7 @@ public extension BLImageCodec {
 
 extension BLImageCodec: Equatable {
     public static func == (lhs: BLImageCodec, rhs: BLImageCodec) -> Bool {
-        return lhs.object.impl == rhs.object.impl
+        return lhs.object._d.impl == rhs.object._d.impl
     }
 }
 
@@ -131,4 +135,14 @@ extension BLImageCodecCore: CoreStructure {
     public static let initializer = blImageCodecInit
     public static let deinitializer = blImageCodecReset
     public static let assignWeak = blImageCodecAssignWeak
+
+    @usableFromInline
+    var impl: BLImageCodecImpl {
+        get {
+            _d.impl!.load(as: BLImageCodecImpl.self)
+        }
+        set {
+            _d.impl!.storeBytes(of: newValue, as: BLImageCodecImpl.self)
+        }
+    }
 }
