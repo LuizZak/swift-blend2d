@@ -198,7 +198,7 @@ public struct BLGradient: Equatable {
     /// Type of the transformation matrix.
     @inlinable
     public var matrixType: BLMatrix2DType {
-        return BLMatrix2DType(Int32(box.object.impl.matrixType))
+        return BLMatrix2DType(BLMatrix2DType.RawValue(box.object.impl.matrixType))
     }
     
     /// Gradient transformation matrix.
