@@ -18,7 +18,7 @@ class SwiftBlend2DTests: XCTestCase {
         let ctx = BLContext(image: img)!
         
         // Clear the image.
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         // Fill some path.
@@ -28,7 +28,7 @@ class SwiftBlend2DTests: XCTestCase {
         path.cubicTo(x1: 642, y1: 132, x2: 587, y2: -136, x3: 25, y3: 464)
         path.cubicTo(x1: 882, y1: 404, x2: 144, y2: 267, x3: 27, y3: 31)
         
-        ctx.compOp = .sourceOver
+        ctx.compOp = .srcOver
         ctx.setFillStyleRgba32(0xFFFFFFFF)
         ctx.fillPath(path)
         
@@ -42,7 +42,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         // Coordinates can be specified now or changed later.
@@ -56,7 +56,7 @@ class SwiftBlend2DTests: XCTestCase {
         // `setFillStyle()` can be used for both colors and styles.
         ctx.setFillStyle(linear)
         
-        ctx.compOp = .sourceOver
+        ctx.compOp = .srcOver
         ctx.fillRoundRect(x: 40.0, y: 40.0, width: 400.0, height: 400.0, radius: 45.5)
         ctx.end()
         
@@ -67,7 +67,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         // Read an image from file.
@@ -76,7 +76,7 @@ class SwiftBlend2DTests: XCTestCase {
         // Create a pattern and use it to fill a rounded-rect.
         let pattern = BLPattern(image: texture)
         
-        ctx.compOp = .sourceOver
+        ctx.compOp = .srcOver
         ctx.setFillStyle(pattern)
         ctx.fillRoundRect(x: 40.0, y: 40.0, width: 400.0, height: 400.0, radius: 45.5)
         
@@ -89,7 +89,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         // Read an image from file.
@@ -99,7 +99,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.rotate(angle: 0.785398, x: 240.0, y: 240.0)
         
         // Create a pattern.
-        ctx.compOp = .sourceOver
+        ctx.compOp = .srcOver
         ctx.setFillStyle(BLPattern(image: texture))
         ctx.fillRoundRect(x: 50.0, y: 50.0, width: 380.0, height: 380.0, radius: 80.5)
         
@@ -112,7 +112,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         // First shape filld by a radial gradient.
@@ -120,7 +120,7 @@ class SwiftBlend2DTests: XCTestCase {
         radial.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
         radial.addStop(1.0, BLRgba32(argb: 0xFFFF6F3F))
         
-        ctx.compOp = .sourceOver
+        ctx.compOp = .srcOver
         ctx.setFillStyle(radial)
         ctx.fillCircle(x: 180, y: 180, radius: 160)
         
@@ -142,7 +142,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         var linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
@@ -154,7 +154,7 @@ class SwiftBlend2DTests: XCTestCase {
         path.cubicTo(x1: 259, y1: 29, x2: 99, y2: 279, x3: 275, y3: 267)
         path.cubicTo(x1: 537, y1: 245, x2: 300, y2: -170, x3: 274, y3: 430)
         
-        ctx.compOp = .sourceOver
+        ctx.compOp = .srcOver
         ctx.setStrokeStyle(linear)
         ctx.setStrokeWidth(15)
         ctx.setStrokeStartCap(.round)
@@ -170,7 +170,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         
         let face = try BLFontFace(fromFile: pathToTestFontFace())
@@ -192,7 +192,7 @@ class SwiftBlend2DTests: XCTestCase {
         let img = BLImage(width: 480, height: 480, format: .prgb32)
         let ctx = BLContext(image: img)!
         
-        ctx.compOp = .sourceCopy
+        ctx.compOp = .srcCopy
         ctx.fillAll()
         ctx.setFillStyle(BLRgba32(argb: 0xFFFFFFFF))
 
