@@ -31,20 +31,27 @@ public struct BLPattern {
     /// Gradient transformation matrix.
     public var matrix: BLMatrix2D {
         get {
-            return box.object.impl.matrix
+            var matrix = BLMatrix2D()
+            blPatternGetMatrix(&box.object, &matrix)
+            return matrix
         }
         set {
             ensureUnique()
-            box.object.impl.matrix = newValue
+
+            _=_applyMatrixOp(.assign, newValue)
         }
     }
     
     public var image: BLImage {
-        return BLImage(weakAssign: box.object.impl.image)
+        var image = BLImageCore()
+        blPatternGetImage(&box.object, &image)
+        return BLImage(weakAssign: image)
     }
     
     public var area: BLRectI {
-        return box.object.impl.area
+        var area = BLRectI()
+        blPatternGetArea(&box.object, &area)
+        return area
     }
     
     public init() {

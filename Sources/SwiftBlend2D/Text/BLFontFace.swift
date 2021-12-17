@@ -24,19 +24,21 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     }
     /// Returns font-face information as `BLFontFaceInfo`.
     public var faceInfo: BLFontFaceInfo {
-        return object.impl.faceInfo
+        var info = BLFontFaceInfo()
+        blFontFaceGetFaceInfo(&object, &info)
+        return info
     }
     /// Gets font-face type.
     public var faceType: BLFontFaceType {
-        return BLFontFaceType(BLFontFaceType.RawValue(object.impl.faceInfo.faceType))
+        return BLFontFaceType(BLFontFaceType.RawValue(faceInfo.faceType))
     }
     /// Gets font-face type.
     public var outlineType: BLFontOutlineType {
-        return BLFontOutlineType(BLFontFaceType.RawValue(object.impl.faceInfo.outlineType))
+        return BLFontOutlineType(BLFontFaceType.RawValue(faceInfo.outlineType))
     }
     /// Gets a number of glyphs the face provides.
     public var glyphCount: UInt16 {
-        return object.impl.faceInfo.glyphCount
+        return faceInfo.glyphCount
     }
     /// Gets a zero-based index of this font-face.
     ///
@@ -45,15 +47,15 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     /// the index of this face in that collection. If the face is not part of a
     /// collection then the returned value would always be zero.
     public var faceIndex: UInt32 {
-        return object.impl.faceInfo.faceIndex
+        return faceInfo.faceIndex
     }
     /// Gets font-face flags.
     public var faceFlags: BLFontFaceFlags {
-        return BLFontFaceFlags(BLFontFaceFlags.RawValue(object.impl.faceInfo.faceFlags))
+        return BLFontFaceFlags(BLFontFaceFlags.RawValue(faceInfo.faceFlags))
     }
     /// Gets font-face diagnostics flags.
     public var diagFlags: BLFontFaceDiagFlags {
-        return BLFontFaceDiagFlags(BLFontFaceDiagFlags.RawValue(object.impl.faceInfo.diagFlags))
+        return BLFontFaceDiagFlags(BLFontFaceDiagFlags.RawValue(faceInfo.diagFlags))
     }
     /// Gets a unique identifier describing this BLFontFace.
     public var faceUniqueId: BLUniqueId {

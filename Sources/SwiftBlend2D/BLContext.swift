@@ -1,6 +1,10 @@
 import blend2d
 
 public class BLContext: BLBaseClass<BLContextCore> {
+    @usableFromInline
+    var _state: BLContextState {
+        object.impl.state.pointee
+    }
 
     /// Returns target size in abstract units (pixels in case of `BLImage`).
     @inlinable
@@ -61,7 +65,9 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// See `userMatrix` and `userToMeta()`.
     @inlinable
     public var metaMatrix: BLMatrix2D {
-        return object.impl.state.pointee.metaMatrix
+        var matrix = BLMatrix2D()
+        blContextGetMetaMatrix(&object, &matrix)
+        return matrix
     }
 
     /// Returns user-matrix.
@@ -70,13 +76,15 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// context unless the context was restored or `userToMeta()` was called.
     @inlinable
     public var userMatrix: BLMatrix2D {
-        return object.impl.state.pointee.userMatrix
+        var matrix = BLMatrix2D()
+        blContextGetUserMatrix(&object, &matrix)
+        return matrix
     }
 
     /// Returns rendering hints.
     @inlinable
     public var hints: BLContextHints {
-        return object.impl.state.pointee.hints
+        return _state.hints
     }
 
 
@@ -84,7 +92,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var flattenTolerance: Double {
         get {
-            return object.impl.state.pointee.approximationOptions.flattenTolerance
+            return _state.approximationOptions.flattenTolerance
         }
         set {
             blContextSetFlattenTolerance(&object, newValue)
@@ -95,7 +103,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var flattenMode: BLFlattenMode {
         get {
-            return BLFlattenMode(BLFlattenMode.RawValue(object.impl.state.pointee.approximationOptions.flattenMode))
+            return BLFlattenMode(BLFlattenMode.RawValue(_state.approximationOptions.flattenMode))
         }
         set {
             blContextSetFlattenMode(&object, newValue)
@@ -106,7 +114,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var compOp: BLCompOp {
         get {
-            return BLCompOp(BLCompOp.RawValue(object.impl.state.pointee.compOp))
+            return BLCompOp(BLCompOp.RawValue(_state.compOp))
         }
         set {
             blContextSetCompOp(&object, newValue)
@@ -117,7 +125,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var globalAlpha: Double {
         get {
-            return object.impl.state.pointee.globalAlpha
+            return _state.globalAlpha
         }
         set {
             blContextSetGlobalAlpha(&object, newValue)
@@ -127,13 +135,13 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var fillStyleType: UInt32 {
         assert(BLContextOpType.fill.rawValue == 0)
-        return UInt32(object.impl.state.pointee.styleType.0)
+        return UInt32(_state.styleType.0)
     }
     
     @inlinable
     public var strokeStyleType: UInt32 {
         assert(BLContextOpType.stroke.rawValue == 1)
-        return UInt32(object.impl.state.pointee.styleType.1)
+        return UInt32(_state.styleType.1)
     }
     
     /// Gets an enumeration specifying the fill style and their current associated
@@ -165,7 +173,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var fillRule: BLFillRule {
         get {
-            return BLFillRule(BLFillRule.RawValue(object.impl.state.pointee.fillRule))
+            return BLFillRule(BLFillRule.RawValue(_state.fillRule))
         }
         set {
             blContextSetFillRule(&object, newValue)
@@ -177,7 +185,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public var fillAlpha: Double {
         get {
             assert(BL_CONTEXT_OP_TYPE_STROKE.rawValue == 0)
-            return object.impl.state.pointee.styleAlpha.0
+            return _state.styleAlpha.0
         }
         set {
             blContextSetFillAlpha(&object, newValue)
@@ -214,7 +222,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public var strokeAlpha: Double {
         get {
             assert(BL_CONTEXT_OP_TYPE_STROKE.rawValue == 1)
-            return object.impl.state.pointee.styleAlpha.1
+            return _state.styleAlpha.1
         }
         set {
             blContextSetStrokeAlpha(&object, newValue)
@@ -1163,7 +1171,7 @@ public extension BLContext {
 
     /// Returns the number of saved states in the context (0 means no saved states).
     var savedStateCount: Int {
-        return object.impl.state.pointee.savedStateCount
+        return _state.savedStateCount
     }
 
     /// Saves the current rendering context state.

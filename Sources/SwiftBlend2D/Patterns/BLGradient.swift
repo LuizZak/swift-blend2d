@@ -210,7 +210,7 @@ public struct BLGradient: Equatable {
         set {
             ensureUnique()
             
-            box.object.impl.matrix = newValue
+            _=_applyMatrixOp(.assign, newValue)
         }
     }
     
@@ -219,13 +219,14 @@ public struct BLGradient: Equatable {
     public var values: [Double] {
         get {
             assert(BLGradientValue.maxValue.rawValue == 5)
+            let values = box.object.impl.values
             return [
-                box.object.impl.values.0,
-                box.object.impl.values.1,
-                box.object.impl.values.2,
-                box.object.impl.values.3,
-                box.object.impl.values.4,
-                box.object.impl.values.5,
+                values.0,
+                values.1,
+                values.2,
+                values.3,
+                values.4,
+                values.5,
             ]
         }
     }
@@ -444,8 +445,8 @@ public extension BLGradient {
 
     @inlinable
     mutating func replaceStopRgba32(atIndex index: Int, rgba32: BLRgba32) -> BLResult {
-        if index < 0 || index >= box.object.impl.size {
-            fatalError("Index out of bounds: \(index) in bounds [0 - \(box.object.impl.size)]")
+        if index < 0 || index >= size {
+            fatalError("Index out of bounds: \(index) in bounds [0 - \(size)]")
         }
         if let stops = blGradientGetStops(&box.object) {
             ensureUnique()

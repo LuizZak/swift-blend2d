@@ -2,6 +2,8 @@ import XCTest
 import blend2d
 @testable import SwiftBlend2D
 
+import WinSDK
+
 class BLArrayTests: XCTestCase {
     func testInit() {
         let sut = BLArray<UInt8>()

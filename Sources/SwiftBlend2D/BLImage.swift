@@ -12,18 +12,18 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     }
     
     public var width: Int {
-        return Int(object.impl.size.w)
+        return Int(getImageData().size.w)
     }
     public var height: Int {
-        return Int(object.impl.size.h)
+        return Int(getImageData().size.h)
     }
     public var size: BLSizeI {
-        return object.impl.size
+        return getImageData().size
     }
     
     /// The image format.
     public var format: BLFormat {
-        return BLFormat(rawValue: BLFormat.RawValue(object.impl.format))
+        return BLFormat(rawValue: BLFormat.RawValue(getImageData().format))
     }
     
     public override init() {
