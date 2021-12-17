@@ -1390,14 +1390,14 @@ internal extension BLContext {
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp) -> BLResult {
-        return object.impl.virt.pointee.matrixOp(&object.impl, opType, nil)
+        blContextMatrixOp(&object, opType, nil)
     }
 
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
         return withUnsafePointer(to: opData) { pointer in
-            return object.impl.virt.pointee.matrixOp(&object.impl, opType, pointer)
+            blContextMatrixOp(&object, opType, pointer)
         }
     }
     
@@ -1405,7 +1405,7 @@ internal extension BLContext {
     @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
         return withUnsafePointer(to: opData) { pointer in
-            return object.impl.virt.pointee.matrixOp(&object.impl, opType, pointer)
+            blContextMatrixOp(&object, opType, pointer)
         }
     }
     
@@ -1413,7 +1413,7 @@ internal extension BLContext {
     @inlinable
     func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
         return withUnsafePointer(to: opData) { pointer in
-            return object.impl.virt.pointee.matrixOp(&object.impl, opType, pointer)
+            blContextMatrixOp(&object, opType, pointer)
         }
     }
     
@@ -1421,7 +1421,7 @@ internal extension BLContext {
     @inlinable
     func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
         return args.withUnsafeBytes { pointer in
-            return object.impl.virt.pointee.matrixOp(&object.impl, opType, pointer.baseAddress)
+            blContextMatrixOp(&object, opType, pointer.baseAddress)
         }
     }
     
@@ -1429,7 +1429,7 @@ internal extension BLContext {
     @inlinable
     func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
         return args.map { Double($0) }.withUnsafeBytes { pointer in
-            return object.impl.virt.pointee.matrixOp(&object.impl, opType, pointer.baseAddress)
+            blContextMatrixOp(&object, opType, pointer.baseAddress)
         }
     }
 }
