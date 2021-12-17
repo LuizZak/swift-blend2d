@@ -28,7 +28,7 @@ public extension BLRgba32 {
 
     var b: UInt32 {
         get {
-            (value >> 8) & 0xFF
+            value & 0xFF
         }
         set {
             value = (value & 0xFFFFFF00) | (newValue <<  0)
