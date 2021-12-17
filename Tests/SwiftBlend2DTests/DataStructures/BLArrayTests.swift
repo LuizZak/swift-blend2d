@@ -51,7 +51,8 @@ class BLArrayTests: XCTestCase {
         XCTAssert(sut.capacity <= 32)
     }
     
-    /*
+    /* TODO: Figure out how to do ref-count tests after Blend2D beta 17
+
     func testWeakAssign() {
         let array = BLArray<Int32>()
         // Append an item to force creation of a new backing array structure
