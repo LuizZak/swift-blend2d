@@ -16,3 +16,4 @@ default.profraw
 *.perspectivev3
 !default.perspectivev3
 xcuserdata/
+__pycache__
