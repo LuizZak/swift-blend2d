@@ -595,7 +595,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public func hitTest(point: BLPoint, fillRule: BLFillRule) -> BLHitTest {
         var point = point
-        return BLHitTest(BLHitTest.RawValue(blPathHitTest(&object, &point, UInt32(fillRule.rawValue))))
+        return blPathHitTest(&object, &point, fillRule)
     }
 }
 

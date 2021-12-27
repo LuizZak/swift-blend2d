@@ -146,6 +146,6 @@ public extension BLObjectType {
     /// Maximum object type identifier that can be used as a style.
     static let maxStyleValue = BL_OBJECT_TYPE_MAX_STYLE_VALUE
     
-    /// Count of type identifiers including all reserved ones.
+    /// Maximum possible value of an object type, including identifiers reserved for the future.
     static let maxValue = BL_OBJECT_TYPE_MAX_VALUE
 }

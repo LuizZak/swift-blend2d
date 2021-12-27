@@ -43,8 +43,11 @@ public extension BLExtendMode {
     static let reflectXRepeatY = BL_EXTEND_MODE_REFLECT_X_REPEAT_Y
     
     /// Count of simple extend modes (that use the same value for X and Y).
-    static let simpleMax = BL_EXTEND_MODE_SIMPLE_MAX
+    static let simpleMaxValue = BL_EXTEND_MODE_SIMPLE_MAX_VALUE
     
     /// Count of complex extend modes (that can use independent values for X and Y).
-    static let complexMax = BL_EXTEND_MODE_COMPLEX_MAX
+    static let complexMaxValue = BL_EXTEND_MODE_COMPLEX_MAX_VALUE
+    
+    /// Maximum value of `BLExtendMode`.
+    static let maxValue = BL_EXTEND_MODE_MAX_VALUE
 }

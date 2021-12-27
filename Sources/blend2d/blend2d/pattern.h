@@ -15,7 +15,6 @@
 //! \{
 
 //! \name BLPattern - C API
-//!
 //! \{
 
 //! Pattern [Impl].
@@ -74,7 +73,6 @@ BL_END_C_DECLS
 //! \}
 
 //! \name BLPattern - C++ API
-//!
 //! \{
 #ifdef __cplusplus
 
@@ -187,7 +185,7 @@ public:
   BL_INLINE BLExtendMode extendMode() const noexcept { return (BLExtendMode)_d.bField(); }
 
   BL_INLINE BLResult setExtendMode(BLExtendMode extendMode) noexcept {
-    if (BL_UNLIKELY(extendMode > BL_EXTEND_MODE_COMPLEX_MAX))
+    if (BL_UNLIKELY(extendMode > BL_EXTEND_MODE_COMPLEX_MAX_VALUE))
       return blTraceError(BL_ERROR_INVALID_VALUE);
 
     _d.info.setBField(uint32_t(extendMode));
