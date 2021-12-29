@@ -14,11 +14,11 @@ pr:
 jobs:
 - job: macOS
   pool:
-    vmImage: 'macOS-10.15'
+    vmImage: 'macOS-latest'
   steps:
   - bash: 'brew install pkg-config'
   - bash: 'brew install libpng'
-  - bash: 'sudo xcode-select -s /Applications/Xcode_12.4.app/Contents/Developer'
+  - bash: 'sudo xcode-select -s /Applications/Xcode_13.0.app/Contents/Developer'
   - bash: 'swift --version'
   - bash: 'swift test'
 
@@ -29,12 +29,6 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - script: |
-      /tmp/docker exec -t -u 0 ci-container \
-      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-    displayName: Set up sudo
-  - script: 'sudo apt-get update'
-  - script: 'sudo apt-get install zlib1g-dev'
   - bash: 'swift --version'
   - bash: 'swift test'
 
