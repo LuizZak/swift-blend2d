@@ -24,12 +24,13 @@ jobs:
 
 - job: Linux
   container:
-    image: swift:5.5.0
+    image: swift:5.4.3
     options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
   pool:
     vmImage: ubuntu-latest
   steps:
   - bash: 'swift --version'
+  - bash: 'swift package resolve'
   - bash: 'swift test'
 
 - job: Windows
