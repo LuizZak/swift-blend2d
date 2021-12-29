@@ -26,7 +26,7 @@ from utils.paths import paths
 
 
 def run_cl(input_path: Path) -> bytes:
-    cl_args = [
+    args = [
         "cl",
         "/E",
         "/Za",
@@ -34,7 +34,27 @@ def run_cl(input_path: Path) -> bytes:
         input_path,
     ]
 
-    return subprocess.check_output(cl_args, cwd=paths.SCRIPTS_ROOT_PATH)
+    return subprocess.check_output(args, cwd=paths.SCRIPTS_ROOT_PATH)
+
+
+def run_clang(input_path: Path) -> bytes:
+    args = [
+        "clang",
+        "-E",
+        "-fuse-line-directives",
+        "-std=c99",
+        "-pedantic-errors",
+        input_path,
+    ]
+
+    return subprocess.check_output(args, cwd=paths.SCRIPTS_ROOT_PATH)
+
+
+def run_c_preprocessor(input_path: Path) -> bytes:
+    if sys.platform == "win32":
+        return run_cl(input_path)
+    
+    return run_clang(input_path)
 
 
 class SwiftDeclMerger:
@@ -168,8 +188,11 @@ class TypeGeneratorRequest:
 def generate_types(request: TypeGeneratorRequest) -> int:
     print('Generating header file...')
 
-    output_file = run_cl(request.header_file)
-    output_file = output_file.replace(b'\x0c', b'')
+    output_file = run_c_preprocessor(request.header_file)
+
+    # Windows-specific fix to replace some page feeds that are present in the original system headers
+    if sys.platform == "win32":
+        output_file = output_file.replace(b'\x0c', b'')
 
     output_path = request.header_file.with_suffix(".i")
     with open(output_path, 'wb') as f:

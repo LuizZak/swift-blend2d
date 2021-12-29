@@ -1,4 +1,4 @@
-/// Work around some MSVC-specific type definitions
+/// Work around some MSVC-specific features
 #define wchar_t short
 #define _WCHAR_T_DEFINED
 #define __int8 int
@@ -18,4 +18,13 @@
 #define __declspec(x)
 #define _declspec(x)
 
-#include "..\Sources\blend2d\blend2d.h"
+/// Work around GCC-specific features
+#define __builtin_va_list void
+
+#if defined(__WCHAR_TYPE__)
+#undef wchar_t
+#endif // defined(__WCHAR_TYPE__)
+#define __restrict
+#define __attribute__(va)
+
+#include "../Sources/blend2d/blend2d.h"
