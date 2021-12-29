@@ -58,7 +58,7 @@
 				"type": "shell",
 				"command": "python generate_types.py",
 				"args": [
-					"-o", "${workspaceFolder:SwiftBlend2D}\\Sources\\SwiftBlend2D\\Generated"
+					"-o", "${workspaceFolder:SwiftBlend2D}/Sources/SwiftBlend2D/Generated"
 				],
 				"options": {
 					"cwd": "${workspaceFolder:SwiftBlend2D}"
@@ -77,7 +77,7 @@
 		},
 		{
 			"name": "Build",
-			"path": ".build/x86_64-unknown-windows-msvc"
+			"path": ".build/debug/.."
 		}
 	],
 	"settings": {
@@ -135,11 +135,9 @@
 			"_UNICODE"
 		],
 		"C_Cpp.default.windowsSdkVersion": "10.0.18362.0",
-		"C_Cpp.default.compilerPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Preview\\VC\\Tools\\MSVC\\14.29.30132\\bin\\Hostx64\\x64\\cl.exe",
 		"C_Cpp.default.cStandard": "c11",
 		"C_Cpp.default.cppStandard": "c++17",
-		"C_Cpp.default.intelliSenseMode": "windows-msvc-x64",
-
+		
 		"python.formatting.provider": "black",
     	"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
