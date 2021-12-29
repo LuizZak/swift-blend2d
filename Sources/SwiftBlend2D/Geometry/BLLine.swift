@@ -41,7 +41,7 @@ public extension BLLine {
         let dx = x0 - x1
         let dy = y0 - y1
         
-        return sqrt(dx * dx + dy * dy)
+        return (dx * dx + dy * dy).squareRoot()
     }
 
     @inlinable

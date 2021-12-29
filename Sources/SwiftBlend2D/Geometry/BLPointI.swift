@@ -9,7 +9,7 @@ public extension BLPointI {
 
     @inlinable
     init(rounding point: BLPoint) {
-        self.init(x: Int32(round(point.x)), y: Int32(round(point.y)))
+        self.init(x: Int32(point.x.rounded()), y: Int32(point.y.rounded()))
     }
 
     /// Returns the dot product between `self` and `other`.

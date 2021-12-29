@@ -84,18 +84,18 @@ public extension BLRectI {
 
     @inlinable
     init(rounding rect: BLRect) {
-        self.init(x: Int32(round(rect.x)),
-                  y: Int32(round(rect.y)),
-                  w: Int32(round(rect.w)),
-                  h: Int32(round(rect.h)))
+        self.init(x: Int32(rect.x.rounded()),
+                  y: Int32(rect.y.rounded()),
+                  w: Int32(rect.w.rounded()),
+                  h: Int32(rect.h.rounded()))
     }
 
     @inlinable
     init(roundingBox box: BLBox) {
-        self.init(x: Int32(round(box.x0)),
-                  y: Int32(round(box.y0)),
-                  w: Int32(round(box.w)),
-                  h: Int32(round(box.h)))
+        self.init(x: Int32(box.x0.rounded()),
+                  y: Int32(box.y0.rounded()),
+                  w: Int32(box.w.rounded()),
+                  h: Int32(box.h.rounded()))
     }
 
     @inlinable

@@ -34,7 +34,8 @@
 				"type": "shell",
 				"command": "swift",
 				"args": [
-					"build"
+					"build",
+					"--build-tests"
 				]
 			},
             {

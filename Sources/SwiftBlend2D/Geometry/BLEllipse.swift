@@ -1,3 +1,4 @@
+import Foundation
 import blend2d
 
 public extension BLEllipse {

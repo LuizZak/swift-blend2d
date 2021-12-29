@@ -1,3 +1,4 @@
+import Foundation
 import blend2d
 
 public extension BLPoint {
@@ -9,7 +10,7 @@ public extension BLPoint {
 
     /// Returns the magnitude of this point
     var magnitude: Double {
-        return sqrt(x * x + y * y)
+        return (x * x + y * y).squareRoot()
     }
 
     /// Returns a normalized version of this point.
@@ -37,7 +38,7 @@ public extension BLPoint {
     /// Returns the distance between this and another point
     @inlinable
     func distance(to other: BLPoint) -> Double {
-        return sqrt(distanceSquared(to: other))
+        return distanceSquared(to: other).squareRoot()
     }
     
     /// Returns the distance (squared) between this and another point
