@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_globals
-/// 
 /// Modification operation applied to Blend2D containers.
 public extension BLModifyOp {
     /// Assign operation, which reserves space only to fit the requested input.

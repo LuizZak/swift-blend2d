@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_styling
-/// 
 /// Extend mode.
 public extension BLExtendMode {
     /// Pad extend [default].
@@ -15,7 +13,7 @@ public extension BLExtendMode {
     /// Reflect extend.
     static let reflect = BL_EXTEND_MODE_REFLECT
     
-    /// Alias to `BL_EXTEND_MODE_PAD`.
+    /// Alias to `BLExtendMode.pad`.
     static let padXPadY = BL_EXTEND_MODE_PAD_X_PAD_Y
     
     /// Pad X and repeat Y.
@@ -24,7 +22,7 @@ public extension BLExtendMode {
     /// Pad X and reflect Y.
     static let padXReflectY = BL_EXTEND_MODE_PAD_X_REFLECT_Y
     
-    /// Alias to `BL_EXTEND_MODE_REPEAT`.
+    /// Alias to `BLExtendMode.repeat`.
     static let repeatXRepeatY = BL_EXTEND_MODE_REPEAT_X_REPEAT_Y
     
     /// Repeat X and pad Y.
@@ -33,7 +31,7 @@ public extension BLExtendMode {
     /// Repeat X and reflect Y.
     static let repeatXReflectY = BL_EXTEND_MODE_REPEAT_X_REFLECT_Y
     
-    /// Alias to `BL_EXTEND_MODE_REFLECT`.
+    /// Alias to `BLExtendMode.reflect`.
     static let reflectXReflectY = BL_EXTEND_MODE_REFLECT_X_REFLECT_Y
     
     /// Reflect X and pad Y.

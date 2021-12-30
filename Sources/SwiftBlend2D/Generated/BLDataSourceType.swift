@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_globals
-/// 
 /// Data source type.
 public extension BLDataSourceType {
     /// No data source.

@@ -61,8 +61,8 @@ public extension BLFileOpenFlags {
     
     /// Opens the file for both reading and writing (Windows).
     /// 
-    /// This is a combination of both `BL_FILE_OPEN_READ_EXCLUSIVE` and
-    /// `BL_FILE_OPEN_WRITE_EXCLUSIVE`.
+    /// This is a combination of both `BLFileOpenFlags.readExclusive` and
+    /// `BLFileOpenFlags.writeExclusive`.
     static let rwExclusive = BL_FILE_OPEN_RW_EXCLUSIVE
     
     /// Creates the file in exclusive mode - fails if the file already exists.

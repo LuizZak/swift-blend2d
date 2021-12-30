@@ -8,7 +8,9 @@ from pycparser import c_ast
 from utils.converters.base_word_capitalizer import PatternCapitalizer
 from utils.converters.default_symbol_name_formatter import DefaultSymbolNameFormatter
 from utils.converters.symbol_name_formatter import SymbolNameFormatter
-from utils.data.swift_decls import SwiftEnumCaseDecl, SwiftEnumDecl
+from utils.data.swift_decl_lookup import SwiftDeclLookup
+from utils.data.swift_decls import SwiftDecl, SwiftEnumCaseDecl, SwiftEnumDecl
+from utils.doccomment.doccomment_formatter import DoccommentFormatter
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
 from utils.generator.symbol_name_generator import SymbolNameGenerator
@@ -48,6 +50,12 @@ class Blend2DDeclGenerator(SwiftDeclGenerator):
 
 
 class Blend2DSymbolFilter(SymbolGeneratorFilter):
+    def should_gen_enum(self, node: c_ast.Enum, decl: SwiftEnumDecl) -> bool:
+        if decl.name.to_string() == "BLObjectInfoBits":
+            return False
+
+        return super().should_gen_enum(node, decl)
+
     def should_gen_enum_case(
         self, node: c_ast.Enumerator, decl: SwiftEnumCaseDecl
     ) -> bool:
@@ -122,6 +130,56 @@ class Blend2DNameGenerator(SymbolNameGenerator):
         return self.generate(name)
 
 
+class Blend2DDoccommentFormatter(DoccommentFormatter):
+    """
+    Formats doc comments from Blend2D to be more Swifty, including renaming \
+    referenced C symbol names to the converted Swift names.
+    """
+
+    def __init__(self):
+        self.ref_regex = re.compile(r"\\ref (\w+(?:\(\))?)", re.IGNORECASE)
+        self.backtick_regex = re.compile(r"`(.+)`")
+        self.backtick_word_regex = re.compile(r"\w+")
+
+    def replace_refs(self, string: str) -> str:
+        return self.ref_regex.sub(
+            lambda match: f"`{''.join(match.groups())}`",
+            string,
+        )
+
+    def convert_refs(self, string: str, lookup: SwiftDeclLookup) -> str:
+        def convert_word_match(match: re.Match[str]) -> str:
+            name = match.group()
+            swift_name = lookup.lookup_c_symbol(name)
+            if swift_name is not None:
+                return swift_name
+
+            return name
+
+        def convert_backtick_match(match: re.Match[str]) -> str:
+            return self.backtick_word_regex.sub(
+                convert_word_match,
+                match.group(),
+            )
+
+        return self.backtick_regex.sub(convert_backtick_match, string)
+
+    def format_doccomments(
+        self, comments: list[str], decl: SwiftDecl, lookup: SwiftDeclLookup
+    ) -> list[str] | None:
+
+        new_comments = filter(lambda c: not c.startswith("\\ingroup"), comments)
+        new_comments = map(lambda c: c.replace("\\note", "- note:"), new_comments)
+
+        # Replace "\\ref <symbol>" with "`<symbol>`"
+        new_comments = map(self.replace_refs, new_comments)
+
+        # Convert C symbol references to Swift symbols
+        new_comments = map(lambda c: self.convert_refs(c, lookup), new_comments)
+
+        return super().format_doccomments(list(new_comments), decl, lookup)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generates .swift files for Blend2D enum declarations."
@@ -172,6 +230,7 @@ def main() -> int:
         destination=destination_path,
         prefixes=BLEND2D_PREFIXES,
         target=target,
+        includes=["blend2d"],
         swift_decl_generator=Blend2DDeclGenerator(
             prefixes=BLEND2D_PREFIXES,
             symbol_filter=symbol_filter,
@@ -179,7 +238,7 @@ def main() -> int:
         ),
         symbol_filter=symbol_filter,
         symbol_name_generator=symbol_name_generator,
-        includes=["blend2d"],
+        doccomment_formatter=Blend2DDoccommentFormatter(),
     )
 
     generate_types(request)

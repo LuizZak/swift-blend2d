@@ -13,10 +13,12 @@ from pycparser import c_ast
 from contextlib import contextmanager
 
 from utils.converters.syntax_stream import SyntaxStream
+from utils.data.swift_decl_lookup import SwiftDeclLookup
+from utils.doccomment.doccomment_formatter import DoccommentFormatter
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
 from utils.generator.symbol_name_generator import SymbolNameGenerator
-from utils.data.swift_decls import SwiftDecl, SwiftEnumDecl
+from utils.data.swift_decls import SwiftDecl, SwiftEnumDecl, SwiftDeclAnyVisitor, SwiftDeclVisitResult
 from utils.directory_structure.directory_structure_manager import DirectoryStructureManager
 from utils.data.swift_file import SwiftFile
 from utils.doccomment.doccomment_lookup import DoccommentLookup
@@ -173,6 +175,17 @@ class DeclCollectorVisitor(c_ast.NodeVisitor):
             self.decls.append(node)
 
 
+class SwiftDoccommentFormatterVisitor(SwiftDeclAnyVisitor):
+    def __init__(self, formatter: DoccommentFormatter, lookup: SwiftDeclLookup):
+        self.formatter = formatter
+        self.lookup = lookup
+    
+    def visit_any_decl(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
+        decl.doccomments = self.formatter.format_doccomments(decl.doccomments, decl, self.lookup)
+
+        return SwiftDeclVisitResult.VISIT_CHILDREN
+
+
 @dataclass
 class TypeGeneratorRequest:
     header_file: Path
@@ -183,6 +196,7 @@ class TypeGeneratorRequest:
     swift_decl_generator: SwiftDeclGenerator | None
     symbol_filter: SymbolGeneratorFilter
     symbol_name_generator: SymbolNameGenerator
+    doccomment_formatter: DoccommentFormatter | None
 
 
 def generate_types(request: TypeGeneratorRequest) -> int:
@@ -218,11 +232,22 @@ def generate_types(request: TypeGeneratorRequest) -> int:
 
     doccomment_lookup = DoccommentLookup()
     swift_decls = doccomment_lookup.populate_doc_comments(swift_decls)
-    
+
     print('Merging generated Swift type declarations...')
     
     merger = SwiftDeclMerger()
     swift_decls = merger.merge(swift_decls)
+
+    if request.doccomment_formatter is not None:
+        print('Formatting doc comments...')
+
+        lookup = SwiftDeclLookup(swift_decls)
+        visitor = SwiftDoccommentFormatterVisitor(request.doccomment_formatter, lookup)
+
+        for decl in swift_decls:
+            visitor.walk_decl(decl)
+    
+    print('Generating files...')
 
     generator = DeclFileGenerator(request.destination, request.target, swift_decls, request.includes)
     generator.generate()

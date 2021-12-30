@@ -17,7 +17,7 @@ public extension BLContextCreateFlags {
     /// rendering context fails to acquire at least one thread it would fallback to synchronous mode with no worker
     /// threads.
     /// 
-    /// \note If this flag is specified with `threadCount == 1` it means to immediately fallback to synchronous
+    /// - note: If this flag is specified with `threadCount == 1` it means to immediately fallback to synchronous
     /// rendering. It's only practical to use this flag with 2 or more requested threads.
     static let fallbackToSync = BL_CONTEXT_CREATE_FLAG_FALLBACK_TO_SYNC
     
@@ -39,7 +39,7 @@ public extension BLContextCreateFlags {
     
     /// Enables logging to stderr of isolated runtime.
     /// 
-    /// \note Must be used with \ref BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT_RUNTIME otherwise it would have no effect.
+    /// - note: Must be used with `BLContextCreateFlags.isolatedJitRuntime` otherwise it would have no effect.
     static let isolatedJitLogging = BL_CONTEXT_CREATE_FLAG_ISOLATED_JIT_LOGGING
     
     /// Override CPU features when creating isolated context.

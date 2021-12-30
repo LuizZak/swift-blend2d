@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_text
-/// 
 /// Text encoding.
 public extension BLTextEncoding {
     /// UTF-8 encoding.

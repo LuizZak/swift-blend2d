@@ -11,7 +11,7 @@ public extension BLContextErrorFlags {
     /// No flags.
     static let noFlags = BL_CONTEXT_ERROR_NO_FLAGS
     
-    /// The rendering context returned or encountered `BL_ERROR_INVALID_VALUE`, which is mostly related to the function
+    /// The rendering context returned or encountered `BLResultCode.errorInvalidValue`, which is mostly related to the function
     /// argument handling. It's very likely some argument was wrong when calling `BLContext` API.
     static let invalidValue = BL_CONTEXT_ERROR_FLAG_INVALID_VALUE
     

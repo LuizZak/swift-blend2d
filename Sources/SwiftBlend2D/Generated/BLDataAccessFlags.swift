@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_globals
-/// 
 /// Data access flags.
 extension BLDataAccessFlags: OptionSet { }
 

@@ -1,15 +1,7 @@
-from dataclasses import dataclass
 from pathlib import Path
 
 from utils.data.swift_decls import SwiftDecl, SwiftEnumDecl
-
-
-@dataclass
-class DoccommentLine:
-    file: Path
-    line: int
-    column: int
-    comment_contents: str
+from utils.doccomment.doccomment_line import DoccommentLine
 
 
 class DoccommentLookup:

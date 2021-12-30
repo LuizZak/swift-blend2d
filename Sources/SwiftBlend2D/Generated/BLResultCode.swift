@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_globals
-/// 
 /// Blend2D result code.
 public extension BLResultCode {
     /// Successful result code.

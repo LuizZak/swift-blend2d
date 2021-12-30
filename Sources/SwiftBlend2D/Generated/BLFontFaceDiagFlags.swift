@@ -2,7 +2,7 @@
 
 import blend2d
 
-/// Diagnostic flags offered by \ref BLFontFace (or \ref BLFontFaceCore).
+/// Diagnostic flags offered by `BLFontFace` (or `BLFontFaceCore`).
 extension BLFontFaceDiagFlags: OptionSet { }
 
 public extension BLFontFaceDiagFlags {

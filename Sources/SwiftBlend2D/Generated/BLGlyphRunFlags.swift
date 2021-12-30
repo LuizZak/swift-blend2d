@@ -2,7 +2,7 @@
 
 import blend2d
 
-/// Flags used by \ref BLGlyphRun.
+/// Flags used by `BLGlyphRun`.
 extension BLGlyphRunFlags: OptionSet { }
 
 public extension BLGlyphRunFlags {

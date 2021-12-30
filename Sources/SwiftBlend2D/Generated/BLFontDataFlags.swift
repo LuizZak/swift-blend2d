@@ -2,7 +2,7 @@
 
 import blend2d
 
-/// Flags used by \ref BLFontData (or \ref BLFontDataCore).
+/// Flags used by `BLFontData` (or `BLFontDataCore`).
 extension BLFontDataFlags: OptionSet { }
 
 public extension BLFontDataFlags {

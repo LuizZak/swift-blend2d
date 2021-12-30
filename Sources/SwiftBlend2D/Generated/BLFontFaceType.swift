@@ -2,7 +2,7 @@
 
 import blend2d
 
-/// Type of a font or font-face, see \ref BLFontFace (or \ref BLFontFaceCore).
+/// Type of a font or font-face, see `BLFontFace` (or `BLFontFaceCore`).
 public extension BLFontFaceType {
     /// None or unknown font type.
     static let none = BL_FONT_FACE_TYPE_NONE

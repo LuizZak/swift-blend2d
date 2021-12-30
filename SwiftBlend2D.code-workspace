@@ -35,7 +35,11 @@
 				"command": "swift",
 				"args": [
 					"build",
-					"--build-tests"
+					"--build-tests",
+					"-Xswiftc",
+					"-Xfrontend",
+					"-Xswiftc",
+					"-serialize-debugging-options",
 				]
 			},
             {
@@ -43,7 +47,12 @@
 				"type": "shell",
 				"command": "swift",
 				"args": [
-					"test"
+					"test",
+					"--enable-code-coverage",
+					"-Xswiftc",
+					"-Xfrontend",
+					"-Xswiftc",
+					"-serialize-debugging-options",
 				]
 			},
             {
@@ -155,6 +164,36 @@
 	"extensions": {
 		"recommendations": [
 			"exodiusstudios.comment-anchors"
+		]
+	},
+	"launch": {
+		"configurations": [
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "Debug SwiftBlend2DSample",
+				"program": "${workspaceFolder}/.build/debug/SwiftBlend2DSample",
+				"args": [],
+				"cwd": "${workspaceFolder:SwiftBlend2D}",
+				"preLaunchTask": "swift: Build Debug SwiftBlend2DSample"
+			},
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "Release SwiftBlend2DSample",
+				"program": "${workspaceFolder}/.build/release/SwiftBlend2DSample",
+				"args": [],
+				"cwd": "${workspaceFolder:SwiftBlend2D}",
+				"preLaunchTask": "swift: Build Release SwiftBlend2DSample"
+			},
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "Test SwiftBlend2D",
+				"program": "./.build/debug/SwiftBlend2DPackageTests.xctest",
+				"cwd": "${workspaceFolder:SwiftBlend2D}",
+				"preLaunchTask": "swift: Build All"
+			}
 		]
 	}
 }

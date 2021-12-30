@@ -4,7 +4,7 @@ import blend2d
 
 /// File seek mode, see `BLFile::seek()`.
 /// 
-/// \note Seek constants should be compatible with constants used by both POSIX
+/// - note: Seek constants should be compatible with constants used by both POSIX
 /// and Windows API.
 public extension BLFileSeekType {
     /// Seek from the beginning of the file (SEEK_SET).

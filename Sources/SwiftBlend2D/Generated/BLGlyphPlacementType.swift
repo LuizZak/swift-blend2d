@@ -2,9 +2,9 @@
 
 import blend2d
 
-/// Placement of glyphs stored in a \ref BLGlyphRun.
+/// Placement of glyphs stored in a `BLGlyphRun`.
 public extension BLGlyphPlacementType {
-    /// No placement (custom handling by \ref BLPathSinkFunc).
+    /// No placement (custom handling by `BLPathSinkFunc`).
     static let none = BL_GLYPH_PLACEMENT_TYPE_NONE
     
     /// Each glyph has a BLGlyphPlacement (advance + offset).

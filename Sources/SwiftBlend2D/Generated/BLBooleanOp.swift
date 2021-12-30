@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_globals
-/// 
 /// Boolean operator.
 public extension BLBooleanOp {
     /// Result = B.

@@ -17,7 +17,7 @@ public extension BLPixelConverterCreateFlags {
     /// preparing the conversion. The modification can be irreversible so only use this flag when you are sure that
     /// the palette passed to `BLPixelConverter::create()` won't be needed outside of pixel conversion.
     /// 
-    /// \note The flag `BL_PIXEL_CONVERTER_CREATE_FLAG_DONT_COPY_PALETTE` must be set as well, otherwise this flag would
+    /// - note: The flag `BLPixelConverterCreateFlags.dontCopyPalette` must be set as well, otherwise this flag would
     /// be ignored.
     static let alterablePalette = BL_PIXEL_CONVERTER_CREATE_FLAG_ALTERABLE_PALETTE
     
@@ -25,7 +25,7 @@ public extension BLPixelConverterCreateFlags {
     /// that is used during conversion. In such case the base pixel converter creates two more converters that are then
     /// used internally.
     /// 
-    /// This option disables such feature - creating a pixel converter would fail with `BL_ERROR_NOT_IMPLEMENTED` error
+    /// This option disables such feature - creating a pixel converter would fail with `BLResultCode.errorNotImplemented` error
     /// if direct conversion is not possible.
     static let noMultiStep = BL_PIXEL_CONVERTER_CREATE_FLAG_NO_MULTI_STEP
 }

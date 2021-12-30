@@ -2,7 +2,7 @@
 
 import blend2d
 
-/// Flags used by \ref BLFontFace (or \ref BLFontFaceCore)
+/// Flags used by `BLFontFace` (or `BLFontFaceCore`)
 extension BLFontFaceFlags: OptionSet { }
 
 public extension BLFontFaceFlags {

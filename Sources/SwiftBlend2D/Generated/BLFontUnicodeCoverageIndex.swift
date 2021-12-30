@@ -2,7 +2,7 @@
 
 import blend2d
 
-/// Bit positions in \ref BLFontUnicodeCoverage structure.
+/// Bit positions in `BLFontUnicodeCoverage` structure.
 /// 
 /// Each bit represents a range (or multiple ranges) of unicode characters.
 public extension BLFontUnicodeCoverageIndex {

@@ -2,8 +2,6 @@
 
 import blend2d
 
-/// \ingroup blend2d_api_globals
-/// 
 /// Byte order.
 public extension BLByteOrder {
     /// Little endian byte-order.

@@ -15,13 +15,13 @@ public extension BLFormatFlags {
     /// Pixel format provides only alpha component.
     static let alpha = BL_FORMAT_FLAG_ALPHA
     
-    /// A combination of `BL_FORMAT_FLAG_RGB | BL_FORMAT_FLAG_ALPHA`.
+    /// A combination of `BLFormatFlags.rgb | BLFormatFlags.alpha`.
     static let rgba = BL_FORMAT_FLAG_RGBA
     
     /// Pixel format provides LUM component (and not RGB components).
     static let lum = BL_FORMAT_FLAG_LUM
     
-    /// A combination of `BL_FORMAT_FLAG_LUM | BL_FORMAT_FLAG_ALPHA`.
+    /// A combination of `BLFormatFlags.lum | BLFormatFlags.alpha`.
     static let luma = BL_FORMAT_FLAG_LUMA
     
     /// Indexed pixel format the requres a palette (I/O only).
@@ -43,17 +43,17 @@ public extension BLFormatFlags {
     /// and is usually set to zero. Blend2D doesn't rely on the content of such bits.
     static let undefinedBits = BL_FORMAT_FLAG_UNDEFINED_BITS
     
-    /// Convenience flag that contains either zero or `BL_FORMAT_FLAG_BYTE_SWAP` depending on host byte order. Little
-    /// endian hosts have this flag set to zero and big endian hosts to `BL_FORMAT_FLAG_BYTE_SWAP`.
+    /// Convenience flag that contains either zero or `BLFormatFlags.byteSwap` depending on host byte order. Little
+    /// endian hosts have this flag set to zero and big endian hosts to `BLFormatFlags.byteSwap`.
     /// 
-    /// \note This is not a real flag that you can test, it's only provided for convenience to define little endian
+    /// - note: This is not a real flag that you can test, it's only provided for convenience to define little endian
     /// pixel formats.
     static let le = BL_FORMAT_FLAG_LE
     
-    /// Convenience flag that contains either zero or `BL_FORMAT_FLAG_BYTE_SWAP` depending on host byte order. Big
-    /// endian hosts have this flag set to zero and little endian hosts to `BL_FORMAT_FLAG_BYTE_SWAP`.
+    /// Convenience flag that contains either zero or `BLFormatFlags.byteSwap` depending on host byte order. Big
+    /// endian hosts have this flag set to zero and little endian hosts to `BLFormatFlags.byteSwap`.
     /// 
-    /// \note This is not a real flag that you can test, it's only provided for convenience to define big endian
+    /// - note: This is not a real flag that you can test, it's only provided for convenience to define big endian
     /// pixel formats.
     static let be = BL_FORMAT_FLAG_BE
 }
