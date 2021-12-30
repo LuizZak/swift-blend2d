@@ -18,8 +18,15 @@ from utils.doccomment.doccomment_formatter import DoccommentFormatter
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
 from utils.generator.symbol_name_generator import SymbolNameGenerator
-from utils.data.swift_decls import SwiftDecl, SwiftEnumDecl, SwiftDeclAnyVisitor, SwiftDeclVisitResult
-from utils.directory_structure.directory_structure_manager import DirectoryStructureManager
+from utils.data.swift_decls import (
+    SwiftDecl,
+    SwiftEnumDecl,
+    SwiftDeclAnyVisitor,
+    SwiftDeclVisitResult,
+)
+from utils.directory_structure.directory_structure_manager import (
+    DirectoryStructureManager,
+)
 from utils.data.swift_file import SwiftFile
 from utils.doccomment.doccomment_lookup import DoccommentLookup
 
@@ -55,7 +62,7 @@ def run_clang(input_path: Path) -> bytes:
 def run_c_preprocessor(input_path: Path) -> bytes:
     if sys.platform == "win32":
         return run_cl(input_path)
-    
+
     return run_clang(input_path)
 
 
@@ -63,25 +70,33 @@ class SwiftDeclMerger:
     """
     Merges Swift declarations that share a name
     """
-    
+
     def merge(self, decls: list[SwiftDecl]) -> list[SwiftDecl]:
         decl_dict: dict[str, SwiftDecl] = dict()
 
         for decl in decls:
             existing = decl_dict.get(decl.name)
             if existing is not None:
-                match (existing, decl):
-                    case SwiftEnumDecl(), SwiftEnumDecl():
-                        decl_dict[decl.name] = SwiftEnumDecl(
-                            name=existing.name,
-                            original_name=existing.original_name,
-                            cases=existing.cases + decl.cases,
-                            origin=existing.origin,
-                            doccomments=existing.doccomments,
-                            conformances=existing.conformances + decl.conformances
-                        )
-                    case _:
-                        raise BaseException(f"Found two symbols that share the same name but are of different types: {existing.name} (originally: {existing.original_name}) and {decl.name} (originally: {decl.original_name})")
+                if isinstance(existing, SwiftEnumDecl) and isinstance(
+                    decl, SwiftEnumDecl
+                ):
+                    decl_dict[decl.name] = SwiftEnumDecl(
+                        name=existing.name,
+                        original_name=existing.original_name,
+                        cases=existing.cases + decl.cases,
+                        origin=existing.origin,
+                        doccomments=existing.doccomments,
+                        conformances=existing.conformances + decl.conformances,
+                    )
+                else:
+                    existing_name = existing.name.to_string()
+                    existing_original = existing.original_name.to_string()
+                    decl_name = decl.name.to_string()
+                    decl_original = decl.original_name.to_string()
+
+                    raise BaseException(
+                        f"Found two symbols that share the same name but are of different types: {existing_name} (type: {type(existing)}) (originally: {existing_original}) and {decl_name} (type: {type(decl)}) (originally: {decl_original})"
+                    )
             else:
                 decl_dict[decl.name] = decl
 
@@ -94,11 +109,13 @@ class DeclGeneratorTarget:
 
     @contextmanager
     def create_stream(self, _: Path) -> SyntaxStream:
-        raise NotImplementedError('Must be overridden by subclasses.')
+        raise NotImplementedError("Must be overridden by subclasses.")
 
 
 class DeclFileGeneratorDiskTarget(DeclGeneratorTarget):
-    def __init__(self, destination_folder: Path, rm_folder: bool = True, verbose: bool = True):
+    def __init__(
+        self, destination_folder: Path, rm_folder: bool = True, verbose: bool = True
+    ):
         self.destination_folder = destination_folder
         self.rm_folder = rm_folder
         self.directory_manager = DirectoryStructureManager(destination_folder)
@@ -106,7 +123,7 @@ class DeclFileGeneratorDiskTarget(DeclGeneratorTarget):
 
     def prepare(self):
         if self.verbose:
-            print(f'Generating .swift files to {self.destination_folder}...')
+            print(f"Generating .swift files to {self.destination_folder}...")
 
         if self.rm_folder:
             shutil.rmtree(self.destination_folder)
@@ -116,7 +133,7 @@ class DeclFileGeneratorDiskTarget(DeclGeneratorTarget):
     def create_stream(self, path: Path) -> SyntaxStream:
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(path, 'w', newline='\n') as file:
+        with open(path, "w", newline="\n") as file:
             stream = SyntaxStream(file)
             yield stream
 
@@ -129,11 +146,20 @@ class DeclFileGeneratorStdoutTarget(DeclGeneratorTarget):
 
 
 class DeclFileGenerator:
-    def __init__(self, destination_folder: Path, target: DeclGeneratorTarget,
-                 decls: list[SwiftDecl], includes: list[str]):
+    def __init__(
+        self,
+        destination_folder: Path,
+        target: DeclGeneratorTarget,
+        decls: list[SwiftDecl],
+        includes: list[str],
+        directory_manager: DirectoryStructureManager | None = None,
+    ):
+        if directory_manager is None:
+            self.directory_manager = DirectoryStructureManager(destination_folder)
+        else:
+            self.directory_manager = directory_manager
 
         self.destination_folder = destination_folder
-        self.directory_manager = DirectoryStructureManager(destination_folder)
         self.target = target
         self.decls = decls
         self.includes = includes
@@ -179,9 +205,11 @@ class SwiftDoccommentFormatterVisitor(SwiftDeclAnyVisitor):
     def __init__(self, formatter: DoccommentFormatter, lookup: SwiftDeclLookup):
         self.formatter = formatter
         self.lookup = lookup
-    
+
     def visit_any_decl(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
-        decl.doccomments = self.formatter.format_doccomments(decl.doccomments, decl, self.lookup)
+        decl.doccomments = self.formatter.format_doccomments(
+            decl.doccomments, decl, self.lookup
+        )
 
         return SwiftDeclVisitResult.VISIT_CHILDREN
 
@@ -197,26 +225,27 @@ class TypeGeneratorRequest:
     symbol_filter: SymbolGeneratorFilter
     symbol_name_generator: SymbolNameGenerator
     doccomment_formatter: DoccommentFormatter | None
+    directory_manager: DirectoryStructureManager | None
 
 
 def generate_types(request: TypeGeneratorRequest) -> int:
-    print('Generating header file...')
+    print("Generating header file...")
 
     output_file = run_c_preprocessor(request.header_file)
 
     # Windows-specific fix to replace some page feeds that are present in the original system headers
     if sys.platform == "win32":
-        output_file = output_file.replace(b'\x0c', b'')
+        output_file = output_file.replace(b"\x0c", b"")
 
     output_path = request.header_file.with_suffix(".i")
-    with open(output_path, 'wb') as f:
+    with open(output_path, "wb") as f:
         f.write(output_file)
 
-    print('Parsing generated header file...')
+    print("Parsing generated header file...")
 
     ast = pycparser.parse_file(output_path, use_cpp=False)
 
-    print('Collecting Swift type candidates...')
+    print("Collecting Swift type candidates...")
 
     visitor = DeclCollectorVisitor(prefixes=request.prefixes)
     visitor.visit(ast)
@@ -224,34 +253,44 @@ def generate_types(request: TypeGeneratorRequest) -> int:
     if request.swift_decl_generator is not None:
         converter = request.swift_decl_generator
     else:
-        converter = SwiftDeclGenerator(prefixes=request.prefixes, symbol_filter=request.symbol_filter, symbol_name_generator=request.symbol_name_generator)
-    
+        converter = SwiftDeclGenerator(
+            prefixes=request.prefixes,
+            symbol_filter=request.symbol_filter,
+            symbol_name_generator=request.symbol_name_generator,
+        )
+
     swift_decls = converter.generate_from_list(visitor.decls)
 
-    print('Generating doc comments...')
+    print("Generating doc comments...")
 
     doccomment_lookup = DoccommentLookup()
     swift_decls = doccomment_lookup.populate_doc_comments(swift_decls)
 
-    print('Merging generated Swift type declarations...')
-    
+    print("Merging generated Swift type declarations...")
+
     merger = SwiftDeclMerger()
     swift_decls = merger.merge(swift_decls)
 
     if request.doccomment_formatter is not None:
-        print('Formatting doc comments...')
+        print("Formatting doc comments...")
 
         lookup = SwiftDeclLookup(swift_decls)
         visitor = SwiftDoccommentFormatterVisitor(request.doccomment_formatter, lookup)
 
         for decl in swift_decls:
             visitor.walk_decl(decl)
-    
-    print('Generating files...')
 
-    generator = DeclFileGenerator(request.destination, request.target, swift_decls, request.includes)
+    print("Generating files...")
+
+    generator = DeclFileGenerator(
+        request.destination,
+        request.target,
+        swift_decls,
+        request.includes,
+        request.directory_manager,
+    )
     generator.generate()
 
-    print('Success!')
+    print("Success!")
 
     return 0

@@ -10,6 +10,10 @@ from utils.converters.default_symbol_name_formatter import DefaultSymbolNameForm
 from utils.converters.symbol_name_formatter import SymbolNameFormatter
 from utils.data.swift_decl_lookup import SwiftDeclLookup
 from utils.data.swift_decls import SwiftDecl, SwiftEnumCaseDecl, SwiftEnumDecl
+from utils.directory_structure.directory_structure_manager import (
+    DirectoryStructureEntry,
+    DirectoryStructureManager,
+)
 from utils.doccomment.doccomment_formatter import DoccommentFormatter
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
@@ -51,7 +55,10 @@ class Blend2DDeclGenerator(SwiftDeclGenerator):
 
 class Blend2DSymbolFilter(SymbolGeneratorFilter):
     def should_gen_enum(self, node: c_ast.Enum, decl: SwiftEnumDecl) -> bool:
-        if decl.name.to_string() == "BLObjectInfoBits":
+        if (
+            decl.name.to_string() == "BLObjectInfoBits"
+            or decl.name.to_string() == "BLObjectInfoShift"
+        ):
             return False
 
         return super().should_gen_enum(node, decl)
@@ -180,6 +187,74 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
         return super().format_doccomments(list(new_comments), decl, lookup)
 
 
+class Blend2DDirectoryStructureManager(DirectoryStructureManager):
+    def path_matchers(self) -> list[DirectoryStructureEntry]:
+        # Array of tuples containing:
+        # tuple.0: An array of path components (min 1, must not have special characters);
+        # tuple.1: Either a regular expression, OR a list of regular expression/exact
+        #          strings that file names will be tested against.
+        # Matches are made against full file names, with no directory information,
+        # e.g.: "BLContext.swift", "BLFillRule.swift", "BLResultCode.swift", etc.
+        return [
+            # C
+            (
+                ["Context"],
+                [
+                    re.compile(r"^BLContext.+"),
+                    "BLGradientQuality.swift",
+                    "BLPatternQuality.swift",
+                    "BLRenderingQuality.swift",
+                    "BLFillRule.swift",
+                    "BLClipMode.swift",
+                    "BLCompOp.swift",
+                    "BLFlattenMode.swift",
+                ],
+            ),
+            # F
+            (["File"], re.compile(r"^BLFile.+")),
+            # G
+            (["Gradient"], re.compile(r"^BLGradient.+")),
+            (
+                ["Geometry"],
+                [
+                    "BLGeometryDirection.swift",
+                    "BLGeometryType.swift",
+                ],
+            ),
+            (["Geometry", "Matrix"], re.compile(r"^BLMatrix.+")),
+            (
+                ["Geometry", "Path"],
+                [
+                    re.compile(r"^BLPath.+"),
+                    "BLHitTest.swift",
+                    "BLOffsetMode.swift",
+                ],
+            ),
+            # I
+            (["Image"], re.compile(r"^BLImage.+")),
+            # R
+            (
+                ["Runtime"],
+                [
+                    re.compile(r"^BLRuntime.+"),
+                    "BLObjectType.swift",
+                ],
+            ),
+            # S
+            (["Stroke"], re.compile(r"^BLStroke.+")),
+            # T
+            (["Text"], re.compile(r"^BLText.+")),
+            (
+                ["Text", "Font"],
+                [
+                    re.compile(r"^BLFont.+"),
+                    "BLOrientation.swift",
+                ],
+            ),
+            (["Text", "Glyph"], re.compile(r"^BLGlyph.+")),
+        ]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generates .swift files for Blend2D enum declarations."
@@ -239,6 +314,7 @@ def main() -> int:
         symbol_filter=symbol_filter,
         symbol_name_generator=symbol_name_generator,
         doccomment_formatter=Blend2DDoccommentFormatter(),
+        directory_manager=Blend2DDirectoryStructureManager(destination_path),
     )
 
     generate_types(request)

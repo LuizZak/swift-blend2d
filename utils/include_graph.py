@@ -16,7 +16,7 @@ from typing import List, Generic, TypeVar
 def make_argparser() -> argparse.ArgumentParser:
     argparser = argparse.ArgumentParser(
         description="Generates a .dot Graphviz file with the include graph starting from a given header file. Results "
-                    "gets printed to stdout. "
+        "gets printed to stdout. "
     )
     argparser.add_argument(
         "header_file_path",
