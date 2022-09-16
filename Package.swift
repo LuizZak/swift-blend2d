@@ -53,8 +53,19 @@ var blend2DCXXSettings: [CXXSetting] = [
     .define("BL_BUILD_NO_STDCXX"),
     .define("BL_EMBED"),
     .define("BL_STATIC"),
+    .define("ASMJIT_NO_LOGGING"),
 ]
 blend2DCXXSettings.append(contentsOf: extraBlend2DFlags.map { .define($0) })
+
+let asmjitCXXSettings: [CXXSetting] = [
+    .define("NDEBUG", .when(configuration: .release)),
+    .define("ASMJIT_NO_FOREIGN"),
+    .define("ASMJIT_BUILD_NO_STDCXX"),
+    .define("ASMJIT_EMBED"),
+    .define("ASMJIT_STATIC"),
+    .define("ASMJIT_NO_TEXT"),
+    .define("ASMJIT_NO_LOGGING"),
+]
 
 // LibPNG for snapshot testing
 
@@ -94,13 +105,7 @@ let package = Package(
         .target(
             name: "asmjit",
             dependencies: [],
-            cxxSettings: [
-                .define("NDEBUG", .when(configuration: .release)),
-                .define("ASMJIT_NO_FOREIGN"),
-                .define("ASMJIT_BUILD_NO_STDCXX"),
-                .define("ASMJIT_EMBED"),
-                .define("ASMJIT_STATIC"),
-            ],
+            cxxSettings: asmjitCXXSettings,
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
                 .linkedLibrary("pthread", .when(platforms: [.linux]))

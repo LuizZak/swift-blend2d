@@ -624,7 +624,7 @@ static void blPngDeinterlaceBits(
     }
 
     // Don't change to `||`, both have to be executed!
-    if ((--y == 0) | (++n == 4)) {
+    if (uint32_t(--y == 0) | uint32_t(++n == 4)) {
       pc.convertRect(dstLine, dstStride * 2, tmpLine, tmpStride, w, n);
       dstLine += dstStride * 8;
 
@@ -729,7 +729,7 @@ static void blPngDeinterlaceBytes(
     }
 
     // Don't change to `||`, both have to be executed!
-    if ((--y == 0) | (++n == 4)) {
+    if (uint32_t(--y == 0) | uint32_t(++n == 4)) {
       pc.convertRect(dstLine, dstStride * 2, tmpLine, tmpStride, w, n);
       dstLine += dstStride * 8;
 
@@ -1652,10 +1652,10 @@ void blPngCodecOnInit(BLRuntimeContext* rt, BLArray<BLImageCodec>* codecs) noexc
     BL_IMAGE_CODEC_FEATURE_READ     |
     BL_IMAGE_CODEC_FEATURE_WRITE    |
     BL_IMAGE_CODEC_FEATURE_LOSSLESS ;
-  blPngCodec.impl->name.assign("PNG");
-  blPngCodec.impl->vendor.assign("Blend2D");
-  blPngCodec.impl->mimeType.assign("image/png");
-  blPngCodec.impl->extensions.assign("png");
+  blPngCodec.impl->name.dcast().assign("PNG");
+  blPngCodec.impl->vendor.dcast().assign("Blend2D");
+  blPngCodec.impl->mimeType.dcast().assign("image/png");
+  blPngCodec.impl->extensions.dcast().assign("png");
 
   blPngCodecObject._d.initDynamic(BL_OBJECT_TYPE_IMAGE_CODEC, BLObjectInfo{BL_OBJECT_INFO_IMMUTABLE_FLAG}, &blPngCodec.impl);
 
@@ -1674,5 +1674,5 @@ void blPngCodecOnInit(BLRuntimeContext* rt, BLArray<BLImageCodec>* codecs) noexc
   blPngEncoderVirt.restart = blPngEncoderImplRestart;
   blPngEncoderVirt.writeFrame = blPngEncoderImplWriteFrame;
 
-  codecs->append(blDownCast(blPngCodecObject));
+  codecs->append(blPngCodecObject.dcast());
 }

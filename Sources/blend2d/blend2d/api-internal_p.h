@@ -257,6 +257,15 @@
 #define BL_ARRAY_SIZE(X) uint32_t(sizeof(X) / sizeof(X[0]))
 #define BL_OFFSET_OF(STRUCT, MEMBER) ((int)(offsetof(STRUCT, MEMBER)))
 
+#define BL_PROPAGATE_(exp, cleanup)                                           \
+  do {                                                                        \
+    BLResult _resultToPropagate = (exp);                                      \
+    if (BL_UNLIKELY(_resultToPropagate != BL_SUCCESS)) {                      \
+      cleanup                                                                 \
+      return _resultToPropagate;                                              \
+    }                                                                         \
+  } while (0)
+
 //! Like BL_PROPAGATE, but propagates everything except `BL_RESULT_NOTHING`.
 #define BL_PROPAGATE_IF_NOT_NOTHING(...)                                      \
   do {                                                                        \
@@ -368,6 +377,23 @@ struct C {                                                                    \
   BL_INLINE bool operator<=(const C& x) const noexcept { return _v <= x._v; } \
 };
 
+// Internal Macros
+// ===============
+
+#define BL_RETURN_ERROR_IF_NULL(ptr)               \
+  do {                                             \
+    if (!(ptr))                                    \
+      return blTraceError(BL_ERROR_OUT_OF_MEMORY); \
+  } while (0)
+
+#define BL_RETURN_ERROR_IF_NULL_(ptr, ...)         \
+  do {                                             \
+    if (!(ptr)) {                                  \
+      __VA_ARGS__                                  \
+      return blTraceError(BL_ERROR_OUT_OF_MEMORY); \
+    }                                              \
+  } while (0)
+
 // Internal Types
 // ==============
 
@@ -406,7 +432,7 @@ enum : uint32_t {
   //! Host memory allocator alignment (can be lower than reality, but cannot be higher).
   BL_ALLOC_ALIGNMENT = 8,
 
-  //! Limits a doubling of a container size after the limit size [in bytes] has reached 8MB. The container will
+  //! Limits doubling of a container size after the limit size [in bytes] has reached 8MB. The container will
   //! use a more conservative approach after the threshold has been reached.
   BL_ALLOC_GROW_LIMIT = 1 << 23,
 

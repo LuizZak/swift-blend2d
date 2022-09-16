@@ -292,15 +292,15 @@ extension UInt: BLArrayElement {
             : UInt64.arrayImplementationType
     }
 }
-extension BLFontFeature: BLArrayElement {
+extension BLFontFeatureItem: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayStruct8)
+        return BLArrayType(arrayType: .fontFeatureSettings)
     }
 }
-extension BLFontVariation: BLArrayElement {
+extension BLFontVariationItem: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayStruct8)
+        return BLArrayType(arrayType: .fontVariationSettings)
     }
 }

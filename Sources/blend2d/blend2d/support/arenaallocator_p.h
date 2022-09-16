@@ -373,6 +373,11 @@ public:
     return new(BLInternal::PlacementNew{p}) T(std::forward<Args>(args)...);
   }
 
+  BL_INLINE void release(void* ptr, size_t size) noexcept {
+    // TODO: This should work by creating an invisible block.
+    blUnused(ptr, size);
+  }
+
   //! \}
 
   //! \name State Management
@@ -445,7 +450,7 @@ public:
 template<size_t N>
 class BLArenaAllocatorTmp : public BLArenaAllocator {
 public:
-  BL_NONCOPYABLE(BLArenaAllocatorTmp<N>)
+  BL_NONCOPYABLE(BLArenaAllocatorTmp)
 
   BL_INLINE explicit BLArenaAllocatorTmp(size_t blockSize, size_t blockAlignment = 1) noexcept
     : BLArenaAllocator(blockSize, blockAlignment, _storage.data, N) {}
@@ -486,7 +491,7 @@ public:
     return true;
   }
 
-  //! Allocates a memory (or reuse the existing allocation) of `size` (in bytes).
+  //! Allocates a memory (or reuses the existing allocation) of `SizeOfT` (in bytes).
   BL_NODISCARD
   BL_INLINE T* alloc(BLArenaAllocator& arena) noexcept {
     Link* p = _pool;

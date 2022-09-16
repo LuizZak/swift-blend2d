@@ -62,6 +62,13 @@ public:
     return _mem;
   }
 
+  BL_NOINLINE void* allocZeroed(size_t size) noexcept {
+    void* p = alloc(size);
+    if (p)
+      memset(p, 0, size);
+    return p;
+  }
+
   BL_INLINE void _reset() noexcept {
     if (_mem != _buf)
       free(_mem);
@@ -82,7 +89,7 @@ public:
 template<size_t N>
 class BLScopedBufferTmp : public BLScopedBuffer {
 public:
-  BL_NONCOPYABLE(BLScopedBufferTmp<N>)
+  BL_NONCOPYABLE(BLScopedBufferTmp)
 
   uint8_t _storage[N];
 

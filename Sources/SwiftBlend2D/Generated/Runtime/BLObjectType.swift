@@ -10,10 +10,10 @@ public extension BLObjectType {
     /// Object is `Null` (can be used as style).
     static let null = BL_OBJECT_TYPE_NULL
     
-    /// Object is `BLPattern` (style compatible).
+    /// Object is `BLPattern` (can be used as style).
     static let pattern = BL_OBJECT_TYPE_PATTERN
     
-    /// Object is `BLGradient` (style compatible).
+    /// Object is `BLGradient` (can be used as style).
     static let gradient = BL_OBJECT_TYPE_GRADIENT
     
     /// Object is `BLImage`.
@@ -25,11 +25,11 @@ public extension BLObjectType {
     /// Object is `BLFont`.
     static let font = BL_OBJECT_TYPE_FONT
     
-    /// Object is `BLFontFeatureOptions`.
-    static let fontFeatureOptions = BL_OBJECT_TYPE_FONT_FEATURE_OPTIONS
+    /// Object is `BLFontFeatureSettings`.
+    static let fontFeatureSettings = BL_OBJECT_TYPE_FONT_FEATURE_SETTINGS
     
-    /// Object is `BLFontVariationOptions`.
-    static let fontVariationOptions = BL_OBJECT_TYPE_FONT_VARIATION_OPTIONS
+    /// Object is `BLFontVariationSettings`.
+    static let fontVariationSettings = BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS
     
     /// Object represents a boolean value.
     static let bool = BL_OBJECT_TYPE_BOOL

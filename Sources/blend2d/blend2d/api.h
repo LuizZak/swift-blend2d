@@ -216,7 +216,7 @@
 #define BL_MAKE_VERSION(MAJOR, MINOR, PATCH) (((MAJOR) << 16) | ((MINOR) << 8) | (PATCH))
 
 //! Blend2D library version.
-#define BL_VERSION BL_MAKE_VERSION(0, 0, 17)
+#define BL_VERSION BL_MAKE_VERSION(0, 0, 18)
 
 //! \}
 //! \}
@@ -477,9 +477,11 @@
 //! \endcond
 
 #ifdef __cplusplus
+  #define BL_DEFINE_CONST static constexpr
   #define BL_DEFINE_ENUM(NAME) enum NAME : uint32_t
   #define BL_FORCE_ENUM_UINT32(ENUM_VALUE_PREFIX)
 #else
+  #define BL_DEFINE_CONST static const
   #define BL_DEFINE_ENUM(NAME) typedef enum NAME NAME; enum NAME
   #define BL_FORCE_ENUM_UINT32(ENUM_VALUE_PREFIX) ,ENUM_VALUE_PREFIX##_FORCE_UINT = 0xFFFFFFFFu
 #endif
@@ -535,7 +537,7 @@
 //! \{
 
 // Diagnostic warnings can be turned on/off by using pragmas, however, this is a compiler specific stuff we have to
-// maintain for each compiler. Ideally we should have a clean code that would compile without any warnings with all
+// maintain for each compiler. Ideally we should have a clean code that would compiler without any warnings with all
 // of them enabled by default, but since there is a lot of nitpicks we just disable some locally when needed (like
 // unused parameter in null-impl functions, etc).
 #if defined(__INTEL_COMPILER)
@@ -714,13 +716,19 @@ BL_FORWARD_DECLARE_STRUCT(BLGlyphRun);
 BL_FORWARD_DECLARE_STRUCT(BLFontUnicodeCoverage);
 BL_FORWARD_DECLARE_STRUCT(BLFontFaceInfo);
 BL_FORWARD_DECLARE_STRUCT(BLFontQueryProperties);
-BL_FORWARD_DECLARE_STRUCT(BLFontFeature);
+BL_FORWARD_DECLARE_STRUCT(BLFontFeatureItem);
+BL_FORWARD_DECLARE_STRUCT(BLFontFeatureSettingsCore);
+BL_FORWARD_DECLARE_STRUCT(BLFontFeatureSettingsImpl);
+BL_FORWARD_DECLARE_STRUCT(BLFontFeatureSettingsView);
 BL_FORWARD_DECLARE_STRUCT(BLFontDesignMetrics);
 BL_FORWARD_DECLARE_STRUCT(BLFontMatrix);
 BL_FORWARD_DECLARE_STRUCT(BLFontMetrics);
 BL_FORWARD_DECLARE_STRUCT(BLFontPanose);
 BL_FORWARD_DECLARE_STRUCT(BLFontTable);
-BL_FORWARD_DECLARE_STRUCT(BLFontVariation);
+BL_FORWARD_DECLARE_STRUCT(BLFontVariationItem);
+BL_FORWARD_DECLARE_STRUCT(BLFontVariationSettingsCore);
+BL_FORWARD_DECLARE_STRUCT(BLFontVariationSettingsImpl);
+BL_FORWARD_DECLARE_STRUCT(BLFontVariationSettingsView);
 BL_FORWARD_DECLARE_STRUCT(BLTextMetrics);
 
 BL_FORWARD_DECLARE_STRUCT(BLFontCore);
@@ -766,7 +774,9 @@ class BLGlyphRunIterator;
 class BLFont;
 class BLFontData;
 class BLFontFace;
+class BLFontFeatureSettings;
 class BLFontManager;
+class BLFontVariationSettings;
 class BLVar;
 #endif
 
@@ -1158,35 +1168,6 @@ struct ConstCTZ {
   };
 };
 
-//! Implementation of `blDownCast()`, which can be used to downcast a Blend2D core struct / object into its C++
-//! counterpart. The cast is always safe.
-template<typename T>
-struct DownCast { typedef T Type; };
-
-#define BL_DCAST_IMPL(T) template<> struct DownCast<T##Core> { typedef T Type; }
-
-BL_DCAST_IMPL(BLBitSet);
-BL_DCAST_IMPL(BLContext);
-BL_DCAST_IMPL(BLFile);
-BL_DCAST_IMPL(BLFont);
-BL_DCAST_IMPL(BLFontData);
-BL_DCAST_IMPL(BLFontFace);
-BL_DCAST_IMPL(BLFontManager);
-BL_DCAST_IMPL(BLGlyphBuffer);
-BL_DCAST_IMPL(BLGradient);
-BL_DCAST_IMPL(BLImage);
-BL_DCAST_IMPL(BLImageCodec);
-BL_DCAST_IMPL(BLImageDecoder);
-BL_DCAST_IMPL(BLImageEncoder);
-BL_DCAST_IMPL(BLPath);
-BL_DCAST_IMPL(BLPattern);
-BL_DCAST_IMPL(BLPixelConverter);
-BL_DCAST_IMPL(BLString);
-BL_DCAST_IMPL(BLStrokeOptions);
-BL_DCAST_IMPL(BLVar);
-
-#undef BL_DCAST_IMPL
-
 // These are required to properly use the C API from C++ BLArray<T>. Category provides a rough overview of `BLArray<T>`
 // type category (like int, float) and the other APIs provide some basic traits that the implementation needs.
 enum TypeCategory : uint32_t {
@@ -1251,7 +1232,9 @@ BL_DEFINE_OBJECT_TRAITS(BLContext)
 BL_DEFINE_OBJECT_TRAITS(BLFont)
 BL_DEFINE_OBJECT_TRAITS(BLFontData)
 BL_DEFINE_OBJECT_TRAITS(BLFontFace)
+BL_DEFINE_OBJECT_TRAITS(BLFontFeatureSettings)
 BL_DEFINE_OBJECT_TRAITS(BLFontManager)
+BL_DEFINE_OBJECT_TRAITS(BLFontVariationSettings)
 BL_DEFINE_OBJECT_TRAITS(BLGradient)
 BL_DEFINE_OBJECT_TRAITS(BLImage)
 BL_DEFINE_OBJECT_TRAITS(BLImageCodec)
@@ -1297,6 +1280,10 @@ BL_INLINE void* operator new(std::size_t, const BLInternal::PlacementNew& p) {
 //! It's a zero-cost solution that doesn't affect release builds in any way.
 BL_NODISCARD
 static inline BLResult blTraceError(BLResult result) BL_NOEXCEPT_C { return result; }
+
+BL_BEGIN_C_DECLS
+BL_API BL_NORETURN void BL_CDECL blRuntimeAssertionFailure(const char* file, int line, const char* msg) BL_NOEXCEPT_C;
+BL_END_C_DECLS
 
 //! \}
 //! \}
@@ -1417,47 +1404,6 @@ BL_INLINE bool blEquals(const double& a, const double& b) noexcept {
 //! \}
 #endif
 
-#ifdef __cplusplus
-//! \addtogroup blend2d_api_globals
-//! \{
-
-//! \name Downcasting from C API type to C++ type
-//! \{
-
-//! Downcasts a core type like `BLContextCore` into a C++ type like `BLContext`. Intended to be used by C++ users
-//! that work with C API as well (by either providing it directly or using some other code that uses Blend2D C API).
-template<typename T>
-BL_NODISCARD
-static BL_INLINE constexpr typename BLInternal::DownCast<T>::Type& blDownCast(T& ref) noexcept {
-  return static_cast<typename BLInternal::DownCast<T>::Type&>(ref);
-}
-
-//! \overload
-template<typename T>
-BL_NODISCARD
-static BL_INLINE constexpr const typename BLInternal::DownCast<T>::Type& blDownCast(const T& ref) noexcept {
-  return static_cast<const typename BLInternal::DownCast<T>::Type&>(ref);
-}
-
-//! \overload
-template<typename T>
-BL_NODISCARD
-static BL_INLINE constexpr typename BLInternal::DownCast<T>::Type* blDownCast(T* ptr) noexcept {
-  return static_cast<typename BLInternal::DownCast<T>::Type*>(ptr);
-}
-
-//! \overload
-template<typename T>
-BL_NODISCARD
-static BL_INLINE constexpr const typename BLInternal::DownCast<T>::Type* blDownCast(const T* ptr) noexcept {
-  return static_cast<const typename BLInternal::DownCast<T>::Type*>(ptr);
-}
-
-//! \}
-
-//! \}
-#endif
-
 //! \addtogroup blend2d_api_globals
 //! \{
 
@@ -1472,25 +1418,13 @@ struct BLRange {
   //! \name Construction & Destruction
   //! \{
 
-  //! Create an uninitialized range.
-  BL_INLINE BLRange() noexcept = default;
-  //! Create a copy of `other` range.
-  BL_INLINE constexpr BLRange(const BLRange& other) noexcept = default;
-
-  //! Create a range from `rstart` to `rEnd`.
-  BL_INLINE constexpr explicit BLRange(size_t rStart, size_t rEnd) noexcept
-    : start(rStart),
-      end(rEnd) {}
-
   BL_NODISCARD
-  static BL_INLINE constexpr BLRange everything() noexcept { return BLRange(0, SIZE_MAX); }
+  static BL_INLINE constexpr BLRange everything() noexcept { return BLRange{0, SIZE_MAX}; }
 
   //! \}
 
   //! \name Overloaded Operators
   //! \{
-
-  BL_INLINE BLRange& operator=(const BLRange& other) noexcept = default;
 
   BL_NODISCARD
   BL_INLINE bool operator==(const BLRange& other) const noexcept { return equals(other); }
@@ -1519,8 +1453,8 @@ struct BLRange {
 
   BL_NODISCARD
   BL_INLINE bool equals(const BLRange& other) const noexcept {
-    return blEquals(start, other.start) &
-           blEquals(end  , other.end  ) ;
+    return bool(unsigned(blEquals(start, other.start)) &
+                unsigned(blEquals(end, other.end)));
   }
 
   //! \}
@@ -1548,8 +1482,16 @@ struct BLArrayView {
     size = sizeIn;
   }
 
+  BL_INLINE const T& operator[](size_t index) noexcept {
+    BL_ASSERT(index < size);
+    return data[index];
+  }
+
   BL_INLINE const T* begin() const noexcept { return data; }
   BL_INLINE const T* end() const noexcept { return data + size; }
+
+  BL_INLINE const T* cbegin() const noexcept { return data; }
+  BL_INLINE const T* cend() const noexcept { return data + size; }
 };
 
 // In C++ mode these are just typedefs of `BLArrayView<Type>`.
@@ -1558,7 +1500,7 @@ struct BLArrayView {
 typedef BLArrayView<char> BLStringView;
 
 //! View of untyped data.
-typedef BLArrayView<void> BLDataView;
+typedef BLArrayView<uint8_t> BLDataView;
 
 #else
 
@@ -1578,10 +1520,6 @@ typedef BLArrayView BLDataView;
 #endif
 
 //! \}
-
-BL_BEGIN_C_DECLS
-BL_API BL_NORETURN void BL_CDECL blRuntimeAssertionFailure(const char* file, int line, const char* msg) BL_NOEXCEPT_C;
-BL_END_C_DECLS
 
 //! \}
 

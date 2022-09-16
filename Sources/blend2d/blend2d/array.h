@@ -11,7 +11,7 @@
 //! \addtogroup blend2d_api_globals
 //! \{
 
-//! \name BLArray [C API]
+//! \name BLArray - C API
 //!
 //! Array functionality is provided by \ref BLArrayCore in C API and wrapped by \ref BLArray<T> template in C++ API.
 //!
@@ -21,48 +21,6 @@
 //! types at API level as there is no difference between them from an implementation perspective.
 //!
 //! \{
-
-//! \cond INTERNAL
-//! Array container [Impl].
-struct BLArrayImpl BL_CLASS_INHERITS(BLObjectImpl) {
-  void* data;
-  //! Array size [in items].
-  size_t size;
-  //! Array capacity [in items].
-  size_t capacity;
-
-#ifdef __cplusplus
-  //! Returns the pointer to the `data` casted to `T*`.
-  template<typename T>
-  BL_NODISCARD
-  BL_INLINE T* dataAs() noexcept { return (T*)data; }
-
-  //! Returns the pointer to the `data` casted to `const T*`.
-  template<typename T>
-  BL_NODISCARD
-  BL_INLINE const T* dataAs() const noexcept { return (const T*)data; }
-#endif
-};
-//! \endcond
-
-//! Array container [C API].
-struct BLArrayCore BL_CLASS_INHERITS(BLObjectCore) {
-  BL_DEFINE_OBJECT_DETAIL
-
-#ifdef __cplusplus
-  //! \cond INTERNAL
-
-  template<typename T>
-  BL_NODISCARD
-  BL_INLINE T& dcast() noexcept { return static_cast<T&>(*this); }
-
-  template<typename T>
-  BL_NODISCARD
-  BL_INLINE const T& dcast() const noexcept { return static_cast<const T&>(*this); }
-
-  //! \endcond
-#endif
-};
 
 BL_BEGIN_C_DECLS
 
@@ -127,12 +85,54 @@ BL_API bool BL_CDECL blArrayEquals(const BLArrayCore* a, const BLArrayCore* b) B
 
 BL_END_C_DECLS
 
-//! \}
+//! Array container [C API].
+struct BLArrayCore BL_CLASS_INHERITS(BLObjectCore) {
+  BL_DEFINE_OBJECT_DETAIL
 
 #ifdef __cplusplus
+  //! \cond INTERNAL
+
+  template<typename T>
+  BL_NODISCARD
+  BL_INLINE T& dcast() noexcept { return static_cast<T&>(*this); }
+
+  template<typename T>
+  BL_NODISCARD
+  BL_INLINE const T& dcast() const noexcept { return static_cast<const T&>(*this); }
+
+  //! \endcond
+#endif
+};
+
+//! \}
+
 //! \cond INTERNAL
-//! \name Internals behind BLArray<T> implementation.
+//! \name BLArray - Internals
 //! \{
+
+//! Array container [Impl].
+struct BLArrayImpl BL_CLASS_INHERITS(BLObjectImpl) {
+  //! Pointer to array data.
+  void* data;
+  //! Array size [in items].
+  size_t size;
+  //! Array capacity [in items].
+  size_t capacity;
+
+#ifdef __cplusplus
+  //! Returns the pointer to the `data` casted to `T*`.
+  template<typename T>
+  BL_NODISCARD
+  BL_INLINE T* dataAs() noexcept { return (T*)data; }
+
+  //! Returns the pointer to the `data` casted to `const T*`.
+  template<typename T>
+  BL_NODISCARD
+  BL_INLINE const T* dataAs() const noexcept { return (const T*)data; }
+#endif
+};
+
+#ifdef __cplusplus
 namespace BLInternal {
 namespace {
 
@@ -252,12 +252,12 @@ template<> BL_INLINE BLResult replaceItem(BLArrayCore* self, size_t index, const
 
 } // {anonymous}
 } // {BLInternal}
+#endif
 
 //! \}
 //! \endcond
-#endif
 
-//! \name BLArray C++ API
+//! \name BLArray - C++ API
 //! \{
 #ifdef __cplusplus
 
@@ -266,6 +266,9 @@ template<typename T>
 class BLArray : public BLArrayCore {
 public:
   //! \cond INTERNAL
+  //! \name Internals
+  //! \{
+
   //! Array traits of `T`.
   typedef BLInternal::ArrayTraits<T> Traits;
 
@@ -279,6 +282,8 @@ public:
                 "Type 'T' cannot be used with 'BLArray<T>' as it's either non-trivial or non-specialized");
 
   BL_INLINE BLArrayImpl* _impl() const noexcept { return static_cast<BLArrayImpl*>(_d.impl); }
+
+  //! \}
   //! \endcond
 
   //! \name Construction & Destruction
@@ -323,11 +328,11 @@ public:
 
   //! Returns true if this and `other` arrays are equal.
   BL_NODISCARD
-  BL_INLINE bool operator==(const BLArray& other) noexcept { return equals(other); }
+  BL_INLINE bool operator==(const BLArray& other) const noexcept { return equals(other); }
 
   //! Returns true if this and `other` arrays are not equal.
   BL_NODISCARD
-  BL_INLINE bool operator!=(const BLArray& other) noexcept { return !equals(other); }
+  BL_INLINE bool operator!=(const BLArray& other) const noexcept { return !equals(other); }
 
   //! Returns a read-only reference to the array item at the given `index`.
   //!

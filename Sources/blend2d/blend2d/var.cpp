@@ -8,7 +8,8 @@
 #include "array_p.h"
 #include "bitset_p.h"
 #include "font_p.h"
-#include "fontmanager_p.h"
+#include "fontfeaturesettings_p.h"
+#include "fontvariationsettings_p.h"
 #include "gradient_p.h"
 #include "image_p.h"
 #include "object_p.h"
@@ -18,8 +19,6 @@
 #include "rgba_p.h"
 #include "string_p.h"
 #include "var_p.h"
-
-namespace BLVarPrivate {
 
 // BLVar - API - Init & Destroy
 // ============================
@@ -72,15 +71,15 @@ BL_API_IMPL BLResult blVarInitDouble(BLUnknown* self, double value) noexcept {
 }
 
 BL_API_IMPL BLResult blVarInitRgba(BLUnknown* self, const BLRgba* rgba) noexcept {
-  return initRgba(blAsObject(self), rgba);
+  return BLVarPrivate::initRgba(blAsObject(self), rgba);
 }
 
 BL_API_IMPL BLResult blVarInitRgba32(BLUnknown* self, uint32_t rgba32) noexcept {
-  return initRgba32(blAsObject(self), BLRgba32(rgba32));
+  return BLVarPrivate::initRgba32(blAsObject(self), BLRgba32(rgba32));
 }
 
 BL_API_IMPL BLResult blVarInitRgba64(BLUnknown* self, uint64_t rgba64) noexcept {
-  return initRgba64(blAsObject(self), BLRgba64(rgba64));
+  return BLVarPrivate::initRgba64(blAsObject(self), BLRgba64(rgba64));
 }
 
 BL_API_IMPL BLResult blVarInitMove(BLUnknown* self, BLUnknown* other) noexcept {
@@ -155,19 +154,19 @@ BL_API_IMPL BLResult blVarAssignDouble(BLUnknown* self, double value) noexcept {
 
 BL_API_IMPL BLResult blVarAssignRgba(BLUnknown* self, const BLRgba* rgba) noexcept {
   BLObjectCore tmp = *blAsObject(self);
-  initRgba(blAsObject(self), rgba);
+  BLVarPrivate::initRgba(blAsObject(self), rgba);
   return blObjectPrivateReleaseUnknown(&tmp);
 }
 
 BL_API_IMPL BLResult blVarAssignRgba32(BLUnknown* self, uint32_t rgba32) noexcept {
   BLObjectCore tmp = *blAsObject(self);
-  initRgba32(blAsObject(self), BLRgba32(rgba32));
+  BLVarPrivate::initRgba32(blAsObject(self), BLRgba32(rgba32));
   return blObjectPrivateReleaseUnknown(&tmp);
 }
 
 BL_API_IMPL BLResult blVarAssignRgba64(BLUnknown* self, uint64_t rgba64) noexcept {
   BLObjectCore tmp = *blAsObject(self);
-  initRgba64(blAsObject(self), BLRgba64(rgba64));
+  BLVarPrivate::initRgba64(blAsObject(self), BLRgba64(rgba64));
   return blObjectPrivateReleaseUnknown(&tmp);
 }
 
@@ -626,6 +625,12 @@ BL_API_IMPL bool blVarEquals(const BLUnknown* a, const BLUnknown* b) noexcept {
     case BL_OBJECT_TYPE_FONT:
       return blFontEquals(static_cast<const BLFontCore*>(a), static_cast<const BLFontCore*>(b));
 
+    case BL_OBJECT_TYPE_FONT_FEATURE_SETTINGS:
+      return blFontFeatureSettingsEquals(static_cast<const BLFontFeatureSettingsCore*>(a), static_cast<const BLFontFeatureSettingsCore*>(b));
+
+    case BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS:
+      return blFontVariationSettingsEquals(static_cast<const BLFontVariationSettingsCore*>(a), static_cast<const BLFontVariationSettingsCore*>(b));
+
     case BL_OBJECT_TYPE_BIT_SET:
       return blBitSetEquals(static_cast<const BLBitSetCore*>(a), static_cast<const BLBitSetCore*>(b));
 
@@ -857,13 +862,13 @@ UNIT(var) {
 
   INFO("Verifying BLRgba value functionality");
   {
-    EXPECT_EQ(BLVar(BLRgba(0.1, 0.2, 0.3, 0.5)).type(), BL_OBJECT_TYPE_RGBA);
-    EXPECT_EQ(BLVar(BLRgba(0.1, 0.2, 0.3, 0.5)), BLVar(BLRgba(0.1, 0.2, 0.3, 0.5)));
-    EXPECT_TRUE(BLVar(BLRgba(0.1, 0.2, 0.3, 0.5)).isRgba());
-    EXPECT_TRUE(BLVar(BLRgba(0.1, 0.2, 0.3, 0.5)).isStyle());
+    EXPECT_EQ(BLVar(BLRgba(0.1f, 0.2f, 0.3f, 0.5f)).type(), BL_OBJECT_TYPE_RGBA);
+    EXPECT_EQ(BLVar(BLRgba(0.1f, 0.2f, 0.3f, 0.5f)), BLVar(BLRgba(0.1f, 0.2f, 0.3f, 0.5f)));
+    EXPECT_TRUE(BLVar(BLRgba(0.1f, 0.2f, 0.3f, 0.5f)).isRgba());
+    EXPECT_TRUE(BLVar(BLRgba(0.1f, 0.2f, 0.3f, 0.5f)).isStyle());
 
     // Wrapped BLRgba is an exception - it doesn't form a valid BLObject signature.
-    EXPECT_FALSE(BLVar(BLRgba(0.1, 0.2, 0.3, 0.5))._d.hasObjectSignature());
+    EXPECT_FALSE(BLVar(BLRgba(0.1f, 0.2f, 0.3f, 0.5f))._d.hasObjectSignature());
   }
 
   INFO("Checking BLGradient value functionality");
@@ -951,5 +956,3 @@ UNIT(var) {
   }
 }
 #endif
-
-} // {BLVarPrivate}

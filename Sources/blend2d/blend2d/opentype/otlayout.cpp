@@ -5,6 +5,7 @@
 
 #include "../api-build_p.h"
 #include "../font_p.h"
+#include "../fonttags_p.h"
 #include "../glyphbuffer_p.h"
 #include "../tables_p.h"
 #include "../trace_p.h"
@@ -2004,7 +2005,7 @@ static bool checkLookupTable(Validator* self, Trace trace, uint32_t kind, BLFont
 
 static bool checkFeatureTable(Validator* self, Trace trace, uint32_t kind, BLFontTableT<GAnyTable::FeatureTable> table, uint32_t index, uint32_t tag) noexcept {
   char tagString[5];
-  blFontTagToAscii(tagString, tag);
+  BLFontTagsPrivate::tagToAscii(tagString, tag);
 
   trace.info("FeatureTable #%u '%s'\n", index, tagString);
   trace.indent();
@@ -2038,7 +2039,7 @@ static bool checkFeatureTable(Validator* self, Trace trace, uint32_t kind, BLFon
 
 static bool checkScriptTable(Validator* self, Trace trace, uint32_t kind, BLFontTableT<GAnyTable::ScriptTable> table, uint32_t index, uint32_t tag) noexcept {
   char tagString[5];
-  blFontTagToAscii(tagString, tag);
+  BLFontTagsPrivate::tagToAscii(tagString, tag);
 
   trace.info("ScriptTable #%u '%s'\n", index, tagString);
   trace.indent();
@@ -2063,7 +2064,7 @@ static bool checkScriptTable(Validator* self, Trace trace, uint32_t kind, BLFont
     uint32_t langSysTag = langSysOffsetArray[i].tag();
     uint32_t langSysOffset = langSysOffsetArray[i].offset();
 
-    blFontTagToAscii(tagString, langSysTag);
+    BLFontTagsPrivate::tagToAscii(tagString, langSysTag);
     trace.info("LangSys #%u '%s' [%u]\n", i, tagString, langSysOffset);
     trace.indent();
 
@@ -2381,8 +2382,9 @@ BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
     faceI->layout.tables[1] = validator.tables[1];
   }
 
-  faceI->scriptTags = validator.scriptTags;
-  faceI->featureTags = validator.featureTags;
+  faceI->scriptTags.dcast<BLArray<BLTag>>().assign(std::move(validator.scriptTags));
+  faceI->featureTags.dcast<BLArray<BLTag>>().assign(std::move(validator.featureTags));
+
   return BL_SUCCESS;
 }
 

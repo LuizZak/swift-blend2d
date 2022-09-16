@@ -168,11 +168,11 @@ static BL_INLINE void blRuntimeInitSystemInfo(BLRuntimeContext* rt) noexcept {
 #endif
 
   // NOTE: It seems that on some archs 16kB stack-size is the bare minimum even when sysconf() or PTHREAD_STACK_MIN
-  // report a smaller value. Even if we don't need it we slighly increase the bare minimum to 64kB to make it safer
+  // report a smaller value. Even if we don't need it we slighly increase the bare minimum to 128kB to make it safer
   // especially on archs that have a big register file. In addition, some compilers like GCC/clang will use stack
   // slot for every variable in code, which means that heavily inlined code may need relatively large stack when
   // compiled in debug mode.
-  info.threadStackSize = BLIntOps::alignUp(blMax<uint32_t>(info.threadStackSize, 65536), info.allocationGranularity);
+  info.threadStackSize = BLIntOps::alignUp(blMax<uint32_t>(info.threadStackSize, 128u * 1024u), info.allocationGranularity);
 }
 
 static BL_INLINE void blRuntimeInitOptimizationInfo(BLRuntimeContext* rt) noexcept {
@@ -234,9 +234,16 @@ BL_API_IMPL BLResult blRuntimeInit() noexcept {
   blPath2DRtInit(rt);
   blImageRtInit(rt);
   blImageCodecRtInit(rt);
+  blImageDecoderRtInit(rt);
+  blImageEncoderRtInit(rt);
   blImageScaleRtInit(rt);
   blPatternRtInit(rt);
   blGradientRtInit(rt);
+  blFontFeatureSettingsRtInit(rt);
+  blFontVariationSettingsRtInit(rt);
+  blFontDataRtInit(rt);
+  blFontFaceRtInit(rt);
+  blOpenTypeRtInit(rt);
   blFontRtInit(rt);
   blFontManagerRtInit(rt);
 
@@ -249,6 +256,7 @@ BL_API_IMPL BLResult blRuntimeInit() noexcept {
 #endif
 
   blContextRtInit(rt);
+  blRegisterBuiltInCodecs(rt);
 
   return BL_SUCCESS;
 }

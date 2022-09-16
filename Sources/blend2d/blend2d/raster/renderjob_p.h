@@ -141,7 +141,7 @@ struct RenderJob_TextOp : public RenderJob_BaseOp {
   BLFontCore _font;
 
   union {
-    BLArrayView<void> _textData;
+    BLArrayView<uint8_t> _textData;
     BLGlyphRun _glyphRun;
     BLGlyphBufferCore _glyphBuffer;
   };
@@ -155,9 +155,9 @@ struct RenderJob_TextOp : public RenderJob_BaseOp {
   }
 
   BL_INLINE void destroy() noexcept {
-    blDownCast(_font).~BLFont();
+    _font.dcast().~BLFont();
     if (_payloadType == kTextDataGlyphBuffer)
-      blDownCast(_glyphBuffer).~BLGlyphBuffer();
+      _glyphBuffer.dcast().~BLGlyphBuffer();
   }
 
   BL_INLINE void initFont(const BLFontCore& font) noexcept {
@@ -170,7 +170,7 @@ struct RenderJob_TextOp : public RenderJob_BaseOp {
 
   BL_INLINE void initTextData(const void* text, size_t size, BLTextEncoding encoding) noexcept {
     _payloadType = uint8_t(encoding);
-    _textData.reset(text, size);
+    _textData.reset(static_cast<const uint8_t*>(text), size);
   }
 
   BL_INLINE void initGlyphRun(void* glyphData, void* placementData, size_t size, uint32_t placementType, uint32_t flags) noexcept {
@@ -195,7 +195,7 @@ struct RenderJob_TextOp : public RenderJob_BaseOp {
   BL_INLINE const void* textData() const noexcept { return _textData.data; }
   BL_INLINE size_t textSize() const noexcept { return _textData.size; }
 
-  BL_INLINE const BLGlyphBuffer& glyphBuffer() const noexcept { return blDownCast(_glyphBuffer); }
+  BL_INLINE const BLGlyphBuffer& glyphBuffer() const noexcept { return _glyphBuffer.dcast(); }
 };
 
 } // {BLRasterEngine}

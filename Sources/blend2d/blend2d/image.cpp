@@ -9,6 +9,8 @@
 #include "format.h"
 #include "image_p.h"
 #include "imagecodec.h"
+#include "imagedecoder.h"
+#include "imageencoder.h"
 #include "imagescale_p.h"
 #include "pixelconverter_p.h"
 #include "runtime_p.h"
@@ -145,15 +147,21 @@ BLResult freeImpl(BLImagePrivateImpl* impl, BLObjectInfo info) noexcept {
   return blObjectImplFreeInline(impl, info);
 }
 
+} // {BLImagePrivate}
+
 // BLImage - API - Init & Destroy
 // ==============================
 
 BL_API_IMPL BLResult blImageInit(BLImageCore* self) noexcept {
+  using namespace BLImagePrivate;
+
   self->_d = blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d;
   return BL_SUCCESS;
 }
 
 BL_API_IMPL BLResult blImageInitMove(BLImageCore* self, BLImageCore* other) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self != other);
   BL_ASSERT(other->_d.isImage());
 
@@ -164,6 +172,8 @@ BL_API_IMPL BLResult blImageInitMove(BLImageCore* self, BLImageCore* other) noex
 }
 
 BL_API_IMPL BLResult blImageInitWeak(BLImageCore* self, const BLImageCore* other) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self != other);
   BL_ASSERT(other->_d.isImage());
 
@@ -171,18 +181,23 @@ BL_API_IMPL BLResult blImageInitWeak(BLImageCore* self, const BLImageCore* other
 }
 
 BL_API_IMPL BLResult blImageInitAs(BLImageCore* self, int w, int h, BLFormat format) noexcept {
+  using namespace BLImagePrivate;
+
   self->_d = blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d;
   return blImageCreate(self, w, h, format);
 }
 
 BL_API_IMPL BLResult blImageInitAsFromData(BLImageCore* self, int w, int h, BLFormat format, void* pixelData, intptr_t stride, BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
+  using namespace BLImagePrivate;
+
   self->_d = blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d;
   return blImageCreateFromData(self, w, h, format, pixelData, stride, destroyFunc, userData);
 }
 
 BL_API_IMPL BLResult blImageDestroy(BLImageCore* self) noexcept {
-  BL_ASSERT(self->_d.isImage());
+  using namespace BLImagePrivate;
 
+  BL_ASSERT(self->_d.isImage());
   return releaseInstance(self);
 }
 
@@ -190,8 +205,9 @@ BL_API_IMPL BLResult blImageDestroy(BLImageCore* self) noexcept {
 // =====================
 
 BL_API_IMPL BLResult blImageReset(BLImageCore* self) noexcept {
-  BL_ASSERT(self->_d.isImage());
+  using namespace BLImagePrivate;
 
+  BL_ASSERT(self->_d.isImage());
   return replaceInstance(self, static_cast<BLImageCore*>(&blObjectDefaults[BL_OBJECT_TYPE_IMAGE]));
 }
 
@@ -199,6 +215,8 @@ BL_API_IMPL BLResult blImageReset(BLImageCore* self) noexcept {
 // ======================
 
 BL_API_IMPL BLResult blImageAssignMove(BLImageCore* self, BLImageCore* other) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(other->_d.isImage());
 
@@ -208,6 +226,8 @@ BL_API_IMPL BLResult blImageAssignMove(BLImageCore* self, BLImageCore* other) no
 }
 
 BL_API_IMPL BLResult blImageAssignWeak(BLImageCore* self, const BLImageCore* other) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(other->_d.isImage());
 
@@ -216,6 +236,8 @@ BL_API_IMPL BLResult blImageAssignWeak(BLImageCore* self, const BLImageCore* oth
 }
 
 BL_API_IMPL BLResult blImageAssignDeep(BLImageCore* self, const BLImageCore* other) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(other->_d.isImage());
 
@@ -244,6 +266,8 @@ BL_API_IMPL BLResult blImageAssignDeep(BLImageCore* self, const BLImageCore* oth
 // ======================
 
 BL_API_IMPL BLResult blImageCreate(BLImageCore* self, int w, int h, BLFormat format) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
 
   if (BL_UNLIKELY(w <= 0 || h <= 0 || format == BL_FORMAT_NONE || format > BL_FORMAT_MAX_VALUE)) {
@@ -269,6 +293,8 @@ BL_API_IMPL BLResult blImageCreate(BLImageCore* self, int w, int h, BLFormat for
 }
 
 BL_API_IMPL BLResult blImageCreateFromData(BLImageCore* self, int w, int h, BLFormat format, void* pixelData, intptr_t stride, BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
 
   if (BL_UNLIKELY(w <= 0 || h <= 0 || format == BL_FORMAT_NONE || format > BL_FORMAT_MAX_VALUE))
@@ -287,6 +313,8 @@ BL_API_IMPL BLResult blImageCreateFromData(BLImageCore* self, int w, int h, BLFo
 // =========================
 
 BL_API_IMPL BLResult blImageGetData(const BLImageCore* self, BLImageData* dataOut) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BLImagePrivateImpl* selfI = getImpl(self);
 
@@ -300,6 +328,8 @@ BL_API_IMPL BLResult blImageGetData(const BLImageCore* self, BLImageData* dataOu
 }
 
 BL_API_IMPL BLResult blImageMakeMutable(BLImageCore* self, BLImageData* dataOut) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BLImagePrivateImpl* selfI = getImpl(self);
 
@@ -336,6 +366,8 @@ BL_API_IMPL BLResult blImageMakeMutable(BLImageCore* self, BLImageData* dataOut)
 // =======================
 
 BL_API_IMPL BLResult blImageConvert(BLImageCore* self, BLFormat format) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BLImagePrivateImpl* selfI = getImpl(self);
 
@@ -392,6 +424,8 @@ BL_API_IMPL BLResult blImageConvert(BLImageCore* self, BLFormat format) noexcept
 // =====================================
 
 BL_API_IMPL bool blImageEquals(const BLImageCore* a, const BLImageCore* b) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(a->_d.isImage());
   BL_ASSERT(b->_d.isImage());
 
@@ -428,6 +462,8 @@ BL_API_IMPL bool blImageEquals(const BLImageCore* a, const BLImageCore* b) noexc
 // =====================
 
 BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, const BLSizeI* size, uint32_t filter, const BLImageScaleOptions* options) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(dst->_d.isImage());
   BL_ASSERT(src->_d.isImage());
 
@@ -449,7 +485,8 @@ BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, cons
     // Only horizontal or vertical scale.
 
     // Move to `tmp` so it's not destroyed by `dst->create()`.
-    if (dst == src) tmp = *blDownCast(src);
+    if (dst == src)
+      tmp = src->dcast();
 
     BL_PROPAGATE(blImageCreate(dst, scaleCtx.dstWidth(), scaleCtx.dstHeight(), format));
     BL_PROPAGATE(blImageMakeMutable(dst, &buf));
@@ -479,6 +516,8 @@ BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, cons
 // =========================
 
 BL_API_IMPL BLResult blImageReadFromFile(BLImageCore* self, const char* fileName, const BLArrayCore* codecs) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
 
   BLArray<uint8_t> buffer;
@@ -495,13 +534,15 @@ BL_API_IMPL BLResult blImageReadFromFile(BLImageCore* self, const char* fileName
 
   BLImageDecoder decoder;
   BL_PROPAGATE(codec.createDecoder(&decoder));
-  return decoder.readFrame(*blDownCast(self), buffer);
+  return decoder.readFrame(*self, buffer);
 }
 
 // BLImage - API - Read Data
 // =========================
 
 BL_API_IMPL BLResult blImageReadFromData(BLImageCore* self, const void* data, size_t size, const BLArrayCore* codecs) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
 
   BLImageCodec codec;
@@ -512,13 +553,17 @@ BL_API_IMPL BLResult blImageReadFromData(BLImageCore* self, const void* data, si
 
   BLImageDecoder decoder;
   BL_PROPAGATE(codec.createDecoder(&decoder));
-  return decoder.readFrame(*blDownCast(self), data, size);
+  return decoder.readFrame(*self, data, size);
 }
 
 // BLImage - API - Write File
 // ==========================
 
+namespace BLImagePrivate {
+
 static BLResult writeToFileInternal(const BLImageCore* self, const char* fileName, const BLImageCodecCore* codec) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(codec->_d.isImageCodec());
 
@@ -527,7 +572,11 @@ static BLResult writeToFileInternal(const BLImageCore* self, const char* fileNam
   return BLFileSystem::writeFile(fileName, buffer);
 }
 
+} // {BLImagePrivate}
+
 BL_API_IMPL BLResult blImageWriteToFile(const BLImageCore* self, const char* fileName, const BLImageCodecCore* codec) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
 
   if (!codec) {
@@ -545,18 +594,18 @@ BL_API_IMPL BLResult blImageWriteToFile(const BLImageCore* self, const char* fil
 // ==========================
 
 BL_API_IMPL BLResult blImageWriteToData(const BLImageCore* self, BLArrayCore* dst, const BLImageCodecCore* codec) noexcept {
+  using namespace BLImagePrivate;
+
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(codec->_d.isImageCodec());
 
-  if (BL_UNLIKELY(!(blDownCast(codec)->features() & BL_IMAGE_CODEC_FEATURE_WRITE)))
+  if (BL_UNLIKELY(!(codec->dcast().features() & BL_IMAGE_CODEC_FEATURE_WRITE)))
     return blTraceError(BL_ERROR_IMAGE_ENCODER_NOT_PROVIDED);
 
   BLImageEncoder encoder;
-  BL_PROPAGATE(blDownCast(codec)->createEncoder(&encoder));
-  return encoder.writeFrame(dst->dcast<BLArray<uint8_t>>(), *blDownCast(self));
+  BL_PROPAGATE(codec->dcast().createEncoder(&encoder));
+  return encoder.writeFrame(dst->dcast<BLArray<uint8_t>>(), self->dcast());
 }
-
-} // {BLImagePrivate}
 
 // BLImage - Runtime Registration
 // ==============================
@@ -570,3 +619,43 @@ void blImageRtInit(BLRuntimeContext* rt) noexcept {
     BLObjectInfo{BL_OBJECT_INFO_IMMUTABLE_FLAG},
     &defaultImage.impl);
 }
+
+// BLImage - Tests
+// ===============
+
+#if defined(BL_TEST)
+UNIT(image) {
+  INFO("Image data");
+  {
+    constexpr uint32_t kSize = 256;
+
+    BLImage img0;
+    BLImage img1;
+
+    EXPECT_SUCCESS(img0.create(kSize, kSize, BL_FORMAT_PRGB32));
+    EXPECT_SUCCESS(img1.create(kSize, kSize, BL_FORMAT_PRGB32));
+
+    EXPECT_EQ(img0.width(), 256);
+    EXPECT_EQ(img0.height(), 256);
+    EXPECT_EQ(img0.format(), BL_FORMAT_PRGB32);
+
+    EXPECT_EQ(img1.width(), 256);
+    EXPECT_EQ(img1.height(), 256);
+    EXPECT_EQ(img1.format(), BL_FORMAT_PRGB32);
+
+    BLImageData imgData0;
+    BLImageData imgData1;
+
+    EXPECT_SUCCESS(img0.getData(&imgData0));
+    EXPECT_SUCCESS(img1.getData(&imgData1));
+
+    // Direct memory manipulation.
+    for (uint32_t i = 0; i < kSize; i++) {
+      memset(static_cast<uint8_t*>(imgData0.pixelData) + i * imgData0.stride, 0xFF, kSize * 4);
+      memset(static_cast<uint8_t*>(imgData1.pixelData) + i * imgData1.stride, 0xFF, kSize * 4);
+    }
+
+    EXPECT_TRUE(img0.equals(img1));
+  }
+}
+#endif

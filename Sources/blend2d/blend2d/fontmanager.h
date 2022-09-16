@@ -13,24 +13,13 @@
 //! \addtogroup blend2d_api_text
 //! \{
 
-//! \name BLFontManager C API
-//!
+//! \name BLFontManager - C API
 //! \{
-
-//! Font manager [Virtual Function Table].
-struct BLFontManagerVirt BL_CLASS_INHERITS(BLObjectVirt) {
-  BL_DEFINE_VIRT_BASE
-};
-
-//! Font manager [Impl].
-struct BLFontManagerImpl BL_CLASS_INHERITS(BLObjectImpl) {
-  //! Virtual function table.
-  const BLFontManagerVirt* virt;
-};
 
 //! Font manager [C API].
 struct BLFontManagerCore BL_CLASS_INHERITS(BLObjectCore) {
   BL_DEFINE_OBJECT_DETAIL
+  BL_DEFINE_OBJECT_DCAST(BLFontManager)
 };
 
 BL_BEGIN_C_DECLS
@@ -55,8 +44,25 @@ BL_API bool BL_CDECL blFontManagerEquals(const BLFontManagerCore* a, const BLFon
 BL_END_C_DECLS
 //! \}
 
-//! \name BLFontManager C++ API
-//!
+//! \cond INTERNAL
+//! \name BLFontManager - Internals
+//! \{
+
+//! Font manager [Virtual Function Table].
+struct BLFontManagerVirt BL_CLASS_INHERITS(BLObjectVirt) {
+  BL_DEFINE_VIRT_BASE
+};
+
+//! Font manager [Impl].
+struct BLFontManagerImpl BL_CLASS_INHERITS(BLObjectImpl) {
+  //! Virtual function table.
+  const BLFontManagerVirt* virt;
+};
+
+//! \}
+//! \endcond
+
+//! \name BLFontManager - C++ API
 //! \{
 #ifdef __cplusplus
 
@@ -147,7 +153,7 @@ public:
   }
 
   //! \overload
-  BL_INLINE BLResult queryFace(const BLStringView& name, BLFontFaceCore& out) const noexcept {
+  BL_INLINE BLResult queryFace(BLStringView name, BLFontFaceCore& out) const noexcept {
     return blFontManagerQueryFace(this, name.data, name.size, nullptr, &out);
   }
 
@@ -163,7 +169,7 @@ public:
   }
 
   //! \overload
-  BL_INLINE BLResult queryFace(const BLStringView& name, const BLFontQueryProperties& properties, BLFontFaceCore& out) const noexcept {
+  BL_INLINE BLResult queryFace(BLStringView name, const BLFontQueryProperties& properties, BLFontFaceCore& out) const noexcept {
     return blFontManagerQueryFace(this, name.data, name.size, &properties, &out);
   }
 
@@ -173,7 +179,7 @@ public:
   }
 
   //! \overload
-  BL_INLINE BLResult queryFacesByFamilyName(const BLStringView& name, BLArray<BLFontFace>& out) const noexcept {
+  BL_INLINE BLResult queryFacesByFamilyName(BLStringView name, BLArray<BLFontFace>& out) const noexcept {
     return blFontManagerQueryFacesByFamilyName(this, name.data, name.size, &out);
   }
 

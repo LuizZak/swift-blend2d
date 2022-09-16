@@ -112,8 +112,8 @@ struct BLGradientStop {
   }
 
   BL_INLINE bool equals(const BLGradientStop& other) const noexcept {
-    return blEquals(this->offset, other.offset) &
-           blEquals(this->rgba  , other.rgba  ) ;
+    return bool(unsigned(blEquals(this->offset, other.offset)) &
+                unsigned(blEquals(this->rgba  , other.rgba  )));
   }
 
   //! \}
@@ -216,10 +216,59 @@ struct BLConicalGradientValues {
 //! \}
 
 //! \name BLGradient - C API
-//!
 //! \{
 
+//! Gradient [C API].
+struct BLGradientCore BL_CLASS_INHERITS(BLObjectCore) {
+  BL_DEFINE_OBJECT_DETAIL
+  BL_DEFINE_OBJECT_DCAST(BLGradient)
+};
+
+BL_BEGIN_C_DECLS
+
+BL_API BLResult BL_CDECL blGradientInit(BLGradientCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientInitMove(BLGradientCore* self, BLGradientCore* other) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientInitWeak(BLGradientCore* self, const BLGradientCore* other) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientInitAs(BLGradientCore* self, BLGradientType type, const void* values, BLExtendMode extendMode, const BLGradientStop* stops, size_t n, const BLMatrix2D* m) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientDestroy(BLGradientCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientReset(BLGradientCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientAssignMove(BLGradientCore* self, BLGradientCore* other) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientAssignWeak(BLGradientCore* self, const BLGradientCore* other) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientCreate(BLGradientCore* self, BLGradientType type, const void* values, BLExtendMode extendMode, const BLGradientStop* stops, size_t n, const BLMatrix2D* m) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientShrink(BLGradientCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientReserve(BLGradientCore* self, size_t n) BL_NOEXCEPT_C;
+BL_API BLGradientType BL_CDECL blGradientGetType(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
+BL_API BLResult BL_CDECL blGradientSetType(BLGradientCore* self, BLGradientType type) BL_NOEXCEPT_C;
+BL_API BLExtendMode BL_CDECL blGradientGetExtendMode(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
+BL_API BLResult BL_CDECL blGradientSetExtendMode(BLGradientCore* self, BLExtendMode extendMode) BL_NOEXCEPT_C;
+BL_API double BL_CDECL blGradientGetValue(const BLGradientCore* self, size_t index) BL_NOEXCEPT_C BL_PURE;
+BL_API BLResult BL_CDECL blGradientSetValue(BLGradientCore* self, size_t index, double value) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientSetValues(BLGradientCore* self, size_t index, const double* values, size_t n) BL_NOEXCEPT_C;
+BL_API size_t BL_CDECL blGradientGetSize(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
+BL_API size_t BL_CDECL blGradientGetCapacity(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
+BL_API const BLGradientStop* BL_CDECL blGradientGetStops(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
+BL_API BLResult BL_CDECL blGradientResetStops(BLGradientCore* self) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientAssignStops(BLGradientCore* self, const BLGradientStop* stops, size_t n) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientAddStopRgba32(BLGradientCore* self, double offset, uint32_t argb32) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientAddStopRgba64(BLGradientCore* self, double offset, uint64_t argb64) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientRemoveStop(BLGradientCore* self, size_t index) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientRemoveStopByOffset(BLGradientCore* self, double offset, uint32_t all) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientRemoveStopsByIndex(BLGradientCore* self, size_t rStart, size_t rEnd) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientRemoveStopsByOffset(BLGradientCore* self, double offsetMin, double offsetMax) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientReplaceStopRgba32(BLGradientCore* self, size_t index, double offset, uint32_t rgba32) BL_NOEXCEPT_C;
+BL_API BLResult BL_CDECL blGradientReplaceStopRgba64(BLGradientCore* self, size_t index, double offset, uint64_t rgba64) BL_NOEXCEPT_C;
+BL_API size_t BL_CDECL blGradientIndexOfStop(const BLGradientCore* self, double offset) BL_NOEXCEPT_C BL_PURE;
+BL_API BLResult BL_CDECL blGradientApplyMatrixOp(BLGradientCore* self, BLMatrix2DOp opType, const void* opData) BL_NOEXCEPT_C;
+BL_API bool BL_CDECL blGradientEquals(const BLGradientCore* a, const BLGradientCore* b) BL_NOEXCEPT_C BL_PURE;
+
+BL_END_C_DECLS
+
+//! \}
+
 //! \cond INTERNAL
+//! \name BLGradient - Internals
+//! \{
+
 //! Gradient [Impl].
 struct BLGradientImpl BL_CLASS_INHERITS(BLObjectImpl) {
   //! Gradient stop data.
@@ -252,56 +301,11 @@ struct BLGradientImpl BL_CLASS_INHERITS(BLObjectImpl) {
     BLConicalGradientValues conical;
   };
 };
-//! \endcond
-
-//! Gradient [C API].
-struct BLGradientCore BL_CLASS_INHERITS(BLObjectCore) {
-  BL_DEFINE_OBJECT_DETAIL
-};
-
-BL_BEGIN_C_DECLS
-
-BL_API BLResult BL_CDECL blGradientInit(BLGradientCore* self) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientInitMove(BLGradientCore* self, BLGradientCore* other) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientInitWeak(BLGradientCore* self, const BLGradientCore* other) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientInitAs(BLGradientCore* self, BLGradientType type, const void* values, BLExtendMode extendMode, const BLGradientStop* stops, size_t n, const BLMatrix2D* m) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientDestroy(BLGradientCore* self) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientReset(BLGradientCore* self) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientAssignMove(BLGradientCore* self, BLGradientCore* other) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientAssignWeak(BLGradientCore* self, const BLGradientCore* other) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientCreate(BLGradientCore* self, BLGradientType type, const void* values, BLExtendMode extendMode, const BLGradientStop* stops, size_t n, const BLMatrix2D* m) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientShrink(BLGradientCore* self) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientReserve(BLGradientCore* self, size_t n) BL_NOEXCEPT_C;
-BL_API BLGradientType BL_CDECL blGradientGetType(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
-BL_API BLResult BL_CDECL blGradientSetType(BLGradientCore* self, BLGradientType type) BL_NOEXCEPT_C;
-BL_API BLExtendMode BL_CDECL blGradientGetExtendMode(BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
-BL_API BLResult BL_CDECL blGradientSetExtendMode(BLGradientCore* self, BLExtendMode extendMode) BL_NOEXCEPT_C;
-BL_API double BL_CDECL blGradientGetValue(const BLGradientCore* self, size_t index) BL_NOEXCEPT_C BL_PURE;
-BL_API BLResult BL_CDECL blGradientSetValue(BLGradientCore* self, size_t index, double value) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientSetValues(BLGradientCore* self, size_t index, const double* values, size_t n) BL_NOEXCEPT_C;
-BL_API size_t BL_CDECL blGradientGetSize(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
-BL_API size_t BL_CDECL blGradientGetCapacity(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
-BL_API const BLGradientStop* BL_CDECL blGradientGetStops(const BLGradientCore* self) BL_NOEXCEPT_C BL_PURE;
-BL_API BLResult BL_CDECL blGradientResetStops(BLGradientCore* self) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientAssignStops(BLGradientCore* self, const BLGradientStop* stops, size_t n) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientAddStopRgba32(BLGradientCore* self, double offset, uint32_t argb32) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientAddStopRgba64(BLGradientCore* self, double offset, uint64_t argb64) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientRemoveStop(BLGradientCore* self, size_t index) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientRemoveStopByOffset(BLGradientCore* self, double offset, uint32_t all) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientRemoveStopsByIndex(BLGradientCore* self, size_t rStart, size_t rEnd) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientRemoveStopsByOffset(BLGradientCore* self, double offsetMin, double offsetMax) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientReplaceStopRgba32(BLGradientCore* self, size_t index, double offset, uint32_t rgba32) BL_NOEXCEPT_C;
-BL_API BLResult BL_CDECL blGradientReplaceStopRgba64(BLGradientCore* self, size_t index, double offset, uint64_t rgba64) BL_NOEXCEPT_C;
-BL_API size_t BL_CDECL blGradientIndexOfStop(const BLGradientCore* self, double offset) BL_NOEXCEPT_C BL_PURE;
-BL_API BLResult BL_CDECL blGradientApplyMatrixOp(BLGradientCore* self, BLMatrix2DOp opType, const void* opData) BL_NOEXCEPT_C;
-BL_API bool BL_CDECL blGradientEquals(const BLGradientCore* a, const BLGradientCore* b) BL_NOEXCEPT_C BL_PURE;
-
-BL_END_C_DECLS
 
 //! \}
+//! \endcond
 
 //! \name BLGradient - C++ API
-//!
 //! \{
 #ifdef __cplusplus
 

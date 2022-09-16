@@ -12,35 +12,7 @@
 //! \{
 
 //! \name BLString - C API
-//!
 //! \{
-
-//! \cond INTERNAL
-//! Byte string [Impl].
-struct BLStringImpl BL_CLASS_INHERITS(BLObjectImpl) {
-  //! String size [in bytes].
-  size_t size;
-  //! String data capacity [in bytes].
-  size_t capacity;
-
-#ifdef __cplusplus
-  BL_INLINE BLStringImpl() noexcept = default;
-
-  BL_INLINE constexpr BLStringImpl(size_t sizeIn, size_t capacityIn) noexcept
-    : size(sizeIn),
-      capacity(capacityIn) {}
-
-  //! String data [null terminated] follows BLStringImpl data.
-  BL_NODISCARD
-  BL_INLINE char* data() noexcept { return reinterpret_cast<char*>(this) + sizeof(BLStringImpl); }
-#endif
-};
-//! \endcond
-
-//! Byte string [C API].
-struct BLStringCore BL_CLASS_INHERITS(BLObjectCore) {
-  BL_DEFINE_OBJECT_DETAIL
-};
 
 BL_BEGIN_C_DECLS
 
@@ -81,7 +53,40 @@ BL_API int BL_CDECL blStringCompareData(const BLStringCore* self, const char* st
 
 BL_END_C_DECLS
 
+//! Byte string [C API].
+struct BLStringCore BL_CLASS_INHERITS(BLObjectCore) {
+  BL_DEFINE_OBJECT_DETAIL
+  BL_DEFINE_OBJECT_DCAST(BLString)
+};
+
 //! \}
+
+//! \cond INTERNAL
+//! \name BLString - Internal
+//! \{
+
+//! Byte string [Impl].
+struct BLStringImpl BL_CLASS_INHERITS(BLObjectImpl) {
+  //! String size [in bytes].
+  size_t size;
+  //! String data capacity [in bytes].
+  size_t capacity;
+
+#ifdef __cplusplus
+  BL_INLINE BLStringImpl() noexcept = default;
+
+  BL_INLINE constexpr BLStringImpl(size_t sizeIn, size_t capacityIn) noexcept
+    : size(sizeIn),
+      capacity(capacityIn) {}
+
+  //! String data [null terminated] follows BLStringImpl data.
+  BL_NODISCARD
+  BL_INLINE char* data() noexcept { return reinterpret_cast<char*>(this) + sizeof(BLStringImpl); }
+#endif
+};
+
+//! \}
+//! \endcond
 
 //! \name BLString - C++ API
 //! \{
@@ -94,6 +99,9 @@ BL_END_C_DECLS
 class BLString : public BLStringCore {
 public:
   //! \cond INTERNAL
+  //! \name Internals
+  //! \{
+
   enum : uint32_t {
     //! Capacity of an SSO string - depends actually on architecture endianness.
     kSSOCapacity =
@@ -101,7 +109,7 @@ public:
         ? BLObjectDetail::kStaticDataSize + 2u
         : BLObjectDetail::kStaticDataSize - 1u,
 
-    //! String signature of an empty SSO string (with size XORed with `kSSOCapacity`).
+    //! Signature of an empty SSO string (with size XORed with `kSSOCapacity`).
     //!
     //! This mask can be used to get quickly SSO string size.
     kSSOEmptySignature = (BL_OBJECT_INFO_MARKER_FLAG) |
@@ -111,6 +119,8 @@ public:
   };
 
   BL_INLINE BLStringImpl* _impl() const noexcept { return static_cast<BLStringImpl*>(_d.impl); }
+
+  //! \}
   //! \endcond
 
   //! \name Construction & Destruction
@@ -135,7 +145,7 @@ public:
   //! Constructor that creates a string from the given string `view`.
   //!
   //! \note See other constructors for more details.
-  BL_INLINE explicit BLString(const BLStringView& view) noexcept { blStringInitWithData(this, view.data, view.size); }
+  BL_INLINE explicit BLString(BLStringView view) noexcept { blStringInitWithData(this, view.data, view.size); }
 
   //! Constructor that creates a string from the given data specified by `str` and `size`. If `size` is `SIZE_MAX`
   //! the string is assumed to be null terminated.
@@ -289,7 +299,7 @@ public:
   BL_INLINE BLResult assign(const BLString& other) noexcept { return blStringAssignWeak(this, &other); }
 
   //! Replaces the string by the content described by the given string `view`.
-  BL_INLINE BLResult assign(const BLStringView& view) noexcept { return blStringAssignData(this, view.data, view.size); }
+  BL_INLINE BLResult assign(BLStringView view) noexcept { return blStringAssignData(this, view.data, view.size); }
 
   //! Replaces the string by `str` data of the given length `n`.
   //!
@@ -313,7 +323,7 @@ public:
 
   BL_INLINE BLResult append(char c, size_t n = 1) noexcept { return blStringApplyOpChar(this, BL_MODIFY_OP_APPEND_GROW, c, n); }
   BL_INLINE BLResult append(const BLString& other) noexcept { return blStringApplyOpString(this, BL_MODIFY_OP_APPEND_GROW, &other); }
-  BL_INLINE BLResult append(const BLStringView& view) noexcept { return blStringApplyOpData(this, BL_MODIFY_OP_APPEND_GROW, view.data, view.size); }
+  BL_INLINE BLResult append(BLStringView view) noexcept { return blStringApplyOpData(this, BL_MODIFY_OP_APPEND_GROW, view.data, view.size); }
   BL_INLINE BLResult append(const char* str, size_t n = SIZE_MAX) noexcept { return blStringApplyOpData(this, BL_MODIFY_OP_APPEND_GROW, str, n); }
 
   template<typename... Args>
@@ -322,12 +332,12 @@ public:
 
   BL_INLINE BLResult prepend(char c, size_t n = 1) noexcept { return blStringInsertChar(this, 0, c, n); }
   BL_INLINE BLResult prepend(const BLString& other) noexcept { return blStringInsertString(this, 0, &other); }
-  BL_INLINE BLResult prepend(const BLStringView& view) noexcept { return blStringInsertData(this, 0, view.data, view.size); }
+  BL_INLINE BLResult prepend(BLStringView view) noexcept { return blStringInsertData(this, 0, view.data, view.size); }
   BL_INLINE BLResult prepend(const char* str, size_t n = SIZE_MAX) noexcept { return blStringInsertData(this, 0, str, n); }
 
   BL_INLINE BLResult insert(size_t index, char c, size_t n = 1) noexcept { return blStringInsertChar(this, index, c, n); }
   BL_INLINE BLResult insert(size_t index, const BLString& other) noexcept { return blStringInsertString(this, index, &other); }
-  BL_INLINE BLResult insert(size_t index, const BLStringView& view) noexcept { return blStringInsertData(this, index, view.data, view.size); }
+  BL_INLINE BLResult insert(size_t index, BLStringView view) noexcept { return blStringInsertData(this, index, view.data, view.size); }
   BL_INLINE BLResult insert(size_t index, const char* str, size_t n = SIZE_MAX) noexcept { return blStringInsertData(this, index, str, n); }
 
   BL_INLINE BLResult remove(size_t index) noexcept { return blStringRemoveIndex(this, index); }
@@ -342,7 +352,7 @@ public:
 
   //! Returns whether this string and other string `view` are equal.
   BL_NODISCARD
-  BL_INLINE bool equals(const BLStringView& view) const noexcept { return blStringEqualsData(this, view.data, view.size); }
+  BL_INLINE bool equals(BLStringView view) const noexcept { return blStringEqualsData(this, view.data, view.size); }
 
   //! Returns whether this string and the given string data `str` of length `n` are equal.
   BL_NODISCARD
@@ -354,7 +364,7 @@ public:
 
   //! Compares this string with other string `view` and returns either `-1`, `0`, or `1`.
   BL_NODISCARD
-  BL_INLINE int compare(const BLStringView& view) const noexcept { return blStringCompareData(this, view.data, view.size); }
+  BL_INLINE int compare(BLStringView view) const noexcept { return blStringCompareData(this, view.data, view.size); }
 
   //! Compares this string with other string data and returns either `-1`, `0`, or `1`.
   BL_NODISCARD

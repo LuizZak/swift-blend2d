@@ -477,8 +477,8 @@ SmoothPolyTo:
 
     if (_n0 == n1) {
       // Collinear case - patch the previous point(s) if they connect lines.
-      _aOut.back(_aOut.cmd[-2] <= BL_PATH_CMD_ON);
-      _bOut.back(_bOut.cmd[-2] <= BL_PATH_CMD_ON);
+      _aOut.back(_aOut.cmd[-2].value <= BL_PATH_CMD_ON);
+      _bOut.back(_bOut.cmd[-2].value <= BL_PATH_CMD_ON);
     }
     else {
       BLPoint m = _n0 + n1;
@@ -622,8 +622,8 @@ SmoothPolyTo:
 
     if (_n0 == n1) {
       // Collinear case - patch the previous point(s) if they connect lines.
-      _aOut.back(_aOut.cmd[-2] <= BL_PATH_CMD_ON);
-      _bOut.back(_bOut.cmd[-2] <= BL_PATH_CMD_ON);
+      _aOut.back(_aOut.cmd[-2].value <= BL_PATH_CMD_ON);
+      _bOut.back(_bOut.cmd[-2].value <= BL_PATH_CMD_ON);
       return BL_SUCCESS;
     }
 
@@ -649,7 +649,7 @@ SmoothPolyTo:
         if (aStartCmd[1] == BL_PATH_CMD_ON) {
           _aOut.back();
           aStartVtx[0] = _aOut.vtx[-1];
-          _aOut.back(_aOut.cmd[-2] <= BL_PATH_CMD_ON);
+          _aOut.back(_aOut.cmd[-2].value <= BL_PATH_CMD_ON);
         }
       }
 
@@ -666,7 +666,7 @@ SmoothPolyTo:
         if (bStartCmd[1] == BL_PATH_CMD_ON) {
           _bOut.back();
           bStartVtx[0] = _bOut.vtx[-1];
-          _bOut.back(_bOut.cmd[-2] <= BL_PATH_CMD_ON);
+          _bOut.back(_bOut.cmd[-2].value <= BL_PATH_CMD_ON);
         }
       }
 
@@ -683,7 +683,7 @@ SmoothPolyTo:
   }
 
   BL_INLINE_IF_NOT_DEBUG void innerJoinLineTo(BLPathAppender& out, const BLPoint& lineP0, const BLPoint& lineP1, const BLPoint& innerPt) noexcept {
-    if (out.cmd[-2] <= BL_PATH_CMD_ON && testInnerJoinIntersecion(out.vtx[-2], out.vtx[-1], lineP0, lineP1, innerPt)) {
+    if (out.cmd[-2].value <= BL_PATH_CMD_ON && testInnerJoinIntersecion(out.vtx[-2], out.vtx[-1], lineP0, lineP1, innerPt)) {
       out.vtx[-1] = innerPt;
     }
     else {
@@ -693,7 +693,7 @@ SmoothPolyTo:
   }
 
   BL_INLINE_IF_NOT_DEBUG void innerJoinEndPoint(BLPathAppender& out, BLPoint& lineP0, const BLPoint& lineP1, const BLPoint& innerPt) noexcept {
-    if (out.cmd[-2] <= BL_PATH_CMD_ON && testInnerJoinIntersecion(out.vtx[-2], out.vtx[-1], lineP0, lineP1, innerPt)) {
+    if (out.cmd[-2].value <= BL_PATH_CMD_ON && testInnerJoinIntersecion(out.vtx[-2], out.vtx[-1], lineP0, lineP1, innerPt)) {
       lineP0 = innerPt;
       out.back(1);
     }
@@ -709,7 +709,7 @@ SmoothPolyTo:
 
     if (BLGeometry::lengthSq(k) <= _miterLimitSq) {
       // Miter condition is met.
-      out.back(out.cmd[-2] <= BL_PATH_CMD_ON);
+      out.back(out.cmd[-2].value <= BL_PATH_CMD_ON);
       out.lineTo(_p0 + k);
       out.lineTo(pb);
 
@@ -726,7 +726,7 @@ SmoothPolyTo:
       else
         b2 = _miterLimit;
 
-      out.back(out.cmd[-2] <= BL_PATH_CMD_ON);
+      out.back(out.cmd[-2].value <= BL_PATH_CMD_ON);
       if (side == kSideA) {
         out.lineTo(_p0 + _d * _n0 - b2 * BLGeometry::normal(_n0));
         out.lineTo(_p0 + _d *  n1 + b2 * BLGeometry::normal(n1));
@@ -936,12 +936,12 @@ BLResult strokePath(
   const BLPathView& input,
   const BLStrokeOptions& options,
   const BLApproximationOptions& approx,
-  BLPath* a,
-  BLPath* b,
-  BLPath* c,
+  BLPath& a,
+  BLPath& b,
+  BLPath& c,
   StrokeSinkFunc sink, void* closure) noexcept {
 
-  return PathStroker(input, options, approx, a, b, c).stroke(sink, closure);
+  return PathStroker(input, options, approx, &a, &b, &c).stroke(sink, closure);
 }
 
 } // {BLPathPrivate}

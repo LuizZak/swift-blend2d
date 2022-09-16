@@ -53,7 +53,7 @@ BL_DEFINE_ENUM_FLAGS(OTFaceFlags)
 //! This class provides extra data required by TrueType / OpenType implementation. It's currently the only
 //! implementation of \ref BLFontFaceImpl available in Blend2D and there will probably not be any other
 //! implementation as OpenType provides enough features required to render text in general.
-struct OTFaceImpl : public BLInternalFontFaceImpl {
+struct OTFaceImpl : public BLFontFacePrivateImpl {
   //! OpenType flags, see OTFlags.
   OTFaceFlags otFlags;
 
@@ -82,11 +82,6 @@ struct OTFaceImpl : public BLInternalFontFaceImpl {
   //! Array of LSubR indexes used by CID fonts (CFF/CFF2).
   BLArray<CFFData::IndexData> cffFDSubrIndexes;
 
-  //! Script tags.
-  BLArray<BLTag> scriptTags;
-  //! Feature tags.
-  BLArray<BLTag> featureTags;
-
   BL_INLINE uint32_t locaOffsetSize() const noexcept {
     return uint32_t(otFlags & (OTFaceFlags::kLocaOffset16 | OTFaceFlags::kLocaOffset32));
   }
@@ -95,8 +90,6 @@ struct OTFaceImpl : public BLInternalFontFaceImpl {
 BL_HIDDEN BLResult createOpenTypeFace(BLFontFaceCore* self, const BLFontData* fontData, uint32_t faceIndex) noexcept;
 
 } // {BLOpenType}
-
-BL_HIDDEN void blOpenTypeRtInit(BLRuntimeContext* rt) noexcept;
 
 //! \}
 //! \endcond

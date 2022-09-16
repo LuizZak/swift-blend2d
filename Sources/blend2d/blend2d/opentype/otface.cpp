@@ -85,8 +85,6 @@ static BLResult BL_CDECL destroyOpenTypeFace(BLObjectImpl* impl, uint32_t info) 
   blCallDtor(faceI->kern);
   blCallDtor(faceI->layout);
   blCallDtor(faceI->cffFDSubrIndexes);
-  blCallDtor(faceI->scriptTags);
-  blCallDtor(faceI->featureTags);
   blFontFaceImplDtor(faceI);
 
   return blObjectDetailFreeImpl(faceI, info);
@@ -104,14 +102,12 @@ BLResult createOpenTypeFace(BLFontFaceCore* self, const BLFontData* fontData, ui
 
   faceI->faceInfo.faceType = uint8_t(BL_FONT_FACE_TYPE_OPENTYPE);
   faceI->faceInfo.faceIndex = faceIndex;
-  faceI->data = *fontData;
+  faceI->data.dcast() = *fontData;
   faceI->cmapFormat = uint8_t(0xFF);
 
   blCallCtor(faceI->kern);
   blCallCtor(faceI->layout);
   blCallCtor(faceI->cffFDSubrIndexes);
-  blCallCtor(faceI->scriptTags);
-  blCallCtor(faceI->featureTags);
 
   BLResult result = initOpenTypeFace(faceI, fontData);
   if (BL_UNLIKELY(result != BL_SUCCESS)) {

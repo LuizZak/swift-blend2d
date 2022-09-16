@@ -312,6 +312,20 @@ static BL_INLINE void fillSmallT(T* dst, const T& pattern, size_t count) noexcep
   fillInlineT(dst, pattern, count);
 }
 
+static BL_INLINE void fillSmall(void* dst, uint8_t pattern, size_t count) noexcept {
+#if defined(__GNUC__) && BL_TARGET_ARCH_X86
+  size_t unused0, unused1;
+  __asm__ __volatile__(
+    "rep stosb" : "=&c"(unused0), "=&D"(unused1)
+                : "0"(count), "a"(pattern), "1"(dst)
+                : "memory");
+#elif defined(_MSC_VER) && BL_TARGET_ARCH_X86
+  __stosb(static_cast<unsigned char *>(dst), static_cast<unsigned char>(pattern), count);
+#else
+  fillSmallT(static_cast<uint8_t*>(dst), pattern, count);
+#endif
+}
+
 //! \}
 
 //! \name Memory Copy

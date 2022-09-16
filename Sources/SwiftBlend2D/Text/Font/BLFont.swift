@@ -57,12 +57,12 @@ public class BLFont: BLBaseClass<BLFontCore> {
     }
 
     /// Gets font-features of the font.
-    public var features: [BLFontFeature] {
-        return Array(BLArray<BLFontFeature>(weakAssign: object.impl.features))
+    public var features: BLFontFeatureSettings {
+        return BLFontFeatureSettings(weakAssign: object.impl.featureSettings)
     }
     /// Gets font-variations used by this font.
-    public var variations: [BLFontVariation] {
-        return Array(BLArray<BLFontVariation>(weakAssign: object.impl.variations))
+    public var variations: BLFontVariationSettings {
+        return BLFontVariationSettings(weakAssign: object.impl.variationSettings)
     }
 
     /// Gets the weight of the font.
