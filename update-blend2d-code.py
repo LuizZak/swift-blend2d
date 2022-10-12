@@ -9,6 +9,9 @@ from typing import Callable
 from pathlib import Path
 from os import PathLike
 
+from utils.cli.cli_printing import print_stage_name
+from utils.cli.console_color import ConsoleColor
+
 # -----
 # Utility functions
 # -----
@@ -104,7 +107,7 @@ def clone_repo(tag_or_branch: str | None, repo: str, clone_path: str):
 
 
 def clone_blend2d(tag_or_branch: str | None, base_folder: Path) -> Path:
-    print("Cloning Blend2D...")
+    print_stage_name("Cloning Blend2D...")
 
     blend2d_clone_path = str(path(base_folder, "blend2d").absolute())
 
@@ -114,7 +117,7 @@ def clone_blend2d(tag_or_branch: str | None, base_folder: Path) -> Path:
 
 
 def clone_asmjit(tag_or_branch: str | None, base_folder: Path) -> Path:
-    print("Cloning asmjit...")
+    print_stage_name("Cloning asmjit...")
 
     asmjit_clone_path = str(path(base_folder, "asmjit").absolute())
 
@@ -142,13 +145,13 @@ def copy_repo_files(source_files: Path, target_path: Path):
 
 
 def copy_blend2d_files(clone_path: Path, target_path: Path):
-    print("Copying over Blend2D files...")
+    print_stage_name("Copying over Blend2D files...")
 
     copy_repo_files(clone_path.joinpath("src"), target_path)
 
 
 def copy_asmjit_files(clone_path: Path, target_path: Path):
-    print("Copying over asmjit files...")
+    print_stage_name("Copying over asmjit files...")
 
     copy_repo_files(clone_path.joinpath("src").joinpath("asmjit"), target_path)
 
@@ -157,7 +160,11 @@ def update_code(
     blend2d_tag_or_branch: str | None, asmjit_tag_or_branch: str | None, force: bool
 ) -> int:
     if (not force) and len(git_output("status", "--porcelain", echo=False).strip()) > 0:
-        print("Current git repo's state is not committed! Please commit and try again.")
+        print(
+            ConsoleColor.RED(
+                "Current git repo's state is not committed! Please commit and try again. (override with --force)"
+            )
+        )
         return 1
 
     # Create temp path
@@ -171,11 +178,11 @@ def update_code(
     copy_blend2d_files(blend2d_clone_path, BLEND2D_TARGET_PATH)
     copy_asmjit_files(asmjit_clone_path, ASMJIT_TARGET_PATH)
 
-    print("Success!")
+    print(ConsoleColor.GREEN("Success!"))
 
     git_status = git_output("status", "--porcelain").strip()
     if len(git_status) > 0:
-        print("New unstaged changes:")
+        print(ConsoleColor.YELLOW("New unstaged changes:"))
         print(git_status)
 
     git_rmtree(temp_path)
