@@ -1,201 +1,201 @@
 {
-	"tasks": {
-		"version": "2.0.0",
-		"problemMatcher": [
-			// Compilation
-			{
-				"owner": "swift",
-				"fileLocation": "autoDetect",
-				"pattern": {
-					"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-					"file": 1,
-					"line": 2,
-					"column": 3,
-					"severity": 4,
-					"message": 5
-				}
-			},
-			// Fix to detect unit test executions, which do not feature a column during reporting
-			{
-				"owner": "swift",
-				"fileLocation": "autoDetect",
-				"pattern": {
-					"regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
-					"file": 1,
-					"line": 2,
-					"severity": 3,
-					"message": 4
-				}
-			}
-		],
-		"tasks": [
+    "tasks": {
+        "version": "2.0.0",
+        "problemMatcher": [
+            // Compilation
             {
-				"label": "Build (debug)",
-				"type": "shell",
-				"command": "swift",
-				"args": [
-					"build",
-					"--build-tests",
-					"-Xswiftc",
-					"-Xfrontend",
-					"-Xswiftc",
-					"-serialize-debugging-options",
-				]
-			},
+                "owner": "swift",
+                "fileLocation": "autoDetect",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            // Fix to detect unit test executions, which do not feature a column during reporting
             {
-				"label": "Test",
-				"type": "shell",
-				"command": "swift",
-				"args": [
-					"test",
-					"--enable-code-coverage",
-					"-Xswiftc",
-					"-Xfrontend",
-					"-Xswiftc",
-					"-serialize-debugging-options",
-				]
-			},
+                "owner": "swift",
+                "fileLocation": "autoDetect",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        ],
+        "tasks": [
             {
-				"label": "Update Blend2D",
-				"type": "shell",
-				"command": "python",
-				"args": [
-					"update-blend2d-code.py"
-				]
-			},
-			{
-				"label": "Generate Swift Types",
-				"type": "shell",
-				"command": "python generate_types.py",
-				"args": [
-					"-o", "${workspaceFolder:SwiftBlend2D}/Sources/SwiftBlend2D/Generated"
-				],
-				"options": {
-					"cwd": "${workspaceFolder:SwiftBlend2D}"
-				}
-			},
-		]
-	},
-	"folders": [
-		{
-			"path": "./",
-			"name": "SwiftBlend2D"
-		},
-		{
-			"name": "Swift Package Dependencies",
-			"path": ".build/checkouts"
-		},
-		{
-			"name": "Build",
-			"path": ".build/debug/.."
-		}
-	],
-	"settings": {
-		"files.eol": "\n",
-		"files.insertFinalNewline": true,
-		"files.exclude": {
-			".git": true,
-			".build": true,
-			".*.sw?": true,
-			"**/.DS_Store": true
-		},
-		"commentAnchors.workspace.excludeFiles": "**/{node_modules,.git,.idea,target,out,build,vendor,.build,.swiftpm}/**/*",
-		"commentAnchors.tags.anchors": {
-			"MARK:": {
-				"iconColor": "default",
-				"highlightColor": "#A8C023",
-				"scope": "file",
-			},
-			"TODO:": {
-				"iconColor": "blue",
-				"highlightColor": "#3ea8ff",
-				"scope": "workspace",
-			},
-			"FIXME:": {
-				"iconColor": "red",
-				"highlightColor": "#F44336",
-				"scope": "workspace",
-			},
-			"NOTE:": {
-				"iconColor": "orange",
-				"highlightColor": "#FFB300",
-				"scope": "file",
-			},
-		},
-		"ShortcutMenuBar.userButton01Command": "workbench.action.tasks.runTask|Build (debug)",
-		"ShortcutMenuBar.userButton02Command": "workbench.action.tasks.runTask|Test",
-		"ShortcutMenuBar.userButton03Command": "workbench.action.tasks.runTask|Update Blend2D",
-		"ShortcutMenuBar.userButton04Command": "workbench.action.tasks.runTask|Generate Swift Types",
-		"cSpell.words": [
-			"asmjit",
-			"msvc",
-			"swiftpm"
-		],
-		"C_Cpp.default.includePath": [
-			"${workspaceFolder}/Sources/asmjit/**",
-			"${workspaceFolder}/Sources/blend2d/**"
-		],
-		"C_Cpp.default.defines": [
-			"_DEBUG",
-			"UNICODE",
-			"_UNICODE"
-		],
-		"C_Cpp.default.windowsSdkVersion": "10.0.18362.0",
-		"C_Cpp.default.cStandard": "c11",
-		"C_Cpp.default.cppStandard": "c++17",
-		
-		"python.formatting.provider": "black",
-    	"python.linting.enabled": true,
-		"python.linting.flake8Enabled": true,
-		"python.linting.flake8Args": ["--ignore=E203,E225,E302,E501,W293,W503"],
-		
-		// Hack to disable mypy from looking into every workspace folder by default.
-		// Main workspace folder has a .vscode/settings.json that overrides this.
-		"mypy.targets": [
-			"/dev/null",
-		],
+                "label": "Build (debug)",
+                "type": "shell",
+                "command": "swift",
+                "args": [
+                    "build",
+                    "--build-tests",
+                    "-Xswiftc",
+                    "-Xfrontend",
+                    "-Xswiftc",
+                    "-serialize-debugging-options",
+                ]
+            },
+            {
+                "label": "Test",
+                "type": "shell",
+                "command": "swift",
+                "args": [
+                    "test",
+                    "--enable-code-coverage",
+                    "-Xswiftc",
+                    "-Xfrontend",
+                    "-Xswiftc",
+                    "-serialize-debugging-options",
+                ]
+            },
+            {
+                "label": "Update Blend2D",
+                "type": "shell",
+                "command": "python",
+                "args": [
+                    "update-blend2d-code.py"
+                ]
+            },
+            {
+                "label": "Generate Swift Types",
+                "type": "shell",
+                "command": "python generate_types.py",
+                "args": [
+                    "-o", "${workspaceFolder:SwiftBlend2D}/Sources/SwiftBlend2D/Generated"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder:SwiftBlend2D}"
+                }
+            },
+        ]
+    },
+    "folders": [
+        {
+            "path": "./",
+            "name": "SwiftBlend2D"
+        },
+        {
+            "name": "Swift Package Dependencies",
+            "path": ".build/checkouts"
+        },
+        {
+            "name": "Build",
+            "path": ".build/debug/.."
+        }
+    ],
+    "settings": {
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.exclude": {
+            ".git": true,
+            ".build": true,
+            ".*.sw?": true,
+            "**/.DS_Store": true
+        },
+        "commentAnchors.workspace.excludeFiles": "**/{node_modules,.git,.idea,target,out,build,vendor,.build,.swiftpm}/**/*",
+        "commentAnchors.tags.anchors": {
+            "MARK:": {
+                "iconColor": "default",
+                "highlightColor": "#A8C023",
+                "scope": "file",
+            },
+            "TODO:": {
+                "iconColor": "blue",
+                "highlightColor": "#3ea8ff",
+                "scope": "workspace",
+            },
+            "FIXME:": {
+                "iconColor": "red",
+                "highlightColor": "#F44336",
+                "scope": "workspace",
+            },
+            "NOTE:": {
+                "iconColor": "orange",
+                "highlightColor": "#FFB300",
+                "scope": "file",
+            },
+        },
+        "ShortcutMenuBar.userButton01Command": "workbench.action.tasks.runTask|Build (debug)",
+        "ShortcutMenuBar.userButton02Command": "workbench.action.tasks.runTask|Test",
+        "ShortcutMenuBar.userButton03Command": "workbench.action.tasks.runTask|Update Blend2D",
+        "ShortcutMenuBar.userButton04Command": "workbench.action.tasks.runTask|Generate Swift Types",
+        "cSpell.words": [
+            "asmjit",
+            "msvc",
+            "swiftpm"
+        ],
+        "C_Cpp.default.includePath": [
+            "${workspaceFolder}/Sources/asmjit/**",
+            "${workspaceFolder}/Sources/blend2d/**"
+        ],
+        "C_Cpp.default.defines": [
+            "_DEBUG",
+            "UNICODE",
+            "_UNICODE"
+        ],
+        "C_Cpp.default.windowsSdkVersion": "10.0.18362.0",
+        "C_Cpp.default.cStandard": "c11",
+        "C_Cpp.default.cppStandard": "c++17",
+        
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.flake8Args": ["--ignore=E203,E225,E302,E501,W293,W503"],
+        
+        // Hack to disable mypy from looking into every workspace folder by default.
+        // Main workspace folder has a .vscode/settings.json that overrides this.
+        "mypy.targets": [
+            "/dev/null",
+        ],
 
-		"[python]": {
-			"editor.formatOnSave": true
-		},
-		"files.associations": {
-			"iterator": "cpp",
-			"xutility": "cpp"
-		},
-	},
-	"extensions": {
-		"recommendations": [
-			"exodiusstudios.comment-anchors"
-		]
-	},
-	"launch": {
-		"configurations": [
-			{
-				"type": "lldb",
-				"request": "launch",
-				"name": "Debug SwiftBlend2DSample",
-				"program": "${workspaceFolder}/.build/debug/SwiftBlend2DSample",
-				"args": [],
-				"cwd": "${workspaceFolder:SwiftBlend2D}",
-				"preLaunchTask": "swift: Build Debug SwiftBlend2DSample"
-			},
-			{
-				"type": "lldb",
-				"request": "launch",
-				"name": "Release SwiftBlend2DSample",
-				"program": "${workspaceFolder}/.build/release/SwiftBlend2DSample",
-				"args": [],
-				"cwd": "${workspaceFolder:SwiftBlend2D}",
-				"preLaunchTask": "swift: Build Release SwiftBlend2DSample"
-			},
-			{
-				"type": "lldb",
-				"request": "launch",
-				"name": "Test SwiftBlend2D",
-				"program": "./.build/debug/SwiftBlend2DPackageTests.xctest",
-				"cwd": "${workspaceFolder:SwiftBlend2D}",
-				"preLaunchTask": "swift: Build All"
-			}
-		]
-	}
+        "[python]": {
+            "editor.formatOnSave": true
+        },
+        "files.associations": {
+            "iterator": "cpp",
+            "xutility": "cpp"
+        },
+    },
+    "extensions": {
+        "recommendations": [
+            "exodiusstudios.comment-anchors"
+        ]
+    },
+    "launch": {
+        "configurations": [
+            {
+                "type": "lldb",
+                "request": "launch",
+                "name": "Debug SwiftBlend2DSample",
+                "program": "${workspaceFolder}/.build/debug/SwiftBlend2DSample",
+                "args": [],
+                "cwd": "${workspaceFolder:SwiftBlend2D}",
+                "preLaunchTask": "swift: Build Debug SwiftBlend2DSample"
+            },
+            {
+                "type": "lldb",
+                "request": "launch",
+                "name": "Release SwiftBlend2DSample",
+                "program": "${workspaceFolder}/.build/release/SwiftBlend2DSample",
+                "args": [],
+                "cwd": "${workspaceFolder:SwiftBlend2D}",
+                "preLaunchTask": "swift: Build Release SwiftBlend2DSample"
+            },
+            {
+                "type": "lldb",
+                "request": "launch",
+                "name": "Test SwiftBlend2D",
+                "program": "./.build/debug/SwiftBlend2DPackageTests.xctest",
+                "cwd": "${workspaceFolder:SwiftBlend2D}",
+                "preLaunchTask": "swift: Build All"
+            }
+        ]
+    }
 }
