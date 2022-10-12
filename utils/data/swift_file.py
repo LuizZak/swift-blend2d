@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from utils.converters.syntax_stream import SyntaxStream
@@ -12,15 +12,21 @@ class SwiftFile:
     path: Path
     decls: list[SwiftDecl]
     includes: list[str]
+    header_lines: list[str] = field(
+        default_factory=lambda: [
+            "// HEADS UP!: Auto-generated file, changes made directly here will be overwritten by code generators."
+        ]
+    )
+    "List of lines to prefix the file with"
 
     def add_decl(self, decl: SwiftDecl):
         self.decls.append(decl)
 
     def write(self, stream: SyntaxStream):
         # Write required boilerplate
-        stream.line(
-            "// HEADS UP!: Auto-generated file, changes made directly here will be overwritten by code generators."
-        )
+        for line in self.header_lines:
+            stream.line(line)
+
         if len(self.includes) > 0:
             stream.line()
             for include in self.includes:
