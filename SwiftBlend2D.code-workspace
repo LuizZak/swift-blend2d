@@ -148,6 +148,12 @@
     	"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
 		"python.linting.flake8Args": ["--ignore=E203,E225,E302,E501,W293,W503"],
+		
+		// Hack to disable mypy from looking into every workspace folder by default.
+		// Main workspace folder has a .vscode/settings.json that overrides this.
+		"mypy.targets": [
+			"/dev/null",
+		],
 
 		"[python]": {
 			"editor.formatOnSave": true
