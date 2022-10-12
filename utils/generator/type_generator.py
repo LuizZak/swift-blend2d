@@ -12,6 +12,7 @@ import pycparser
 from pathlib import Path
 from pycparser import c_ast
 from contextlib import contextmanager
+from utils.cli.cli_printing import print_stage_name
 from utils.cli.console_color import ConsoleColor
 
 from utils.converters.syntax_stream import SyntaxStream
@@ -241,7 +242,7 @@ class TypeGeneratorRequest:
 
 
 def generate_types(request: TypeGeneratorRequest) -> int:
-    print("Generating header file...")
+    print_stage_name("Generating header file...")
 
     output_file = run_c_preprocessor(request.header_file)
 
@@ -253,11 +254,11 @@ def generate_types(request: TypeGeneratorRequest) -> int:
     with open(output_path, "wb") as f:
         f.write(output_file)
 
-    print("Parsing generated header file...")
+    print_stage_name("Parsing generated header file...")
 
     ast = pycparser.parse_file(output_path, use_cpp=False)
 
-    print("Collecting Swift type candidates...")
+    print_stage_name("Collecting Swift type candidates...")
 
     visitor = DeclCollectorVisitor(prefixes=request.prefixes)
     visitor.visit(ast)
@@ -275,12 +276,12 @@ def generate_types(request: TypeGeneratorRequest) -> int:
 
     print(f"Found {ConsoleColor.CYAN(len(swift_decls))} potential declarations")
 
-    print("Generating doc comments...")
+    print_stage_name("Generating doc comments...")
 
     doccomment_lookup = DoccommentLookup()
     swift_decls = doccomment_lookup.populate_doc_comments(swift_decls)
 
-    print("Merging generated Swift type declarations...")
+    print_stage_name("Merging generated Swift type declarations...")
 
     merger = SwiftDeclMerger()
     swift_decls = merger.merge(swift_decls)
@@ -288,7 +289,7 @@ def generate_types(request: TypeGeneratorRequest) -> int:
     print(f"Merged down to {ConsoleColor.CYAN(len(swift_decls))} declarations")
 
     if request.doccomment_formatter is not None:
-        print("Formatting doc comments...")
+        print_stage_name("Formatting doc comments...")
 
         lookup = SwiftDeclLookup(swift_decls)
         doc_visitor = SwiftDoccommentFormatterVisitor(
@@ -298,7 +299,7 @@ def generate_types(request: TypeGeneratorRequest) -> int:
         for decl in swift_decls:
             doc_visitor.walk_decl(decl)
 
-    print("Generating files...")
+    print_stage_name("Generating files...")
 
     generator = DeclFileGenerator(
         request.destination,
@@ -310,6 +311,6 @@ def generate_types(request: TypeGeneratorRequest) -> int:
     )
     generator.generate()
 
-    print("Success!")
+    print(ConsoleColor.GREEN("Success!"))
 
     return 0
