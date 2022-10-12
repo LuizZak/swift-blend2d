@@ -82,7 +82,7 @@ class DefaultSymbolNameFormatter(SymbolNameFormatter):
         self.split_component_inplace(component.string, split_string)
 
         # Capitalize
-        split_components = flatten(
+        split_components_str = flatten(
             map(
                 lambda p: self.capitalize_component_string(p[1], has_prev=p[0] > 0),
                 enumerate(split_string),
@@ -95,7 +95,7 @@ class DefaultSymbolNameFormatter(SymbolNameFormatter):
                 lambda t: component.with_string(t[0]).with_string_case(
                     component.string_case | t[1]
                 ),
-                split_components,
+                split_components_str,
             )
         )
 
@@ -104,8 +104,10 @@ class DefaultSymbolNameFormatter(SymbolNameFormatter):
     def split_component_inplace(self, string: str, output: list[str]):
         for pattern in self.words_to_split:
             if pattern.search(string):
-                filtered = filter(
-                    lambda x: x is not None and len(x) > 0, pattern.split(string)
+                filtered = list(
+                    filter(
+                        lambda x: x is not None and len(x) > 0, pattern.split(string)
+                    )
                 )
 
                 if len(filtered) == 1 and filtered[0] == string:
@@ -170,7 +172,7 @@ class DefaultSymbolNameFormatter(SymbolNameFormatter):
 
     def snake_case(
         self, components: list[CompoundSymbolName.Component]
-    ) -> list[CompoundSymbolName]:
+    ) -> list[CompoundSymbolName.Component]:
 
         result = []
         snake_case_next = False

@@ -66,8 +66,9 @@
             {
                 "label": "Generate Swift Types",
                 "type": "shell",
-                "command": "python generate_types.py",
+                "command": "python",
                 "args": [
+                    "generate_types.py",
                     "-o", "${workspaceFolder:SwiftBlend2D}/Sources/SwiftBlend2D/Generated"
                 ],
                 "options": {

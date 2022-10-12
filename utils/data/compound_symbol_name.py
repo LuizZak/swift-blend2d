@@ -111,8 +111,11 @@ class CompoundSymbolName(Sequence, Hashable):
         def __hash__(self) -> int:
             return hash(self.__key())
         
-        def __eq__(self, other: 'CompoundSymbolName.Component') -> bool:
-            return self.__key() == other.__key()
+        def __eq__(self, other: object) -> bool:
+            if isinstance(other, CompoundSymbolName.Component):
+                return self.__key() == other.__key()
+            
+            return False
 
         def copy(self) -> "CompoundSymbolName.Component":
             """
@@ -653,7 +656,7 @@ class CompoundSymbolName(Sequence, Hashable):
 
         return CompoundSymbolName(components=result)
 
-    def camel_cased(self, digit_separator: str | None = "_") -> "CompoundSymbolName":
+    def camel_cased(self, digit_separator: str = "_") -> "CompoundSymbolName":
         """
         Returns a new compound name where each component is a component from this
         compound name that when put together with to_string() forms a camelCaseString.

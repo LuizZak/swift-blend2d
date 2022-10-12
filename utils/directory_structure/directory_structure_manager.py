@@ -38,7 +38,7 @@ class DirectoryStructureManager:
 
     def folder_for_file(self, file_name: str) -> Path:
         def matches(
-            pattern: re.Pattern | list[re.Pattern | str],
+            pattern: str | re.Pattern | list[re.Pattern],
             file_name: str,
         ) -> bool:
             if isinstance(pattern, re.Pattern):
@@ -47,11 +47,15 @@ class DirectoryStructureManager:
 
                 return True
 
-            for pattern in pattern:
-                if isinstance(pattern, str):
-                    if pattern == file_name:
+            for pat in pattern:
+                if isinstance(pat, str):
+                    if pat == file_name:
                         return True
-                elif pattern.match(file_name):
+                    else:
+                        continue
+                if isinstance(pat, list):
+                    return True if file_name in pat else False
+                elif pat.match(file_name):
                     return True
 
             return False
@@ -59,8 +63,8 @@ class DirectoryStructureManager:
         dir_path = self.base_path
         longest_path: List[str] = []
 
-        for (path, pattern) in self.path_matchers():
-            if not matches(pattern, file_name):
+        for (path, pat) in self.path_matchers():
+            if not matches(pat, file_name):
                 continue
 
             if len(path) > len(longest_path):

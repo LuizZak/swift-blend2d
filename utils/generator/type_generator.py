@@ -5,6 +5,7 @@ import os
 import subprocess
 import shutil
 from dataclasses import dataclass
+from typing import Generator
 
 import pycparser
 
@@ -35,7 +36,7 @@ from utils.paths import paths
 
 
 def run_cl(input_path: Path) -> bytes:
-    args = [
+    args: list[str | os.PathLike] = [
         "cl",
         "/E",
         "/Za",
@@ -47,7 +48,7 @@ def run_cl(input_path: Path) -> bytes:
 
 
 def run_clang(input_path: Path) -> bytes:
-    args = [
+    args: list[str | os.PathLike] = [
         "clang",
         "-E",
         "-fuse-line-directives",
@@ -75,12 +76,13 @@ class SwiftDeclMerger:
         decl_dict: dict[str, SwiftDecl] = dict()
 
         for decl in decls:
-            existing = decl_dict.get(decl.name)
+            decl_name = decl.name.to_string()
+            existing = decl_dict.get(decl_name)
             if existing is not None:
                 if isinstance(existing, SwiftEnumDecl) and isinstance(
                     decl, SwiftEnumDecl
                 ):
-                    decl_dict[decl.name] = SwiftEnumDecl(
+                    decl_dict[decl_name] = SwiftEnumDecl(
                         name=existing.name,
                         original_name=existing.original_name,
                         cases=existing.cases + decl.cases,
@@ -91,14 +93,13 @@ class SwiftDeclMerger:
                 else:
                     existing_name = existing.name.to_string()
                     existing_original = existing.original_name.to_string()
-                    decl_name = decl.name.to_string()
                     decl_original = decl.original_name.to_string()
 
                     raise BaseException(
                         f"Found two symbols that share the same name but are of different types: {existing_name} (type: {type(existing)}) (originally: {existing_original}) and {decl_name} (type: {type(decl)}) (originally: {decl_original})"
                     )
             else:
-                decl_dict[decl.name] = decl
+                decl_dict[decl_name] = decl
 
         return list(decl_dict.values())
 
@@ -108,7 +109,7 @@ class DeclGeneratorTarget:
         pass
 
     @contextmanager
-    def create_stream(self, _: Path) -> SyntaxStream:
+    def create_stream(self, _: Path) -> Generator:
         raise NotImplementedError("Must be overridden by subclasses.")
 
 
@@ -130,7 +131,7 @@ class DeclFileGeneratorDiskTarget(DeclGeneratorTarget):
             os.mkdir(self.destination_folder)
 
     @contextmanager
-    def create_stream(self, path: Path) -> SyntaxStream:
+    def create_stream(self, path: Path) -> Generator:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(path, "w", newline="\n") as file:
@@ -140,7 +141,7 @@ class DeclFileGeneratorDiskTarget(DeclGeneratorTarget):
 
 class DeclFileGeneratorStdoutTarget(DeclGeneratorTarget):
     @contextmanager
-    def create_stream(self, path: Path) -> SyntaxStream:
+    def create_stream(self, path: Path) -> Generator:
         stream = SyntaxStream(sys.stdout)
         yield stream
 
@@ -275,10 +276,12 @@ def generate_types(request: TypeGeneratorRequest) -> int:
         print("Formatting doc comments...")
 
         lookup = SwiftDeclLookup(swift_decls)
-        visitor = SwiftDoccommentFormatterVisitor(request.doccomment_formatter, lookup)
+        doc_visitor = SwiftDoccommentFormatterVisitor(
+            request.doccomment_formatter, lookup
+        )
 
         for decl in swift_decls:
-            visitor.walk_decl(decl)
+            doc_visitor.walk_decl(decl)
 
     print("Generating files...")
 

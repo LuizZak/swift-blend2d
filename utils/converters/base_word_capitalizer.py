@@ -85,7 +85,13 @@ class PatternCapitalizer(BaseWordCapitalizer):
         if self.ignore_if_is_leading_string and not has_leading_string:
             return None
 
-        for match in self.pattern.finditer(string):
+        pat: re.Pattern = (
+            self.pattern
+            if isinstance(self.pattern, re.Pattern)
+            else re.compile(self.pattern)
+        )
+
+        for match in pat.finditer(string):
             if leftmost_interval is None or match.start() < leftmost_interval[1]:
                 leftmost_interval = (
                     match.group(1).upper(),

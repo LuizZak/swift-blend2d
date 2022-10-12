@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Sequence
 
 from utils.data.swift_decls import SwiftDecl, SwiftEnumDecl
 from utils.doccomment.doccomment_line import DoccommentLine
@@ -81,7 +82,7 @@ class DoccommentLookup:
 
         return list(reversed(collected))
 
-    def populate_doc_comments(self, decls: list[SwiftDecl]) -> list[SwiftDecl]:
+    def populate_doc_comments(self, decls: Sequence[SwiftDecl]) -> list[SwiftDecl]:
         results = []
 
         for decl in decls:
