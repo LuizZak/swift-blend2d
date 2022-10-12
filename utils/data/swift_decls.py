@@ -5,7 +5,7 @@ from pathlib import Path
 
 from utils.converters.syntax_stream import SyntaxStream
 from utils.data.compound_symbol_name import CompoundSymbolName
-from utils.constants.constants import backticked_term
+from utils.converters.backticked_term import backticked_term
 
 
 class SwiftDeclVisitResult(Enum):

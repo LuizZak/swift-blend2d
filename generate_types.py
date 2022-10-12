@@ -44,12 +44,15 @@ Will also be used as a list of terms to remove the prefix of in final declaratio
 class Blend2DDeclGenerator(SwiftDeclGenerator):
     def generate_enum(self, node: c_ast.Enum) -> SwiftEnumDecl:
         decl = super().generate_enum(node)
+
+        # Append 'OptionSet' conformance to some enum declarations
         if (
             decl.name.endswith("Flags")
             or decl.name.to_string() == "BLRuntimeCpuFeatures"
             or decl.name.to_string() == "BLImageCodecFeatures"
         ):
             decl.conformances.append("OptionSet")
+
         return decl
 
 
@@ -175,10 +178,12 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
         self, comments: list[str], decl: SwiftDecl, lookup: SwiftDeclLookup
     ) -> list[str] | None:
 
+        # Remove '\ingroup*' lines
         new_comments = filter(lambda c: not c.startswith("\\ingroup"), comments)
+        # Reword '\note' to '- note'
         new_comments = map(lambda c: c.replace("\\note", "- note:"), new_comments)
 
-        # Replace "\\ref <symbol>" with "`<symbol>`"
+        # Replace "\ref <symbol>" with "`<symbol>`"
         new_comments = map(self.replace_refs, new_comments)
 
         # Convert C symbol references to Swift symbols

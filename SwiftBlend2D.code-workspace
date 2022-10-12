@@ -129,7 +129,10 @@
         "ShortcutMenuBar.userButton04Command": "workbench.action.tasks.runTask|Generate Swift Types",
         "cSpell.words": [
             "asmjit",
+            "doccomment",
+            "doccomments",
             "msvc",
+            "pycparser",
             "swiftpm"
         ],
         "C_Cpp.default.includePath": [

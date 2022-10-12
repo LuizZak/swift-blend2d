@@ -12,6 +12,7 @@ import pycparser
 from pathlib import Path
 from pycparser import c_ast
 from contextlib import contextmanager
+from utils.cli.console_color import ConsoleColor
 
 from utils.converters.syntax_stream import SyntaxStream
 from utils.data.swift_decl_lookup import SwiftDeclLookup
@@ -124,7 +125,9 @@ class DeclFileGeneratorDiskTarget(DeclGeneratorTarget):
 
     def prepare(self):
         if self.verbose:
-            print(f"Generating .swift files to {self.destination_folder}...")
+            print(
+                f"Generating .swift files to {ConsoleColor.MAGENTA(self.destination_folder)}..."
+            )
 
         if self.rm_folder:
             shutil.rmtree(self.destination_folder)
@@ -154,6 +157,7 @@ class DeclFileGenerator:
         decls: list[SwiftDecl],
         includes: list[str],
         directory_manager: DirectoryStructureManager | None = None,
+        verbose: bool = False,
     ):
         if directory_manager is None:
             self.directory_manager = DirectoryStructureManager(destination_folder)
@@ -164,6 +168,7 @@ class DeclFileGenerator:
         self.target = target
         self.decls = decls
         self.includes = includes
+        self.verbose = verbose
 
     def generate_file(self, file: SwiftFile):
         with self.target.create_stream(file.path) as stream:
@@ -177,6 +182,12 @@ class DeclFileGenerator:
         for file in files:
             file.includes = self.includes
             self.generate_file(file)
+
+            if self.verbose:
+                rel_path = file.path.relative_to(self.destination_folder)
+                print(
+                    f"Generated {ConsoleColor.MAGENTA(rel_path)} with {ConsoleColor.CYAN(len(file.decls))} declaration(s)"
+                )
 
 
 # noinspection PyPep8Naming
@@ -262,6 +273,8 @@ def generate_types(request: TypeGeneratorRequest) -> int:
 
     swift_decls = converter.generate_from_list(visitor.decls)
 
+    print(f"Found {ConsoleColor.CYAN(len(swift_decls))} potential declarations")
+
     print("Generating doc comments...")
 
     doccomment_lookup = DoccommentLookup()
@@ -271,6 +284,8 @@ def generate_types(request: TypeGeneratorRequest) -> int:
 
     merger = SwiftDeclMerger()
     swift_decls = merger.merge(swift_decls)
+
+    print(f"Merged down to {ConsoleColor.CYAN(len(swift_decls))} declarations")
 
     if request.doccomment_formatter is not None:
         print("Formatting doc comments...")
@@ -291,6 +306,7 @@ def generate_types(request: TypeGeneratorRequest) -> int:
         swift_decls,
         request.includes,
         request.directory_manager,
+        verbose=True,
     )
     generator.generate()
 
