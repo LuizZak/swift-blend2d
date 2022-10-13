@@ -3,7 +3,7 @@ import blend2d
 import SwiftBlend2D
 
 class BLGlyphBufferTests: XCTestCase {
-    func testGlyphIds_Alphabet() {
+    func testGlyphIds_alphabet() {
         let sut = BLGlyphBuffer(text: "abcdefghijklmnopqrstuvwxyz")
 
         XCTAssertEqual(sut.glyphIds, [
@@ -12,15 +12,33 @@ class BLGlyphBufferTests: XCTestCase {
         ])
     }
 
-    func testGlyphIds_Diacritic() {
+    func testGlyphIds_diacritic() {
         let sut = BLGlyphBuffer(text: "éáËã")
 
         XCTAssertEqual(sut.glyphIds, [233, 225, 203, 227])
     }
 
-    func testGlyphIds_SpecialCharacters() {
+    func testGlyphIds_specialCharacters() {
         let sut = BLGlyphBuffer(text: "•")
 
         XCTAssertEqual(sut.glyphIds, [8226])
+    }
+
+    func testGlyphIds_emojis() {
+        let sut = BLGlyphBuffer(text: "🚀🎉")
+
+        XCTAssertEqual(sut.glyphIds, [0x1F680, 0x1F389])
+    }
+
+    func testGlyphIds_emojis_zwj() {
+        let sut = BLGlyphBuffer(text: "👁️‍🗨️")
+
+        XCTAssertEqual(sut.glyphIds, [
+            0x1F441, // Eye emoji
+            0xFE0F, // Variation selector
+            0x200D, // Zero-width joiner
+            0x1F5E8, // Left speech bubble emoji
+            0xFE0F, // Variation selector
+        ])
     }
 }
