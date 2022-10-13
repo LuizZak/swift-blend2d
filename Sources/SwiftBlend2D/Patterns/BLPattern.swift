@@ -58,11 +58,22 @@ public struct BLPattern {
         box = BLBaseClass()
     }
     
-    public init(image: BLImage, area: BLRectI? = nil, extendMode: BLExtendMode = .repeat, matrix: BLMatrix2D? = nil) {
+    public init(
+        image: BLImage,
+        area: BLRectI? = nil,
+        extendMode: BLExtendMode = .repeat,
+        matrix: BLMatrix2D? = nil
+    ) {
         box = BLBaseClass { pointer in
             withUnsafeNullablePointer(to: area) { area in
                 withUnsafeNullablePointer(to: matrix) { matrix in
-                    blPatternInitAs(pointer, &image.object, area, extendMode, matrix)
+                    blPatternInitAs(
+                        pointer,
+                        &image.object,
+                        area,
+                        extendMode,
+                        matrix
+                    )
                 }
             }
         }

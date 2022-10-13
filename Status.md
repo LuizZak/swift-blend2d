@@ -10,12 +10,9 @@ This may change at any moment.
 `BLArc` | ✅ Done | Arc specified as [cx, cy, rx, ry, start, sweep[ using double as a storage type |
 `BLArray` | ✅ Done | Array container (template) [C++ API]|
 `BLArrayView` | ✅ Done | |
-`BLBitSet` | ❌ Unstarted | |
-`BLBitSetBuilderCore` | ❌ Unstarted | BitSet builder [C API] |
-`BLBitSetBuilderT` | ❌ Unstarted | |
-`BLBitSetCore` | ❌ Unstarted | BitSet container [C API] |
-`BLBitSetData` | ❌ Unstarted | BitSet data view [C API] |
-`BLBitSetWordIterator` | ❌ Unstarted | |
+`BLBitSet` | 🕒 Partial | `(Missing Swift tests)` |
+`BLBitSetWordIterator` | ✅ Done | |
+`BLBitSetSegment` | 🕒 Partial | `(Missing Swift tests)` |
 `BLBox` | ✅ Done | Box specified as [x0, y0, x1, y1] using double as a storage type |
 `BLBoxI` | ✅ Done | Box specified as [x0, y0, x1, y1] using int as a storage type |
 `BLCircle` | ✅ Done | Circle specified as [cx, cy, r] using double as a storage type |

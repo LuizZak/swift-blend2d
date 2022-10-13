@@ -41,7 +41,7 @@ extension Array {
         _ closure: (UnsafePointer<BLArrayView<Element>>) throws -> T
     ) rethrows -> T {
         
-        return try withUnsafeBufferPointer { pointer -> T in
+        try withUnsafeBufferPointer { pointer -> T in
             var view = BLArrayView(
                 data: pointer.baseAddress,
                 size: pointer.count

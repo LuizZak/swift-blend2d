@@ -6,17 +6,17 @@ public final class BLArray<Element: BLArrayElement> {
     
     /// Returns the size of the array (number of items).
     public var count: Int {
-        return blArrayGetSize(&object)
+        blArrayGetSize(&object)
     }
     
     /// Returns the capacity of the array (number of items).
     public var capacity: Int {
-        return blArrayGetCapacity(&object)
+        blArrayGetCapacity(&object)
     }
     
     /// Returns whether the array is empty.
     public var isEmpty: Bool {
-        return count == 0
+        count == 0
     }
     
     public subscript(index: Int) -> Element {
@@ -221,43 +221,43 @@ public struct BLArrayType {
 extension Float: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayFloat32)
+        BLArrayType(arrayType: .arrayFloat32)
     }
 }
 extension Double: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayFloat64)
+        BLArrayType(arrayType: .arrayFloat64)
     }
 }
 extension UInt8: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayUInt8)
+        BLArrayType(arrayType: .arrayUInt8)
     }
 }
 extension UInt16: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayUInt16)
+        BLArrayType(arrayType: .arrayUInt16)
     }
 }
 extension UInt32: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayUInt32)
+        BLArrayType(arrayType: .arrayUInt32)
     }
 }
 extension UInt64: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayUInt64)
+        BLArrayType(arrayType: .arrayUInt64)
     }
 }
 extension Int8: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayInt8)
+        BLArrayType(arrayType: .arrayInt8)
     }
 }
 extension Int16: BLArrayElement {
@@ -269,19 +269,19 @@ extension Int16: BLArrayElement {
 extension Int32: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayInt32)
+        BLArrayType(arrayType: .arrayInt32)
     }
 }
 extension Int64: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .arrayInt64)
+        BLArrayType(arrayType: .arrayInt64)
     }
 }
 extension Int: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return MemoryLayout<Int>.size == MemoryLayout<Int32>.size
+        MemoryLayout<Int>.size == MemoryLayout<Int32>.size
             ? Int32.arrayImplementationType
             : Int64.arrayImplementationType
     }
@@ -289,7 +289,7 @@ extension Int: BLArrayElement {
 extension UInt: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return MemoryLayout<UInt>.size == MemoryLayout<UInt32>.size
+        MemoryLayout<UInt>.size == MemoryLayout<UInt32>.size
             ? UInt32.arrayImplementationType
             : UInt64.arrayImplementationType
     }
@@ -297,12 +297,12 @@ extension UInt: BLArrayElement {
 extension BLFontFeatureItem: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .fontFeatureSettings)
+        BLArrayType(arrayType: .fontFeatureSettings)
     }
 }
 extension BLFontVariationItem: BLArrayElement {
     @inlinable
     public static var arrayImplementationType: BLArrayType {
-        return BLArrayType(arrayType: .fontVariationSettings)
+        BLArrayType(arrayType: .fontVariationSettings)
     }
 }

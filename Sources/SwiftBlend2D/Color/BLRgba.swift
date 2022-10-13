@@ -30,7 +30,12 @@ public extension BLRgba {
         return BLRgba(r: r, g: g, b: b, a: alpha)
     }
 
-    func faded(towards otherColor: BLRgba, factor: Float, blendAlpha: Bool = false) -> BLRgba {
+    func faded(
+        towards otherColor: BLRgba,
+        factor: Float,
+        blendAlpha: Bool = false
+    ) -> BLRgba {
+
         let from = 1 - factor
 
         let a = blendAlpha ? self.a * from + otherColor.a * factor : self.a
@@ -45,7 +50,7 @@ public extension BLRgba {
 extension BLRgba: Equatable {
     @inlinable
     public static func == (lhs: BLRgba, rhs: BLRgba) -> Bool {
-        return lhs.r == rhs.r
+        lhs.r == rhs.r
             && lhs.g == rhs.g
             && lhs.b == rhs.b
             && lhs.a == rhs.a
@@ -53,25 +58,25 @@ extension BLRgba: Equatable {
     
     @inlinable
     public static func == (lhs: BLRgba, rhs: BLRgba32) -> Bool {
-        return lhs == BLRgba(rhs)
+        lhs == BLRgba(rhs)
     }
     @inlinable
     public static func == (lhs: BLRgba32, rhs: BLRgba) -> Bool {
-        return BLRgba(lhs) == rhs
+        BLRgba(lhs) == rhs
     }
     
     @inlinable
     public static func == (lhs: BLRgba, rhs: BLRgba64) -> Bool {
-        return lhs == BLRgba(rhs)
+        lhs == BLRgba(rhs)
     }
     @inlinable
     public static func == (lhs: BLRgba64, rhs: BLRgba) -> Bool {
-        return BLRgba(lhs) == rhs
+        BLRgba(lhs) == rhs
     }
 }
 
 extension BLRgba: CustomStringConvertible {
     public var description: String {
-        return "BLRgba(r: \(r), g: \(g), b: \(b), a: \(a))"
+        "BLRgba(r: \(r), g: \(g), b: \(b), a: \(a))"
     }
 }

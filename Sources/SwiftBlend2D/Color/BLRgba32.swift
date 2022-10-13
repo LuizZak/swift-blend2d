@@ -9,39 +9,23 @@ public extension BLRgba32 {
     var isTransparent: Bool { return value <= 0x00FFFFFF }
 
     var r: UInt32 {
-        get {
-            (value >> 16) & 0xFF
-        }
-        set {
-            value = (value & 0xFF00FFFF) | (newValue << 16)
-        }
+        get { (value >> 16) & 0xFF }
+        set { value = (value & 0xFF00FFFF) | (newValue << 16) }
     }
 
     var g: UInt32 {
-        get {
-            (value >> 8) & 0xFF
-        }
-        set {
-            value = (value & 0xFFFF00FF) | (newValue <<  8)
-        }
+        get { (value >> 8) & 0xFF }
+        set { value = (value & 0xFFFF00FF) | (newValue <<  8) }
     }
 
     var b: UInt32 {
-        get {
-            value & 0xFF
-        }
-        set {
-            value = (value & 0xFFFFFF00) | (newValue <<  0)
-        }
+        get { value & 0xFF }
+        set { value = (value & 0xFFFFFF00) | (newValue <<  0) }
     }
 
     var a: UInt32 {
-        get {
-            value >> 24
-        }
-        set {
-            value = (value & 0x00FFFFFF) | (newValue << 24)
-        }
+        get { value >> 24 }
+        set { value = (value & 0x00FFFFFF) | (newValue << 24) }
     }
     
     @inlinable
@@ -62,7 +46,8 @@ public extension BLRgba32 {
         self.init(argb: (hi & 0xFF000000)
             + ((lo & 0xFF000000) >> 16)
             + ((hi & 0x0000FF00) <<  8)
-            + ((lo & 0x0000FF00) >>  8))
+            + ((lo & 0x0000FF00) >>  8)
+        )
     }
 
     func withTransparency(_ alpha: UInt32) -> BLRgba32 {

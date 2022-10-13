@@ -1,5 +1,28 @@
 import blend2d
 
+/// BitSet container.
+///
+/// BitSet container implements sparse BitSet that consists of segments, where
+/// each segment represents either dense range of bits or a range of bits that
+/// are all set to one. In addition, the BitSet provides also a SSO mode, in which
+/// it's possible to store 96 dense bits (3 consecutive BitWords) in the whole
+/// addressable range or a range of ones. SSO mode optimizes use cases, in which
+/// very small BitSets are used (typically in OpenType pipeline).
+///
+/// The BitSet itself has been optimized for Blend2D use cases, which are the
+/// following:
+///
+///   1. Representing character coverage of fonts and unicode text. This use-case
+///      requires sparseness and ranges as some fonts, especially those designed
+///      for Chinese/Japan languages, provide thousands of glyphs that have pretty
+///      high code points - using a simple BitVector would be pretty wasteful in
+///      this case.
+///
+///   2. Storing OpenType processing instructions, where each bit represents one
+///      operation in the OpenType pipeline.
+///      SSO BitSet will be most likely enough to describe this as most fonts
+///      have less than 96 GPOS/GSUB instructions.
+///
 public class BLBitSet: BLBaseClass<BLBitSetCore> {
     /// Tests whether the BitSet is empty (has no content).
     ///
@@ -8,18 +31,18 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
         blBitSetIsEmpty(&object)
     }
 
-    /// Stores a normalized BitSet data represented as segments into `out`.
+    /// Stores a normalized `BitSet` data represented as segments.
     ///
-    /// If the BitSet is in SSO mode, it will be converter to temporary segments
-    /// provided by `BLBitSetData::ssoSegments`, if the BitSet is in dynamic mode
+    /// If the `BitSet` is in SSO mode, it will be converter to temporary segments
+    /// provided by `BLBitSetData.ssoSegments`, if the `BitSet` is in dynamic mode
     /// (already contains segments) then only a pointer to the data will be stored
-    /// into `out`.
+    /// into the result.
     ///
-    /// - remarks: The data written into `out` can reference the data in the BitSet,
-    /// thus the BitSet cannot be manipulated during the use of the data. This
-    /// function is ideal for inspecting the content of the BitSet in a unique
-    /// way and for implementing iterators that don't have to be aware of how
-    /// SSO data is represented and used.
+    /// - remarks: The data written into the result can reference the data in the
+    /// `BitSet`, thus the `BitSet` cannot be manipulated during the use of the
+    /// data. This property is ideal for inspecting the content of the `BitSet`
+    /// in a unique way and for implementing iterators that don't have to be
+    /// aware of how SSO data is represented and used.
     public var data: BLBitSetData {
         var data = BLBitSetData()
         blBitSetGetData(&object, &data)
@@ -69,7 +92,8 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
         blBitSetHasBit(&object, UInt32(bitIndex))
     }
 
-    /// Returns whether the bit-set has at least on bit in the given range `[startBit:endBit)`.
+    /// Returns whether the bit-set has at least on bit in the given range
+    /// `[startBit:endBit)`.
     public func hasBitsInRange(startBit: Int, endBit: Int) -> Bool {
         blBitSetHasBitsInRange(&object, UInt32(startBit), UInt32(endBit))
     }
@@ -160,5 +184,13 @@ extension BLBitSet: Comparable {
     /// Compares two BitSets and returns `true` if `lhs` compares lower than `rhs`
     public static func < (lhs: BLBitSet, rhs: BLBitSet) -> Bool {
         blBitSetCompare(&lhs.object, &rhs.object) < 0
+    }
+}
+
+extension BLBitSet: Sequence {
+    /// Creates an iterator for this `BLBitSet` that iterates over each word data
+    /// within the set.
+    public func makeIterator() -> BLBitSetWordIterator {
+        .init(self)
     }
 }

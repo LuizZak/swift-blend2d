@@ -9,39 +9,23 @@ public extension BLRgba64 {
     var isTransparent: Bool { return value <= 0x0000FFFFFFFFFFFF }
     
     var r: UInt32 {
-        get {
-            UInt32((value >> 32) & 0xFFFF)
-        }
-        set {
-            value = (value & 0xFFFF0000FFFFFFFF) | (UInt64(newValue) << 32)
-        }
+        get { UInt32((value >> 32) & 0xFFFF) }
+        set { value = (value & 0xFFFF0000FFFFFFFF) | (UInt64(newValue) << 32) }
     }
 
     var g: UInt32 {
-        get {
-            UInt32((value >> 16) & 0xFFFF)
-        }
-        set {
-            value = (value & 0xFFFFFFFF0000FFFF) | (UInt64(newValue) << 16)
-        }
+        get { UInt32((value >> 16) & 0xFFFF) }
+        set { value = (value & 0xFFFFFFFF0000FFFF) | (UInt64(newValue) << 16) }
     }
 
     var b: UInt32 {
-        get {
-            UInt32((value >> 0) & 0xFFFF)
-        }
-        set {
-            value = (value & 0xFFFFFFFFFFFF0000) | (UInt64(newValue) <<  0)
-        }
+        get { UInt32((value >> 0) & 0xFFFF) }
+        set { value = (value & 0xFFFFFFFFFFFF0000) | (UInt64(newValue) <<  0) }
     }
 
     var a: UInt32 {
-        get {
-            UInt32(value >> 48)
-        }
-        set {
-            value = (value & 0x0000FFFFFFFFFFFF) | (UInt64(newValue) << 48)
-        }
+        get { UInt32(value >> 48) }
+        set { value = (value & 0x0000FFFFFFFFFFFF) | (UInt64(newValue) << 48) }
     }
 
     @inlinable
@@ -51,7 +35,9 @@ public extension BLRgba64 {
     
     @inlinable
     init(r: UInt32, g: UInt32, b: UInt32, a: UInt32 = 0xFFFF) {
-        self.init(value: (UInt64(a) << 48) | (UInt64(r) << 32) | (UInt64(g) << 16) | (UInt64(b) <<  0))
+        self.init(
+            value: (UInt64(a) << 48) | (UInt64(r) << 32) | (UInt64(g) << 16) | (UInt64(b) <<  0)
+        )
     }
     
     // Note: Not @inlinable for now because this currently crashes the Swift
@@ -90,18 +76,18 @@ public extension BLRgba64 {
 extension BLRgba64: Equatable {
     @inlinable
     public static func == (lhs: BLRgba64, rhs: BLRgba64) -> Bool {
-        return lhs.value == rhs.value
+        lhs.value == rhs.value
     }
 }
 
 extension BLRgba64: CustomStringConvertible {
     public var description: String {
-        return "BLRgba64(r: \(r), g: \(g), b: \(b), a: \(a))"
+        "BLRgba64(r: \(r), g: \(g), b: \(b), a: \(a))"
     }
 }
 
 public extension BLRgba64 {
     var asBLRgba: BLRgba {
-        return BLRgba(self)
+        BLRgba(self)
     }
 }
