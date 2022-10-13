@@ -78,6 +78,9 @@ public class BLBaseClass<T: CoreStructure> {
 /// Used to create empty function stubs for implementing the `CoreStructure.assignWeak`
 /// conformance for types that do not have matching weak assignment functions in
 /// Blend2D.
-func emptyAssignWeak<T>(type: T.Type) -> (UnsafeMutablePointer<T>?, UnsafePointer<T>?) -> BLResult {
+func emptyAssignWeak<T>(
+    type: T.Type
+) -> (UnsafeMutablePointer<T>?, UnsafePointer<T>?) -> BLResult {
+    
     return { _, _ in BLResult(BL_SUCCESS.rawValue) }
 }
