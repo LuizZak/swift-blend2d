@@ -10,9 +10,18 @@ class BLPointTests: XCTestCase {
     }
     
     func testHashable() {
-        XCTAssertEqual(BLPoint(x: 0, y: 1).hashValue, BLPoint(x: 0, y: 1).hashValue)
-        XCTAssertNotEqual(BLPoint(x: 1, y: 1).hashValue, BLPoint(x: 0, y: 1).hashValue)
-        XCTAssertNotEqual(BLPoint(x: 0, y: 0).hashValue, BLPoint(x: 0, y: 1).hashValue)
+        XCTAssertEqual(
+            BLPoint(x: 0, y: 1).hashValue,
+            BLPoint(x: 0, y: 1).hashValue
+        )
+        XCTAssertNotEqual(
+            BLPoint(x: 1, y: 1).hashValue,
+            BLPoint(x: 0, y: 1).hashValue
+        )
+        XCTAssertNotEqual(
+            BLPoint(x: 0, y: 0).hashValue,
+            BLPoint(x: 0, y: 1).hashValue
+        )
     }
     
     func testZero() {
@@ -170,7 +179,10 @@ class BLPointTests: XCTestCase {
     func testNormalized() {
         let p = BLPoint(x: 10, y: 10)
 
-        XCTAssertEqual(p.normalized, BLPoint(x: 10 / sqrt(200), y: 10 / sqrt(200)))
+        XCTAssertEqual(
+            p.normalized,
+            BLPoint(x: 10 / sqrt(200), y: 10 / sqrt(200))
+        )
     }
 
     func testNormalizedOnZero() {
@@ -219,7 +231,9 @@ class BLPointTests: XCTestCase {
     func testDescription() {
         let point = BLPoint(x: 1, y: 2)
         
-        XCTAssertEqual(point.description,
-                       "BLPoint(x: 1.0, y: 2.0)")
+        XCTAssertEqual(
+            point.description,
+            "BLPoint(x: 1.0, y: 2.0)"
+        )
     }
 }

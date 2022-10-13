@@ -4,7 +4,9 @@ import blend2d
 
 class BLGradientTests: XCTestCase {
     func testCopyOnWrite() {
-        let linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 10, y1: 10))
+        let linear = BLGradient(
+            linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 10, y1: 10)
+        )
         var copy = linear
         
         copy.setValue(.commonX0, 10)
@@ -14,7 +16,9 @@ class BLGradientTests: XCTestCase {
     }
     
     func testCopyOnWriteInstanceReference() {
-        let linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 10, y1: 10))
+        let linear = BLGradient(
+            linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 10, y1: 10)
+        )
         var copy = linear
         
         XCTAssert(linear.box === copy.box)
@@ -26,9 +30,13 @@ class BLGradientTests: XCTestCase {
     }
 
     func testSetGradientValues() {
-        var gradient = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 0))
+        var gradient = BLGradient(
+            linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 0)
+        )
 
-        gradient.gradientValues = .radial(BLRadialGradientValues(x0: 0, y0: 0, x1: 10, y1: 10, r0: 0))
+        gradient.gradientValues = .radial(
+            BLRadialGradientValues(x0: 0, y0: 0, x1: 10, y1: 10, r0: 0)
+        )
 
         XCTAssertEqual(gradient.type, .radial)
     }

@@ -84,15 +84,19 @@ public class Tiger {
             p += 1
             
             // Stroke & Fill style.
-            tp.strokeColor = BLRgba32(r: UInt32(points[p + 0] * 255.0),
-                                      g: UInt32(points[p + 1] * 255.0),
-                                      b: UInt32(points[p + 2] * 255.0),
-                                      a: 255)
+            tp.strokeColor = BLRgba32(
+                r: UInt32(points[p + 0] * 255.0),
+                g: UInt32(points[p + 1] * 255.0),
+                b: UInt32(points[p + 2] * 255.0),
+                a: 255
+            )
             
-            tp.fillColor = BLRgba32(r: UInt32(points[p + 3] * 255.0),
-                                    g: UInt32(points[p + 4] * 255.0),
-                                    b: UInt32(points[p + 5] * 255.0),
-                                    a: 255)
+            tp.fillColor = BLRgba32(
+                r: UInt32(points[p + 3] * 255.0),
+                g: UInt32(points[p + 4] * 255.0),
+                b: UInt32(points[p + 5] * 255.0),
+                a: 255
+            )
             p += 6
             
             // Path.
@@ -108,9 +112,11 @@ public class Tiger {
                     tp.blPath.lineTo(x: points[p], y: h - points[p + 1])
                     p += 2
                 case "C":
-                    tp.blPath.cubicTo(x1: points[p], y1: h - points[p + 1],
-                                      x2: points[p + 2], y2: h - points[p + 3],
-                                      x3: points[p + 4], y3: h - points[p + 5])
+                    tp.blPath.cubicTo(
+                        x1: points[p], y1: h - points[p + 1],
+                        x2: points[p + 2], y2: h - points[p + 3],
+                        x3: points[p + 4], y3: h - points[p + 5]
+                    )
                     p += 6
                 case "E":
                     tp.blPath.close()

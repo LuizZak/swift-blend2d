@@ -3,7 +3,10 @@ import XCTest
 
 class BLImageCodecTests: XCTestCase {
     func testBuiltInCodecsCountMatchesInternalImageCodecs() {
-        XCTAssertEqual(BLImageCodec.BuiltInImageCodec.allCases.count, BLImageCodec.builtInCodecs.count)
+        XCTAssertEqual(
+            BLImageCodec.BuiltInImageCodec.allCases.count,
+            BLImageCodec.builtInCodecs.count
+        )
     }
     
     func testInitFromData() {
@@ -20,7 +23,8 @@ class BLImageCodecTests: XCTestCase {
                 , but resulted in \
                 \((codec?.name).map { "image codec '\($0)'" } ?? "no codec")\
                 instead.
-                """)
+                """
+            )
         }
     }
     

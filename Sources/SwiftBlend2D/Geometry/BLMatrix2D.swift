@@ -3,7 +3,10 @@ import blend2d
 public extension BLMatrix2D {
     @inlinable
     init(m00: Double, m01: Double, m10: Double, m11: Double, m20: Double, m21: Double) {
-        self.init(.init(.init(m00: m00, m01: m01, m10: m10, m11: m11, m20: m20, m21: m21)))
+        self.init(
+            .init(
+                .init(
+                    m00: m00, m01: m01, m10: m10, m11: m11, m20: m20, m21: m21)))
     }
 }
 
@@ -30,44 +33,44 @@ public extension BLMatrix2D {
     /// Creates a new matrix initialized to identity.
     @inlinable
     static func makeIdentity() -> BLMatrix2D {
-        return BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: 0.0, m21: 0.0)
+        BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: 0.0, m21: 0.0)
     }
     
     /// Creates a new matrix initialized to translation.
     @inlinable
     static func makeTranslation(x: Double, y: Double) -> BLMatrix2D {
-        return BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: x, m21: y)
+        BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: x, m21: y)
     }
     /// Creates a new matrix initialized to translation.
     @inlinable
     static func makeTranslation(_ p: BLPointI) -> BLMatrix2D {
-        return BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: Double(p.x), m21: Double(p.y))
+        BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: Double(p.x), m21: Double(p.y))
     }
     /// Creates a new matrix initialized to translation.
     @inlinable
     static func makeTranslation(_ p: BLPoint) -> BLMatrix2D {
-        return BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: p.x, m21: p.y)
+        BLMatrix2D(m00: 1.0, m01: 0.0, m10: 0.0, m11: 1.0, m20: p.x, m21: p.y)
     }
     
     /// Creates a new matrix initialized to scaling.
     @inlinable
     static func makeScaling(xy: Double) -> BLMatrix2D {
-        return BLMatrix2D(m00: xy, m01: 0.0, m10: 0.0, m11: xy, m20: 0.0, m21: 0.0)
+        BLMatrix2D(m00: xy, m01: 0.0, m10: 0.0, m11: xy, m20: 0.0, m21: 0.0)
     }
     /// Creates a new matrix initialized to scaling.
     @inlinable
     static func makeScaling(x: Double, y: Double) -> BLMatrix2D {
-        return BLMatrix2D(m00: x, m01: 0.0, m10: 0.0, m11: y, m20: 0.0, m21: 0.0)
+        BLMatrix2D(m00: x, m01: 0.0, m10: 0.0, m11: y, m20: 0.0, m21: 0.0)
     }
     /// Creates a new matrix initialized to scaling.
     @inlinable
     static func makeScaling(_ p: BLPointI) -> BLMatrix2D {
-        return BLMatrix2D(m00: Double(p.x), m01: 0.0, m10: 0.0, m11: Double(p.y), m20: 0.0, m21: 0.0)
+        BLMatrix2D(m00: Double(p.x), m01: 0.0, m10: 0.0, m11: Double(p.y), m20: 0.0, m21: 0.0)
     }
     /// Creates a new matrix initialized to scaling.
     @inlinable
     static func makeScaling(_ p: BLPoint) -> BLMatrix2D {
-        return BLMatrix2D(m00: p.x, m01: 0.0, m10: 0.0, m11: p.y, m20: 0.0, m21: 0.0)
+        BLMatrix2D(m00: p.x, m01: 0.0, m10: 0.0, m11: p.y, m20: 0.0, m21: 0.0)
     }
     
     /// Creates a new matrix initialized to rotation.
@@ -111,12 +114,12 @@ public extension BLMatrix2D {
     
     @inlinable
     static func makeSinCos(sin: Double, cos: Double, tx: Double = 0.0, ty: Double = 0.0) -> BLMatrix2D {
-        return BLMatrix2D(m00: cos, m01: sin, m10: -sin, m11: cos, m20: tx, m21: ty)
+        BLMatrix2D(m00: cos, m01: sin, m10: -sin, m11: cos, m20: tx, m21: ty)
     }
     
     @inlinable
     static func makeSinCos(sin: Double, cos: Double, translation: BLPoint) -> BLMatrix2D {
-        return makeSinCos(sin: sin, cos: cos, tx: translation.x, ty: translation.y)
+        makeSinCos(sin: sin, cos: cos, tx: translation.x, ty: translation.y)
     }
 }
 
@@ -125,22 +128,34 @@ public extension BLMatrix2D {
     /// Resets matrix to identity.
     @inlinable
     mutating func reset() {
-        reset(m00: 1.0, m01: 0.0,
-              m10: 0.0, m11: 1.0,
-              m20: 0.0, m21: 0.0)
+        reset(
+            m00: 1.0, m01: 0.0,
+            m10: 0.0, m11: 1.0,
+            m20: 0.0, m21: 0.0
+        )
     }
     
     /// Resets matrix to `other` (copy its content to this matrix).
     @inlinable
     mutating func reset(to other: BLMatrix2D) {
-        reset(m00: other.m00, m01: other.m01,
-              m10: other.m10, m11: other.m11,
-              m20: other.m20, m21: other.m21)
+        reset(
+            m00: other.m00, m01: other.m01,
+            m10: other.m10, m11: other.m11,
+            m20: other.m20, m21: other.m21
+        )
     }
     
     /// Resets matrix to [`m00`, `m01`, `m10`, `m11`, `m20`, `m21`].
     @inlinable
-    mutating func reset(m00: Double, m01: Double, m10: Double, m11: Double, m20: Double, m21: Double) {
+    mutating func reset(
+        m00: Double,
+        m01: Double,
+        m10: Double,
+        m11: Double,
+        m20: Double,
+        m21: Double
+    ) {
+
         self.m00 = m00
         self.m01 = m01
         self.m10 = m10
@@ -478,11 +493,12 @@ public extension BLMatrix2D {
         return BLBox(x0: minimum.x, y0: minimum.y, x1: maximum.x, y1: maximum.y).asBLRect
     }
     
-    /// Inverts `source` matrix and stores the result in `desination`.
+    /// Inverts `source` matrix and stores the result in `destination`.
     @discardableResult
     static func invert(destination: inout BLMatrix2D, source: BLMatrix2D) -> BLResult {
-        var source = source
-        return blMatrix2DInvert(&destination, &source)
+        withUnsafePointer(to: source) { point in
+            blMatrix2DInvert(&destination, point)
+        }
     }
 }
 
@@ -503,6 +519,6 @@ public extension BLMatrix2D {
     
     @inlinable
     static func * (lhs: BLPoint, rhs: BLMatrix2D) -> BLPoint {
-        return rhs.mapPoint(lhs)
+        rhs.mapPoint(lhs)
     }
 }

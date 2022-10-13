@@ -4,13 +4,19 @@ import SwiftBlend2D
 
 class BLGradientStopTests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)),
-                       BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)))
+        XCTAssertEqual(
+            BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)),
+            BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc))
+        )
         
-        XCTAssertNotEqual(BLGradientStop(offset: 9, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)),
-                          BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)))
-        XCTAssertNotEqual(BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0x9999999999999999)),
-                          BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)))
+        XCTAssertNotEqual(
+            BLGradientStop(offset: 9, rgba: BLRgba64(argb: 0xffffeeeeddddcccc)),
+            BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc))
+        )
+        XCTAssertNotEqual(
+            BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0x9999999999999999)),
+            BLGradientStop(offset: 0, rgba: BLRgba64(argb: 0xffffeeeeddddcccc))
+        )
     }
     
     func testInitWithRgba32() {

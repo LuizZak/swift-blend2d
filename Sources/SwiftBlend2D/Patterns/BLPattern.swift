@@ -7,7 +7,7 @@ public struct BLPattern {
     /// Pattern extend mode.
     public var extendMode: BLExtendMode {
         get {
-            return blPatternGetExtendMode(&box.object)
+            blPatternGetExtendMode(&box.object)
         }
         set {
             ensureUnique()
@@ -20,12 +20,12 @@ public struct BLPattern {
     /// Whether this pattern has a transformation matrix different than
     /// `BLMatrix2D.identity`.
     public var hasMatrix: Bool {
-        return matrixType != .identity
+        matrixType != .identity
     }
     
     /// Type of the transformation matrix.
     public var matrixType: BLMatrix2DType {
-        return blPatternGetMatrixType(&box.object)
+        blPatternGetMatrixType(&box.object)
     }
     
     /// Gradient transformation matrix.
@@ -60,7 +60,7 @@ public struct BLPattern {
     
     public init(image: BLImage, area: BLRectI? = nil, extendMode: BLExtendMode = .repeat, matrix: BLMatrix2D? = nil) {
         box = BLBaseClass { pointer in
-            return withUnsafeNullablePointer(to: area) { area in
+            withUnsafeNullablePointer(to: area) { area in
                 withUnsafeNullablePointer(to: matrix) { matrix in
                     blPatternInitAs(pointer, &image.object, area, extendMode, matrix)
                 }
@@ -90,26 +90,26 @@ public struct BLPattern {
     mutating func setImage(_ image: BLImage, area: BLRectI) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: area) { pointer in
-            return blPatternSetImage(&box.object, &image.object, pointer)
+            blPatternSetImage(&box.object, &image.object, pointer)
         }
     }
 
     @discardableResult
     mutating func resetImage() -> BLResult {
-        return blPatternResetImage(&box.object)
+        blPatternResetImage(&box.object)
     }
 
     @discardableResult
     mutating func setArea(_ area: BLRectI?) -> BLResult {
         ensureUnique()
         return withUnsafeNullablePointer(to: area) { pointer in
-            return blPatternSetArea(&box.object, pointer)
+            blPatternSetArea(&box.object, pointer)
         }
     }
 
     @discardableResult
     mutating func resetArea() -> BLResult {
-        return setArea(nil)
+        setArea(nil)
     }
 }
 
@@ -123,142 +123,142 @@ public extension BLPattern {
     @inlinable
     @discardableResult
     mutating func translate(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.translate, x, y)
+        _applyMatrixOpV(.translate, x, y)
     }
     @inlinable
     @discardableResult
     mutating func translate(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.translate, p.x, p.y)
+        _applyMatrixOpV(.translate, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func translate(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.translate, p)
+        _applyMatrixOp(.translate, p)
     }
     @inlinable
     @discardableResult
     mutating func scale(xy: Double) -> BLResult {
-        return _applyMatrixOpV(.scale, xy, xy)
+        _applyMatrixOpV(.scale, xy, xy)
     }
     @inlinable
     @discardableResult
     mutating func scale(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.scale, x, y)
+        _applyMatrixOpV(.scale, x, y)
     }
     @inlinable
     @discardableResult
     mutating func scale(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.scale, p.x, p.y)
+        _applyMatrixOpV(.scale, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func scale(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.scale, p)
+        _applyMatrixOp(.scale, p)
     }
     @inlinable
     @discardableResult
     mutating func skew(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.skew, x, y)
+        _applyMatrixOpV(.skew, x, y)
     }
     @inlinable
     @discardableResult
     mutating func skew(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.skew, p)
+        _applyMatrixOp(.skew, p)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double) -> BLResult {
-        return _applyMatrixOp(.rotate, angle)
+        _applyMatrixOp(.rotate, angle)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.rotatePt, angle, x, y)
+        _applyMatrixOpV(.rotatePt, angle, x, y)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
-        return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
+        _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
+        _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
     @inlinable
     @discardableResult
     mutating func transform(_ matrix: BLMatrix2D) -> BLResult {
-        return _applyMatrixOp(.transform, matrix)
+        _applyMatrixOp(.transform, matrix)
     }
     @inlinable
     @discardableResult
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postTranslate, x, y)
+        _applyMatrixOpV(.postTranslate, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postTranslate(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.postTranslate, p.x, p.y)
+        _applyMatrixOpV(.postTranslate, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func postTranslate(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.postTranslate, p)
+        _applyMatrixOp(.postTranslate, p)
     }
     @inlinable
     @discardableResult
     mutating func postScale(xy: Double) -> BLResult {
-        return _applyMatrixOpV(.postScale, xy, xy)
+        _applyMatrixOpV(.postScale, xy, xy)
     }
     @inlinable
     @discardableResult
     mutating func postScale(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postScale, x, y)
+        _applyMatrixOpV(.postScale, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postScale(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.postScale, p.x, p.y)
+        _applyMatrixOpV(.postScale, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func postScale(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.postScale, p)
+        _applyMatrixOp(.postScale, p)
     }
     @inlinable
     @discardableResult
     mutating func postSkew(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postSkew, x, y)
+        _applyMatrixOpV(.postSkew, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postSkew(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.postSkew, p)
+        _applyMatrixOp(.postSkew, p)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double) -> BLResult {
-        return _applyMatrixOp(.postRotate, angle)
+        _applyMatrixOp(.postRotate, angle)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postRotatePt, angle, x, y)
+        _applyMatrixOpV(.postRotatePt, angle, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, point: BLPoint) -> BLResult {
-        return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
+        _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, point: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
+        _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
     @inlinable
     @discardableResult
     mutating func postTransform(_ matrix: BLMatrix2D) -> BLResult {
-        return _applyMatrixOp(.postTransform, matrix)
+        _applyMatrixOp(.postTransform, matrix)
     }
 }
 

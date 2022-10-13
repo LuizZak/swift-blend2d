@@ -37,10 +37,15 @@ extension Array {
     /// The pointer value is short-lived and should not be stored or used beyond
     /// the duration of the closure's execution.
     @usableFromInline
-    func withTemporaryView<T>(_ closure: (UnsafePointer<BLArrayView<Element>>) throws -> T) rethrows -> T {
+    func withTemporaryView<T>(
+        _ closure: (UnsafePointer<BLArrayView<Element>>) throws -> T
+    ) rethrows -> T {
+        
         return try withUnsafeBufferPointer { pointer -> T in
-            var view = BLArrayView(data: pointer.baseAddress,
-                                   size: pointer.count)
+            var view = BLArrayView(
+                data: pointer.baseAddress,
+                size: pointer.count
+            )
             
             return try closure(&view)
         }

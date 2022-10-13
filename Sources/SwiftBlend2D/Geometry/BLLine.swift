@@ -4,7 +4,7 @@ public extension BLLine {
     @inlinable
     var start: BLPoint {
         get {
-            return BLPoint(x: x0, y: y0)
+            BLPoint(x: x0, y: y0)
         }
         set {
             (x0, y0) = (newValue.x, newValue.y)
@@ -14,7 +14,7 @@ public extension BLLine {
     @inlinable
     var end: BLPoint {
         get {
-            return BLPoint(x: x1, y: y1)
+            BLPoint(x: x1, y: y1)
         }
         set {
             (x1, y1) = (newValue.x, newValue.y)
@@ -25,7 +25,7 @@ public extension BLLine {
     @inlinable
     var center: BLPoint {
         get {
-            return BLPoint(x: (x0 + x1) / 2, y: (y0 + y1) / 2)
+            BLPoint(x: (x0 + x1) / 2, y: (y0 + y1) / 2)
         }
         set {
             let old = center
@@ -107,14 +107,16 @@ public extension BLLine {
     
     /// Returns this line, rotated by a certain radian angle around its center.
     func rotated(by angle: Double) -> BLLine {
-        return rotated(around: center, by: angle)
+        rotated(around: center, by: angle)
     }
     
     /// Returns this line, rotated around a given center point by a certain radian
     /// angle.
     func rotated(around center: BLPoint, by angle: Double) -> BLLine {
-        return BLLine(start: start.rotated(around: center, by: angle),
-                      end: end.rotated(around: center, by: angle))
+        BLLine(
+            start: start.rotated(around: center, by: angle),
+            end: end.rotated(around: center, by: angle)
+        )
     }
 }
 
@@ -122,7 +124,7 @@ public extension BLLine {
 extension BLLine: Equatable {
     @inlinable
     public static func == (lhs: BLLine, rhs: BLLine) -> Bool {
-        return lhs.x0 == rhs.x0
+        lhs.x0 == rhs.x0
             && lhs.y0 == rhs.y0
             && lhs.x1 == rhs.x1
             && lhs.y1 == rhs.y1
@@ -143,6 +145,6 @@ extension BLLine: Hashable {
 // MARK: - CustomStringConvertible
 extension BLLine: CustomStringConvertible {
     public var description: String {
-        return "BLLine(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"
+        "BLLine(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"
     }
 }

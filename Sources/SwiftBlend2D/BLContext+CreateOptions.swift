@@ -25,10 +25,12 @@ public extension BLContext {
         ///
         public var commandQueueLimit: UInt32
         
-        public init(flags: BLContextCreateFlags = [],
-                    cpuFeatures: BLRuntimeCpuFeatures = [],
-                    threadCount: UInt32 = 0,
-                    commandQueueLimit: UInt32 = 0) {
+        public init(
+            flags: BLContextCreateFlags = [],
+            cpuFeatures: BLRuntimeCpuFeatures = [],
+            threadCount: UInt32 = 0,
+            commandQueueLimit: UInt32 = 0
+        ) {
             
             self.flags = flags
             self.cpuFeatures = cpuFeatures
@@ -41,10 +43,12 @@ public extension BLContext {
 extension BLContext.CreateOptions {
     @inlinable
     func toBLContextCreateInfo() -> BLContextCreateInfo {
-        return BLContextCreateInfo(flags: UInt32(flags.rawValue),
-                                   threadCount: threadCount,
-                                   cpuFeatures: UInt32(cpuFeatures.rawValue),
-                                   commandQueueLimit: commandQueueLimit,
-                                   reserved: (0, 0, 0, 0))
+        return BLContextCreateInfo(
+            flags: UInt32(flags.rawValue),
+            threadCount: threadCount,
+            cpuFeatures: UInt32(cpuFeatures.rawValue),
+            commandQueueLimit: commandQueueLimit,
+            reserved: (0, 0, 0, 0)
+        )
     }
 }

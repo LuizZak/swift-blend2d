@@ -5,22 +5,22 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
 
     /// Gets `BLFontData` associated with this font-face.
     public var data: BLFontData {
-        return BLFontData(weakAssign: object.impl.data)
+        BLFontData(weakAssign: object.impl.data)
     }
     
     // MARK: Properties
 
     /// Returns font weight (returns default weight in case this is a variable font).
     public var weight: UInt16 {
-        return object.impl.weight
+        object.impl.weight
     }
     /// Returns font stretch (returns default weight in case this is a variable font).
     public var stretch: UInt8 {
-        return object.impl.stretch
+        object.impl.stretch
     }
     /// Returns font style.
     public var style: UInt8 {
-        return object.impl.style
+        object.impl.style
     }
     /// Returns font-face information as `BLFontFaceInfo`.
     public var faceInfo: BLFontFaceInfo {
@@ -30,15 +30,15 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     }
     /// Gets font-face type.
     public var faceType: BLFontFaceType {
-        return BLFontFaceType(BLFontFaceType.RawValue(faceInfo.faceType))
+        BLFontFaceType(BLFontFaceType.RawValue(faceInfo.faceType))
     }
     /// Gets font-face type.
     public var outlineType: BLFontOutlineType {
-        return BLFontOutlineType(BLFontFaceType.RawValue(faceInfo.outlineType))
+        BLFontOutlineType(BLFontFaceType.RawValue(faceInfo.outlineType))
     }
     /// Gets a number of glyphs the face provides.
     public var glyphCount: UInt16 {
-        return faceInfo.glyphCount
+        faceInfo.glyphCount
     }
     /// Gets a zero-based index of this font-face.
     ///
@@ -47,43 +47,37 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     /// the index of this face in that collection. If the face is not part of a
     /// collection then the returned value would always be zero.
     public var faceIndex: UInt32 {
-        return faceInfo.faceIndex
+        faceInfo.faceIndex
     }
     /// Gets font-face flags.
     public var faceFlags: BLFontFaceFlags {
-        return BLFontFaceFlags(BLFontFaceFlags.RawValue(faceInfo.faceFlags))
+        BLFontFaceFlags(BLFontFaceFlags.RawValue(faceInfo.faceFlags))
     }
     /// Gets font-face diagnostics flags.
     public var diagFlags: BLFontFaceDiagFlags {
-        return BLFontFaceDiagFlags(BLFontFaceDiagFlags.RawValue(faceInfo.diagFlags))
+        BLFontFaceDiagFlags(BLFontFaceDiagFlags.RawValue(faceInfo.diagFlags))
     }
     /// Gets a unique identifier describing this BLFontFace.
     public var faceUniqueId: BLUniqueId {
-        return object.impl.uniqueId
+        object.impl.uniqueId
     }
 
     /// Gets full name as UTF-8 null-terminated string.
     public var fullName: BLString {
-        return BLString(weakAssign: object.impl.fullName)
+        BLString(weakAssign: object.impl.fullName)
     }
     /// Gets family name as UTF-8 null-terminated string.
     public var familyName: BLString {
-        return BLString(weakAssign: object.impl.familyName)
+        BLString(weakAssign: object.impl.familyName)
     }
     /// Gets subfamily name as UTF-8 null-terminated string.
     public var subfamilyName: BLString {
-        return BLString(weakAssign: object.impl.subfamilyName)
+        BLString(weakAssign: object.impl.subfamilyName)
     }
     /// Gets manufacturer name as UTF-8 null-terminated string.
     public var postScriptName: BLString {
-        return BLString(weakAssign: object.impl.postScriptName)
+        BLString(weakAssign: object.impl.postScriptName)
     }
-
-    // TODO: This property is commented out in Blend2D's source code
-    /// Returns feature-set of this `BLFontFace`.
-    //    public var featureSet: FontFeatureSet {
-    //        return object.impl.featureSet
-    //    }
 
     /// Returns design metrics of this `BLFontFace`.
     public var designMetrics: BLFontDesignMetrics {
@@ -93,15 +87,15 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
     }
     /// Returns units per em, which are part of font's design metrics.
     public var unitsPerEm: Int32 {
-        return designMetrics.unitsPerEm
+        designMetrics.unitsPerEm
     }
     /// Returns PANOSE classification of this `BLFontFace`.
     public var panose: BLFontPanose {
-        return object.impl.panose
+        object.impl.panose
     }
     /// Returns unicode coverage of this `BLFontFace`.
     public var unicodeCoverage: BLFontUnicodeCoverage {
-        return object.impl.unicodeCoverage
+        object.impl.unicodeCoverage
     }
 
     var info: BLFontFaceInfo {
@@ -144,7 +138,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
 
 extension BLFontFace: Equatable {
     public static func == (lhs: BLFontFace, rhs: BLFontFace) -> Bool {
-        return blFontFaceEquals(&lhs.object, &rhs.object)
+        blFontFaceEquals(&lhs.object, &rhs.object)
     }
 }
 

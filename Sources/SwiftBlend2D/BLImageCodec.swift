@@ -4,27 +4,27 @@ import Foundation
 public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     /// Returns image codec name (i.e, "PNG", "JPEG", etc...).
     public var name: String {
-        return BLString(weakAssign: object.impl.name).toString()
+        BLString(weakAssign: object.impl.name).toString()
     }
     
     /// Returns the image codec vendor (i.e. "Blend2D" for all built-in codecs).
     public var vendor: String {
-        return BLString(weakAssign: object.impl.vendor).toString()
+        BLString(weakAssign: object.impl.vendor).toString()
     }
     
     /// Returns a mime-type associated with the image codec's format.
     public var mimeType: String {
-        return BLString(weakAssign: object.impl.mimeType).toString()
+        BLString(weakAssign: object.impl.mimeType).toString()
     }
 
     /// Known file extensions used by this image codec separated by "|".
     public var extensions: [String] {
-        return BLString(weakAssign: object.impl.extensions).toString().split(separator: "|").map(String.init)
+        BLString(weakAssign: object.impl.extensions).toString().split(separator: "|").map(String.init)
     }
     
     /// Returns image codec flags, see `BLImageCodecFeatures`.
     public var features: BLImageCodecFeatures {
-        return BLImageCodecFeatures(BLImageCodecFeatures.RawValue(object.impl.features))
+        BLImageCodecFeatures(BLImageCodecFeatures.RawValue(object.impl.features))
     }
     
     public override init() {
@@ -77,7 +77,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     }
     
     public func inspectData(_ data: Data) -> Int {
-        return data.withUnsafeBytes { pointer in
+        data.withUnsafeBytes { pointer in
             inspectData(pointer)
         }
     }
@@ -113,7 +113,7 @@ extension BLImageCodec {
 
 public extension BLImageCodec {
     static var builtInCodecs: [BLImageCodec] = {
-        return _builtInCodecs.map { object in
+        _builtInCodecs.map { object in
             BLImageCodec(weakAssign: object)
         }
     }()
@@ -127,7 +127,7 @@ public extension BLImageCodec {
 
 extension BLImageCodec: Equatable {
     public static func == (lhs: BLImageCodec, rhs: BLImageCodec) -> Bool {
-        return lhs.object._d.impl == rhs.object._d.impl
+        lhs.object._d.impl == rhs.object._d.impl
     }
 }
 

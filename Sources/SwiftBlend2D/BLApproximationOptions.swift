@@ -6,17 +6,21 @@ public extension BLApproximationOptions {
     
     /// Preferred initializer for `BLApproximationOptions` in Swift, fills in
     /// omitted parameters with values from `BLApproximationOptions.default`.
-    init(flattenMode: BLFlattenMode /* Not omitted so that we avoid empty initializers being ambiguous at call sites */,
-         offsetMode: BLOffsetMode = BLOffsetMode(BLOffsetMode.RawValue(BLApproximationOptions.default.offsetMode)),
-         flattenTolerance: Double = BLApproximationOptions.default.flattenTolerance,
-         simplifyTolerance: Double = BLApproximationOptions.default.simplifyTolerance,
-         offsetParameter: Double = BLApproximationOptions.default.offsetParameter) {
+    init(
+        flattenMode: BLFlattenMode /* Not omitted so that we avoid empty initializers being ambiguous at call sites */,
+        offsetMode: BLOffsetMode = BLOffsetMode(BLOffsetMode.RawValue(BLApproximationOptions.default.offsetMode)),
+        flattenTolerance: Double = BLApproximationOptions.default.flattenTolerance,
+        simplifyTolerance: Double = BLApproximationOptions.default.simplifyTolerance,
+        offsetParameter: Double = BLApproximationOptions.default.offsetParameter
+    ) {
         
-        self.init(flattenMode: UInt8(flattenMode.rawValue),
-                  offsetMode: UInt8(offsetMode.rawValue),
-                  reservedFlags: (0, 0, 0, 0, 0, 0),
-                  flattenTolerance: flattenTolerance,
-                  simplifyTolerance: simplifyTolerance,
-                  offsetParameter: offsetParameter)
+        self.init(
+            flattenMode: UInt8(flattenMode.rawValue),
+            offsetMode: UInt8(offsetMode.rawValue),
+            reservedFlags: (0, 0, 0, 0, 0, 0),
+            flattenTolerance: flattenTolerance,
+            simplifyTolerance: simplifyTolerance,
+            offsetParameter: offsetParameter
+        )
     }
 }

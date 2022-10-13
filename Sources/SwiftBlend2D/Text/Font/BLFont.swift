@@ -34,48 +34,48 @@ public class BLFont: BLBaseClass<BLFontCore> {
     
     /// Returns the type of the font's associated font-face, see `BLFontFaceType`.
     public var faceType: BLFontFaceType {
-        return face.faceType
+        face.faceType
     }
     /// Returns the flags of the font, see `BLFontFaceFlags`.
     public var faceFlags: BLFontFaceFlags {
-        return face.faceFlags
+        face.faceFlags
     }
     /// Gets the size of the font (as float).
     public var size: Float {
-        return metrics.size
+        metrics.size
     }
     /// Gets the "units per em" (UPEM) of the font's associated font-face.
     public var unitsPerEm: Int32 {
-        return face.unitsPerEm
+        face.unitsPerEm
     }
 
     /// Returns the font's associated font-face.
     ///
     /// Returns the same font-face, which was passed to `init(fromFace:size:)`.
     public var face: BLFontFace {
-        return BLFontFace(weakAssign: object.impl.face)
+        BLFontFace(weakAssign: object.impl.face)
     }
 
     /// Gets font-features of the font.
     public var features: BLFontFeatureSettings {
-        return BLFontFeatureSettings(weakAssign: object.impl.featureSettings)
+        BLFontFeatureSettings(weakAssign: object.impl.featureSettings)
     }
     /// Gets font-variations used by this font.
     public var variations: BLFontVariationSettings {
-        return BLFontVariationSettings(weakAssign: object.impl.variationSettings)
+        BLFontVariationSettings(weakAssign: object.impl.variationSettings)
     }
 
     /// Gets the weight of the font.
     public var weight: BLFontWeight {
-        return BLFontWeight(BLFontWeight.RawValue(object.impl.weight))
+        BLFontWeight(BLFontWeight.RawValue(object.impl.weight))
     }
     /// Gets the stretch of the font.
     public var stretch: BLFontStretch {
-        return BLFontStretch(BLFontStretch.RawValue(object.impl.stretch))
+        BLFontStretch(BLFontStretch.RawValue(object.impl.stretch))
     }
     /// Gets the style of the font.
     public var style: BLFontStyle {
-        return BLFontStyle(BLFontStyle.RawValue(object.impl.style))
+        BLFontStyle(BLFontStyle.RawValue(object.impl.style))
     }
     
     public init(fromFace face: BLFontFace, size: Float) {
@@ -129,39 +129,49 @@ public class BLFont: BLBaseClass<BLFontCore> {
     public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> [BLBoxI] {
         var out: [BLBoxI] = .init(repeating: .empty, count: glyphRun.size)
         
-        blFontGetGlyphBounds(&object,
-                             glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
-                             Int(glyphRun.glyphAdvance),
-                             &out,
-                             glyphRun.size)
+        blFontGetGlyphBounds(
+            &object,
+            glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
+            Int(glyphRun.glyphAdvance),
+            &out,
+            glyphRun.size
+        )
         
         return out
     }
     
     public func getGlyphAdvances(_ glyphRun: BLGlyphRun) -> [BLGlyphPlacement] {
-        var out: [BLGlyphPlacement] = .init(repeating: BLGlyphPlacement(),
-                                            count: glyphRun.size)
+        var out: [BLGlyphPlacement] = .init(
+            repeating: BLGlyphPlacement(),
+            count: glyphRun.size
+        )
         
-        blFontGetGlyphAdvances(&object,
-                               glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
-                               Int(glyphRun.glyphAdvance),
-                               &out,
-                               glyphRun.size)
+        blFontGetGlyphAdvances(
+            &object,
+            glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
+            Int(glyphRun.glyphAdvance),
+            &out,
+            glyphRun.size
+        )
         
         return out
     }
 
-    public func getGlyphOutlines(_ glyphId: UInt32,
-                                 userMatrix: BLMatrix2D? = nil) -> BLPath {
+    public func getGlyphOutlines(
+        _ glyphId: UInt32,
+        userMatrix: BLMatrix2D? = nil
+    ) -> BLPath {
 
-        return getGlyphOutlines(glyphId, userMatrix: userMatrix) { (_, _) -> BLResult in
-            return BLResult(BL_SUCCESS.rawValue)
+        getGlyphOutlines(glyphId, userMatrix: userMatrix) { (_, _) -> BLResult in
+            BLResult(BL_SUCCESS.rawValue)
         }
     }
 
-    public func getGlyphOutlines(_ glyphId: UInt32,
-                                 userMatrix: BLMatrix2D? = nil,
-                                 sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult) -> BLPath {
+    public func getGlyphOutlines(
+        _ glyphId: UInt32,
+        userMatrix: BLMatrix2D? = nil,
+        sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult
+    ) -> BLPath {
 
         return withTemporaryPathSink(sink) { (sink, closure) in
             let path = BLPath()
@@ -174,17 +184,21 @@ public class BLFont: BLBaseClass<BLFontCore> {
         }
     }
 
-    public func getGlyphRunOutlines(_ glyphRun: BLGlyphRun,
-                                    userMatrix: BLMatrix2D? = nil) -> BLPath {
+    public func getGlyphRunOutlines(
+        _ glyphRun: BLGlyphRun,
+        userMatrix: BLMatrix2D? = nil
+    ) -> BLPath {
 
-        return getGlyphRunOutlines(glyphRun, userMatrix: userMatrix) { (_, _) -> BLResult in
-            return BLResult(BL_SUCCESS.rawValue)
+        getGlyphRunOutlines(glyphRun, userMatrix: userMatrix) { (_, _) -> BLResult in
+            BLResult(BL_SUCCESS.rawValue)
         }
     }
     
-    public func getGlyphRunOutlines(_ glyphRun: BLGlyphRun,
-                                    userMatrix: BLMatrix2D? = nil,
-                                    sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult) -> BLPath {
+    public func getGlyphRunOutlines(
+        _ glyphRun: BLGlyphRun,
+        userMatrix: BLMatrix2D? = nil,
+        sink: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult
+    ) -> BLPath {
 
         return withTemporaryPathSink(sink) { (sink, closure) in
             var glyphRun = glyphRun
@@ -198,8 +212,10 @@ public class BLFont: BLBaseClass<BLFontCore> {
         }
     }
 
-    private func withTemporaryPathSink<T>(_ original: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult,
-                                          do closure: (@escaping BLPathSinkFunc, UnsafeMutableRawPointer) -> T) -> T {
+    private func withTemporaryPathSink<T>(
+        _ original: (BLPath, BLGlyphOutlineSinkInfo) -> BLResult,
+        do closure: (@escaping BLPathSinkFunc, UnsafeMutableRawPointer) -> T
+    ) -> T {
 
         let pathSink: BLPathSinkFunc = { (path, outline, closure) -> BLResult in
             guard let glyphSinkInfo = outline?.load(as: BLGlyphOutlineSinkInfo.self) else {
@@ -216,7 +232,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
 
 extension BLFont: Equatable {
     public static func == (lhs: BLFont, rhs: BLFont) -> Bool {
-        return lhs.object._d.impl == rhs.object._d.impl
+        lhs.object._d.impl == rhs.object._d.impl
     }
 }
 

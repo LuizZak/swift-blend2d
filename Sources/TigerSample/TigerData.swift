@@ -218,14 +218,7 @@ public enum TigerData {
     // Using a bit of trickery here because this giant flat array of float
     // literals kills the Swift compiler
     
-    static var points: [Double] = {
-        let pointsData = _pointsData.data(using: .utf8)!
-        
-        return try! JSONDecoder().decode([Double].self, from: pointsData)
-    }()
-
-    static let _pointsData: String = """
-        [
+    static var points: [Double] = [
         10.0, 0.0, 1.0,
         1.0, 1.0, 1.0, 1.0, 1.0, 5.0, 85.25, 487.75, 85.25, 487.75,
         85.5742, 485.199, 84.25, 484.746, 83.7617, 485.242, 65.6641, 538.125, 43.2461, 535.746,
@@ -1926,6 +1919,5 @@ public enum TigerData {
         183.25, 210.75, 183.25, 210.75, 185.348, 217.547, 178.246, 212.746, 10.0, 1.1,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 242.246, 200.75, 242.246,
         200.75, 244.199, 213.148, 231.246, 198.75
-        ]
-        """
+    ]
 }

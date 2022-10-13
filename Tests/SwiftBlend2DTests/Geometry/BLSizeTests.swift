@@ -4,15 +4,33 @@ import blend2d
 
 class BLSizeTests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLSize(w: 32, h: 48), BLSize(w: 32, h: 48))
-        XCTAssertNotEqual(BLSize(w: 0, h: 48), BLSize(w: 32, h: 48))
-        XCTAssertNotEqual(BLSize(w: 32, h: 0), BLSize(w: 32, h: 48))
+        XCTAssertEqual(
+            BLSize(w: 32, h: 48),
+            BLSize(w: 32, h: 48)
+        )
+        XCTAssertNotEqual(
+            BLSize(w: 0, h: 48),
+            BLSize(w: 32, h: 48)
+        )
+        XCTAssertNotEqual(
+            BLSize(w: 32, h: 0),
+            BLSize(w: 32, h: 48)
+        )
     }
     
     func testHashable() {
-        XCTAssertEqual(BLSize(w: 32, h: 48).hashValue, BLSize(w: 32, h: 48).hashValue)
-        XCTAssertNotEqual(BLSize(w: 0, h: 48).hashValue, BLSize(w: 32, h: 48).hashValue)
-        XCTAssertNotEqual(BLSize(w: 32, h: 0).hashValue, BLSize(w: 32, h: 48).hashValue)
+        XCTAssertEqual(
+            BLSize(w: 32, h: 48).hashValue,
+            BLSize(w: 32, h: 48).hashValue
+        )
+        XCTAssertNotEqual(
+            BLSize(w: 0, h: 48).hashValue,
+            BLSize(w: 32, h: 48).hashValue
+        )
+        XCTAssertNotEqual(
+            BLSize(w: 32, h: 0).hashValue,
+            BLSize(w: 32, h: 48).hashValue
+        )
     }
 
     func testAdd() {
@@ -78,7 +96,6 @@ class BLSizeTests: XCTestCase {
     func testDescription() {
         let size = BLSize(w: 1, h: 2)
         
-        XCTAssertEqual(size.description,
-                       "BLSize(w: 1.0, h: 2.0)")
+        XCTAssertEqual(size.description, "BLSize(w: 1.0, h: 2.0)")
     }
 }

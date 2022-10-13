@@ -7,6 +7,9 @@ class BLRuntimeBuildInfoTests: XCTestCase {
         // Just sanity check that we can get this value from the runtime
         let info = BLRuntimeBuildInfo.current
         
-        XCTAssertEqual(BLRuntimeLimits(BLRuntimeLimits.RawValue(info.maxImageSize)), BL_RUNTIME_MAX_IMAGE_SIZE)
+        XCTAssertEqual(
+            BLRuntimeLimits(BLRuntimeLimits.RawValue(info.maxImageSize)),
+            BL_RUNTIME_MAX_IMAGE_SIZE
+        )
     }
 }

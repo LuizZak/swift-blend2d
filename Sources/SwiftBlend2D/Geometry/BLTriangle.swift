@@ -9,32 +9,34 @@ public extension BLTriangle {
     /// The centroid of the triangle is at (0, 0).
     ///
     /// The first point is the top-most center point of the triangle.
-    static let unitEquilateral = BLTriangle(x0: 0,
-                                            y0: -equilateralHeight / 2 - equilateralOffset,
-                                            x1: 0.5,
-                                            y1: equilateralHeight / 2 - equilateralOffset,
-                                            x2: -0.5,
-                                            y2: equilateralHeight / 2 - equilateralOffset)
+    static let unitEquilateral = BLTriangle(
+        x0: 0,
+        y0: -equilateralHeight / 2 - equilateralOffset,
+        x1: 0.5,
+        y1: equilateralHeight / 2 - equilateralOffset,
+        x2: -0.5,
+        y2: equilateralHeight / 2 - equilateralOffset
+    )
     
     @inlinable
     var p0: BLPoint {
-        return BLPoint(x: x0, y: y0)
+        BLPoint(x: x0, y: y0)
     }
     
     @inlinable
     var p1: BLPoint {
-        return BLPoint(x: x1, y: y1)
+        BLPoint(x: x1, y: y1)
     }
     
     @inlinable
     var p2: BLPoint {
-        return BLPoint(x: x2, y: y2)
+        BLPoint(x: x2, y: y2)
     }
     
     /// Computes the centroid of this triangle
     @inlinable
     var centroid: BLPoint {
-        return (p0 + p1 + p2) / 3
+        (p0 + p1 + p2) / 3
     }
     
     /// Returns the minimal rectangle capable of containing all three points of
@@ -49,17 +51,21 @@ public extension BLTriangle {
     
     @inlinable
     init(p0: BLPoint, p1: BLPoint, p2: BLPoint) {
-        self.init(x0: p0.x, y0: p0.y,
-                  x1: p1.x, y1: p1.y,
-                  x2: p2.x, y2: p2.y)
+        self.init(
+            x0: p0.x, y0: p0.y,
+            x1: p1.x, y1: p1.y,
+            x2: p2.x, y2: p2.y
+        )
     }
 
     @inlinable
     func contains(x: Double, y: Double) -> Bool {
-        func sign(_ p1x: Double, _ p1y: Double, _ p2x: Double,
-                  _ p2y: Double, _ p3x: Double, _ p3y: Double) -> Double {
+        func sign(
+            _ p1x: Double, _ p1y: Double, _ p2x: Double,
+            _ p2y: Double, _ p3x: Double, _ p3y: Double
+        ) -> Double {
 
-            return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y)
+            (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y)
         }
 
         let d1 = sign(x, y, x0, y0, x1, y1)
@@ -74,7 +80,7 @@ public extension BLTriangle {
 
     @inlinable
     func contains(_ point: BLPoint) -> Bool {
-        return contains(x: point.x, y: point.y)
+        contains(x: point.x, y: point.y)
     }
     
     /// Returns a new triangle represented by the coordinates of this triangle,
@@ -84,7 +90,7 @@ public extension BLTriangle {
     /// triangle.
     @inlinable
     func scaledBy(x: Double, y: Double) -> BLTriangle {
-        return scaledBy(BLPoint(x: x, y: y))
+        scaledBy(BLPoint(x: x, y: y))
     }
     
     /// Returns a new triangle represented by the coordinates of this triangle,
@@ -96,35 +102,39 @@ public extension BLTriangle {
     func scaledBy(_ scale: BLPoint) -> BLTriangle {
         let center = centroid
         
-        return BLTriangle(p0: center + (p0 - center) * scale,
-                          p1: center + (p1 - center) * scale,
-                          p2: center + (p2 - center) * scale)
+        return BLTriangle(
+            p0: center + (p0 - center) * scale,
+            p1: center + (p1 - center) * scale,
+            p2: center + (p2 - center) * scale
+        )
     }
     
     /// Returns a new copy of this triangle with the vertices offset by a given
     /// pair of coordinates.
     @inlinable
     func offsetBy(x: Double, y: Double) -> BLTriangle {
-        return BLTriangle(x0: x0 + x,
-                          y0: y0 + y,
-                          x1: x1 + x,
-                          y1: y1 + y,
-                          x2: x2 + x,
-                          y2: y2 + y)
+        BLTriangle(
+            x0: x0 + x,
+            y0: y0 + y,
+            x1: x1 + x,
+            y1: y1 + y,
+            x2: x2 + x,
+            y2: y2 + y
+        )
     }
     
     /// Returns a new copy of this triangle with the vertices offset by a given
     /// point.
     @inlinable
     func offsetBy(_ vector: BLPoint) -> BLTriangle {
-        return offsetBy(x: vector.x, y: vector.y)
+        offsetBy(x: vector.x, y: vector.y)
     }
     
     /// Returns a new copy of this triangle with the vertices rotated along the
     /// centroid by a given radian amount
     @inlinable
     func rotated(by angleInRadians: Double) -> BLTriangle {
-        return rotated(around: centroid, by: angleInRadians)
+        rotated(around: centroid, by: angleInRadians)
     }
     
     /// Returns a new copy of this triangle with the vertices rotated along the
@@ -141,9 +151,11 @@ public extension BLTriangle {
     /// Returns a new copy of this triangle with the vertices transformed around
     /// by a given matrix
     func transformed(by matrix: BLMatrix2D) -> BLTriangle {
-        return BLTriangle(p0: matrix.mapPoint(p0),
-                          p1: matrix.mapPoint(p1),
-                          p2: matrix.mapPoint(p2))
+        BLTriangle(
+            p0: matrix.mapPoint(p0),
+            p1: matrix.mapPoint(p1),
+            p2: matrix.mapPoint(p2)
+        )
     }
 }
 
@@ -151,7 +163,7 @@ public extension BLTriangle {
 extension BLTriangle: Equatable {
     @inlinable
     public static func == (lhs: BLTriangle, rhs: BLTriangle) -> Bool {
-        return lhs.x0 == rhs.x0
+        lhs.x0 == rhs.x0
             && lhs.y0 == rhs.y0
             && lhs.x1 == rhs.x1
             && lhs.y1 == rhs.y1
@@ -176,6 +188,6 @@ extension BLTriangle: Hashable {
 // MARK: - CustomStringConvertible
 extension BLTriangle: CustomStringConvertible {
     public var description: String {
-        return "BLTriangle(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1), x2: \(x2), y2: \(y2))"
+        "BLTriangle(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1), x2: \(x2), y2: \(y2))"
     }
 }

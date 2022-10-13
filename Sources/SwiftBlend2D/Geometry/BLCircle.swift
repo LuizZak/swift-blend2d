@@ -7,7 +7,7 @@ public extension BLCircle {
     @inlinable
     var center: BLPoint {
         get {
-            return BLPoint(x: cx, y: cy)
+            BLPoint(x: cx, y: cy)
         }
         set {
             (cx, cy) = (newValue.x, newValue.y)
@@ -16,20 +16,14 @@ public extension BLCircle {
     
     @inlinable
     var boundingBox: BLBox {
-        get {
-            return BLBox(x0: cx - r, y0: cy - r, x1: cx + r, y1: cy + r)
-        }
+        BLBox(x0: cx - r, y0: cy - r, x1: cx + r, y1: cy + r)
     }
     
     /// The diameter of this circle (r * 2)
     @inlinable
     var diameter: Double {
-        get {
-            return r * 2
-        }
-        set {
-            r = newValue / 2
-        }
+        get { r * 2 }
+        set { r = newValue / 2 }
     }
     
     @inlinable
@@ -39,7 +33,7 @@ public extension BLCircle {
 
     @inlinable
     func expanded(by value: Double) -> BLCircle {
-        return BLCircle(cx: cx, cy: cy, r: r + value)
+        BLCircle(cx: cx, cy: cy, r: r + value)
     }
 
     @inlinable
@@ -52,7 +46,7 @@ public extension BLCircle {
 
     @inlinable
     func contains(_ point: BLPoint) -> Bool {
-        return contains(x: point.x, y: point.y)
+        contains(x: point.x, y: point.y)
     }
 }
 
@@ -60,7 +54,7 @@ public extension BLCircle {
 extension BLCircle: Equatable {
     @inlinable
     public static func == (lhs: BLCircle, rhs: BLCircle) -> Bool {
-        return lhs.cx == rhs.cx
+        lhs.cx == rhs.cx
             && lhs.cy == rhs.cy
             && lhs.r == rhs.r
     }

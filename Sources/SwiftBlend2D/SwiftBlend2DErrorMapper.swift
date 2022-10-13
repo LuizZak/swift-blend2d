@@ -32,7 +32,7 @@ class SwiftBlend2DErrorMapper {
     /// If `filePath` is `nil`, a non-specific file error is generated, instead.
     @inlinable
     func addFileErrorMappings(filePath: String?) -> SwiftBlend2DErrorMapper {
-        return map(blend2DError: .errorInvalidHandle, swiftError: SwiftBlend2DError.FileError(fileNotOpenAtPath: filePath))
+        map(blend2DError: .errorInvalidHandle, swiftError: SwiftBlend2DError.FileError(fileNotOpenAtPath: filePath))
     }
 
     @discardableResult

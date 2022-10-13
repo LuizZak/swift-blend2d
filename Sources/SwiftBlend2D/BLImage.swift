@@ -4,26 +4,26 @@ import blend2d
 public final class BLImage: BLBaseClass<BLImageCore> {
     /// Maximum width of an image.
     public static var maximumWidth: Int {
-        return Int(BLRuntimeBuildInfo.current.maxImageSize)
+        Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     /// Maximum height of an image.
     public static var maximumHeight: Int {
-        return Int(BLRuntimeBuildInfo.current.maxImageSize)
+        Int(BLRuntimeBuildInfo.current.maxImageSize)
     }
     
     public var width: Int {
-        return Int(getImageData().size.w)
+        Int(getImageData().size.w)
     }
     public var height: Int {
-        return Int(getImageData().size.h)
+        Int(getImageData().size.h)
     }
     public var size: BLSizeI {
-        return getImageData().size
+        getImageData().size
     }
     
     /// The image format.
     public var format: BLFormat {
-        return BLFormat(rawValue: BLFormat.RawValue(getImageData().format))
+        BLFormat(rawValue: BLFormat.RawValue(getImageData().format))
     }
     
     public override init() {
@@ -39,8 +39,10 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// equal to BLImage.maximumHeight.
     ///   - format: A valid image format to use for the image.
     public convenience init(width: Int, height: Int, format: BLFormat) {
-        self.init(size: .init(w: Int32(width), h: Int32(height)),
-                  format: format)
+        self.init(
+            size: .init(w: Int32(width), h: Int32(height)),
+            format: format
+        )
     }
     
     /// Initializes a new image with the given dimensions and format.
@@ -77,8 +79,8 @@ public final class BLImage: BLBaseClass<BLImageCore> {
                     blImageReadFromFile(pointer, filePath, codecs)
                 }
             }
-                .addFileErrorMappings(filePath: filePath)
-                .execute()
+            .addFileErrorMappings(filePath: filePath)
+            .execute()
         }
     }
 
@@ -96,8 +98,20 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     ///   - height: Height of image. Must be greater than zero and less than or
     /// equal to BLImage.maximumHeight.
     ///   - format: A valid image format to use for the image.
-    public convenience init(fromUnownedData pixelData: UnsafeMutableRawPointer, stride: Int, width: Int, height: Int, format: BLFormat) {
-        self.init(fromUnownedData: pixelData, stride: stride, size: .init(w: Int32(width), h: Int32(height)), format: format)
+    public convenience init(
+        fromUnownedData pixelData: UnsafeMutableRawPointer,
+        stride: Int,
+        width: Int,
+        height: Int,
+        format: BLFormat
+    ) {
+
+        self.init(
+            fromUnownedData: pixelData,
+            stride: stride,
+            size: .init(w: Int32(width), h: Int32(height)),
+            format: format
+        )
     }
 
     /// Initializes a new image from a section of memory containing the 
@@ -112,9 +126,24 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     ///   - size: Size of the image. Both width and height must be greater than 
     /// zero and less than or equal to (BLImage.maximumWidth, BLImage.maximumHeight).
     ///   - format: A valid image format to use for the image.
-    public init(fromUnownedData pixelData: UnsafeMutableRawPointer, stride: Int, size: BLSizeI, format: BLFormat) {
+    public init(
+        fromUnownedData pixelData: UnsafeMutableRawPointer,
+        stride: Int,
+        size: BLSizeI,
+        format: BLFormat
+    ) {
+
         super.init {
-            blImageInitAsFromData($0, size.w, size.h, format, pixelData, stride, nil, nil)
+            blImageInitAsFromData(
+                $0,
+                size.w,
+                size.h,
+                format,
+                pixelData,
+                stride,
+                nil,
+                nil
+            )
         }
     }
     
@@ -129,7 +158,12 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// Scales this image to a given size, with a given scale filter.
     ///
     /// Throws in case one of the input values is invalid.
-    public func scale(size: BLSizeI, filter: BLImageScaleFilter, options: BLImageScaleOptions? = nil) throws {
+    public func scale(
+        size: BLSizeI,
+        filter: BLImageScaleFilter,
+        options: BLImageScaleOptions? = nil
+    ) throws {
+
         var size = size
         var objectCopy = object
         
@@ -144,8 +178,8 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         try mapError {
             blImageWriteToFile(&self.object, path, &codec.object)
         }
-            .addFileErrorMappings(filePath: path)
-            .execute()
+        .addFileErrorMappings(filePath: path)
+        .execute()
     }
     
     public func getImageData() -> BLImageData {
@@ -178,8 +212,8 @@ public final class BLImage: BLBaseClass<BLImageCore> {
                 blImageReadFromFile(&self.object, fileName, $0)
             }
         }
-            .addFileErrorMappings(filePath: fileName)
-            .execute()
+        .addFileErrorMappings(filePath: fileName)
+        .execute()
     }
     
     public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]? = nil) throws {
@@ -202,7 +236,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
 
 extension BLImage: Equatable {
     public static func == (lhs: BLImage, rhs: BLImage) -> Bool {
-        return blImageEquals(&lhs.object, &rhs.object)
+        blImageEquals(&lhs.object, &rhs.object)
     }
 }
 

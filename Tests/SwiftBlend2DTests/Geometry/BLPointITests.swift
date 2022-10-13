@@ -4,15 +4,33 @@ import blend2d
 
 class BLPointITests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLPointI(x: 0, y: 1), BLPointI(x: 0, y: 1))
-        XCTAssertNotEqual(BLPointI(x: 1, y: 1), BLPointI(x: 0, y: 1))
-        XCTAssertNotEqual(BLPointI(x: 0, y: 0), BLPointI(x: 0, y: 1))
+        XCTAssertEqual(
+            BLPointI(x: 0, y: 1),
+            BLPointI(x: 0, y: 1)
+        )
+        XCTAssertNotEqual(
+            BLPointI(x: 1, y: 1),
+            BLPointI(x: 0, y: 1)
+        )
+        XCTAssertNotEqual(
+            BLPointI(x: 0, y: 0),
+            BLPointI(x: 0, y: 1)
+        )
     }
     
     func testHashable() {
-        XCTAssertEqual(BLPointI(x: 0, y: 1).hashValue, BLPointI(x: 0, y: 1).hashValue)
-        XCTAssertNotEqual(BLPointI(x: 1, y: 1).hashValue, BLPointI(x: 0, y: 1).hashValue)
-        XCTAssertNotEqual(BLPointI(x: 0, y: 0).hashValue, BLPointI(x: 0, y: 1).hashValue)
+        XCTAssertEqual(
+            BLPointI(x: 0, y: 1).hashValue,
+            BLPointI(x: 0, y: 1).hashValue
+        )
+        XCTAssertNotEqual(
+            BLPointI(x: 1, y: 1).hashValue,
+            BLPointI(x: 0, y: 1).hashValue
+        )
+        XCTAssertNotEqual(
+            BLPointI(x: 0, y: 0).hashValue,
+            BLPointI(x: 0, y: 1).hashValue
+        )
     }
     
     func testZero() {
@@ -171,7 +189,9 @@ class BLPointITests: XCTestCase {
     func testDescription() {
         let point = BLPointI(x: 1, y: 2)
         
-        XCTAssertEqual(point.description,
-                       "BLPointI(x: 1, y: 2)")
+        XCTAssertEqual(
+            point.description,
+            "BLPointI(x: 1, y: 2)"
+        )
     }
 }

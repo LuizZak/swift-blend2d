@@ -2,7 +2,7 @@ import blend2d
 
 public extension BLGlyphRun {
     var isEmpty: Bool {
-        return size == 0
+        size == 0
     }
 }
 
@@ -46,11 +46,11 @@ public struct BLGlyphRunIterator {
     var glyphRun: BLGlyphRun
     
     public var atEnd: Bool {
-        return index >= size
+        index >= size
     }
     
     public var hasPlacement: Bool {
-        return placementDataPointer != nil
+        placementDataPointer != nil
     }
 
     /// Placement data that depends on the stored placement data on the currently
@@ -98,11 +98,11 @@ public struct BLGlyphRunIterator {
     }
     
     public func glyphId() -> UInt32? {
-        return glyphIdData?.load(as: UInt32.self)
+        glyphIdData?.load(as: UInt32.self)
     }
     
     public func placement<T>(as type: T.Type) -> T? {
-        return placementDataPointer?.load(as: type)
+        placementDataPointer?.load(as: type)
     }
     
     public mutating func advance() {

@@ -8,7 +8,7 @@ public extension BLSizeI {
 extension BLSizeI: Equatable {
     @inlinable
     public static func == (lhs: BLSizeI, rhs: BLSizeI) -> Bool {
-        return lhs.w == rhs.w
+        lhs.w == rhs.w
             && lhs.h == rhs.h
     }
 }
@@ -24,7 +24,7 @@ extension BLSizeI: Hashable {
 // MARK: - CustomStringConvertible
 extension BLSizeI: CustomStringConvertible {
     public var description: String {
-        return "BLSizeI(w: \(w), h: \(h))"
+        "BLSizeI(w: \(w), h: \(h))"
     }
 }
 
@@ -32,22 +32,22 @@ extension BLSizeI: CustomStringConvertible {
 public extension BLSizeI {
     @inlinable
     static func + (lhs: BLSizeI, rhs: BLSizeI) -> BLSizeI {
-        return BLSizeI(w: lhs.w + rhs.w, h: lhs.h + rhs.h)
+        BLSizeI(w: lhs.w + rhs.w, h: lhs.h + rhs.h)
     }
 
     @inlinable
     static func - (lhs: BLSizeI, rhs: BLSizeI) -> BLSizeI {
-        return BLSizeI(w: lhs.w - rhs.w, h: lhs.h - rhs.h)
+        BLSizeI(w: lhs.w - rhs.w, h: lhs.h - rhs.h)
     }
 
     @inlinable
     static func * (lhs: BLSizeI, rhs: BLSizeI) -> BLSizeI {
-        return BLSizeI(w: lhs.w * rhs.w, h: lhs.h * rhs.h)
+        BLSizeI(w: lhs.w * rhs.w, h: lhs.h * rhs.h)
     }
 
     @inlinable
     static func / (lhs: BLSizeI, rhs: BLSizeI) -> BLSizeI {
-        return BLSizeI(w: lhs.w / rhs.w, h: lhs.h / rhs.h)
+        BLSizeI(w: lhs.w / rhs.w, h: lhs.h / rhs.h)
     }
 
     @inlinable

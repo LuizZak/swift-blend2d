@@ -3,6 +3,6 @@
 public enum Blend2DStatics {
     @inlinable
     static var isLittleEndian: Bool {
-        return BL_BYTE_ORDER == 1234
+        BL_BYTE_ORDER == 1234
     }
 }

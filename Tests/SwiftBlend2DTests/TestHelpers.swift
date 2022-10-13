@@ -79,9 +79,11 @@ func pathExists(_ path: String, isDirectory: inout Bool) -> Bool {
 }
 
 func createDirectory(atPath path: String) throws {
-    try FileManager.default.createDirectory(at: URL(fileURLWithPath: path),
-                                            withIntermediateDirectories: true,
-                                            attributes: nil)
+    try FileManager.default.createDirectory(
+        at: URL(fileURLWithPath: path),
+        withIntermediateDirectories: true,
+        attributes: nil
+    )
 }
 
 func copyFile(source: String, dest: String) throws {

@@ -3,16 +3,16 @@ import blend2d
 
 public extension BLFormatInfo {
     static var none: BLFormatInfo {
-        return blFormatInfo.0
+        blFormatInfo.0
     }
     static var prgb32: BLFormatInfo {
-        return blFormatInfo.1
+        blFormatInfo.1
     }
     static var xrgb32: BLFormatInfo {
-        return blFormatInfo.2
+        blFormatInfo.2
     }
     static var a8: BLFormatInfo {
-        return blFormatInfo.3
+        blFormatInfo.3
     }
     
     init?(query format: BLFormat) {
@@ -36,7 +36,7 @@ public extension BLFormatInfo {
 
 extension BLFormatInfo: Equatable {
     public static func == (lhs: BLFormatInfo, rhs: BLFormatInfo) -> Bool {
-        return withUnsafePointer(to: lhs) { lhs_p in
+        withUnsafePointer(to: lhs) { lhs_p in
             withUnsafePointer(to: rhs) { rhs_p in
                 memcmp(lhs_p, rhs_p, MemoryLayout<Self>.size) == 0
             }

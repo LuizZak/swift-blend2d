@@ -68,7 +68,7 @@ public class BLBaseClass<T: CoreStructure> {
     
     @inlinable
     func copy() -> BLBaseClass {
-        return BLBaseClass(weakAssign: object)
+        BLBaseClass(weakAssign: object)
     }
 }
 

@@ -4,31 +4,51 @@ import blend2d
 
 class BLLineTests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 3),
-                       BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3),
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
+        )
         
-        XCTAssertNotEqual(BLLine(x0: 1, y0: 1, x1: 2, y1: 3),
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
-        XCTAssertNotEqual(BLLine(x0: 0, y0: 2, x1: 2, y1: 3),
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
-        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 3, y1: 3),
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
-        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 4),
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3))
+        XCTAssertNotEqual(
+            BLLine(x0: 1, y0: 1, x1: 2, y1: 3),
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
+        )
+        XCTAssertNotEqual(
+            BLLine(x0: 0, y0: 2, x1: 2, y1: 3),
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
+        )
+        XCTAssertNotEqual(
+            BLLine(x0: 0, y0: 1, x1: 3, y1: 3),
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
+        )
+        XCTAssertNotEqual(
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 4),
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
+        )
     }
     
     func testHashable() {
-        XCTAssertEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue,
-                       BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue,
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue
+        )
         
-        XCTAssertNotEqual(BLLine(x0: 1, y0: 1, x1: 2, y1: 3).hashValue,
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
-        XCTAssertNotEqual(BLLine(x0: 0, y0: 2, x1: 2, y1: 3).hashValue,
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
-        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 3, y1: 3).hashValue,
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
-        XCTAssertNotEqual(BLLine(x0: 0, y0: 1, x1: 2, y1: 4).hashValue,
-                          BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue)
+        XCTAssertNotEqual(
+            BLLine(x0: 1, y0: 1, x1: 2, y1: 3).hashValue,
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue
+        )
+        XCTAssertNotEqual(
+            BLLine(x0: 0, y0: 2, x1: 2, y1: 3).hashValue,
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue
+        )
+        XCTAssertNotEqual(
+            BLLine(x0: 0, y0: 1, x1: 3, y1: 3).hashValue,
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue
+        )
+        XCTAssertNotEqual(
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 4).hashValue,
+            BLLine(x0: 0, y0: 1, x1: 2, y1: 3).hashValue
+        )
     }
     
     func testInitWithPoints() {
@@ -70,10 +90,22 @@ class BLLineTests: XCTestCase {
     }
     
     func testCenter() {
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 0).center, BLPoint(x: 0, y: 0))
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 100).center, BLPoint(x: 50, y: 50))
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 0).center, BLPoint(x: 50, y: 0))
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 100).center, BLPoint(x: 0, y: 50))
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 0, y1: 0).center,
+            BLPoint(x: 0, y: 0)
+        )
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 100, y1: 100).center,
+            BLPoint(x: 50, y: 50)
+        )
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 100, y1: 0).center,
+            BLPoint(x: 50, y: 0)
+        )
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 0, y1: 100).center,
+            BLPoint(x: 0, y: 50)
+        )
     }
     
     func testCenter_set() {
@@ -88,10 +120,26 @@ class BLLineTests: XCTestCase {
     }
     
     func testLength() {
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 0).length, 0, accuracy: 1e-15)
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 100, y1: 0).length, 100, accuracy: 1e-15)
-        XCTAssertEqual(BLLine(x0: 0, y0: 0, x1: 0, y1: 100).length, 100, accuracy: 1e-15)
-        XCTAssertEqual(BLLine(x0: 10, y0: 20, x1: 30, y1: 40).length, 28.284271247461902, accuracy: 1e-15)
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 0, y1: 0).length,
+            0,
+            accuracy: 1e-15
+        )
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 100, y1: 0).length,
+            100,
+            accuracy: 1e-15
+        )
+        XCTAssertEqual(
+            BLLine(x0: 0, y0: 0, x1: 0, y1: 100).length,
+            100,
+            accuracy: 1e-15
+        )
+        XCTAssertEqual(
+            BLLine(x0: 10, y0: 20, x1: 30, y1: 40).length,
+            28.284271247461902,
+            accuracy: 1e-15
+        )
     }
 
     func testRotateLeft() {
@@ -163,7 +211,9 @@ class BLLineTests: XCTestCase {
     func testDescription() {
         let line = BLLine(x0: 0, y0: 1, x1: 2, y1: 3)
         
-        XCTAssertEqual(line.description,
-                       "BLLine(x0: 0.0, y0: 1.0, x1: 2.0, y1: 3.0)")
+        XCTAssertEqual(
+            line.description,
+            "BLLine(x0: 0.0, y0: 1.0, x1: 2.0, y1: 3.0)"
+        )
     }
 }

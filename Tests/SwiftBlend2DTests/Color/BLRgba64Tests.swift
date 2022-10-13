@@ -4,17 +4,27 @@ import SwiftBlend2D
 
 class BLRgba64Tests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLRgba64(r: 1, g: 2, b: 3, a: 4),
-                       BLRgba64(r: 1, g: 2, b: 3, a: 4))
+        XCTAssertEqual(
+            BLRgba64(r: 1, g: 2, b: 3, a: 4),
+            BLRgba64(r: 1, g: 2, b: 3, a: 4)
+        )
         
-        XCTAssertNotEqual(BLRgba64(r: 9, g: 2, b: 3, a: 4),
-                          BLRgba64(r: 1, g: 2, b: 3, a: 4))
-        XCTAssertNotEqual(BLRgba64(r: 1, g: 9, b: 3, a: 4),
-                          BLRgba64(r: 1, g: 2, b: 3, a: 4))
-        XCTAssertNotEqual(BLRgba64(r: 1, g: 2, b: 9, a: 4),
-                          BLRgba64(r: 1, g: 2, b: 3, a: 4))
-        XCTAssertNotEqual(BLRgba64(r: 1, g: 2, b: 3, a: 9),
-                          BLRgba64(r: 1, g: 2, b: 3, a: 4))
+        XCTAssertNotEqual(
+            BLRgba64(r: 9, g: 2, b: 3, a: 4),
+            BLRgba64(r: 1, g: 2, b: 3, a: 4)
+        )
+        XCTAssertNotEqual(
+            BLRgba64(r: 1, g: 9, b: 3, a: 4),
+            BLRgba64(r: 1, g: 2, b: 3, a: 4)
+        )
+        XCTAssertNotEqual(
+            BLRgba64(r: 1, g: 2, b: 9, a: 4),
+            BLRgba64(r: 1, g: 2, b: 3, a: 4)
+        )
+        XCTAssertNotEqual(
+            BLRgba64(r: 1, g: 2, b: 3, a: 9),
+            BLRgba64(r: 1, g: 2, b: 3, a: 4)
+        )
     }
     
     func testInitWithChannels() {

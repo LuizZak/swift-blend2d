@@ -28,14 +28,25 @@ class BLImageTests: XCTestCase {
         pixels.withUnsafeMutableBufferPointer { pointer in
             let size = BLSizeI(w: 1, h: 4)
 
-            let image = BLImage(fromUnownedData: pointer.baseAddress!, stride: 4, size: size, format: .prgb32)
+            let image = BLImage(
+                fromUnownedData: pointer.baseAddress!,
+                stride: 4,
+                size: size,
+                format: .prgb32
+            )
 
             let imageData = image.getImageData()
             let pixelData = imageData.pixelData.assumingMemoryBound(to: UInt8.self)
-            XCTAssertEqual(Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)), Array(pointer))
+            XCTAssertEqual(
+                Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)),
+                Array(pointer)
+            )
             XCTAssertEqual(imageData.size, size)
             XCTAssertEqual(imageData.stride, 4)
-            XCTAssertEqual(BLFormat(BLFormat.RawValue(imageData.format)), BLFormat.prgb32)
+            XCTAssertEqual(
+                BLFormat(BLFormat.RawValue(imageData.format)),
+                BLFormat.prgb32
+            )
         }
     }
 
@@ -49,15 +60,26 @@ class BLImageTests: XCTestCase {
         pixels.withUnsafeMutableBufferPointer { pointer in
             let size = BLSizeI(w: 1, h: 4)
 
-            let image = BLImage(fromUnownedData: pointer.baseAddress!, stride: 4, size: size, format: .prgb32)
+            let image = BLImage(
+                fromUnownedData: pointer.baseAddress!,
+                stride: 4,
+                size: size,
+                format: .prgb32
+            )
             pointer[5] = 0
 
             let imageData = image.getImageData()
             let pixelData = imageData.pixelData.assumingMemoryBound(to: UInt8.self)
-            XCTAssertEqual(Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)), Array(pointer))
+            XCTAssertEqual(
+                Array(UnsafeMutableBufferPointer(start: pixelData, count: 16)),
+                Array(pointer)
+            )
             XCTAssertEqual(imageData.size, size)
             XCTAssertEqual(imageData.stride, 4)
-            XCTAssertEqual(BLFormat(BLFormat.RawValue(imageData.format)), BLFormat.prgb32)
+            XCTAssertEqual(
+                BLFormat(BLFormat.RawValue(imageData.format)),
+                BLFormat.prgb32
+            )
         }
     }
     

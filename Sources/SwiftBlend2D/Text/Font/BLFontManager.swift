@@ -18,12 +18,12 @@ public class BLFontManager: BLBaseClass<BLFontManagerCore> {
     }
     
     public func hasFace(_ face: BLFontFace) -> Bool {
-        return blFontManagerHasFace(&object, &face.object)
+        blFontManagerHasFace(&object, &face.object)
     }
     
     @discardableResult
     public func addFace(_ face: BLFontFace) -> BLResult {
-        return blFontManagerAddFace(&object, &face.object)
+        blFontManagerAddFace(&object, &face.object)
     }
     
     public func queryFace(name: String, properties: BLFontQueryProperties? = nil) -> BLFontFace? {

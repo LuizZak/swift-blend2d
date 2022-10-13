@@ -66,7 +66,7 @@ public class BLFontVariationSettings: BLBaseClass<BLFontVariationSettingsCore> {
 
 extension BLFontVariationSettings {
     public static func == (lhs: BLFontVariationSettings, rhs: BLFontVariationSettings) -> Bool {
-        return blFontVariationSettingsEquals(&lhs.object, &rhs.object)
+        blFontVariationSettingsEquals(&lhs.object, &rhs.object)
     }
 }
 

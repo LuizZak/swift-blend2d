@@ -83,7 +83,7 @@ public final class BLArray<Element: BLArrayElement> {
     }
     
     public func asArray() -> [Element] {
-        return Array(unsafePointer())
+        Array(unsafePointer())
     }
     
     /// Returns an array of `T`-typed elements extracted from the raw buffer of
@@ -94,10 +94,12 @@ public final class BLArray<Element: BLArrayElement> {
     /// `self.count * MemoryLayout<Element>.stride` is a programming error.
     @inlinable
     public func unsafeAsArray<T>(of type: T.Type) -> [T] {
-        return unsafePointer().baseAddress?.withMemoryRebound(to: T.self, capacity: count) { pointer -> [T] in
-            let buffer = UnsafeBufferPointer(start: pointer, count: count)
-            return Array(buffer)
-        } ?? []
+        unsafePointer()
+            .baseAddress?
+            .withMemoryRebound(to: T.self, capacity: count) { pointer -> [T] in
+                let buffer = UnsafeBufferPointer(start: pointer, count: count)
+                return Array(buffer)
+            } ?? []
     }
     
     /// Clears the content of the array.

@@ -4,43 +4,75 @@ import blend2d
 
 class BLTriangleTests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)),
-                       BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
+        XCTAssertEqual(
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
         
-        XCTAssertNotEqual(BLTriangle(p0: BLPoint(x: 9, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)),
-                          BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
-        XCTAssertNotEqual(BLTriangle(p0: BLPoint(x: 0, y: 9), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)),
-                          BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
-        XCTAssertNotEqual(BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 9, y: 3), p2: BLPoint(x: 4, y: 5)),
-                          BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
-        XCTAssertNotEqual(BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 9), p2: BLPoint(x: 4, y: 5)),
-                          BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
-        XCTAssertNotEqual(BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 9, y: 5)),
-                          BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
-        XCTAssertNotEqual(BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 9)),
-                          BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)))
+        XCTAssertNotEqual(
+            BLTriangle(p0: BLPoint(x: 9, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
+        XCTAssertNotEqual(
+            BLTriangle(p0: BLPoint(x: 0, y: 9), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
+        XCTAssertNotEqual(
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 9, y: 3), p2: BLPoint(x: 4, y: 5)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
+        XCTAssertNotEqual(
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 9), p2: BLPoint(x: 4, y: 5)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
+        XCTAssertNotEqual(
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 9, y: 5)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
+        XCTAssertNotEqual(
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 9)),
+            BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        )
     }
     
     func testHashable() {
-        XCTAssertEqual(BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue,
-                       BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
+        XCTAssertEqual(
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
         
-        XCTAssertNotEqual(BLTriangle(x0: 9, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue,
-                          BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
-        XCTAssertNotEqual(BLTriangle(x0: 0, y0: 9, x1: 2, y1: 3, x2: 4, y2: 5).hashValue,
-                          BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
-        XCTAssertNotEqual(BLTriangle(x0: 0, y0: 1, x1: 9, y1: 3, x2: 4, y2: 5).hashValue,
-                          BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
-        XCTAssertNotEqual(BLTriangle(x0: 0, y0: 1, x1: 2, y1: 9, x2: 4, y2: 5).hashValue,
-                          BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
-        XCTAssertNotEqual(BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 9, y2: 5).hashValue,
-                          BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
-        XCTAssertNotEqual(BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 9).hashValue,
-                          BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue)
+        XCTAssertNotEqual(
+            BLTriangle(x0: 9, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
+        XCTAssertNotEqual(
+            BLTriangle(x0: 0, y0: 9, x1: 2, y1: 3, x2: 4, y2: 5).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
+        XCTAssertNotEqual(
+            BLTriangle(x0: 0, y0: 1, x1: 9, y1: 3, x2: 4, y2: 5).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
+        XCTAssertNotEqual(
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 9, x2: 4, y2: 5).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
+        XCTAssertNotEqual(
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 9, y2: 5).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
+        XCTAssertNotEqual(
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 9).hashValue,
+            BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5).hashValue
+        )
     }
     
     func testInitWithPoints() {
-        let sut = BLTriangle(p0: BLPoint(x: 0, y: 1), p1: BLPoint(x: 2, y: 3), p2: BLPoint(x: 4, y: 5))
+        let sut = BLTriangle(
+            p0: BLPoint(x: 0, y: 1),
+            p1: BLPoint(x: 2, y: 3),
+            p2: BLPoint(x: 4, y: 5)
+        )
         
         XCTAssertEqual(sut.x0, 0)
         XCTAssertEqual(sut.y0, 1)
@@ -153,7 +185,11 @@ class BLTriangleTests: XCTestCase {
     }
     
     func testRotatedAroundBy() {
-        let triangle = BLTriangle(p0: BLPoint(x: 1, y: 0), p1: BLPoint(x: 0, y: 1), p2: .zero)
+        let triangle = BLTriangle(
+            p0: BLPoint(x: 1, y: 0),
+            p1: BLPoint(x: 0, y: 1),
+            p2: .zero
+        )
         let result = triangle.rotated(around: .zero, by: .pi / 2)
         
         XCTAssertEqual(result.x0, 0, accuracy: 1e-10)
@@ -165,8 +201,14 @@ class BLTriangleTests: XCTestCase {
     }
     
     func testTransformedBy() {
-        let triangle = BLTriangle(p0: BLPoint(x: 1, y: 0), p1: BLPoint(x: 0, y: 1), p2: .zero)
-        let result = triangle.transformed(by: BLMatrix2D.makeRotation(angle: .pi / 2) * BLMatrix2D.makeTranslation(x: 10, y: 5))
+        let triangle = BLTriangle(
+            p0: BLPoint(x: 1, y: 0),
+            p1: BLPoint(x: 0, y: 1),
+            p2: .zero
+        )
+        let result =
+            triangle.transformed(by: BLMatrix2D.makeRotation(angle: .pi / 2)
+            * BLMatrix2D.makeTranslation(x: 10, y: 5))
         
         XCTAssertEqual(result.x0, 10, accuracy: 1e-10)
         XCTAssertEqual(result.y0, 6, accuracy: 1e-10)
@@ -179,7 +221,9 @@ class BLTriangleTests: XCTestCase {
     func testDescription() {
         let triangle = BLTriangle(x0: 0, y0: 1, x1: 2, y1: 3, x2: 4, y2: 5)
         
-        XCTAssertEqual(triangle.description,
-                       "BLTriangle(x0: 0.0, y0: 1.0, x1: 2.0, y1: 3.0, x2: 4.0, y2: 5.0)")
+        XCTAssertEqual(
+            triangle.description,
+            "BLTriangle(x0: 0.0, y0: 1.0, x1: 2.0, y1: 3.0, x2: 4.0, y2: 5.0)"
+        )
     }
 }

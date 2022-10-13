@@ -6,7 +6,7 @@ public struct BLStrokeOptions {
 
     @inlinable
     public var width: Double {
-        get { return box.object.width }
+        get { box.object.width }
         set {
             ensureUnique()
             box.object.width = newValue
@@ -14,7 +14,7 @@ public struct BLStrokeOptions {
     }
     @inlinable
     public var miterLimit: Double {
-        get { return box.object.miterLimit }
+        get { box.object.miterLimit }
         set {
             ensureUnique()
             box.object.miterLimit = newValue
@@ -22,7 +22,7 @@ public struct BLStrokeOptions {
     }
     @inlinable
     public var dashOffset: Double {
-        get { return box.object.dashOffset }
+        get { box.object.dashOffset }
         set {
             ensureUnique()
             box.object.dashOffset = newValue
@@ -30,7 +30,7 @@ public struct BLStrokeOptions {
     }
     @inlinable
     public var startCap: BLStrokeCap {
-        get { return BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.startCap)) }
+        get { BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.startCap)) }
         set {
             ensureUnique()
             box.object.startCap = UInt8(newValue.rawValue)
@@ -38,7 +38,7 @@ public struct BLStrokeOptions {
     }
     @inlinable
     public var endCap: BLStrokeCap {
-        get { return BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.endCap)) }
+        get { BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.endCap)) }
         set {
             ensureUnique()
             box.object.endCap = UInt8(newValue.rawValue)
@@ -46,14 +46,14 @@ public struct BLStrokeOptions {
     }
     @inlinable
     public var join: BLStrokeJoin {
-        get { return BLStrokeJoin(rawValue: BLStrokeJoin.RawValue(box.object.join)) }
+        get { BLStrokeJoin(rawValue: BLStrokeJoin.RawValue(box.object.join)) }
         set {
             ensureUnique()
             box.object.join = UInt8(newValue.rawValue)
         }
     }
     public var transformOrder: BLStrokeTransformOrder {
-        get { return BLStrokeTransformOrder(rawValue: BLStrokeTransformOrder.RawValue(box.object.transformOrder)) }
+        get { BLStrokeTransformOrder(rawValue: BLStrokeTransformOrder.RawValue(box.object.transformOrder)) }
         set {
             ensureUnique()
             box.object.transformOrder = UInt8(newValue.rawValue)
@@ -62,7 +62,7 @@ public struct BLStrokeOptions {
 
     @inlinable
     public var dashArray: [Double] {
-        get { return BLArray<Double>(weakAssign: box.object.dashArray).asArray() }
+        get { BLArray<Double>(weakAssign: box.object.dashArray).asArray() }
         set {
             ensureUnique()
             

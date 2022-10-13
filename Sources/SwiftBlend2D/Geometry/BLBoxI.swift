@@ -5,74 +5,92 @@ public extension BLBoxI {
 
     @inlinable
     var topLeft: BLPointI {
-        return BLPointI(x: x0, y: y0)
+        BLPointI(x: x0, y: y0)
     }
     
     @inlinable
     var topRight: BLPointI {
-        return BLPointI(x: x1, y: y0)
+        BLPointI(x: x1, y: y0)
     }
     
     @inlinable
     var bottomLeft: BLPointI {
-        return BLPointI(x: x0, y: y1)
+        BLPointI(x: x0, y: y1)
     }
     
     @inlinable
     var bottomRight: BLPointI {
-        return BLPointI(x: x1, y: y1)
+        BLPointI(x: x1, y: y1)
     }
     
     @inlinable
     var w: Int {
-        return Int(x1 - x0)
+        Int(x1 - x0)
     }
     
     @inlinable
     var h: Int {
-        return Int(y1 - y0)
+        Int(y1 - y0)
     }
 
     @inlinable
     var asBLRectI: BLRectI {
-        return BLRectI(boxI: self)
+        BLRectI(boxI: self)
     }
     
     @inlinable
     var center: BLPointI {
         get {
-            return BLPointI(x: (x0 + x1) / 2, y: (y0 + y1) / 2)
+            BLPointI(x: (x0 + x1) / 2, y: (y0 + y1) / 2)
         }
         set {
-            (x0, y0, x1, y1) = (newValue.x - Int32(w) / 2, newValue.y - Int32(h) / 2,
-                                newValue.x + Int32(w) / 2, newValue.y + Int32(h) / 2)
+            (x0, y0, x1, y1) = (
+                newValue.x - Int32(w) / 2,
+                newValue.y - Int32(h) / 2,
+                newValue.x + Int32(w) / 2,
+                newValue.y + Int32(h) / 2
+            )
         }
     }
 
     @inlinable
     init(x: Int, y: Int, w: Int, h: Int) {
-        self.init(x0: Int32(x), y0: Int32(y), x1: Int32(x + w), y1: Int32(y + h))
+        self.init(
+            x0: Int32(x),
+            y0: Int32(y),
+            x1: Int32(x + w),
+            y1: Int32(y + h)
+        )
     }
 
     @inlinable
     init(rectI: BLRectI) {
-        self.init(x0: rectI.x, y0: rectI.y, x1: rectI.x + rectI.w, y1: rectI.y + rectI.h)
+        self.init(
+            x0: rectI.x,
+            y0: rectI.y,
+            x1: rectI.x + rectI.w,
+            y1: rectI.y + rectI.h
+        )
     }
 
     @inlinable
     init(rounding box: BLBox) {
-        self.init(x0: Int32(box.x0.rounded()),
-                  y0: Int32(box.y0.rounded()),
-                  x1: Int32(box.x1.rounded()),
-                  y1: Int32(box.y1.rounded()))
+        self.init(
+            x0: Int32(box.x0.rounded()),
+            y0: Int32(box.y0.rounded()),
+            x1: Int32(box.x1.rounded()),
+            y1: Int32(box.y1.rounded())
+        )
     }
 
     @inlinable
     init(roundingRect rect: BLRect) {
-        self.init(x0: Int32(rect.x.rounded()),
-                  y0: Int32(rect.y.rounded()),
-                  x1: Int32(rect.right.rounded()),
-                  y1: Int32(rect.bottom.rounded()))
+        self.init(
+            x0: Int32(rect.x.rounded()),
+            y0: Int32(rect.y.rounded()),
+            x1: Int32(rect.right.rounded()),
+            y1: Int32(rect.bottom.rounded())
+        )
     }
 
     @inlinable
@@ -95,7 +113,7 @@ public extension BLBoxI {
     
     @inlinable
     func contains(_ x: Int, _ y: Int) -> Bool {
-        return x >= self.x0
+        x >= self.x0
             && y >= self.y0
             && x <  self.x1
             && y <  self.y1
@@ -103,7 +121,7 @@ public extension BLBoxI {
     
     @inlinable
     func contains(_ point: BLPointI) -> Bool {
-        return point.x >= self.x0
+        point.x >= self.x0
             && point.y >= self.y0
             && point.x <  self.x1
             && point.y <  self.y1
@@ -125,7 +143,7 @@ public extension BLBoxI {
 
     @inlinable
     func resized(width: Int, height: Int) -> BLBoxI {
-        return BLBoxI(x0: x0, y0: y0, x1: x0 + Int32(width), y1: y0 + Int32(height))
+        BLBoxI(x0: x0, y0: y0, x1: x0 + Int32(width), y1: y0 + Int32(height))
     }
     
     @inlinable
@@ -141,7 +159,7 @@ public extension BLBoxI {
 extension BLBoxI: Equatable {
     @inlinable
     public static func == (lhs: BLBoxI, rhs: BLBoxI) -> Bool {
-        return lhs.x0 == rhs.x0
+        lhs.x0 == rhs.x0
             && lhs.y0 == rhs.y0
             && lhs.x1 == rhs.x1
             && lhs.y1 == rhs.y1

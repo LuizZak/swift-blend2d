@@ -10,7 +10,7 @@ public extension BLPoint {
 
     /// Returns the magnitude of this point
     var magnitude: Double {
-        return (x * x + y * y).squareRoot()
+        (x * x + y * y).squareRoot()
     }
 
     /// Returns a normalized version of this point.
@@ -32,13 +32,13 @@ public extension BLPoint {
     /// Returns the dot product between `self` and `other`.
     @inlinable
     func dot(_ other: BLPoint) -> Double {
-        return x * other.x + y * other.y
+        x * other.x + y * other.y
     }
     
     /// Returns the distance between this and another point
     @inlinable
     func distance(to other: BLPoint) -> Double {
-        return distanceSquared(to: other).squareRoot()
+        distanceSquared(to: other).squareRoot()
     }
     
     /// Returns the distance (squared) between this and another point
@@ -64,7 +64,7 @@ public extension BLPoint {
     /// around a given center point by a given radian amount
     @inlinable
     func rotated(around center: BLPoint, by angleInRadians: Double) -> BLPoint {
-        return (self - center).rotated(by: angleInRadians) + center
+        (self - center).rotated(by: angleInRadians) + center
     }
 }
 
@@ -72,27 +72,27 @@ public extension BLPoint {
 public extension BLPoint {
     @inlinable
     static prefix func - (lhs: BLPoint) -> BLPoint {
-        return BLPoint(x: -lhs.x, y: -lhs.y)
+        BLPoint(x: -lhs.x, y: -lhs.y)
     }
     
     @inlinable
     static func + (lhs: BLPoint, rhs: BLPoint) -> BLPoint {
-        return BLPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+        BLPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }
     
     @inlinable
     static func - (lhs: BLPoint, rhs: BLPoint) -> BLPoint {
-        return BLPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+        BLPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
     }
     
     @inlinable
     static func * (lhs: BLPoint, rhs: BLPoint) -> BLPoint {
-        return BLPoint(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
+        BLPoint(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
     }
     
     @inlinable
     static func / (lhs: BLPoint, rhs: BLPoint) -> BLPoint {
-        return BLPoint(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
+        BLPoint(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
     }
     
     @inlinable
@@ -120,22 +120,22 @@ public extension BLPoint {
 public extension BLPoint {
     @inlinable
     static func * (lhs: BLPoint, rhs: Double) -> BLPoint {
-        return BLPoint(x: lhs.x * rhs, y: lhs.y * rhs)
+        BLPoint(x: lhs.x * rhs, y: lhs.y * rhs)
     }
     
     @inlinable
     static func / (lhs: BLPoint, rhs: Double) -> BLPoint {
-        return BLPoint(x: lhs.x / rhs, y: lhs.y / rhs)
+        BLPoint(x: lhs.x / rhs, y: lhs.y / rhs)
     }
     
     @inlinable
     static func * (lhs: Double, rhs: BLPoint) -> BLPoint {
-        return BLPoint(x: lhs * rhs.x, y: lhs * rhs.y)
+        BLPoint(x: lhs * rhs.x, y: lhs * rhs.y)
     }
     
     @inlinable
     static func / (lhs: Double, rhs: BLPoint) -> BLPoint {
-        return BLPoint(x: lhs / rhs.x, y: lhs / rhs.y)
+        BLPoint(x: lhs / rhs.x, y: lhs / rhs.y)
     }
     
     @inlinable
@@ -153,7 +153,7 @@ public extension BLPoint {
 extension BLPoint: Equatable {
     @inlinable
     public static func == (lhs: BLPoint, rhs: BLPoint) -> Bool {
-        return lhs.x == rhs.x && lhs.y == rhs.y
+        lhs.x == rhs.x && lhs.y == rhs.y
     }
 }
 
@@ -172,19 +172,19 @@ public extension BLPoint {
     /// this and another `BLPoint`.
     @inlinable
     func pointwiseMin(_ other: BLPoint) -> BLPoint {
-        return BLPoint(x: min(x, other.x), y: min(y, other.y))
+        BLPoint(x: min(x, other.x), y: min(y, other.y))
     }
 
     /// Returns a `BLPoint` where each coordinate is the maximal value between
     /// this and another `BLPoint`.
     @inlinable
     func pointwiseMax(_ other: BLPoint) -> BLPoint {
-        return BLPoint(x: max(x, other.x), y: max(y, other.y))
+        BLPoint(x: max(x, other.x), y: max(y, other.y))
     }
 }
 
 extension BLPoint: CustomStringConvertible {
     public var description: String {
-        return "BLPoint(x: \(x), y: \(y))"
+        "BLPoint(x: \(x), y: \(y))"
     }
 }

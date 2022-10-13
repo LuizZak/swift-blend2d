@@ -10,13 +10,13 @@ public struct BLString: ExpressibleByStringLiteral {
     var box: BLBaseClass<BLStringCore>
 
     var data: UnsafePointer<CChar> {
-        return blStringGetData(&box.object)
+        blStringGetData(&box.object)
     }
     
     /// Size, in bytes, of the data of this BLString instance, minus trailing
     /// null-terminator character.
     public var size: Int {
-        return blStringGetSize(&box.object) - 1
+        blStringGetSize(&box.object) - 1
     }
     
     public init() {
@@ -73,10 +73,12 @@ public struct BLString: ExpressibleByStringLiteral {
         rhs.withCString { pointer in
             let rhsSizeMinusNullTerminator = rhs.utf8CString.count - 1
             
-            blStringInsertData(&lhs.box.object,
-                               lhs.size,
-                               pointer,
-                               rhsSizeMinusNullTerminator)
+            blStringInsertData(
+                &lhs.box.object,
+                lhs.size,
+                pointer,
+                rhsSizeMinusNullTerminator
+            )
         }
     }
     
@@ -92,19 +94,19 @@ public struct BLString: ExpressibleByStringLiteral {
 
 extension BLString: Equatable {
     public static func == (lhs: BLString, rhs: BLString) -> Bool {
-        return blStringEquals(&lhs.box.object, &rhs.box.object)
+        blStringEquals(&lhs.box.object, &rhs.box.object)
     }
 }
 
 extension BLString: CustomStringConvertible {
     public var description: String {
-        return toString()
+        toString()
     }
 }
 
 extension BLString: Sequence {
     public func makeIterator() -> Iterator {
-        return Iterator(string: self, index: 0)
+        Iterator(string: self, index: 0)
     }
     
     public struct Iterator: IteratorProtocol {
@@ -124,16 +126,12 @@ extension BLString: Sequence {
 }
 
 extension BLString: Collection {
-    public var startIndex: Int {
-        return 0
-    }
+    public var startIndex: Int { 0 }
     
-    public var endIndex: Int {
-        return size
-    }
+    public var endIndex: Int { size }
     
     public func index(after i: Int) -> Int {
-        return i + 1
+        i + 1
     }
     
     /// Returns the character at a given index on this string.
@@ -163,14 +161,14 @@ extension BLStringCore: CoreStructure {
 
 internal extension BLStringCore {
     var asBLString: BLString {
-        return BLString(weakAssign: self)
+        BLString(weakAssign: self)
     }
     
     var asString: String {
-        return asBLString.toString()
+        asBLString.toString()
     }
     
     var size: Int {
-        return impl.size
+        impl.size
     }
 }

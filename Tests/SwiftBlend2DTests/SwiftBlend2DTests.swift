@@ -46,7 +46,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.fillAll()
         
         // Coordinates can be specified now or changed later.
-        var linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
+        var linear = BLGradient(
+            linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480)
+        )
         
         // Color stops can be added in any order.
         linear.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
@@ -115,8 +117,10 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.compOp = .srcCopy
         ctx.fillAll()
         
-        // First shape filld by a radial gradient.
-        var radial = BLGradient(radial: BLRadialGradientValues(x0: 180, y0: 180, x1: 180, y1: 180, r0: 180))
+        // First shape filled by a radial gradient.
+        var radial = BLGradient(
+            radial: BLRadialGradientValues(x0: 180, y0: 180, x1: 180, y1: 180, r0: 180)
+        )
         radial.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
         radial.addStop(1.0, BLRgba32(argb: 0xFFFF6F3F))
         
@@ -125,7 +129,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.fillCircle(x: 180, y: 180, radius: 160)
         
         // Second shape filled by a linear gradient.
-        var linear = BLGradient(linear: BLLinearGradientValues(x0: 195, y0: 195, x1: 470, y1: 470))
+        var linear = BLGradient(
+            linear: BLLinearGradientValues(x0: 195, y0: 195, x1: 470, y1: 470)
+        )
         linear.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
         linear.addStop(1.0, BLRgba32(argb: 0xFF3F9FFF))
         
@@ -145,7 +151,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.compOp = .srcCopy
         ctx.fillAll()
         
-        var linear = BLGradient(linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480))
+        var linear = BLGradient(
+            linear: BLLinearGradientValues(x0: 0, y0: 0, x1: 0, y1: 480)
+        )
         linear.addStop(0.0, BLRgba32(argb: 0xFFFFFFFF))
         linear.addStop(1.0, BLRgba32(argb: 0xFF1F7FFF))
         
@@ -231,7 +239,11 @@ class SwiftBlend2DTests: XCTestCase {
     func testTiger() throws {
         let tiger = Tiger()
 
-        let img = BLImage(width: TigerData.width, height: TigerData.height, format: .prgb32)
+        let img = BLImage(
+            width: TigerData.width,
+            height: TigerData.height,
+            format: .prgb32
+        )
         let ctx = BLContext(image: img)!
 
         ctx.setFillStyle(BLRgba32(argb: 0xFF00007F))
@@ -263,7 +275,9 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.setFillStyle(BLRgba32.transparentBlack)
         ctx.clearAll()
 
-        var gradient = BLGradient(conical: BLConicalGradientValues(x0: 100, y0: 100, angle: .pi / 2))
+        var gradient = BLGradient(
+            conical: BLConicalGradientValues(x0: 100, y0: 100, angle: .pi / 2)
+        )
         gradient.addStop(0, BLRgba32.green)
         gradient.addStop(1, BLRgba32.yellow)
 
@@ -386,7 +400,14 @@ class SwiftBlend2DTests: XCTestCase {
         }
         // Rounded rectangle
         do {
-            ctx.fillRoundRect(x: 410, y: 10, width: 50, height: 40, radiusX: 30, radiusY: 10)
+            ctx.fillRoundRect(
+                x: 410,
+                y: 10,
+                width: 50,
+                height: 40,
+                radiusX: 30,
+                radiusY: 10
+            )
         }
         // Fill polygon
         do {
@@ -409,8 +430,10 @@ func pngFileFromImage(_ image: BLImage) -> PNGFile {
     assert(data.format == BLFormat.prgb32.rawValue)
     
     let bytes =
-        UnsafeBufferPointer<UInt32>(start: data.pixelData.assumingMemoryBound(to: UInt32.self),
-                                    count: data.stride * Int(data.size.h))
+        UnsafeBufferPointer<UInt32>(
+            start: data.pixelData.assumingMemoryBound(to: UInt32.self),
+            count: data.stride * Int(data.size.h)
+        )
     
     return PNGFile.fromArgb(bytes, width: image.width, height: image.height)
 }
@@ -490,11 +513,12 @@ extension SwiftBlend2DTests {
             for x in stride(from: 0, to: diffImage.rowLength, by: 4) {
                 diffImage.rows[y].withUnsafeMutableBufferPointer { pointer -> Void in
                     // Color pixel red if two images differ here
-                    if image1.rows[y][x] != image2.rows[y][x]
+                    if
+                        image1.rows[y][x] != image2.rows[y][x]
                         || image1.rows[y][x + 1] != image2.rows[y][x + 1]
                         || image1.rows[y][x + 2] != image2.rows[y][x + 2]
-                        || image1.rows[y][x + 3] != image2.rows[y][x + 3] {
-                        
+                        || image1.rows[y][x + 3] != image2.rows[y][x + 3]
+                    {
                         pointer[x] = 255
                         pointer[x + 1] = 0
                         pointer[x + 2] = 0

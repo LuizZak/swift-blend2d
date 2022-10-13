@@ -6,26 +6,33 @@ class BLMatrix2DTests: XCTestCase {
     func testEquals() {
         XCTAssertEqual(
             BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
         
         XCTAssertNotEqual(
             BLMatrix2D(m00: 9, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
         XCTAssertNotEqual(
             BLMatrix2D(m00: 1, m01: 9, m10: 3, m11: 4, m20: 5, m21: 6),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
         XCTAssertNotEqual(
             BLMatrix2D(m00: 1, m01: 2, m10: 9, m11: 4, m20: 5, m21: 6),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
         XCTAssertNotEqual(
             BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 9, m20: 5, m21: 6),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
         XCTAssertNotEqual(
             BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 9, m21: 6),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
         XCTAssertNotEqual(
             BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 9),
-            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6))
+            BLMatrix2D(m00: 1, m01: 2, m10: 3, m11: 4, m20: 5, m21: 6)
+        )
     }
     
     func testInitWithValues() {
@@ -80,7 +87,11 @@ class BLMatrix2DTests: XCTestCase {
     }
     
     func testMultiplyPoint() {
-        let matrix = BLMatrix2D.makeRotation(angle: .pi) * BLMatrix2D.makeScaling(x: 0.5, y: 0.5) * BLMatrix2D.makeTranslation(x: 10, y: 20)
+        let matrix =
+            BLMatrix2D.makeRotation(angle: .pi)
+            * BLMatrix2D.makeScaling(x: 0.5, y: 0.5)
+            * BLMatrix2D.makeTranslation(x: 10, y: 20)
+        
         let point = BLPoint(x: 10, y: 10)
         
         let result = point * matrix
@@ -90,7 +101,11 @@ class BLMatrix2DTests: XCTestCase {
     }
 
     func testMapPolygon() {
-        let matrix = BLMatrix2D.makeRotation(angle: .pi) * BLMatrix2D.makeScaling(x: 0.5, y: 0.5) * BLMatrix2D.makeTranslation(x: 10, y: 20)
+        let matrix =
+            BLMatrix2D.makeRotation(angle: .pi)
+            * BLMatrix2D.makeScaling(x: 0.5, y: 0.5)
+            * BLMatrix2D.makeTranslation(x: 10, y: 20)
+        
         let points = [
             BLPoint(x: -10, y: -10),
             BLPoint(x: 10, y: -10),

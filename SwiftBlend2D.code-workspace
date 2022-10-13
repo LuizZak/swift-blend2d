@@ -48,7 +48,6 @@
                 "command": "swift",
                 "args": [
                     "test",
-                    "--enable-code-coverage",
                     "-Xswiftc",
                     "-Xfrontend",
                     "-Xswiftc",
@@ -158,6 +157,8 @@
         "mypy.targets": [
             "/dev/null",
         ],
+
+        "swift.buildArguments": [],
 
         "[python]": {
             "editor.formatOnSave": true

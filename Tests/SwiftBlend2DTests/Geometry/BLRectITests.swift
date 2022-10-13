@@ -4,31 +4,51 @@ import blend2d
 
 class BLRectITests: XCTestCase {
     func testEquals() {
-        XCTAssertEqual(BLRectI(x: 0, y: 1, w: 2, h: 3),
-                       BLRectI(x: 0, y: 1, w: 2, h: 3))
+        XCTAssertEqual(
+            BLRectI(x: 0, y: 1, w: 2, h: 3),
+            BLRectI(x: 0, y: 1, w: 2, h: 3)
+        )
         
-        XCTAssertNotEqual(BLRectI(x: 9, y: 1, w: 2, h: 3),
-                          BLRectI(x: 0, y: 1, w: 2, h: 3))
-        XCTAssertNotEqual(BLRectI(x: 0, y: 9, w: 2, h: 3),
-                          BLRectI(x: 0, y: 1, w: 2, h: 3))
-        XCTAssertNotEqual(BLRectI(x: 0, y: 1, w: 9, h: 3),
-                          BLRectI(x: 0, y: 1, w: 2, h: 3))
-        XCTAssertNotEqual(BLRectI(x: 0, y: 1, w: 2, h: 9),
-                          BLRectI(x: 0, y: 1, w: 2, h: 3))
+        XCTAssertNotEqual(
+            BLRectI(x: 9, y: 1, w: 2, h: 3),
+            BLRectI(x: 0, y: 1, w: 2, h: 3)
+        )
+        XCTAssertNotEqual(
+            BLRectI(x: 0, y: 9, w: 2, h: 3),
+            BLRectI(x: 0, y: 1, w: 2, h: 3)
+        )
+        XCTAssertNotEqual(
+            BLRectI(x: 0, y: 1, w: 9, h: 3),
+            BLRectI(x: 0, y: 1, w: 2, h: 3)
+        )
+        XCTAssertNotEqual(
+            BLRectI(x: 0, y: 1, w: 2, h: 9),
+            BLRectI(x: 0, y: 1, w: 2, h: 3)
+        )
     }
     
     func testHashable() {
-        XCTAssertEqual(BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue,
-                       BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue)
+        XCTAssertEqual(
+            BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue,
+            BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue
+        )
         
-        XCTAssertNotEqual(BLRectI(x: 9, y: 1, w: 2, h: 3).hashValue,
-                          BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue)
-        XCTAssertNotEqual(BLRectI(x: 0, y: 9, w: 2, h: 3).hashValue,
-                          BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue)
-        XCTAssertNotEqual(BLRectI(x: 0, y: 1, w: 9, h: 3).hashValue,
-                          BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue)
-        XCTAssertNotEqual(BLRectI(x: 0, y: 1, w: 2, h: 9).hashValue,
-                          BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue)
+        XCTAssertNotEqual(
+            BLRectI(x: 9, y: 1, w: 2, h: 3).hashValue,
+            BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue
+        )
+        XCTAssertNotEqual(
+            BLRectI(x: 0, y: 9, w: 2, h: 3).hashValue,
+            BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue
+        )
+        XCTAssertNotEqual(
+            BLRectI(x: 0, y: 1, w: 9, h: 3).hashValue,
+            BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue
+        )
+        XCTAssertNotEqual(
+            BLRectI(x: 0, y: 1, w: 2, h: 9).hashValue,
+            BLRectI(x: 0, y: 1, w: 2, h: 3).hashValue
+        )
     }
 
     func testInset() {
@@ -129,7 +149,10 @@ class BLRectITests: XCTestCase {
     }
 
     func testInitWithLocationAndSize() {
-        let rect = BLRectI(location: BLPointI(x: 1, y: 2), size: BLSizeI(w: 3, h: 4))
+        let rect = BLRectI(
+            location: BLPointI(x: 1, y: 2),
+            size: BLSizeI(w: 3, h: 4)
+        )
 
         XCTAssertEqual(rect.x, 1)
         XCTAssertEqual(rect.y, 2)
@@ -200,7 +223,9 @@ class BLRectITests: XCTestCase {
     }
 
     func testInitWithRoundedBLBox() {
-        let rect = BLRectI(roundingBox: BLBox(x: 10.4, y: 10.6, w: 20.4, h: 20.6))
+        let rect = BLRectI(
+            roundingBox: BLBox(x: 10.4, y: 10.6, w: 20.4, h: 20.6)
+        )
 
         XCTAssertEqual(rect.x, 10)
         XCTAssertEqual(rect.y, 11)
@@ -211,7 +236,9 @@ class BLRectITests: XCTestCase {
     func testDescription() {
         let rect = BLRectI(x: 0, y: 1, w: 2, h: 3)
         
-        XCTAssertEqual(rect.description,
-                       "BLRectI(x: 0, y: 1, w: 2, h: 3)")
+        XCTAssertEqual(
+            rect.description,
+            "BLRectI(x: 0, y: 1, w: 2, h: 3)"
+        )
     }
 }

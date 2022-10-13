@@ -35,8 +35,8 @@ public final class BLFile: BLBaseClass<BLFileCore> {
             try mapError {
                 blFileOpen(&self.object, pointer, flags)
             }
-                .addFileErrorMappings(filePath: path)
-                .execute()
+            .addFileErrorMappings(filePath: path)
+            .execute()
         }
 
         currentFilePath = path
@@ -48,8 +48,8 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         try mapError {
             blFileSeek(&self.object, offset, type, &positionOut)
         }
-            .addFileErrorMappings(filePath: currentFilePath)
-            .execute()
+        .addFileErrorMappings(filePath: currentFilePath)
+        .execute()
         
         return positionOut
     }
@@ -68,8 +68,8 @@ public final class BLFile: BLBaseClass<BLFileCore> {
             try mapError {
                 blFileWrite(&self.object, rawPointer, buffer.count, &bytesWritten)
             }
-                .addFileErrorMappings(filePath: currentFilePath)
-                .execute()
+            .addFileErrorMappings(filePath: currentFilePath)
+            .execute()
         }
         
         return bytesWritten
@@ -79,8 +79,8 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         try mapError {
             blFileTruncate(&self.object, maxSize)
         }
-            .addFileErrorMappings(filePath: currentFilePath)
-            .execute()
+        .addFileErrorMappings(filePath: currentFilePath)
+        .execute()
     }
 }
 

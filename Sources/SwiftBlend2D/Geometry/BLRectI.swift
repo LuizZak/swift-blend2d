@@ -5,48 +5,48 @@ public extension BLRectI {
 
     @inlinable
     var topLeft: BLPointI {
-        return BLPointI(x: x, y: y)
+        BLPointI(x: x, y: y)
     }
 
     @inlinable
     var topRight: BLPointI {
-        return BLPointI(x: x + w, y: y)
+        BLPointI(x: x + w, y: y)
     }
 
     @inlinable
     var bottomLeft: BLPointI {
-        return BLPointI(x: x, y: y + h)
+        BLPointI(x: x, y: y + h)
     }
 
     @inlinable
     var bottomRight: BLPointI {
-        return BLPointI(x: x + w, y: y + h)
+        BLPointI(x: x + w, y: y + h)
     }
 
     @inlinable
     var left: Int {
-        return Int(x)
+        Int(x)
     }
 
     @inlinable
     var right: Int {
-        return Int(x + w)
+        Int(x + w)
     }
 
     @inlinable
     var top: Int {
-        return Int(y)
+        Int(y)
     }
 
     @inlinable
     var bottom: Int {
-        return Int(y + h)
+        Int(y + h)
     }
 
     @inlinable
     var center: BLPointI {
         get {
-            return BLPointI(x: x + w / 2, y: y + h / 2)
+            BLPointI(x: x + w / 2, y: y + h / 2)
         }
         set {
             (x, y) = (newValue.x - w / 2, newValue.y - h / 2)
@@ -56,7 +56,7 @@ public extension BLRectI {
     @inlinable
     var location: BLPointI {
         get {
-            return BLPointI(x: x, y: y)
+            BLPointI(x: x, y: y)
         }
         set {
             (x, y) = (newValue.x, newValue.y)
@@ -66,7 +66,7 @@ public extension BLRectI {
     @inlinable
     var size: BLSizeI {
         get {
-            return BLSizeI(w: w, h: h)
+            BLSizeI(w: w, h: h)
         }
         set {
             (w, h) = (newValue.w, newValue.h)
@@ -75,7 +75,7 @@ public extension BLRectI {
 
     @inlinable
     var asBLBoxI: BLBoxI {
-        return BLBoxI(rectI: self)
+        BLBoxI(rectI: self)
     }
 
     init(location: BLPointI, size: BLSizeI) {
@@ -84,46 +84,57 @@ public extension BLRectI {
 
     @inlinable
     init(rounding rect: BLRect) {
-        self.init(x: Int32(rect.x.rounded()),
-                  y: Int32(rect.y.rounded()),
-                  w: Int32(rect.w.rounded()),
-                  h: Int32(rect.h.rounded()))
+        self.init(
+            x: Int32(rect.x.rounded()),
+            y: Int32(rect.y.rounded()),
+            w: Int32(rect.w.rounded()),
+            h: Int32(rect.h.rounded())
+        )
     }
 
     @inlinable
     init(roundingBox box: BLBox) {
-        self.init(x: Int32(box.x0.rounded()),
-                  y: Int32(box.y0.rounded()),
-                  w: Int32(box.w.rounded()),
-                  h: Int32(box.h.rounded()))
+        self.init(
+            x: Int32(box.x0.rounded()),
+            y: Int32(box.y0.rounded()),
+            w: Int32(box.w.rounded()),
+            h: Int32(box.h.rounded())
+        )
     }
 
     @inlinable
     init(boxI: BLBoxI) {
-        self.init(x: boxI.x0, y: boxI.y0, w: boxI.x1 - boxI.x0, h: boxI.y1 - boxI.y0)
+        self.init(
+            x: boxI.x0,
+            y: boxI.y0,
+            w: boxI.x1 - boxI.x0,
+            h: boxI.y1 - boxI.y0
+        )
     }
 
     @inlinable
     func insetBy(x: Int, y: Int) -> BLRectI {
-        return BLRectI(x: self.x + Int32(x) / 2,
-                       y: self.y + Int32(y) / 2,
-                       w: w - Int32(x),
-                       h: h - Int32(y))
+        BLRectI(
+            x: self.x + Int32(x) / 2,
+            y: self.y + Int32(y) / 2,
+            w: w - Int32(x),
+            h: h - Int32(y)
+        )
     }
 
     @inlinable
     func resized(width: Int, height: Int) -> BLRectI {
-        return BLRectI(x: x, y: y, w: Int32(width), h: Int32(height))
+        BLRectI(x: x, y: y, w: Int32(width), h: Int32(height))
     }
     
     @inlinable
     func offsetBy(x: Int, y: Int) -> BLRectI {
-        return BLRectI(x: self.x + Int32(x), y: self.y + Int32(y), w: w, h: h)
+        BLRectI(x: self.x + Int32(x), y: self.y + Int32(y), w: w, h: h)
     }
 
     @inlinable
     func contains(_ x: Int, _ y: Int) -> Bool {
-        return x >= self.x
+        x >= self.x
             && y >= self.y
             && x < (self.x + w)
             && y < (self.y + h)
@@ -131,18 +142,18 @@ public extension BLRectI {
 
     @inlinable
     func contains(_ point: BLPointI) -> Bool {
-        return contains(Int(point.x), Int(point.y))
+        contains(Int(point.x), Int(point.y))
     }
 
     @inlinable
     func contains(_ point: BLPoint) -> Bool {
-        return contains(Int(point.x), Int(point.y))
+        contains(Int(point.x), Int(point.y))
     }
 
     /// Returns whether a given `BLRectI` rests completely inside the
     /// boundaries of this `BLRectI`
     func contains(_ other: BLRectI) -> Bool {
-        return other.topLeft.x >= topLeft.x
+        other.topLeft.x >= topLeft.x
             && other.topLeft.y >= topLeft.y
             && other.bottomRight.x <= bottomRight.x
             && other.bottomRight.y <= bottomRight.y
@@ -151,7 +162,7 @@ public extension BLRectI {
     /// Returns whether a given `BLRectI` intersects this `BLRectI`
     func intersects(_ other: BLRectI) -> Bool {
         // X overlap check.
-        return left <= other.right
+        left <= other.right
             && right >= other.left
             && top <= other.bottom
             && bottom >= other.top
@@ -162,7 +173,7 @@ public extension BLRectI {
 extension BLRectI: Equatable {
     @inlinable
     public static func == (lhs: BLRectI, rhs: BLRectI) -> Bool {
-        return lhs.x == rhs.x
+        lhs.x == rhs.x
             && lhs.y == rhs.y
             && lhs.w == rhs.w
             && lhs.h == rhs.h
@@ -183,6 +194,6 @@ extension BLRectI: Hashable {
 // MARK: - CustomStringConvertible
 extension BLRectI: CustomStringConvertible {
     public var description: String {
-        return "BLRectI(x: \(x), y: \(y), w: \(w), h: \(h))"
+        "BLRectI(x: \(x), y: \(y), w: \(w), h: \(h))"
     }
 }

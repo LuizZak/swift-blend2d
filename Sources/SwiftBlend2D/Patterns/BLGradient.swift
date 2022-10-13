@@ -9,8 +9,10 @@ public struct BLGradient: Equatable {
     @inlinable
     public var stops: [BLGradientStop] {
         get {
-            let buffer = UnsafeBufferPointer(start: blGradientGetStops(&box.object),
-                                             count: size)
+            let buffer = UnsafeBufferPointer(
+                start: blGradientGetStops(&box.object),
+                count: size
+            )
 
             return Array(buffer)
         }
@@ -23,12 +25,12 @@ public struct BLGradient: Equatable {
 
     @inlinable
     public var size: Int {
-        return blGradientGetSize(&box.object)
+        blGradientGetSize(&box.object)
     }
 
     @inlinable
     public var capacity: Int {
-        return blGradientGetCapacity(&box.object)
+        blGradientGetCapacity(&box.object)
     }
     
     // MARK: Gradient Options
@@ -37,7 +39,7 @@ public struct BLGradient: Equatable {
     @inlinable
     public var type: BLGradientType {
         get {
-            return blGradientGetType(&box.object)
+            blGradientGetType(&box.object)
         }
         set {
             ensureUnique()
@@ -49,7 +51,7 @@ public struct BLGradient: Equatable {
     @inlinable
     public var extendMode: BLExtendMode {
         get {
-            return blGradientGetExtendMode(&box.object)
+            blGradientGetExtendMode(&box.object)
         }
         set {
             ensureUnique()
@@ -90,9 +92,7 @@ public struct BLGradient: Equatable {
     /// Linear parameters.
     @inlinable
     public var linear: BLLinearGradientValues {
-        get {
-            return box.object.impl.linear
-        }
+        get { box.object.impl.linear }
         set {
             ensureUnique()
             box.object.impl.linear = newValue
@@ -102,9 +102,7 @@ public struct BLGradient: Equatable {
     /// Radial parameters.
     @inlinable
     public var radial: BLRadialGradientValues {
-        get {
-            return box.object.impl.radial
-        }
+        get { box.object.impl.radial }
         set {
             ensureUnique()
             box.object.impl.radial = newValue
@@ -114,9 +112,7 @@ public struct BLGradient: Equatable {
     /// Conical parameters.
     @inlinable
     public var conical: BLConicalGradientValues {
-        get {
-            return box.object.impl.conical
-        }
+        get { box.object.impl.conical }
         set {
             ensureUnique()
             box.object.impl.conical = newValue
@@ -126,87 +122,61 @@ public struct BLGradient: Equatable {
     /// x0 - start 'x' for Linear/Radial and center 'x' for Conical.
     @inlinable
     public var x0: Double {
-        get {
-            return getValue(atIndex: .commonX0)
-        }
-        set {
-            setValue(.commonX0, newValue)
-        }
+        get { getValue(atIndex: .commonX0) }
+        set { setValue(.commonX0, newValue) }
     }
     
     /// y0 - start 'y' for Linear/Radial and center 'y' for Conical.
     @inlinable
     public var y0: Double {
-        get {
-            return getValue(atIndex: .commonY0)
-        }
-        set {
-            setValue(.commonY0, newValue)
-        }
+        get { getValue(atIndex: .commonY0) }
+        set { setValue(.commonY0, newValue) }
     }
     
     /// x1 - end 'x' for Linear/Radial.
     @inlinable
     public var x1: Double {
-        get {
-            return getValue(atIndex: .commonX1)
-        }
-        set {
-            setValue(.commonX1, newValue)
-        }
+        get { getValue(atIndex: .commonX1) }
+        set { setValue(.commonX1, newValue) }
     }
     
     /// y1 - end 'y' for Linear/Radial.
     @inlinable
     public var y1: Double {
-        get {
-            return getValue(atIndex: .commonY1)
-        }
-        set {
-            setValue(.commonY1, newValue)
-        }
+        get { getValue(atIndex: .commonY1) }
+        set { setValue(.commonY1, newValue) }
     }
     
     /// Radial gradient r0 radius.
     @inlinable
     public var r0: Double {
-        get {
-            return getValue(atIndex: .radialR0)
-        }
-        set {
-            setValue(.radialR0, newValue)
-        }
+        get { getValue(atIndex: .radialR0) }
+        set { setValue(.radialR0, newValue) }
     }
     
     /// Conical gradient angle.
     @inlinable
     public var angle: Double {
-        get {
-            return getValue(atIndex: .conicalAngle)
-        }
-        set {
-            setValue(.conicalAngle, newValue)
-        }
+        get { getValue(atIndex: .conicalAngle) }
+        set { setValue(.conicalAngle, newValue) }
     }
     
     // MARK: Transformations
     @inlinable
     public var hasMatrix: Bool {
-        return matrixType != .identity
+        matrixType != .identity
     }
     
     /// Type of the transformation matrix.
     @inlinable
     public var matrixType: BLMatrix2DType {
-        return BLMatrix2DType(BLMatrix2DType.RawValue(box.object.impl.matrixType))
+        BLMatrix2DType(BLMatrix2DType.RawValue(box.object.impl.matrixType))
     }
     
     /// Gradient transformation matrix.
     @inlinable
     public var matrix: BLMatrix2D {
-        get {
-            return box.object.impl.matrix
-        }
+        get { box.object.impl.matrix }
         set {
             ensureUnique()
             
@@ -217,18 +187,16 @@ public struct BLGradient: Equatable {
     /// Gets the gradient values for this gradient.
     @inlinable
     public var values: [Double] {
-        get {
-            assert(BLGradientValue.maxValue.rawValue == 5)
-            let values = box.object.impl.values
-            return [
-                values.0,
-                values.1,
-                values.2,
-                values.3,
-                values.4,
-                values.5,
-            ]
-        }
+        assert(BLGradientValue.maxValue.rawValue == 5)
+        let values = box.object.impl.values
+        return [
+            values.0,
+            values.1,
+            values.2,
+            values.3,
+            values.4,
+            values.5,
+        ]
     }
     
     @inlinable
@@ -239,64 +207,76 @@ public struct BLGradient: Equatable {
     // TODO: Handle error results for init and create methods bellow
     
     @inlinable
-    public init(linear: BLLinearGradientValues,
-                extendMode: BLExtendMode = .pad,
-                stops: [BLGradientStop]? = nil,
-                matrix: BLMatrix2D? = nil) {
+    public init(
+        linear: BLLinearGradientValues,
+        extendMode: BLExtendMode = .pad,
+        stops: [BLGradientStop]? = nil,
+        matrix: BLMatrix2D? = nil
+    ) {
         
         box = BLBaseClass { pointer in
             var linear = linear
             
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blGradientInitAs(pointer,
-                                 BLGradientType.linear,
-                                 &linear,
-                                 extendMode,
-                                 stops,
-                                 stops?.count ?? 0,
-                                 matrix)
+                blGradientInitAs(
+                    pointer,
+                    BLGradientType.linear,
+                    &linear,
+                    extendMode,
+                    stops,
+                    stops?.count ?? 0,
+                    matrix
+                )
             }
         }
     }
     
     @inlinable
-    public init(radial: BLRadialGradientValues,
-                extendMode: BLExtendMode = .pad,
-                stops: [BLGradientStop]? = nil,
-                matrix: BLMatrix2D? = nil) {
+    public init(
+        radial: BLRadialGradientValues,
+        extendMode: BLExtendMode = .pad,
+        stops: [BLGradientStop]? = nil,
+        matrix: BLMatrix2D? = nil
+    ) {
         
         box = BLBaseClass { pointer in
             var radial = radial
             
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blGradientInitAs(pointer,
-                                 BLGradientType.radial,
-                                 &radial,
-                                 extendMode,
-                                 stops,
-                                 stops?.count ?? 0,
-                                 matrix)
+                blGradientInitAs(
+                    pointer,
+                    BLGradientType.radial,
+                    &radial,
+                    extendMode,
+                    stops,
+                    stops?.count ?? 0,
+                    matrix
+                )
             }
         }
     }
     
     @inlinable
-    public init(conical: BLConicalGradientValues,
-                extendMode: BLExtendMode = .pad,
-                stops: [BLGradientStop]? = nil,
-                matrix: BLMatrix2D? = nil) {
+    public init(
+        conical: BLConicalGradientValues,
+        extendMode: BLExtendMode = .pad,
+        stops: [BLGradientStop]? = nil,
+        matrix: BLMatrix2D? = nil
+    ) {
         
         box = BLBaseClass { pointer -> BLResult in
             var conical = conical
             
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blGradientInitAs(pointer,
-                                 BLGradientType.conical,
-                                 &conical,
-                                 extendMode,
-                                 stops,
-                                 stops?.count ?? 0,
-                                 matrix)
+                blGradientInitAs(
+                    pointer,
+                    BLGradientType.conical,
+                    &conical,
+                    extendMode,
+                    stops,
+                    stops?.count ?? 0,
+                    matrix
+                )
             }
         }
     }
@@ -315,7 +295,7 @@ public struct BLGradient: Equatable {
 
     @inlinable
     public static func == (lhs: BLGradient, rhs: BLGradient) -> Bool {
-        return blGradientEquals(&lhs.box.object, &rhs.box.object)
+        blGradientEquals(&lhs.box.object, &rhs.box.object)
     }
 }
 
@@ -328,7 +308,7 @@ public extension BLGradient {
 
     @inlinable
     func getValue(atIndex index: BLGradientValue) -> Double {
-        return blGradientGetValue(&box.object, Int(index.rawValue))
+        blGradientGetValue(&box.object, Int(index.rawValue))
     }
 
     @inlinable
@@ -458,7 +438,7 @@ public extension BLGradient {
 
     @inlinable
     func indexOfStop(withOffset offset: Double) -> Int {
-        return blGradientIndexOfStop(&box.object, offset)
+        blGradientIndexOfStop(&box.object, offset)
     }
 }
 
@@ -472,142 +452,142 @@ public extension BLGradient {
     @discardableResult
     @inlinable
     mutating func translate(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.translate, x, y)
+        _applyMatrixOpV(.translate, x, y)
     }
     @discardableResult
     @inlinable
     mutating func translate(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.translate, p.x, p.y)
+        _applyMatrixOpV(.translate, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func translate(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.translate, p)
+        _applyMatrixOp(.translate, p)
     }
     @discardableResult
     @inlinable
     mutating func scale(xy: Double) -> BLResult {
-        return _applyMatrixOpV(.scale, xy, xy)
+        _applyMatrixOpV(.scale, xy, xy)
     }
     @discardableResult
     @inlinable
     mutating func scale(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.scale, x, y)
+        _applyMatrixOpV(.scale, x, y)
     }
     @discardableResult
     @inlinable
     mutating func scale(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.scale, p.x, p.y)
+        _applyMatrixOpV(.scale, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func scale(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.scale, p)
+        _applyMatrixOp(.scale, p)
     }
     @discardableResult
     @inlinable
     mutating func skew(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.skew, x, y)
+        _applyMatrixOpV(.skew, x, y)
     }
     @discardableResult
     @inlinable
     mutating func skew(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.skew, p)
+        _applyMatrixOp(.skew, p)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double) -> BLResult {
-        return _applyMatrixOp(.rotate, angle)
+        _applyMatrixOp(.rotate, angle)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.rotatePt, angle, x, y)
+        _applyMatrixOpV(.rotatePt, angle, x, y)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
-        return _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
+        _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
+        _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
     @discardableResult
     @inlinable
     mutating func transform(_ matrix: BLMatrix2D) -> BLResult {
-        return _applyMatrixOp(.transform, matrix)
+        _applyMatrixOp(.transform, matrix)
     }
     @discardableResult
     @inlinable
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postTranslate, x, y)
+        _applyMatrixOpV(.postTranslate, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postTranslate(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.postTranslate, p.x, p.y)
+        _applyMatrixOpV(.postTranslate, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func postTranslate(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.postTranslate, p)
+        _applyMatrixOp(.postTranslate, p)
     }
     @discardableResult
     @inlinable
     mutating func postScale(xy: Double) -> BLResult {
-        return _applyMatrixOpV(.postScale, xy, xy)
+        _applyMatrixOpV(.postScale, xy, xy)
     }
     @discardableResult
     @inlinable
     mutating func postScale(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postScale, x, y)
+        _applyMatrixOpV(.postScale, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postScale(by p: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.postScale, p.x, p.y)
+        _applyMatrixOpV(.postScale, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func postScale(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.postScale, p)
+        _applyMatrixOp(.postScale, p)
     }
     @discardableResult
     @inlinable
     mutating func postSkew(x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postSkew, x, y)
+        _applyMatrixOpV(.postSkew, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postSkew(by p: BLPoint) -> BLResult {
-        return _applyMatrixOp(.postSkew, p)
+        _applyMatrixOp(.postSkew, p)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double) -> BLResult {
-        return _applyMatrixOp(.postRotate, angle)
+        _applyMatrixOp(.postRotate, angle)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
-        return _applyMatrixOpV(.postRotatePt, angle, x, y)
+        _applyMatrixOpV(.postRotatePt, angle, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double, point: BLPoint) -> BLResult {
-        return _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
+        _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double, point: BLPointI) -> BLResult {
-        return _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
+        _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
     @discardableResult
     @inlinable
     mutating func postTransform(_ matrix: BLMatrix2D) -> BLResult {
-        return _applyMatrixOp(.postTransform, matrix)
+        _applyMatrixOp(.postTransform, matrix)
     }
 }
 

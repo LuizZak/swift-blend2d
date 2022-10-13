@@ -13,19 +13,49 @@ class BLBoxITests: XCTestCase {
     }
 
     func testEquals() {
-        XCTAssertEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0), BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0))
-        XCTAssertNotEqual(BLBoxI(x0: 1, y0: 0, x1: 0, y1: 0), BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0))
-        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 1, x1: 0, y1: 0), BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0))
-        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 1, y1: 0), BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0))
-        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 1), BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0))
+        XCTAssertEqual(
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0),
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0)
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 1, y0: 0, x1: 0, y1: 0),
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0)
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 0, y0: 1, x1: 0, y1: 0),
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0)
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 0, y0: 0, x1: 1, y1: 0),
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0)
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 1),
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0)
+        )
     }
     
     func testHashable() {
-        XCTAssertEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
-        XCTAssertNotEqual(BLBoxI(x0: 1, y0: 0, x1: 0, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
-        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 1, x1: 0, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
-        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 1, y1: 0).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
-        XCTAssertNotEqual(BLBoxI(x0: 0, y0: 0, x1: 0, y1: 1).hashValue, BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue)
+        XCTAssertEqual(
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue,
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 1, y0: 0, x1: 0, y1: 0).hashValue,
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 0, y0: 1, x1: 0, y1: 0).hashValue,
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 0, y0: 0, x1: 1, y1: 0).hashValue,
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue
+        )
+        XCTAssertNotEqual(
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 1).hashValue,
+            BLBoxI(x0: 0, y0: 0, x1: 0, y1: 0).hashValue
+        )
     }
     
     func testReset() {
@@ -193,7 +223,9 @@ class BLBoxITests: XCTestCase {
     func testDescription() {
         let box = BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)
         
-        XCTAssertEqual(box.description,
-                       "BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)")
+        XCTAssertEqual(
+            box.description,
+            "BLBoxI(x0: 1, y0: 2, x1: 3, y1: 4)"
+        )
     }
 }

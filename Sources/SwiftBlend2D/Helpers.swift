@@ -7,13 +7,13 @@ import blend2d
 /// struct references'.
 @inlinable
 func withUnsafeNullablePointer<T, Result>(to value: T?, _ closure: (UnsafePointer<T>?) -> Result) -> Result {
-    return _withUnsafeNullablePointer(to: value, closure)
+    _withUnsafeNullablePointer(to: value, closure)
 }
 
 @inlinable
 @discardableResult
 func withUnsafeNullablePointer<T>(to value: T?, _ closure: (UnsafePointer<T>?) -> BLResult) -> BLResult {
-    return _withUnsafeNullablePointer(to: value, closure)
+    _withUnsafeNullablePointer(to: value, closure)
 }
 
 // Used to allow defining two signatures for withUnsafeNullablePointer, one with
