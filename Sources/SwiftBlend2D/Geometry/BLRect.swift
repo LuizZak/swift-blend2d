@@ -159,28 +159,6 @@ public extension BLRect {
     }
 }
 
-// MARK: - Equatable
-extension BLRect: Equatable {
-    @inlinable
-    public static func == (lhs: BLRect, rhs: BLRect) -> Bool {
-        lhs.x == rhs.x
-            && lhs.y == rhs.y
-            && lhs.w == rhs.w
-            && lhs.h == rhs.h
-    }
-}
-
-// MARK: - Hashable
-extension BLRect: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x)
-        hasher.combine(y)
-        hasher.combine(w)
-        hasher.combine(h)
-    }
-}
-
 // MARK: - CustomStringConvertible
 extension BLRect: CustomStringConvertible {
     public var description: String {

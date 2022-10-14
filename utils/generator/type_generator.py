@@ -87,8 +87,8 @@ class SwiftDeclMerger:
                     continue
 
                 existing_name = existing.name.to_string()
-                existing_original = existing.original_name.to_string()
-                decl_original = decl.original_name.to_string()
+                existing_original = existing.original_name.to_string() if existing.original_name is not None else "<none>"
+                decl_original = decl.original_name.to_string() if decl.original_name is not None else "<none>"
 
                 raise BaseException(
                     f"Found two symbols that share the same name but are of different types: {existing_name} (type: {type(existing)}) (originally: {existing_original}) and {decl_name} (type: {type(decl)}) (originally: {decl_original})"
@@ -106,17 +106,36 @@ class SwiftDeclMerger:
         if isinstance(decl1, SwiftExtensionDecl) and isinstance(
             decl2, SwiftExtensionDecl
         ):
+            node = self.choose_nodes(decl1.original_node, decl2.original_node)
+
             return SwiftExtensionDecl(
                 name=decl1.name,
                 original_name=decl1.original_name,
                 members=decl1.members + decl2.members,
                 origin=decl1.origin,
+                original_node=node,
                 c_kind=decl1.c_kind,
                 doccomments=decl1.doccomments,
-                conformances=decl1.conformances + decl2.conformances,
+                conformances=list(set(decl1.conformances + decl2.conformances)),
             )
 
         return None
+    
+    def choose_nodes(self, node1: c_ast.Node | None, node2: c_ast.Node | None) -> c_ast.Node | None:
+        if node1 is None:
+            return node2
+        if node2 is None:
+            return node1
+        
+        # Choose the source node that has members, if possible
+        match (node1, node2):
+            case (c_ast.Struct(), c_ast.Struct()):
+                if node1.decls is None:
+                    return node2
+                if node2.decls is None:
+                    return node1
+        
+        return node1
 
 
 class DeclGeneratorTarget:
@@ -300,6 +319,8 @@ def generate_types(request: TypeGeneratorRequest) -> int:
     swift_decls = merger.merge(swift_decls)
 
     print(f"Merged down to {ConsoleColor.CYAN(len(swift_decls))} declarations")
+
+    swift_decls = converter.post_merge(swift_decls)
 
     if request.doccomment_formatter is not None:
         print_stage_name("Formatting doc comments...")

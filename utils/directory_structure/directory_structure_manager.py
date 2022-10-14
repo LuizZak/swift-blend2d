@@ -79,8 +79,9 @@ class DirectoryStructureManager:
         return dir_path.joinpath(*longest_path)
 
     def file_for_decl(self, decl: SwiftDecl) -> Path:
-        decl_name = decl.name.to_string()
-
-        file_name = f"{decl_name}.swift"
+        file_name = self.file_name_for_decl(decl)
 
         return self.folder_for_file(file_name).joinpath(file_name)
+
+    def file_name_for_decl(self, decl: SwiftDecl) -> str:
+        return f"{decl.name.to_string()}.swift"

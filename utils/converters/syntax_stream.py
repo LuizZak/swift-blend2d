@@ -10,11 +10,20 @@ class SyntaxStream:
     def write(self, text: str):
         self.destination.write(text)
 
+    def write_then_line(self, text: str = ""):
+        "Writes a given string of text and output a line break at the end."
+        self.write(f"{text}\n")
+
     def indent_str(self) -> str:
         return "    " * self.indent_depth
 
     def line(self, text: str = ""):
-        self.write(f"{self.indent_str()}{text}\n")
+        self.pre_line()
+        self.write_then_line(text)
+
+    def pre_line(self):
+        "Prints the indentation for a line"
+        self.write(f"{self.indent_str()}")
 
     def indent(self):
         self.indent_depth += 1
@@ -31,3 +40,13 @@ class SyntaxStream:
 
         self.unindent()
         self.line("}")
+
+    @contextmanager
+    def inline_block(self, line: str, close_brace: str = "}"):
+        self.write_then_line(line)
+        self.indent()
+
+        yield
+
+        self.unindent()
+        self.line(close_brace)

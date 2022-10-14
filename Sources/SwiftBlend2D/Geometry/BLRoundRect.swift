@@ -74,30 +74,6 @@ public extension BLRoundRect {
     }
 }
 
-// MARK: - Equatable
-extension BLRoundRect: Equatable {
-    @inlinable
-    public static func == (lhs: BLRoundRect, rhs: BLRoundRect) -> Bool {
-        lhs.x == rhs.x
-            && lhs.y == rhs.y
-            && lhs.w == rhs.w
-            && lhs.h == rhs.h
-            && lhs.rx == rhs.rx
-            && lhs.ry == rhs.ry
-    }
-}
-
-extension BLRoundRect: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x)
-        hasher.combine(y)
-        hasher.combine(w)
-        hasher.combine(h)
-        hasher.combine(rx)
-        hasher.combine(ry)
-    }
-}
-
 // MARK: - CustomStringConvertible
 extension BLRoundRect: CustomStringConvertible {
     public var description: String {

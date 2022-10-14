@@ -16,13 +16,6 @@ extension BLMatrix2D: CustomStringConvertible {
     }
 }
 
-extension BLMatrix2D: Equatable {
-    @inlinable
-    public static func == (lhs: BLMatrix2D, rhs: BLMatrix2D) -> Bool {
-        return lhs.m == rhs.m
-    }
-}
-
 public extension BLMatrix2D {
     /// Gets matrix type
     var type: BLMatrix2DType {

@@ -36,10 +36,6 @@
                 "args": [
                     "build",
                     "--build-tests",
-                    "-Xswiftc",
-                    "-Xfrontend",
-                    "-Xswiftc",
-                    "-serialize-debugging-options",
                 ]
             },
             {
@@ -48,10 +44,6 @@
                 "command": "swift",
                 "args": [
                     "test",
-                    "-Xswiftc",
-                    "-Xfrontend",
-                    "-Xswiftc",
-                    "-serialize-debugging-options",
                 ]
             },
             {
@@ -128,6 +120,7 @@
         "ShortcutMenuBar.userButton04Command": "workbench.action.tasks.runTask|Generate Swift Types",
         "cSpell.words": [
             "asmjit",
+            "backticked",
             "doccomment",
             "doccomments",
             "msvc",

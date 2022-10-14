@@ -55,6 +55,10 @@ class DoccommentLookup:
             return lines
 
     def find_doccomment(self, decl: SwiftDecl) -> list[DoccommentLine] | None:
+        # The original node is required for this lookup.
+        if decl.original_node is None or decl.origin is None:
+            return None
+
         decl_file_path = decl.origin.file
         decl_line_num = decl.origin.line - 1
 

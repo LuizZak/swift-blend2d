@@ -4,23 +4,6 @@ public extension BLSize {
     static let zero = BLSize(w: 0, h: 0)
 }
 
-// MARK: - Equatable
-extension BLSize: Equatable {
-    @inlinable
-    public static func == (lhs: BLSize, rhs: BLSize) -> Bool {
-        lhs.w == rhs.w
-            && lhs.h == rhs.h
-    }
-}
-
-// MARK: - Hashable
-extension BLSize: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(w)
-        hasher.combine(h)
-    }
-}
-
 // MARK: - CustomStringConvertible
 extension BLSize: CustomStringConvertible {
     public var description: String {

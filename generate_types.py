@@ -47,10 +47,37 @@ List of prefixes from Blend2D declarations to convert
 Will also be used as a list of terms to remove the prefix of in final declaration names.
 """
 
+STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
+    ("BLRange", ["Equatable"]),
+    ("BLBitSetSegment", ["Equatable"]),
+    # Geometry
+    ("BLArc", ["Equatable", "Hashable"]),
+    ("BLBox", ["Equatable", "Hashable"]),
+    ("BLBoxI", ["Equatable", "Hashable"]),
+    ("BLCircle", ["Equatable", "Hashable"]),
+    ("BLEllipse", ["Equatable", "Hashable"]),
+    ("BLLine", ["Equatable", "Hashable"]),
+    ("BLMatrix2D", ["Equatable"]),
+    ("BLPoint", ["Equatable", "Hashable"]),
+    ("BLPointI", ["Equatable", "Hashable"]),
+    ("BLRect", ["Equatable", "Hashable"]),
+    ("BLRectI", ["Equatable", "Hashable"]),
+    ("BLRoundRect", ["Equatable", "Hashable"]),
+    ("BLSize", ["Equatable", "Hashable"]),
+    ("BLSizeI", ["Equatable", "Hashable"]),
+    ("BLTriangle", ["Equatable", "Hashable"]),
+]
+"""
+List of pattern matching to apply to C struct declarations along with a list of
+conformances that should be appended, in case the struct matches the pattern.
+"""
+
 
 class Blend2DDeclGenerator(SwiftDeclGenerator):
-    def generate_enum(self, node: c_ast.Enum) -> SwiftExtensionDecl:
+    def generate_enum(self, node: c_ast.Enum) -> SwiftExtensionDecl | None:
         decl = super().generate_enum(node)
+        if decl is None:
+            return decl
 
         # Append 'OptionSet' conformance to some enum declarations
         if (
@@ -62,9 +89,58 @@ class Blend2DDeclGenerator(SwiftDeclGenerator):
 
         return decl
 
+    def generate_struct(self, node: c_ast.Struct) -> SwiftExtensionDecl | None:
+        decl = super().generate_struct(node)
+
+        if conformances := self.propose_conformances(decl):
+            decl.conformances.extend(conformances)
+
+        return decl
+    
+    def propose_conformances(self, decl: SwiftExtensionDecl) -> list[str] | None:
+        result = []
+        
+        # Match required protocols
+        for req in STRUCT_CONFORMANCES:
+            c_name = decl.original_name.to_string()
+            match req[0]:
+                case re.Pattern():
+                    if not req[0].match(c_name):
+                        continue
+                case str():
+                    if req[0] != c_name:
+                        continue
+            
+            result.extend(req[1])
+        
+        return list(set(result))
+    
+    def post_merge(self, decls: list[SwiftDecl]) -> list[SwiftDecl]:
+        result = super().post_merge(decls)
+
+        # Use proposed conformances to generate required members
+        for decl in decls:
+            if not isinstance(decl, SwiftExtensionDecl):
+                continue
+            if not isinstance(decl.original_node, c_ast.Struct):
+                continue
+            
+            if "Equatable" in decl.conformances:
+                decl.members.append(
+                    self.generate_struct_equatable_method(decl.original_node)
+                )
+            if "Hashable" in decl.conformances:
+                decl.members.append(
+                    self.generate_struct_hashable_method(decl.original_node)
+                )
+
+        return result
+
 
 class Blend2DSymbolFilter(SymbolGeneratorFilter):
-    def should_gen_extension(self, node: c_ast.Enum, decl: SwiftExtensionDecl) -> bool:
+    def should_gen_enum_extension(
+        self, node: c_ast.Enum, decl: SwiftExtensionDecl
+    ) -> bool:
         if decl.c_kind == CDeclKind.ENUM:
             if (
                 decl.name.to_string() == "BLObjectInfoBits"
@@ -72,9 +148,9 @@ class Blend2DSymbolFilter(SymbolGeneratorFilter):
             ):
                 return False
 
-        return super().should_gen_extension(node, decl)
+        return super().should_gen_enum_extension(node, decl)
 
-    def should_gen_var_member(
+    def should_gen_enum_var_member(
         self, node: c_ast.Enumerator, decl: SwiftMemberVarDecl
     ) -> bool:
         return (
@@ -204,6 +280,14 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
 
 
 class Blend2DDirectoryStructureManager(DirectoryStructureManager):
+    def file_name_for_decl(self, decl: SwiftDecl) -> str:
+        # For struct conformances, append a "+Ext.swift" to the suffix of the
+        # filename
+        if decl.c_kind == CDeclKind.STRUCT and isinstance(decl, SwiftExtensionDecl) and len(decl.conformances) > 0:
+            return f"{decl.name.to_string()}+Ext.swift"
+
+        return super().file_name_for_decl(decl)
+
     def make_declaration_files(self, decls: Iterable[SwiftDecl]) -> list[SwiftFile]:
         result = super().make_declaration_files(decls)
         for file in result:
@@ -244,6 +328,21 @@ class Blend2DDirectoryStructureManager(DirectoryStructureManager):
                 [
                     "BLGeometryDirection.swift",
                     "BLGeometryType.swift",
+                    "BLArc+Ext.swift",
+                    "BLBox+Ext.swift",
+                    "BLBoxI+Ext.swift",
+                    "BLCircle+Ext.swift",
+                    "BLEllipse+Ext.swift",
+                    "BLLine+Ext.swift",
+                    "BLMatrix2D+Ext.swift",
+                    "BLPoint+Ext.swift",
+                    "BLPointI+Ext.swift",
+                    "BLRect+Ext.swift",
+                    "BLRectI+Ext.swift",
+                    "BLRoundRect+Ext.swift",
+                    "BLSize+Ext.swift",
+                    "BLSizeI+Ext.swift",
+                    "BLTriangle+Ext.swift",
                 ],
             ),
             (["Geometry", "Matrix"], re.compile(r"^BLMatrix.+")),

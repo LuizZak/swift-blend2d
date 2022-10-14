@@ -100,23 +100,6 @@ public extension BLPointI {
     }
 }
 
-// MARK: - Equatable
-extension BLPointI: Equatable {
-    @inlinable
-    public static func == (lhs: BLPointI, rhs: BLPointI) -> Bool {
-        lhs.x == rhs.x && lhs.y == rhs.y
-    }
-}
-
-// MARK: - Hashable
-extension BLPointI: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x)
-        hasher.combine(y)
-    }
-}
-
 // MARK: - Operations
 extension BLPointI {
     /// Returns a `BLPoint` where each coordinate is the minimal value between

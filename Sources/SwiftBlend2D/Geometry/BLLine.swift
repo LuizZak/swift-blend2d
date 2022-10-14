@@ -120,28 +120,6 @@ public extension BLLine {
     }
 }
 
-// MARK: - Equatable
-extension BLLine: Equatable {
-    @inlinable
-    public static func == (lhs: BLLine, rhs: BLLine) -> Bool {
-        lhs.x0 == rhs.x0
-            && lhs.y0 == rhs.y0
-            && lhs.x1 == rhs.x1
-            && lhs.y1 == rhs.y1
-    }
-}
-
-// MARK: - Hashable
-extension BLLine: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x0)
-        hasher.combine(y0)
-        hasher.combine(x1)
-        hasher.combine(y1)
-    }
-}
-
 // MARK: - CustomStringConvertible
 extension BLLine: CustomStringConvertible {
     public var description: String {

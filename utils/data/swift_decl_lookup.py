@@ -12,14 +12,15 @@ class _PreCachingVisitor(SwiftDeclVisitor):
         self._cached_results = dict()
 
     def generic_visit(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
-        c_name = decl.original_name.to_string()
+        if decl.original_name is not None:
+            c_name = decl.original_name.to_string()
 
-        # Create fully-qualified member name
-        fully_qualified = ".".join(
-            map(lambda s: s.name.to_string(), self.decl_stack + [decl])
-        )
+            # Create fully-qualified member name
+            fully_qualified = ".".join(
+                map(lambda s: s.name.to_string(), self.decl_stack + [decl])
+            )
 
-        self._cached_results[c_name] = fully_qualified
+            self._cached_results[c_name] = fully_qualified
 
         self.decl_stack.append(decl)
         return SwiftDeclVisitResult.VISIT_CHILDREN

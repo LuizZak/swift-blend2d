@@ -159,32 +159,6 @@ public extension BLTriangle {
     }
 }
 
-// MARK: - Equatable
-extension BLTriangle: Equatable {
-    @inlinable
-    public static func == (lhs: BLTriangle, rhs: BLTriangle) -> Bool {
-        lhs.x0 == rhs.x0
-            && lhs.y0 == rhs.y0
-            && lhs.x1 == rhs.x1
-            && lhs.y1 == rhs.y1
-            && lhs.x2 == rhs.x2
-            && lhs.y2 == rhs.y2
-    }
-}
-
-// MARK: - Hashable
-extension BLTriangle: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x0)
-        hasher.combine(y0)
-        hasher.combine(x1)
-        hasher.combine(y1)
-        hasher.combine(x2)
-        hasher.combine(y2)
-    }
-}
-
 // MARK: - CustomStringConvertible
 extension BLTriangle: CustomStringConvertible {
     public var description: String {

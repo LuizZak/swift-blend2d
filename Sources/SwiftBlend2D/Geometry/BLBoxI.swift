@@ -155,28 +155,6 @@ public extension BLBoxI {
     }
 }
 
-// MARK: - Equatable
-extension BLBoxI: Equatable {
-    @inlinable
-    public static func == (lhs: BLBoxI, rhs: BLBoxI) -> Bool {
-        lhs.x0 == rhs.x0
-            && lhs.y0 == rhs.y0
-            && lhs.x1 == rhs.x1
-            && lhs.y1 == rhs.y1
-    }
-}
-
-// MARK: - Hashable
-extension BLBoxI: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x0)
-        hasher.combine(y0)
-        hasher.combine(x1)
-        hasher.combine(y1)
-    }
-}
-
 // MARK: - CustomStringConvertible
 extension BLBoxI: CustomStringConvertible {
     public var description: String {
