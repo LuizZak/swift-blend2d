@@ -381,7 +381,7 @@ class Blend2DDirectoryStructureManager(DirectoryStructureManager):
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Generates .swift files for Blend2D enum declarations."
+        description="Generates .swift files for Blend2D enum and struct declarations."
     )
 
     parser.add_argument(
