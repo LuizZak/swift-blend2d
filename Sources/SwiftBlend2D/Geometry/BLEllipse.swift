@@ -39,10 +39,3 @@ public extension BLEllipse {
         return contains(x: point.x, y: point.y)
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLEllipse: CustomStringConvertible {
-    public var description: String {
-        return "BLEllipse(cx: \(cx), cy: \(cy), rx: \(rx), ry: \(ry))"
-    }
-}

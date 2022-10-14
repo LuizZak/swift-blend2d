@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLEllipse: Hashable, Equatable { }
+extension BLEllipse: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLEllipse {
+    var description: String {
+        "BLEllipse(cx: \(cx), cy: \(cy), rx: \(rx), ry: \(ry))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.cx == rhs.cx && lhs.cy == rhs.cy && lhs.rx == rhs.rx && lhs.ry == rhs.ry
     }

@@ -168,10 +168,3 @@ public extension BLRectI {
             && bottom >= other.top
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLRectI: CustomStringConvertible {
-    public var description: String {
-        "BLRectI(x: \(x), y: \(y), w: \(w), h: \(h))"
-    }
-}

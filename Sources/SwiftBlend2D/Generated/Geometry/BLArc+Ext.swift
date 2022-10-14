@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLArc: Hashable, Equatable { }
+extension BLArc: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLArc {
+    var description: String {
+        "BLArc(cx: \(cx), cy: \(cy), rx: \(rx), ry: \(ry), start: \(start), sweep: \(sweep))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.cx == rhs.cx && lhs.cy == rhs.cy && lhs.rx == rhs.rx && lhs.ry == rhs.ry && lhs.start == rhs.start && lhs.sweep == rhs.sweep
     }

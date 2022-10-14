@@ -73,10 +73,3 @@ public extension BLRoundRect {
         )
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLRoundRect: CustomStringConvertible {
-    public var description: String {
-        "BLRoundRect(x: \(x), y: \(y), w: \(w), h: \(h), rx: \(rx), ry: \(ry))"
-    }
-}

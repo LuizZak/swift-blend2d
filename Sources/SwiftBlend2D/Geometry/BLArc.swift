@@ -13,10 +13,3 @@ public extension BLArc {
         )
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLArc: CustomStringConvertible {
-    public var description: String {
-        return "BLArc(cx: \(cx), cy: \(cy), rx: \(rx), ry: \(ry), start: \(start), sweep: \(sweep))"
-    }
-}

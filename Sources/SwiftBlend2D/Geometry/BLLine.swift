@@ -119,10 +119,3 @@ public extension BLLine {
         )
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLLine: CustomStringConvertible {
-    public var description: String {
-        "BLLine(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"
-    }
-}

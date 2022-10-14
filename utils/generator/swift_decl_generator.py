@@ -7,7 +7,6 @@ from utils.data.swift_decls import (
     SourceLocation,
     SwiftDecl,
     SwiftExtensionDecl,
-    SwiftMemberFunctionDecl,
     SwiftMemberVarDecl,
 )
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
@@ -40,6 +39,8 @@ class SwiftDeclGenerator:
         node: c_ast.Enumerator,
     ) -> SwiftMemberVarDecl | None:
 
+        value = self.symbol_name_generator.generate_original_enum_case(node.name).to_string()
+
         return SwiftMemberVarDecl(
             self.symbol_name_generator.generate_enum_case(
                 enum_name, enum_original_name, node.name
@@ -49,7 +50,8 @@ class SwiftDeclGenerator:
             original_node=node,
             c_kind=CDeclKind.ENUM_CASE,
             doccomments=[],
-            is_static=True
+            is_static=True,
+            initial_value=value
         )
 
     def generate_enum(self, node: c_ast.Enum) -> SwiftExtensionDecl | None:
@@ -76,6 +78,8 @@ class SwiftDeclGenerator:
             conformances=[],
         )
 
+    # Struct
+
     def generate_struct(self, node: c_ast.Struct) -> SwiftExtensionDecl | None:
         struct_name = self.symbol_name_generator.generate_struct_name(node.name)
 
@@ -90,94 +94,6 @@ class SwiftDeclGenerator:
             conformances=[],
         )
     
-    def generate_struct_equatable_method(self, node: c_ast.Struct) -> SwiftMemberFunctionDecl | None:
-        body: list[str] = list()
-
-        field_comparisons: list[str] = list()
-        if node.decls is not None:
-            field_comparisons = list(
-                # Create equality expression for field
-                map(
-                    lambda field: f"lhs.{field} == rhs.{field}",
-                    # Ignore non-nameable fields
-                    filter(
-                        lambda field: field is not None,
-                        # Map field to names
-                        map(
-                            self._field_name,
-                            node.decls
-                        )
-                    )
-                )
-            )
-        
-        if len(field_comparisons) > 0:
-            body = [
-                " && ".join(field_comparisons)
-            ]
-
-        return SwiftMemberFunctionDecl(
-            CompoundSymbolName.from_string_list("==").adding_component(string="", suffix=" "),
-            original_name=None,
-            origin=None,
-            original_node=None,
-            c_kind=CDeclKind.NONE,
-            doccomments=[],
-            is_static=True,
-            arguments=[
-                (None, "lhs", "Self"),
-                (None, "rhs", "Self"),
-            ],
-            return_type="Bool",
-            body=body
-        )
-
-    def generate_struct_hashable_method(self, node: c_ast.Struct) -> SwiftMemberFunctionDecl | None:
-        body: list[str] = list()
-
-        hash_combines: list[str] = list()
-        if node.decls is not None:
-            hash_combines = list(
-                # Create combine calls for field
-                map(
-                    lambda field: f"hasher.combine({field})",
-                    # Ignore non-nameable fields
-                    filter(
-                        lambda field: field is not None,
-                        # Map field to names
-                        map(
-                            self._field_name,
-                            node.decls
-                        )
-                    )
-                )
-            )
-        
-        if len(hash_combines) > 0:
-            body = hash_combines
-
-        return SwiftMemberFunctionDecl(
-            CompoundSymbolName.from_string_list("hash"),
-            original_name=None,
-            origin=None,
-            original_node=None,
-            c_kind=CDeclKind.NONE,
-            doccomments=[],
-            arguments=[
-                ("into", "hasher", "inout Hasher"),
-            ],
-            body=body
-        )
-
-    def _field_name(self, field: c_ast.Decl) -> str | None:
-        # For unions, choose the first named declaration inside.
-        if isinstance(field.type, c_ast.Union):
-            for union_field in field.type.decls:
-                if union_name := self._field_name(union_field):
-                    return union_name
-
-        return field.name
-
     #
 
     def generate(self, node: c_ast.Node) -> SwiftDecl | None:

@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLLine: Hashable, Equatable { }
+extension BLLine: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLLine {
+    var description: String {
+        "BLLine(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.x0 == rhs.x0 && lhs.y0 == rhs.y0 && lhs.x1 == rhs.x1 && lhs.y1 == rhs.y1
     }

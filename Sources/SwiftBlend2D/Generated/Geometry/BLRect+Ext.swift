@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLRect: Hashable, Equatable { }
+extension BLRect: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLRect {
+    var description: String {
+        "BLRect(x: \(x), y: \(y), w: \(w), h: \(h))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.x == rhs.x && lhs.y == rhs.y && lhs.w == rhs.w && lhs.h == rhs.h
     }

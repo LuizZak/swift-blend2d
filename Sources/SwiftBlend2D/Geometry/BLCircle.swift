@@ -49,10 +49,3 @@ public extension BLCircle {
         contains(x: point.x, y: point.y)
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLCircle: CustomStringConvertible {
-    public var description: String {
-        return "BLCircle(cx: \(cx), cy: \(cy), r: \(r))"
-    }
-}

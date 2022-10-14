@@ -84,23 +84,36 @@ class SwiftMemberVarDecl(SwiftMemberDecl):
     A Swift variable member declaration.
     """
 
+    var_type: str | None = None
+    initial_value: str | None = None
+    accessor_block: list[str] | None = None
+
     def write(self, stream: SyntaxStream):
         super().write(stream)
-
-        if self.original_name is None:
-            return
-
-        if self.name.to_string() == self.original_name.to_string():
-            return
 
         stream.pre_line()
 
         if self.is_static:
             stream.write("static ")
 
-        stream.write_then_line(
-            f"let {backticked_term(self.name.to_string())} = {self.original_name.to_string()}"
-        )
+        # Variables with accessors must use "var" keyword
+        if self.accessor_block is None or len(self.accessor_block) == 0:
+            stream.write(f"let {backticked_term(self.name.to_string())}")
+        else:
+            stream.write(f"var {backticked_term(self.name.to_string())}")
+
+        if self.var_type is not None:
+            stream.write(f": {self.var_type}")
+
+        if self.initial_value is not None:
+            stream.write(f" = {self.initial_value}")
+
+        if self.accessor_block is not None and len(self.accessor_block) > 0:
+            with stream.inline_block(" {"):
+                for line in self.accessor_block:
+                    stream.line(line)
+        else:
+            stream.write_then_line()
 
     def copy(self):
         return SwiftMemberVarDecl(
@@ -111,6 +124,9 @@ class SwiftMemberVarDecl(SwiftMemberDecl):
             c_kind=self.c_kind,
             doccomments=self.doccomments,
             is_static=self.is_static,
+            var_type=self.var_type,
+            initial_value=self.initial_value,
+            accessor_block=self.accessor_block,
         )
 
     def accept(self, visitor: SwiftDeclVisitor) -> SwiftDeclVisitResult:
@@ -218,7 +234,7 @@ class SwiftExtensionDecl(SwiftDecl):
         # Emit conformances, with no access control specifier so the code compiles
         # properly
         if len(self.conformances) > 0:
-            conformance_str = ", ".join(self.conformances)
+            conformance_str = ", ".join(sorted(self.conformances))
 
             stream.line(f"extension {name}: {conformance_str} {{ }}")
             stream.line()

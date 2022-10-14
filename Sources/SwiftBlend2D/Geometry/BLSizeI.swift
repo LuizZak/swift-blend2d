@@ -4,13 +4,6 @@ public extension BLSizeI {
     static let zero = BLSizeI(w: 0, h: 0)
 }
 
-// MARK: - CustomStringConvertible
-extension BLSizeI: CustomStringConvertible {
-    public var description: String {
-        "BLSizeI(w: \(w), h: \(h))"
-    }
-}
-
 // MARK: - Operators
 public extension BLSizeI {
     @inlinable

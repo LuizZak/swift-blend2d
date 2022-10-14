@@ -22,6 +22,7 @@ from utils.directory_structure.directory_structure_manager import (
     DirectoryStructureManager,
 )
 from utils.doccomment.doccomment_formatter import DoccommentFormatter
+from utils.generator.known_conformance_generators import get_conformance_generator
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
 from utils.generator.symbol_name_generator import SymbolNameGenerator
@@ -51,21 +52,21 @@ STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
     ("BLRange", ["Equatable"]),
     ("BLBitSetSegment", ["Equatable"]),
     # Geometry
-    ("BLArc", ["Equatable", "Hashable"]),
-    ("BLBox", ["Equatable", "Hashable"]),
-    ("BLBoxI", ["Equatable", "Hashable"]),
-    ("BLCircle", ["Equatable", "Hashable"]),
-    ("BLEllipse", ["Equatable", "Hashable"]),
-    ("BLLine", ["Equatable", "Hashable"]),
+    ("BLArc", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLBox", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLBoxI", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLCircle", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLEllipse", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLLine", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLMatrix2D", ["Equatable"]),
-    ("BLPoint", ["Equatable", "Hashable"]),
-    ("BLPointI", ["Equatable", "Hashable"]),
-    ("BLRect", ["Equatable", "Hashable"]),
-    ("BLRectI", ["Equatable", "Hashable"]),
-    ("BLRoundRect", ["Equatable", "Hashable"]),
-    ("BLSize", ["Equatable", "Hashable"]),
-    ("BLSizeI", ["Equatable", "Hashable"]),
-    ("BLTriangle", ["Equatable", "Hashable"]),
+    ("BLPoint", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLPointI", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLRect", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLRectI", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLRoundRect", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLSize", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLSizeI", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLTriangle", ["Equatable", "Hashable", "CustomStringConvertible"]),
 ]
 """
 List of pattern matching to apply to C struct declarations along with a list of
@@ -124,15 +125,12 @@ class Blend2DDeclGenerator(SwiftDeclGenerator):
                 continue
             if not isinstance(decl.original_node, c_ast.Struct):
                 continue
-            
-            if "Equatable" in decl.conformances:
-                decl.members.append(
-                    self.generate_struct_equatable_method(decl.original_node)
-                )
-            if "Hashable" in decl.conformances:
-                decl.members.append(
-                    self.generate_struct_hashable_method(decl.original_node)
-                )
+
+            for conformance in sorted(decl.conformances):
+                if gen := get_conformance_generator(conformance):
+                    decl.members.extend(
+                        gen.generate_members(decl, decl.original_node)
+                    )
 
         return result
 

@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLPointI: Hashable, Equatable { }
+extension BLPointI: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLPointI {
+    var description: String {
+        "BLPointI(x: \(x), y: \(y))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.x == rhs.x && lhs.y == rhs.y
     }

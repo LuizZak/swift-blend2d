@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLSizeI: Hashable, Equatable { }
+extension BLSizeI: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLSizeI {
+    var description: String {
+        "BLSizeI(w: \(w), h: \(h))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.w == rhs.w && lhs.h == rhs.h
     }

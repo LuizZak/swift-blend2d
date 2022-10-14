@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLRoundRect: Hashable, Equatable { }
+extension BLRoundRect: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLRoundRect {
+    var description: String {
+        "BLRoundRect(x: \(x), y: \(y), w: \(w), h: \(h), rx: \(rx), ry: \(ry))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.x == rhs.x && lhs.y == rhs.y && lhs.w == rhs.w && lhs.h == rhs.h && lhs.rx == rhs.rx && lhs.ry == rhs.ry
     }

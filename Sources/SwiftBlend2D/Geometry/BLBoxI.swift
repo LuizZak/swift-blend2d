@@ -154,10 +154,3 @@ public extension BLBoxI {
         self.y1 = 0
     }
 }
-
-// MARK: - CustomStringConvertible
-extension BLBoxI: CustomStringConvertible {
-    public var description: String {
-        return "BLBoxI(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1))"
-    }
-}

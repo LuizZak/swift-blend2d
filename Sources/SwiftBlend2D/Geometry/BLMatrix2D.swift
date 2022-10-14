@@ -6,7 +6,10 @@ public extension BLMatrix2D {
         self.init(
             .init(
                 .init(
-                    m00: m00, m01: m01, m10: m10, m11: m11, m20: m20, m21: m21)))
+                    m00: m00, m01: m01, m10: m10, m11: m11, m20: m20, m21: m21
+                )
+            )
+        )
     }
 }
 

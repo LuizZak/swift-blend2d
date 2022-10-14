@@ -3,9 +3,13 @@
 
 import blend2d
 
-extension BLCircle: Hashable, Equatable { }
+extension BLCircle: CustomStringConvertible, Equatable, Hashable { }
 
 public extension BLCircle {
+    var description: String {
+        "BLCircle(cx: \(cx), cy: \(cy), r: \(r))"
+    }
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.cx == rhs.cx && lhs.cy == rhs.cy && lhs.r == rhs.r
     }
