@@ -10,7 +10,12 @@ from utils.converters.base_word_capitalizer import PatternCapitalizer
 from utils.converters.default_symbol_name_formatter import DefaultSymbolNameFormatter
 from utils.converters.symbol_name_formatter import SymbolNameFormatter
 from utils.data.swift_decl_lookup import SwiftDeclLookup
-from utils.data.swift_decls import SwiftDecl, SwiftEnumCaseDecl, SwiftEnumDecl
+from utils.data.swift_decls import (
+    CDeclKind,
+    SwiftDecl,
+    SwiftExtensionDecl,
+    SwiftMemberVarDecl,
+)
 from utils.data.swift_file import SwiftFile
 from utils.directory_structure.directory_structure_manager import (
     DirectoryStructureEntry,
@@ -44,7 +49,7 @@ Will also be used as a list of terms to remove the prefix of in final declaratio
 
 
 class Blend2DDeclGenerator(SwiftDeclGenerator):
-    def generate_enum(self, node: c_ast.Enum) -> SwiftEnumDecl:
+    def generate_enum(self, node: c_ast.Enum) -> SwiftExtensionDecl:
         decl = super().generate_enum(node)
 
         # Append 'OptionSet' conformance to some enum declarations
@@ -59,19 +64,23 @@ class Blend2DDeclGenerator(SwiftDeclGenerator):
 
 
 class Blend2DSymbolFilter(SymbolGeneratorFilter):
-    def should_gen_enum(self, node: c_ast.Enum, decl: SwiftEnumDecl) -> bool:
-        if (
-            decl.name.to_string() == "BLObjectInfoBits"
-            or decl.name.to_string() == "BLObjectInfoShift"
-        ):
-            return False
+    def should_gen_extension(self, node: c_ast.Enum, decl: SwiftExtensionDecl) -> bool:
+        if decl.c_kind == CDeclKind.ENUM:
+            if (
+                decl.name.to_string() == "BLObjectInfoBits"
+                or decl.name.to_string() == "BLObjectInfoShift"
+            ):
+                return False
 
-        return super().should_gen_enum(node, decl)
+        return super().should_gen_extension(node, decl)
 
-    def should_gen_enum_case(
-        self, node: c_ast.Enumerator, decl: SwiftEnumCaseDecl
+    def should_gen_var_member(
+        self, node: c_ast.Enumerator, decl: SwiftMemberVarDecl
     ) -> bool:
-        return decl.name.to_string().lower().find("forceuint") == -1
+        return (
+            decl.c_kind == CDeclKind.ENUM_CASE
+            and decl.name.to_string().lower().find("forceuint") == -1
+        )
 
 
 class Blend2DNameGenerator(SymbolNameGenerator):
@@ -150,7 +159,7 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
 
     def __init__(self):
         self.ref_regex = re.compile(r"\\ref (\w+(?:\(\))?)", re.IGNORECASE)
-        self.backtick_regex = re.compile(r"`(.+)`")
+        self.backtick_regex = re.compile(r"`([^`]+)`")
         self.backtick_word_regex = re.compile(r"\w+")
 
     def replace_refs(self, string: str) -> str:

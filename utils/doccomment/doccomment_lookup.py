@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import Sequence
+from utils.data.swift_decl_visitor import SwiftDeclVisitor
 
-from utils.data.swift_decls import SwiftDecl, SwiftEnumDecl
+from utils.data.swift_decls import SwiftDecl, SwiftDeclWalker
 from utils.doccomment.doccomment_line import DoccommentLine
 
 
@@ -83,20 +84,26 @@ class DoccommentLookup:
         return list(reversed(collected))
 
     def populate_doc_comments(self, decls: Sequence[SwiftDecl]) -> list[SwiftDecl]:
+        class DocCommentVisitor(SwiftDeclVisitor):
+            def __init__(self, lookup: DoccommentLookup):
+                self.lookup = lookup
+
+            def generic_visit(self, node):
+                comments = self.lookup.find_doccomment(node)
+                if comments is None:
+                    return super().generic_visit(node)
+
+                node.doccomments = list(map(lambda c: c.comment_contents, comments))
+
+                return super().generic_visit(node)
+
+        walker = SwiftDeclWalker(DocCommentVisitor(self))
+
         results = []
 
         for decl in decls:
-            comments = self.find_doccomment(decl)
-            if comments is None:
-                continue
-
             copy = decl.copy()
-            copy.doccomments = list(map(lambda c: c.comment_contents, comments))
-
-            # TODO: Figure out a way to avoid this hardcoding of nested decl traversal
-            if isinstance(decl, SwiftEnumDecl):
-                copy.cases = list(self.populate_doc_comments(decl.cases))
-
+            walker.walk_decl(copy)
             results.append(copy)
 
         return results

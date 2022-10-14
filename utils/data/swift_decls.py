@@ -6,17 +6,21 @@ from pathlib import Path
 from utils.converters.syntax_stream import SyntaxStream
 from utils.data.compound_symbol_name import CompoundSymbolName
 from utils.converters.backticked_term import backticked_term
+from utils.data.swift_decl_visit_result import SwiftDeclVisitResult
+from utils.data.swift_decl_visitor import SwiftDeclVisitor
 
 
-class SwiftDeclVisitResult(Enum):
+class CDeclKind(Enum):
     """
-    Defines the behavior of a SwiftDeclVisitor as it visits declarations.
+    Represents a kind of C declaration.
     """
 
-    VISIT_CHILDREN = 0
-    "The visitor should visit the children of a declaration."
-    SKIP_CHILDREN = 1
-    "The visitor should skip the children of a declaration."
+    ENUM = 0
+    "A C-style enum declaration."
+    ENUM_CASE = 1
+    "A C-style enum value declaration."
+    STRUCT = 1
+    "A C-style struct declaration."
 
 
 @dataclass
@@ -31,6 +35,7 @@ class SwiftDecl(object):
     name: CompoundSymbolName
     original_name: CompoundSymbolName
     origin: SourceLocation
+    c_kind: CDeclKind
     doccomments: list[str]
     "A list of documentation comments associated with this element."
 
@@ -41,10 +46,10 @@ class SwiftDecl(object):
     def copy(self):
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def accept(self, visitor: "SwiftDeclVisitor") -> SwiftDeclVisitResult:
+    def accept(self, visitor: SwiftDeclVisitor) -> SwiftDeclVisitResult:
         raise NotImplementedError("Must be implemented by subclasses.")
 
-    def accept_post(self, visitor: "SwiftDeclVisitor"):
+    def accept_post(self, visitor: SwiftDeclVisitor):
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def children(self) -> list["SwiftDecl"]:
@@ -52,7 +57,20 @@ class SwiftDecl(object):
 
 
 @dataclass
-class SwiftEnumCaseDecl(SwiftDecl):
+class SwiftMemberDecl(SwiftDecl):
+    """
+    A Swift member declaration base class.
+    """
+
+    pass
+
+
+@dataclass
+class SwiftMemberVarDecl(SwiftMemberDecl):
+    """
+    A Swift variable member declaration.
+    """
+
     def write(self, stream: SyntaxStream):
         super().write(stream)
 
@@ -62,26 +80,27 @@ class SwiftEnumCaseDecl(SwiftDecl):
             )
 
     def copy(self):
-        return SwiftEnumCaseDecl(
+        return SwiftMemberVarDecl(
             name=self.name,
             original_name=self.original_name,
             origin=self.origin,
+            c_kind=self.c_kind,
             doccomments=self.doccomments,
         )
 
-    def accept(self, visitor: "SwiftDeclVisitor") -> SwiftDeclVisitResult:
-        return visitor.visit_enum_case_decl(self)
+    def accept(self, visitor: SwiftDeclVisitor) -> SwiftDeclVisitResult:
+        return visitor.visit(self)
 
-    def accept_post(self, visitor: "SwiftDeclVisitor"):
-        return visitor.post_enum_case_decl(self)
+    def accept_post(self, visitor: SwiftDeclVisitor):
+        return visitor.post_visit(self)
 
     def children(self) -> list["SwiftDecl"]:
         return list()
 
 
 @dataclass
-class SwiftEnumDecl(SwiftDecl):
-    cases: List[SwiftEnumCaseDecl]
+class SwiftExtensionDecl(SwiftDecl):
+    members: List[SwiftMemberDecl]
     conformances: list[str]
 
     def write(self, stream: SyntaxStream):
@@ -101,77 +120,36 @@ class SwiftEnumDecl(SwiftDecl):
 
         decl = f"public extension {name}"
 
-        if len(self.cases) == 0:
+        if len(self.members) == 0:
             stream.line(decl + " { }")
             return
 
         with stream.block(decl + " {"):
-            for i, case in enumerate(self.cases):
+            for i, member in enumerate(self.members):
                 if i > 0:
                     stream.line()
 
-                case.write(stream)
+                member.write(stream)
 
     def copy(self):
-        return SwiftEnumDecl(
+        return SwiftExtensionDecl(
             name=self.name,
             original_name=self.original_name,
             origin=self.origin,
+            c_kind=self.c_kind,
             doccomments=self.doccomments,
-            cases=list(map(lambda c: c.copy(), self.cases)),
+            members=list(map(lambda c: c.copy(), self.members)),
             conformances=self.conformances,
         )
 
-    def accept(self, visitor: "SwiftDeclVisitor") -> SwiftDeclVisitResult:
-        return visitor.visit_enum_decl(self)
+    def accept(self, visitor: SwiftDeclVisitor) -> SwiftDeclVisitResult:
+        return visitor.visit(self)
 
-    def accept_post(self, visitor: "SwiftDeclVisitor"):
-        return visitor.post_enum_decl(self)
+    def accept_post(self, visitor: SwiftDeclVisitor):
+        return visitor.post_visit(self)
 
     def children(self) -> list["SwiftDecl"]:
-        return list(self.cases)
-
-
-class SwiftDeclVisitor:
-    def visit_enum_decl(self, decl: SwiftEnumDecl) -> SwiftDeclVisitResult:
-        return SwiftDeclVisitResult.VISIT_CHILDREN
-
-    def post_enum_decl(self, decl: SwiftEnumDecl):
-        pass
-
-    def visit_enum_case_decl(self, decl: SwiftEnumCaseDecl) -> SwiftDeclVisitResult:
-        return SwiftDeclVisitResult.VISIT_CHILDREN
-
-    def post_enum_case_decl(self, decl: SwiftEnumCaseDecl):
-        pass
-
-    def walk_decl(self, decl: SwiftDecl):
-        walker = SwiftDeclWalker(self)
-        walker.walk_decl(decl)
-
-
-class SwiftDeclAnyVisitor(SwiftDeclVisitor):
-    """
-    A declaration visitor that pipes all visits to `self.visit_any_decl`
-    """
-
-    def visit_any_decl(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
-        return SwiftDeclVisitResult.VISIT_CHILDREN
-
-    def post_any_decl(self, decl: SwiftDecl):
-        pass
-
-    def visit_enum_decl(self, decl: SwiftEnumDecl) -> SwiftDeclVisitResult:
-        return self.visit_any_decl(decl)
-
-    def post_enum_decl(self, decl: SwiftEnumDecl):
-        self.post_any_decl(decl)
-
-    def visit_enum_case_decl(self, decl: SwiftEnumCaseDecl) -> SwiftDeclVisitResult:
-        return self.visit_any_decl(decl)
-
-    def post_enum_case_decl(self, decl: SwiftEnumCaseDecl):
-        self.post_any_decl(decl)
+        return list(self.members)
 
 
 class SwiftDeclWalker:

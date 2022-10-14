@@ -161,7 +161,7 @@
         "swift.buildArguments": [],
 
         "[python]": {
-            "editor.formatOnSave": true
+            "editor.formatOnSave": true,
         },
         "files.associations": {
             "iterator": "cpp",

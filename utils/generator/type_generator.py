@@ -17,15 +17,16 @@ from utils.cli.console_color import ConsoleColor
 
 from utils.converters.syntax_stream import SyntaxStream
 from utils.data.swift_decl_lookup import SwiftDeclLookup
+from utils.data.swift_decl_visitor import SwiftDeclVisitor
 from utils.doccomment.doccomment_formatter import DoccommentFormatter
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
 from utils.generator.symbol_generator_filter import SymbolGeneratorFilter
 from utils.generator.symbol_name_generator import SymbolNameGenerator
 from utils.data.swift_decls import (
     SwiftDecl,
-    SwiftEnumDecl,
-    SwiftDeclAnyVisitor,
+    SwiftDeclWalker,
     SwiftDeclVisitResult,
+    SwiftExtensionDecl,
 )
 from utils.directory_structure.directory_structure_manager import (
     DirectoryStructureManager,
@@ -81,29 +82,41 @@ class SwiftDeclMerger:
             decl_name = decl.name.to_string()
             existing = decl_dict.get(decl_name)
             if existing is not None:
-                if isinstance(existing, SwiftEnumDecl) and isinstance(
-                    decl, SwiftEnumDecl
-                ):
-                    decl_dict[decl_name] = SwiftEnumDecl(
-                        name=existing.name,
-                        original_name=existing.original_name,
-                        cases=existing.cases + decl.cases,
-                        origin=existing.origin,
-                        doccomments=existing.doccomments,
-                        conformances=existing.conformances + decl.conformances,
-                    )
-                else:
-                    existing_name = existing.name.to_string()
-                    existing_original = existing.original_name.to_string()
-                    decl_original = decl.original_name.to_string()
+                if ext_decl := self.try_merge_as_extensions(existing, decl):
+                    decl_dict[decl_name] = ext_decl
+                    continue
 
-                    raise BaseException(
-                        f"Found two symbols that share the same name but are of different types: {existing_name} (type: {type(existing)}) (originally: {existing_original}) and {decl_name} (type: {type(decl)}) (originally: {decl_original})"
-                    )
+                existing_name = existing.name.to_string()
+                existing_original = existing.original_name.to_string()
+                decl_original = decl.original_name.to_string()
+
+                raise BaseException(
+                    f"Found two symbols that share the same name but are of different types: {existing_name} (type: {type(existing)}) (originally: {existing_original}) and {decl_name} (type: {type(decl)}) (originally: {decl_original})"
+                )
+
             else:
                 decl_dict[decl_name] = decl
 
         return list(decl_dict.values())
+
+    def try_merge_as_extensions(
+        self, decl1: SwiftDecl, decl2: SwiftDecl
+    ) -> SwiftExtensionDecl | None:
+
+        if isinstance(decl1, SwiftExtensionDecl) and isinstance(
+            decl2, SwiftExtensionDecl
+        ):
+            return SwiftExtensionDecl(
+                name=decl1.name,
+                original_name=decl1.original_name,
+                members=decl1.members + decl2.members,
+                origin=decl1.origin,
+                c_kind=decl1.c_kind,
+                doccomments=decl1.doccomments,
+                conformances=decl1.conformances + decl2.conformances,
+            )
+
+        return None
 
 
 class DeclGeneratorTarget:
@@ -214,12 +227,12 @@ class DeclCollectorVisitor(c_ast.NodeVisitor):
             self.decls.append(node)
 
 
-class SwiftDoccommentFormatterVisitor(SwiftDeclAnyVisitor):
+class SwiftDoccommentFormatterVisitor(SwiftDeclVisitor):
     def __init__(self, formatter: DoccommentFormatter, lookup: SwiftDeclLookup):
         self.formatter = formatter
         self.lookup = lookup
 
-    def visit_any_decl(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
+    def generic_visit(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
         decl.doccomments = self.formatter.format_doccomments(
             decl.doccomments, decl, self.lookup
         )
@@ -295,9 +308,10 @@ def generate_types(request: TypeGeneratorRequest) -> int:
         doc_visitor = SwiftDoccommentFormatterVisitor(
             request.doccomment_formatter, lookup
         )
+        walker = SwiftDeclWalker(doc_visitor)
 
         for decl in swift_decls:
-            doc_visitor.walk_decl(decl)
+            walker.walk_decl(decl)
 
     print_stage_name("Generating files...")
 
