@@ -3,19 +3,19 @@
 
 import blend2d
 
-extension BLRange: CustomStringConvertible, Equatable, Hashable { }
+extension BLFontFeatureItem: CustomStringConvertible, Equatable, Hashable { }
 
-public extension BLRange {
+public extension BLFontFeatureItem {
     var description: String {
-        "BLRange(start: \(start), end: \(end))"
+        "BLFontFeatureItem(tag: \(tag), value: \(value))"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.start == rhs.start && lhs.end == rhs.end
+        lhs.tag == rhs.tag && lhs.value == rhs.value
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(start)
-        hasher.combine(end)
+        hasher.combine(tag)
+        hasher.combine(value)
     }
 }

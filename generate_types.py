@@ -49,8 +49,18 @@ Will also be used as a list of terms to remove the prefix of in final declaratio
 """
 
 STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
-    ("BLRange", ["Equatable"]),
+    #
     ("BLBitSetSegment", ["Equatable"]),
+    ("BLRange", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    # Color
+    ("BLRgba", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLRgba32", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLRgba64", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    # Font
+    ("BLFontFaceInfo", ["Equatable", "CustomStringConvertible"]),
+    ("BLFontFeatureItem", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLFontQueryProperties", ["Equatable", "CustomStringConvertible"]),
+    ("BLFontVariationItem", ["Equatable", "Hashable", "CustomStringConvertible"]),
     # Geometry
     ("BLArc", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLBox", ["Equatable", "Hashable", "CustomStringConvertible"]),
@@ -67,6 +77,18 @@ STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
     ("BLSize", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLSizeI", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLTriangle", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    # Glyph
+    ("BLGlyphInfo", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLGlyphPlacement", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    # Gradient
+    ("BLGradientStop", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLLinearGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLRadialGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLConicalGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    # Image
+    ("BLImageInfo", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    # Text
+    ("BLTextMetrics", ["Equatable", "Hashable", "CustomStringConvertible"]),
 ]
 """
 List of pattern matching to apply to C struct declarations along with a list of
@@ -328,7 +350,15 @@ class Blend2DDirectoryStructureManager(DirectoryStructureManager):
             # F
             (["File"], re.compile(r"^BLFile.+")),
             # G
-            (["Gradient"], re.compile(r"^BLGradient.+")),
+            (
+                ["Gradient"],
+                [
+                    re.compile(r"^BLGradient.+"),
+                    "BLLinearGradientValues+Ext.swift",
+                    "BLRadialGradientValues+Ext.swift",
+                    "BLConicalGradientValues+Ext.swift",
+                ]
+            ),
             (
                 ["Geometry"],
                 [

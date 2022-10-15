@@ -3,19 +3,19 @@
 
 import blend2d
 
-extension BLRange: CustomStringConvertible, Equatable, Hashable { }
+extension BLGradientStop: CustomStringConvertible, Equatable, Hashable { }
 
-public extension BLRange {
+public extension BLGradientStop {
     var description: String {
-        "BLRange(start: \(start), end: \(end))"
+        "BLGradientStop(offset: \(offset), rgba: \(rgba))"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.start == rhs.start && lhs.end == rhs.end
+        lhs.offset == rhs.offset && lhs.rgba == rhs.rgba
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(start)
-        hasher.combine(end)
+        hasher.combine(offset)
+        hasher.combine(rgba)
     }
 }

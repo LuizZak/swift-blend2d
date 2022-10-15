@@ -53,12 +53,7 @@ class SwiftEquatableConformance(SwiftConformanceGenerator):
                 # Create equality expression for field
                 map(
                     lambda field: f"lhs.{field} == rhs.{field}",
-                    # Ignore non-nameable fields
-                    filter(
-                        lambda field: field is not None,
-                        # Map field to names
-                        map(self._field_name, node.decls),
-                    ),
+                    self.iterate_field_names(node.decls, max_tuple_length=8),
                 )
             )
 

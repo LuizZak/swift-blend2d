@@ -47,15 +47,7 @@ public extension BLRgba {
     }
 }
 
-extension BLRgba: Equatable {
-    @inlinable
-    public static func == (lhs: BLRgba, rhs: BLRgba) -> Bool {
-        lhs.r == rhs.r
-            && lhs.g == rhs.g
-            && lhs.b == rhs.b
-            && lhs.a == rhs.a
-    }
-    
+extension BLRgba {
     @inlinable
     public static func == (lhs: BLRgba, rhs: BLRgba32) -> Bool {
         lhs == BLRgba(rhs)
@@ -72,11 +64,5 @@ extension BLRgba: Equatable {
     @inlinable
     public static func == (lhs: BLRgba64, rhs: BLRgba) -> Bool {
         BLRgba(lhs) == rhs
-    }
-}
-
-extension BLRgba: CustomStringConvertible {
-    public var description: String {
-        "BLRgba(r: \(r), g: \(g), b: \(b), a: \(a))"
     }
 }

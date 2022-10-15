@@ -5,7 +5,7 @@ from typing import List, Iterable
 from utils.data.swift_decls import SwiftDecl
 from utils.data.swift_file import SwiftFile
 
-DirectoryStructureEntry = tuple[list[str], str | re.Pattern | list[re.Pattern]]
+DirectoryStructureEntry = tuple[list[str], str | re.Pattern | list[str | re.Pattern]]
 
 
 class DirectoryStructureManager:
@@ -38,7 +38,7 @@ class DirectoryStructureManager:
 
     def folder_for_file(self, file_name: str) -> Path:
         def matches(
-            pattern: str | re.Pattern | list[re.Pattern],
+            pattern: str | re.Pattern | list[str | re.Pattern],
             file_name: str,
         ) -> bool:
             if isinstance(pattern, re.Pattern):

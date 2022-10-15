@@ -3,19 +3,18 @@
 
 import blend2d
 
-extension BLRange: CustomStringConvertible, Equatable, Hashable { }
+extension BLRgba64: CustomStringConvertible, Equatable, Hashable { }
 
-public extension BLRange {
+public extension BLRgba64 {
     var description: String {
-        "BLRange(start: \(start), end: \(end))"
+        "BLRgba64(value: \(value))"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.start == rhs.start && lhs.end == rhs.end
+        lhs.value == rhs.value
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(start)
-        hasher.combine(end)
+        hasher.combine(value)
     }
 }

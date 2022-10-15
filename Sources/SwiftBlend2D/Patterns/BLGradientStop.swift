@@ -6,11 +6,3 @@ public extension BLGradientStop {
         self.init(offset: offset, rgba: BLRgba64(rgba))
     }
 }
-
-extension BLGradientStop: Equatable {
-    @inlinable
-    public static func == (lhs: BLGradientStop, rhs: BLGradientStop) -> Bool {
-        lhs.offset == rhs.offset
-            && lhs.rgba == rhs.rgba
-    }
-}

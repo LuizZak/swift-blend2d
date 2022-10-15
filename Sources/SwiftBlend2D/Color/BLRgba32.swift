@@ -66,19 +66,6 @@ public extension BLRgba32 {
     }
 }
 
-extension BLRgba32: Equatable {
-    @inlinable
-    public static func == (lhs: BLRgba32, rhs: BLRgba32) -> Bool {
-        return lhs.value == rhs.value
-    }
-}
-
-extension BLRgba32: CustomStringConvertible {
-    public var description: String {
-        return "BLRgba32(r: \(r), g: \(g), b: \(b), a: \(a))"
-    }
-}
-
 public extension BLRgba32 {
     var asBLRgba: BLRgba {
         return BLRgba(self)
