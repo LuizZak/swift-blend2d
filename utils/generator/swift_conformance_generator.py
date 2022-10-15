@@ -40,8 +40,16 @@ class SwiftConformanceGenerator:
                 elif field.name is not None:
                     yield field.name
             elif isinstance(field, c_ast.ArrayDecl):
+                # TODO: Reduce duplication with elif above
                 if isinstance(field.type, c_ast.TypeDecl):
-                    yield field.type.declname
+                    dims = 0
+                    if isinstance(field.dim, c_ast.Constant):
+                        dims = int(field.dim.value)
+                    if dims > max_tuple_length:
+                        for i in range(dims):
+                            yield f"{field.type.declname}.{i}"
+                    elif field.type.declname is not None:
+                        yield field.type.declname
             elif field.name is not None:
                 yield field.name
 

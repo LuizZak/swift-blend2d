@@ -52,9 +52,3 @@ public extension BLFontMatrix {
         return BLBox(x0: minimum.x, y0: minimum.y, x1: maximum.x, y1: maximum.y)
     }
 }
-
-extension BLFontMatrix: Equatable {
-    public static func == (lhs: BLFontMatrix, rhs: BLFontMatrix) -> Bool {
-        lhs.m == rhs.m
-    }
-}

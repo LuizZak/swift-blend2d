@@ -59,6 +59,7 @@ STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
     # Font
     ("BLFontFaceInfo", ["Equatable", "CustomStringConvertible"]),
     ("BLFontFeatureItem", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLFontMatrix", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLFontQueryProperties", ["Equatable", "CustomStringConvertible"]),
     ("BLFontVariationItem", ["Equatable", "Hashable", "CustomStringConvertible"]),
     # Geometry
