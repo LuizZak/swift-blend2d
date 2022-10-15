@@ -5,6 +5,6 @@ import blend2d
 
 /// Path command (never stored in path).
 public extension BLPathCmdExtra {
-    /// Used by `BLPath::setVertexAt` to preserve the current command value.
+    /// Used by `BLPath.setVertexAt` to preserve the current command value.
     static let preserve = BL_PATH_CMD_PRESERVE
 }

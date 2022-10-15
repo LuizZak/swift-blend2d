@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// 2D matrix type that can be obtained by calling `BLMatrix2D::type()`.
+/// 2D matrix type that can be obtained by calling `BLMatrix2D.type()`.
 /// 
 /// ```
 /// Identity  Transl.  Scale     Swap    Affine

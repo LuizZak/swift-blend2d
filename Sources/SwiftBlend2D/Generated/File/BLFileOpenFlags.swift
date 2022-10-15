@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// File open flags, see `BLFile::open()`.
+/// File open flags, see `BLFile.open()`.
 extension BLFileOpenFlags: OptionSet { }
 
 public extension BLFileOpenFlags {

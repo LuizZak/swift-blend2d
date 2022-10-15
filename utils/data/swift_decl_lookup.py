@@ -20,7 +20,7 @@ class _PreCachingVisitor(SwiftDeclVisitor):
                 map(lambda s: s.name.to_string(), self.decl_stack + [decl])
             )
 
-            self._cached_results[c_name] = fully_qualified
+            self._cached_results[c_name.lower()] = fully_qualified
 
         self.decl_stack.append(decl)
         return SwiftDeclVisitResult.VISIT_CHILDREN
@@ -62,4 +62,4 @@ class SwiftDeclLookup:
         ```
         """
 
-        return self._cached_results.get(c_symbol)
+        return self._cached_results.get(c_symbol.lower())

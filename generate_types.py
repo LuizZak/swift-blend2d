@@ -235,6 +235,7 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
         self.ref_regex = re.compile(r"\\ref (\w+(?:\(\))?)", re.IGNORECASE)
         self.backtick_regex = re.compile(r"`([^`]+)`")
         self.backtick_word_regex = re.compile(r"\w+")
+        self.backtick_cpp_member_regex = re.compile(r"(\w+)::(\w+)")
 
     def replace_refs(self, string: str) -> str:
         return self.ref_regex.sub(
@@ -252,10 +253,17 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
             return name
 
         def convert_backtick_match(match: re.Match[str]) -> str:
-            return self.backtick_word_regex.sub(
+            replaced = self.backtick_word_regex.sub(
                 convert_word_match,
                 match.group(),
             )
+            # Perform C++ symbol rewriting (Type::member)
+            replaced = self.backtick_cpp_member_regex.sub(
+                lambda m: f"{m.group(1)}.{m.group(2)}",
+                replaced
+            )
+            
+            return replaced
 
         return self.backtick_regex.sub(convert_backtick_match, string)
 

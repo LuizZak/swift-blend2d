@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// File read flags used by `BLFileSystem::readFile()`.
+/// File read flags used by `BLFileSystem.readFile()`.
 extension BLFileReadFlags: OptionSet { }
 
 public extension BLFileReadFlags {

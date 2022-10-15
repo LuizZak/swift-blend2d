@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// Flags used by `BLPixelConverter::create()` function.
+/// Flags used by `BLPixelConverter.create()` function.
 extension BLPixelConverterCreateFlags: OptionSet { }
 
 public extension BLPixelConverterCreateFlags {
@@ -16,7 +16,7 @@ public extension BLPixelConverterCreateFlags {
     
     /// Specifies that the source palette in `BLFormatInfo` is alterable and the pixel converter can modify it when
     /// preparing the conversion. The modification can be irreversible so only use this flag when you are sure that
-    /// the palette passed to `BLPixelConverter::create()` won't be needed outside of pixel conversion.
+    /// the palette passed to `BLPixelConverter.create()` won't be needed outside of pixel conversion.
     /// 
     /// - note: The flag `BLPixelConverterCreateFlags.dontCopyPalette` must be set as well, otherwise this flag would
     /// be ignored.

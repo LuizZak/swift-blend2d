@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// Filter type used by `BLImage::scale()`.
+/// Filter type used by `BLImage.scale()`.
 public extension BLImageScaleFilter {
     /// No filter or uninitialized.
     static let none = BL_IMAGE_SCALE_FILTER_NONE
