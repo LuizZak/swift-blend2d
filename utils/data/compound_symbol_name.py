@@ -70,6 +70,8 @@ class ComponentCase(Enum):
         return self
 
 
+_pascal_case_matcher = re.compile(r'.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)')
+
 @dataclass(repr=False)
 class CompoundSymbolName(Sequence, Hashable):
     """
@@ -78,7 +80,6 @@ class CompoundSymbolName(Sequence, Hashable):
 
     Can be used for camelCase, PascalCase, and snake_case strings.
     """
-    _pascal_case_matcher = re.compile(r'.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)')
 
     @dataclass(repr=False)
     class Component(Hashable):
@@ -364,7 +365,7 @@ class CompoundSymbolName(Sequence, Hashable):
             CompoundSymbolName.Component(string=String, prefix=None, prefix=None, prefix=None, string_case=ComponentCase.ANY)
         ])
         """
-        return cls.from_string_list(*cls._pascal_case_matcher.findall(string))
+        return cls.from_string_list(*_pascal_case_matcher.findall(string))
 
     def copy(self) -> "CompoundSymbolName":
         return CompoundSymbolName(
@@ -592,8 +593,8 @@ class CompoundSymbolName(Sequence, Hashable):
 
             prefix_index += 1
 
-        # Detect names starting with digits and relax the prefix index until we reach
-        # a name that does not start with a digit.
+        # Detect names starting with digits and relax the prefix index until we
+        # reach a name that does not start with a digit.
         extra_prefix_index = prefix_index
         while extra_prefix_index > 0 and self.components[extra_prefix_index].string[0].isdigit():
             extra_prefix_index -= 1
