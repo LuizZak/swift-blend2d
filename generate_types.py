@@ -69,7 +69,6 @@ STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
     ("BLCircle", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLEllipse", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLLine", ["Equatable", "Hashable", "CustomStringConvertible"]),
-    ("BLMatrix2D", ["Equatable"]),
     ("BLPoint", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLPointI", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLRect", ["Equatable", "Hashable", "CustomStringConvertible"]),
@@ -78,6 +77,7 @@ STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
     ("BLSize", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLSizeI", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLTriangle", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLMatrix2D", ["Equatable", "Hashable"]),
     # Glyph
     ("BLGlyphInfo", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLGlyphPlacement", ["Equatable", "Hashable", "CustomStringConvertible"]),

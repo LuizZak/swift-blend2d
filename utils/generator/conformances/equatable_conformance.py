@@ -53,12 +53,19 @@ class SwiftEquatableConformance(SwiftConformanceGenerator):
                 # Create equality expression for field
                 map(
                     lambda field: f"lhs.{field} == rhs.{field}",
-                    self.iterate_field_names(node.decls, max_tuple_length=8),
+                    self.iterate_field_names(
+                        node.name,
+                        node.decls,
+                        ignore_non_constant_tuples=True,
+                        max_tuple_length=8,
+                    ),
                 )
             )
 
-        if len(field_comparisons) > 0:
-            body = [" && ".join(field_comparisons)]
+        if len(field_comparisons) == 0:
+            return []
+
+        body = [" && ".join(field_comparisons)]
 
         return [
             SwiftMemberFunctionDecl(

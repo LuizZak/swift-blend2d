@@ -53,8 +53,11 @@ class SwiftCustomStringConvertibleConformance(SwiftConformanceGenerator):
                 # Add interpolation for field
                 map(
                     lambda field: f"{field}: \\({field})",
-                    # Ignore non-nameable fields
-                    self.iterate_field_names(node.decls),
+                    self.iterate_field_names(
+                        node.name,
+                        node.decls,
+                        ignore_non_constant_tuples=True,
+                    ),
                 )
             )
 

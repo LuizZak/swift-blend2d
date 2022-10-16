@@ -3,10 +3,19 @@
 
 import blend2d
 
-extension BLMatrix2D: Equatable { }
+extension BLMatrix2D: Equatable, Hashable { }
 
 public extension BLMatrix2D {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.m == rhs.m
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(m00)
+        hasher.combine(m01)
+        hasher.combine(m10)
+        hasher.combine(m11)
+        hasher.combine(m20)
+        hasher.combine(m21)
     }
 }

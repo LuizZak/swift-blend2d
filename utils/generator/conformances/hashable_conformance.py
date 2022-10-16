@@ -54,12 +54,14 @@ class SwiftHashableConformance(SwiftConformanceGenerator):
                 # Create combine calls for field
                 map(
                     lambda field: f"hasher.combine({field})",
-                    self.iterate_field_names(node.decls, max_tuple_length=0),
+                    self.iterate_field_names(node.name, node.decls, max_tuple_length=0),
                 )
             )
 
-        if len(hash_combines) > 0:
-            body = hash_combines
+        if len(hash_combines) == 0:
+            return []
+
+        body = hash_combines
 
         return [
             SwiftMemberFunctionDecl(
