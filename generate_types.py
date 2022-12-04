@@ -1,3 +1,5 @@
+# Requires Python 3.10
+
 import argparse
 import re
 import sys

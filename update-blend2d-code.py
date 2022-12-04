@@ -1,3 +1,5 @@
+# Requires Python 3.10
+
 import argparse
 import os
 import shutil
@@ -214,7 +216,7 @@ def main() -> int:
             "-f",
             "--force",
             action="store_true",
-            help="Whether to ignore non-commited state of the repository. By default, the script fails if the repository has changes that are not commited to avoid conflicts and unintended changes.",
+            help="Whether to ignore non-committed state of the repository. By default, the script fails if the repository has changes that are not committed to avoid conflicts and unintended changes.",
         )
 
         return argparser
