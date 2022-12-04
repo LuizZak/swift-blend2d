@@ -66,7 +66,7 @@ public struct BLBitSetWordIterator {
                 let endWord: UInt32 = _segment._denseEndWord()
                 while _wordIndex < endWord {
                     let bits: UInt32 = _segment.wordAt(
-                        _wordIndex & (BLBitSetConstants.segmentWordCount.rawValue - 1)
+                        _wordIndex & (UInt32(bitPattern: BLBitSetConstants.segmentWordCount.rawValue) - 1)
                     )
 
                     if bits != 0 {
