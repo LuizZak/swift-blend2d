@@ -2,7 +2,7 @@ import blend2d
 
 public extension BLBitSetSegment {
     func allOnes() -> Bool {
-        (_startWord & UInt32(bitPattern: BLBitSetConstants.rangeMask.rawValue)) != 0
+        (_startWord & BLBitSetConstants.rangeMask.rawValue.toUInt32()) != 0
     }
     mutating func clearData() {
         _data = (0, 0, 0, 0)
@@ -49,7 +49,7 @@ public extension BLBitSetSegment {
         _startWord
     }
     func _denseEndWord() -> UInt32 {
-        _startWord + UInt32(bitPattern: BLBitSetConstants.segmentWordCount.rawValue)
+        _startWord + BLBitSetConstants.segmentWordCount.rawValue.toUInt32()
     }
 
     mutating func _setRangeStartWord(index: UInt32) {
@@ -60,10 +60,10 @@ public extension BLBitSetSegment {
     }
 
     func startWord() -> UInt32 {
-        _startWord & ~UInt32(bitPattern: BLBitSetConstants.rangeMask.rawValue)
+        _startWord & ~BLBitSetConstants.rangeMask.rawValue.toUInt32()
     }
     func startSegmentId() -> UInt32 {
-        startWord() / UInt32(bitPattern: BLBitSetConstants.segmentWordCount.rawValue)
+        startWord() / BLBitSetConstants.segmentWordCount.rawValue.toUInt32()
     }
     func startBit() -> UInt32 {
         _startWord &* 32
@@ -76,7 +76,7 @@ public extension BLBitSetSegment {
     }
 
     func endSegmentId() -> UInt32 {
-        endWord() / UInt32(bitPattern: BLBitSetConstants.segmentWordCount.rawValue)
+        endWord() / BLBitSetConstants.segmentWordCount.rawValue.toUInt32()
     }
     func lastBit() -> UInt32 {
         endWord() &* 32 &- 1
