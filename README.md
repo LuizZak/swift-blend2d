@@ -10,6 +10,10 @@ Work-in-progress Swift bindings for [Blend2D](https://github.com/blend2d/blend2d
 
 For a brief report of what APIs are available in Swift, please check the [status page](/Status.md).
 
+### Requirements
+
+Xcode 13.0 / Swift 5.4.3
+
 #### Sample usage
 
 Taken from `sample1` from the [samples library](Sources/SwiftBlend2DSample/Samples.swift).
