@@ -733,17 +733,20 @@ static BL_NOINLINE BLResult flushRenderBatch(BLRasterContextImpl* ctxI) noexcept
     RenderBatch* batch = mgr.currentBatch();
     uint32_t threadCount = mgr.threadCount();
 
-    synchronization.beforeStart(threadCount);
+    synchronization.beforeStart(threadCount, batch->jobCount() > 0);
     batch->_synchronization = &synchronization;
 
     for (uint32_t i = 0; i < threadCount; i++) {
-      BLThread* thread = mgr._workerThreads[i];
       WorkData* workData = mgr._workDataStorage[i];
-
       workData->batch = batch;
       workData->initContextData(ctxI->dstData);
+    }
 
-      thread->run(WorkerProc::workerThreadEntry, workData);
+    // Just to make sure that all the changes are visible to the threads.
+    blAtomicThreadFence();
+
+    for (uint32_t i = 0; i < threadCount; i++) {
+      mgr._workerThreads[i]->run(WorkerProc::workerThreadEntry, mgr._workDataStorage[i]);
     }
 
     // User thread acts as a worker too.
@@ -759,7 +762,7 @@ static BL_NOINLINE BLResult flushRenderBatch(BLRasterContextImpl* ctxI) noexcept
 
     if (threadCount) {
       mgr._synchronization.waitForThreadsToFinish();
-      ctxI->syncWorkData._accumulatedErrorFlags |= blAtomicFetch(&batch->_accumulatedErrorFlags, std::memory_order_relaxed);
+      ctxI->syncWorkData._accumulatedErrorFlags |= blAtomicFetchRelaxed(&batch->_accumulatedErrorFlags);
     }
 
     releaseFetchQueue(ctxI, batch->_fetchList.first());
@@ -770,6 +773,8 @@ static BL_NOINLINE BLResult flushRenderBatch(BLRasterContextImpl* ctxI) noexcept
 
     ctxI->syncWorkData.startOver();
     ctxI->contextFlags &= ~BL_RASTER_CONTEXT_SHARED_ALL_FLAGS;
+    ctxI->sharedFillState = nullptr;
+    ctxI->sharedStrokeState = nullptr;
   }
 
   return BL_SUCCESS;
@@ -3489,7 +3494,7 @@ static BLResult blRasterContextImplAttach(BLRasterContextImpl* ctxI, BLImageCore
 
   // Increase `writerCount` of the image, will be decreased by `blRasterContextImplDetach()`.
   BLImagePrivateImpl* imageI = BLImagePrivate::getImpl(image);
-  blAtomicFetchAdd(&imageI->writerCount);
+  blAtomicFetchAddRelaxed(&imageI->writerCount);
   ctxI->dstImage._d = image->_d;
 
   // Initialize the pipeline runtime and pipeline lookup cache.
@@ -3612,7 +3617,7 @@ static BLResult blRasterContextImplDetach(BLRasterContextImpl* ctxI) noexcept {
   // If the image was dereferenced during rendering it's our responsibility to destroy it. This is not useful
   // from the consumer's perspective as the resulting image can never be used again, but it can happen in some
   // cases (for example when an asynchronous rendering is terminated and the target image released with it).
-  if (blAtomicFetchSub(&imageI->writerCount) == 1)
+  if (blAtomicFetchSubStrong(&imageI->writerCount) == 1)
     if (blObjectImplGetRefCount(imageI) == 0)
       BLImagePrivate::freeImpl(imageI, ctxI->dstImage._d.info);
 
