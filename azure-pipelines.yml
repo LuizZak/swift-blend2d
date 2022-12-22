@@ -18,7 +18,7 @@ jobs:
   steps:
   - bash: 'brew install pkg-config'
   - bash: 'brew install libpng'
-  - bash: 'sudo xcode-select -s /Applications/Xcode_13.0.app/Contents/Developer'
+  - bash: 'sudo xcode-select -s /Applications/Xcode_14.0.app/Contents/Developer'
   - bash: 'swift --version'
   - bash: 'swift test'
 

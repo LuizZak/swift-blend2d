@@ -152,6 +152,7 @@
         ],
 
         "swift.buildArguments": [],
+        "swift.autoGenerateLaunchConfigurations": false,
 
         "[python]": {
             "editor.formatOnSave": true,
