@@ -18,6 +18,9 @@
 #define __declspec(x)
 #define _declspec(x)
 
+/// Work around Darwin-specific header declarations
+#define __asm(x)
+
 /// Work around GCC-specific features
 #define __builtin_va_list void
 
