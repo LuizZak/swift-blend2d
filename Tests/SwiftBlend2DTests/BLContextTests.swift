@@ -18,6 +18,18 @@ class BLContextTests: XCTestCase {
         
         XCTAssertNil(BLContext(image: image))
     }
+
+    func testStrokePathCrash() throws {
+        let image = BLImage(width: 400, height: 400, format: .prgb32)
+        let ctx = try XCTUnwrap(BLContext(image: image))
+
+        let path = BLPath()
+        path.moveTo(x: 326.9375, y: 253.8544921875)
+        path.cubicTo(x1: 350.0, y1: 253.8544921875, x2: 326.9375, y2: 253.8544921875, x3: 350.0, y3: 253.8544921875)
+        
+        ctx.setStrokeStyle(BLRgba32.white)
+        ctx.strokePath(path)
+    }
     
     /*
     func testGetStrokeStyleGradientRefCount() {
