@@ -200,19 +200,19 @@ public extension BLResultCode {
     static let errorImageEncoderNotProvided = BL_ERROR_IMAGE_ENCODER_NOT_PROVIDED
     
     /// Multiple IHDR chunks are not allowed (PNG).
-    static let errorPngMultipleIhdr = BL_ERROR_PNG_MULTIPLE_IHDR
+    static let errorPngMultipleIHDR = BL_ERROR_PNG_MULTIPLE_IHDR
     
     /// Invalid IDAT chunk (PNG).
-    static let errorPngInvalidIdat = BL_ERROR_PNG_INVALID_IDAT
+    static let errorPngInvalidIDAT = BL_ERROR_PNG_INVALID_IDAT
     
     /// Invalid IEND chunk (PNG).
-    static let errorPngInvalidIend = BL_ERROR_PNG_INVALID_IEND
+    static let errorPngInvalidIEND = BL_ERROR_PNG_INVALID_IEND
     
     /// Invalid PLTE chunk (PNG).
-    static let errorPngInvalidPlte = BL_ERROR_PNG_INVALID_PLTE
+    static let errorPngInvalidPLTE = BL_ERROR_PNG_INVALID_PLTE
     
     /// Invalid tRNS chunk (PNG).
-    static let errorPngInvalidTrns = BL_ERROR_PNG_INVALID_TRNS
+    static let errorPngInvalidTRNS = BL_ERROR_PNG_INVALID_TRNS
     
     /// Invalid filter type (PNG).
     static let errorPngInvalidFilter = BL_ERROR_PNG_INVALID_FILTER

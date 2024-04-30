@@ -9,7 +9,7 @@ from typing import Iterable
 
 from pycparser import c_ast
 from utils.cli.console_color import ConsoleColor
-from utils.converters.base_word_capitalizer import PatternCapitalizer
+from utils.converters.base_word_capitalizer import PatternCapitalizer, WordCapitalizer
 from utils.converters.default_symbol_name_formatter import DefaultSymbolNameFormatter
 from utils.converters.symbol_name_formatter import SymbolNameFormatter
 from utils.data.swift_decl_lookup import SwiftDeclLookup
@@ -190,10 +190,17 @@ class Blend2DNameGenerator(SymbolNameGenerator):
     def __init__(self):
         self.formatter = DefaultSymbolNameFormatter(
             capitalizers=[
+                # Scalar type specifiers in geometry names
                 PatternCapitalizer(re.compile(r"rect(i|d)", flags=re.IGNORECASE)),
                 PatternCapitalizer(re.compile(r"box(i|d)$", flags=re.IGNORECASE)),
                 PatternCapitalizer(re.compile(r"polyline(i|d)$", flags=re.IGNORECASE)),
                 PatternCapitalizer(re.compile(r"polygon(i|d)$", flags=re.IGNORECASE)),
+                # PNG tags
+                WordCapitalizer("IHDR"),
+                WordCapitalizer("IDAT"),
+                WordCapitalizer("IEND"),
+                WordCapitalizer("PLTE"),
+                WordCapitalizer("TRNS"),
             ],
             terms_to_snake_case_after=["x86"],
         )

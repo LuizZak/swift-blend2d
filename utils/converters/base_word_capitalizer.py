@@ -22,7 +22,7 @@ class WordCapitalizer(BaseWordCapitalizer):
     """
     Capitalizes an occurrence of a given word as a substring of an input string.
 
-    E.g.: To uppercase 'sse2' in 'x86_sse2' into 'x86_SSE2, initialize as `WordCapitalizer(word="sse2")`.
+    E.g.: To uppercase 'sse2' in 'x86_sse2' into 'x86_SSE2, initialize as `WordCapitalizer(word="SSE2")`.
     """
 
     word: str
