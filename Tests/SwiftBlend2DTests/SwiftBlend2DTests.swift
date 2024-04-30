@@ -580,7 +580,7 @@ extension SwiftBlend2DTests {
 
 /// Gets four bytes from each sequence, returning the absolute magnitude of
 /// the difference between each grouping of four bytes interpreted as a vector.
-private func colorDistance<S1: Sequence<png_byte>, S2: Sequence<png_byte>>(_ p1: S1, _ p2: S2) -> Int {
+private func colorDistance<S1: Sequence, S2: Sequence>(_ p1: S1, _ p2: S2) -> Int where S1.Element == png_byte, S2.Element == png_byte {
     let c1 = Array(p1.prefix(4))
     let c2 = Array(p2.prefix(4))
 
