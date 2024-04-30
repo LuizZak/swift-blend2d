@@ -193,12 +193,8 @@ extension BLArray: Sequence {
 extension BLArrayCore {
     @usableFromInline
     var impl: BLArrayImpl {
-        get {
-            _d.impl!.load(as: BLArrayImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLArrayImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }
 

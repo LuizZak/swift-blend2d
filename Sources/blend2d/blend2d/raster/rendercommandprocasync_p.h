@@ -17,7 +17,8 @@
 //! \addtogroup blend2d_raster_engine_impl
 //! \{
 
-namespace BLRasterEngine {
+namespace bl {
+namespace RasterEngine {
 namespace CommandProcAsync {
 
 struct SlotData {
@@ -33,7 +34,10 @@ struct SlotData {
 
 class ProcData {
 public:
-  typedef BLPrivateBitWordOps BitOps;
+  typedef PrivateBitWordOps BitOps;
+
+  //! \name Members
+  //! \{
 
   WorkData* _workData;
   RenderBatch* _batch;
@@ -52,6 +56,11 @@ public:
 
   AnalyticActiveEdge<int>* _pooledEdges;
 
+  //! \}
+
+  //! \name Construction & Destruction
+  //! \{
+
   BL_INLINE ProcData(WorkData* workData) noexcept
     : _workData(workData),
       _batch(workData->batch),
@@ -66,6 +75,8 @@ public:
       _pendingCommandBitSetMask(0),
       _pooledEdges(nullptr) {}
 
+  //! \}
+
   //! \name Initialization
   //! \{
 
@@ -73,8 +84,8 @@ public:
     size_t commandCount = _batch->commandCount();
     size_t stateSlotCount = _batch->stateSlotCount();
 
-    size_t bitWordCount = BLIntOps::wordCountFromBitCount<BLBitWord>(commandCount);
-    size_t remainingBits = commandCount & (BLIntOps::bitSizeOf<BLBitWord>() - 1);
+    size_t bitWordCount = IntOps::wordCountFromBitCount<BLBitWord>(commandCount);
+    size_t remainingBits = commandCount & (IntOps::bitSizeOf<BLBitWord>() - 1);
 
     _stateSlotData = _workData->workZone.allocT<SlotData>(stateSlotCount * sizeof(SlotData));
     _pendingCommandBitSetData = _workData->workZone.allocT<BLBitWord>(bitWordCount * sizeof(BLBitWord), sizeof(BLBitWord));
@@ -93,7 +104,7 @@ public:
       _pendingCommandBitSetData[bitWordCount - 1] = BitOps::ones();
 
     if (bitWordCount > 1)
-      _pendingCommandBitSetMask = BLIntOps::allOnes<BLBitWord>();
+      _pendingCommandBitSetMask = IntOps::allOnes<BLBitWord>();
     else
       _pendingCommandBitSetMask = 0;
 
@@ -140,11 +151,11 @@ static BL_INLINE bool fillBoxA(ProcData& procData, const RenderCommand& command)
   int y1 = blMin(command.boxI().y1, int(procData.bandY1()));
 
   if (y0 < y1) {
-    BLPipeline::FillData fillData;
+    Pipeline::FillData fillData;
     fillData.initBoxA8bpc(command.alpha(), command.boxI().x0, y0, command.boxI().x1, y1);
 
-    BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-    BLPipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
+    Pipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
+    Pipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
     const void* fetchData = command.getPipeFetchData();
 
     if (fetchFunc == nullptr) {
@@ -163,11 +174,12 @@ static BL_INLINE bool fillBoxU(ProcData& procData, const RenderCommand& command)
   int y1 = blMin(command.boxI().y1, int(procData.bandFixedY1()));
 
   if (y0 < y1) {
-    BLPipeline::FillData fillData;
+    Pipeline::FillData fillData;
+    Pipeline::BoxUToMaskData boxUToMaskData;
 
-    if (fillData.initBoxU8bpc24x8(command.alpha(), command.boxI().x0, y0, command.boxI().x1, y1)) {
-      BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-      BLPipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
+    if (fillData.initBoxU8bpc24x8(command.alpha(), command.boxI().x0, y0, command.boxI().x1, y1, boxUToMaskData)) {
+      Pipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
+      Pipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
       const void* fetchData = command.getPipeFetchData();
 
       if (fetchFunc == nullptr) {
@@ -182,8 +194,8 @@ static BL_INLINE bool fillBoxU(ProcData& procData, const RenderCommand& command)
   return command.boxI().y1 <= int(procData.bandFixedY1());
 }
 
-static BL_NOINLINE bool fillMaskRawA(ProcData& procData, const RenderCommand& command) noexcept {
-  const RenderCommand::FillMaskRaw& payload = command._payload.maskRaw;
+static bool fillBoxMaskA(ProcData& procData, const RenderCommand& command) noexcept {
+  const RenderCommand::FillBoxMaskA& payload = command._payload.boxMaskA;
   const BLBoxI& boxI = payload.boxI;
 
   int y0 = blMax(boxI.y0, int(procData.bandY0()));
@@ -193,20 +205,20 @@ static BL_NOINLINE bool fillMaskRawA(ProcData& procData, const RenderCommand& co
     uint32_t maskX = payload.maskOffsetI.x;
     uint32_t maskY = payload.maskOffsetI.y + (y0 - boxI.y0);
 
-    const BLImageImpl* maskI = payload.maskImageI;
+    const BLImageImpl* maskI = payload.maskImageI.ptr;
     const uint8_t* maskData = static_cast<const uint8_t*>(maskI->pixelData) + maskY * maskI->stride + maskX * (maskI->depth / 8u);
 
-    BLPipeline::MaskCommand maskCommands[2];
-    BLPipeline::MaskCommandType vMaskCmd = command.alpha() >= 255 ? BLPipeline::MaskCommandType::kA8 : BLPipeline::MaskCommandType::kA8WithoutGA;
+    Pipeline::MaskCommand maskCommands[2];
+    Pipeline::MaskCommandType vMaskCmd = command.alpha() >= 255 ? Pipeline::MaskCommandType::kVMaskA8WithoutGA : Pipeline::MaskCommandType::kVMaskA8WithGA;
 
-    maskCommands[0].initVariableMask(vMaskCmd, uint32_t(boxI.x0), uint32_t(boxI.x1), maskData, maskI->stride);
+    maskCommands[0].initVMask(vMaskCmd, uint32_t(boxI.x0), uint32_t(boxI.x1), maskData, maskI->stride);
     maskCommands[1].initRepeat();
 
-    BLPipeline::FillData fillData;
+    Pipeline::FillData fillData;
     fillData.initMaskA(command.alpha(), boxI.x0, y0, boxI.x1, y1, maskCommands);
 
-    BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-    BLPipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
+    Pipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
+    Pipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
     const void* fetchData = command.getPipeFetchData();
 
     if (fetchFunc == nullptr) {
@@ -227,7 +239,7 @@ static bool fillAnalytic(ProcData& procData, const RenderCommand& command, bool 
     AnalyticRasterizer::kOptionRecordMinXMaxX ;
 
   WorkData& workData = *procData.workData();
-  SlotData::Analytic& procState = procData.stateDataAt(command._payload.analyticAsync.stateSlotIndex).analytic;
+  SlotData::Analytic& procState = procData.stateDataAt(command._payload.analytic.stateSlotIndex).analytic;
 
   uint32_t bandFixedY0 = procData.bandFixedY0();
   uint32_t bandFixedY1 = procData.bandFixedY1();
@@ -236,7 +248,7 @@ static bool fillAnalytic(ProcData& procData, const RenderCommand& command, bool 
   AnalyticActiveEdge<int>* active;
 
   if (isInitialBand) {
-    edges = command.analyticEdgesAsync();
+    edges = command.analyticEdges();
     active = nullptr;
 
     // Everything clipped out, or all lines horizontal, etc...
@@ -244,7 +256,7 @@ static bool fillAnalytic(ProcData& procData, const RenderCommand& command, bool 
       return true;
 
     // Don't do anything if we haven't advanced enough.
-    if (command._payload.analyticAsync.fixedY0 >= int(bandFixedY1)) {
+    if (command._payload.analytic.fixedY0 >= int(bandFixedY1)) {
       procState.edges = edges;
       procState.active = active;
       return false;
@@ -252,7 +264,7 @@ static bool fillAnalytic(ProcData& procData, const RenderCommand& command, bool 
   }
   else {
     // Don't do anything if we haven't advanced enough.
-    if (command._payload.analyticAsync.fixedY0 >= int(bandFixedY1))
+    if (command._payload.analytic.fixedY0 >= int(bandFixedY1))
       return false;
 
     edges = procState.edges;
@@ -270,29 +282,27 @@ static bool fillAnalytic(ProcData& procData, const RenderCommand& command, bool 
   */
 
   uint32_t dstWidth = uint32_t(workData.dstSize().w);
-  size_t requiredWidth = BLIntOps::alignUp(dstWidth + 1u + BL_PIPE_PIXELS_PER_ONE_BIT, BL_PIPE_PIXELS_PER_ONE_BIT);
+  size_t requiredWidth = IntOps::alignUp(dstWidth + 1u + BL_PIPE_PIXELS_PER_ONE_BIT, BL_PIPE_PIXELS_PER_ONE_BIT);
   size_t requiredHeight = bandHeight;
   size_t cellAlignment = 16;
 
-  size_t bitStride = BLIntOps::wordCountFromBitCount<BLBitWord>(requiredWidth / BL_PIPE_PIXELS_PER_ONE_BIT) * sizeof(BLBitWord);
+  size_t bitStride = IntOps::wordCountFromBitCount<BLBitWord>(requiredWidth / BL_PIPE_PIXELS_PER_ONE_BIT) * sizeof(BLBitWord);
   size_t cellStride = requiredWidth * sizeof(uint32_t);
 
   size_t bitsStart = 0;
   size_t bitsSize = requiredHeight * bitStride;
 
-  size_t cellsStart = BLIntOps::alignUp(bitsStart + bitsSize, cellAlignment);
-  size_t cellsSize = requiredHeight * cellStride;
-
-  BL_PROPAGATE(workData.zeroBuffer.ensure(cellsStart + cellsSize));
+  size_t cellsStart = IntOps::alignUp(bitsStart + bitsSize, cellAlignment);
+  BL_ASSERT(workData.zeroBuffer.size >= cellsStart + requiredHeight * cellStride);
 
   AnalyticCellStorage cellStorage;
   cellStorage.init(
     reinterpret_cast<BLBitWord*>(workData.zeroBuffer.data + bitsStart), bitStride,
-    BLIntOps::alignUp(reinterpret_cast<uint32_t*>(workData.zeroBuffer.data + cellsStart), cellAlignment), cellStride);
+    IntOps::alignUp(reinterpret_cast<uint32_t*>(workData.zeroBuffer.data + cellsStart), cellAlignment), cellStride);
 
   AnalyticActiveEdge<int>* pooled = procData._pooledEdges;
 
-  BLPipeline::FillData fillData;
+  Pipeline::FillData fillData;
   fillData.initAnalytic(command.alpha(),
                         command.analyticFillRule(),
                         cellStorage.bitPtrTop, cellStorage.bitStride,
@@ -303,7 +313,7 @@ static bool fillAnalytic(ProcData& procData, const RenderCommand& command, bool 
            cellStorage.cellPtrTop, cellStorage.cellStride,
            bandY0, bandHeight);
 
-  BLArenaAllocator* workZone = &workData.workZone;
+  ArenaAllocator* workZone = &workData.workZone;
 
   AnalyticActiveEdge<int>** pPrev = &active;
   AnalyticActiveEdge<int>* current = *pPrev;
@@ -366,8 +376,11 @@ SaveState:
   if (edges) {
     if (!pooled) {
       pooled = static_cast<AnalyticActiveEdge<int>*>(workZone->alloc(sizeof(AnalyticActiveEdge<int>)));
-      if (BL_UNLIKELY(!pooled))
-        return blTraceError(BL_ERROR_OUT_OF_MEMORY);
+      if (BL_UNLIKELY(!pooled)) {
+        // Failed to allocate memory for the current edge.
+        procData.workData()->accumulateErrorFlag(BL_CONTEXT_ERROR_FLAG_OUT_OF_MEMORY);
+        return true;
+      }
       pooled->next = nullptr;
     }
 
@@ -425,12 +438,12 @@ SaveState:
   procState.active = active;
 
   if (ras.hasBounds()) {
-    BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-    BLPipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
+    Pipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
+    Pipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
     const void* fetchData = command.getPipeFetchData();
 
     fillData.analytic.box.x0 = int(ras._cellMinX);
-    fillData.analytic.box.x1 = int(blMin(dstWidth, BLIntOps::alignUp(ras._cellMaxX + 1, BL_PIPE_PIXELS_PER_ONE_BIT)));
+    fillData.analytic.box.x1 = int(blMin(dstWidth, IntOps::alignUp(ras._cellMaxX + 1, BL_PIPE_PIXELS_PER_ONE_BIT)));
     fillData.analytic.box.y0 = int(ras._bandOffset);
     fillData.analytic.box.y1 = int(ras._bandEnd) + 1;
 
@@ -445,19 +458,19 @@ SaveState:
   return !edges && !active;
 }
 
-static BL_NOINLINE bool processCommand(ProcData& procData, const RenderCommand& command, bool isInitialBand) noexcept {
+static bool processCommand(ProcData& procData, const RenderCommand& command, bool isInitialBand) noexcept {
   switch (command.type()) {
-    case RenderCommand::kTypeFillBoxA:
+    case RenderCommandType::kFillBoxA:
       return fillBoxA(procData, command);
 
-    case RenderCommand::kTypeFillBoxU:
+    case RenderCommandType::kFillBoxU:
       return fillBoxU(procData, command);
 
-    case RenderCommand::kTypeFillMaskRaw:
-      return fillMaskRawA(procData, command);
-
-    case RenderCommand::kTypeFillAnalytic:
+    case RenderCommandType::kFillAnalytic:
       return fillAnalytic(procData, command, isInitialBand);
+
+    case RenderCommandType::kFillBoxMaskA:
+      return fillBoxMaskA(procData, command);
 
     default:
       return true;
@@ -465,7 +478,8 @@ static BL_NOINLINE bool processCommand(ProcData& procData, const RenderCommand& 
 }
 
 } // {CommandProcAsync}
-} // {BLRasterEngine}
+} // {RasterEngine}
+} // {bl}
 
 //! \}
 //! \endcond

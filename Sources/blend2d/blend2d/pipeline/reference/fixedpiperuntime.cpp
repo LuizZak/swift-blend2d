@@ -4,96 +4,202 @@
 // SPDX-License-Identifier: Zlib
 
 #include "../../api-build_p.h"
-#if !defined(BL_BUILD_NO_FIXED_PIPE)
-
 #include "../../pipeline/reference/compopgeneric_p.h"
 #include "../../pipeline/reference/fillgeneric_p.h"
 #include "../../pipeline/reference/fixedpiperuntime_p.h"
 #include "../../support/wrap_p.h"
 
-namespace BLPipeline {
+namespace bl {
+namespace Pipeline {
 
 // FixedPipelineRuntime - Globals
 // ==============================
 
-BLWrap<PipeStaticRuntime> PipeStaticRuntime::_global;
+Wrap<PipeStaticRuntime> PipeStaticRuntime::_global;
 
 // FixedPipelineRuntime - Get
 // ==========================
 
+template<typename CompOp>
+static BL_INLINE FillFunc getFillFunc(FillType fillType) noexcept {
+  switch (fillType) {
+    case FillType::kBoxA: return Reference::FillBoxA_Base<CompOp>::fillFunc;
+    case FillType::kMask: return Reference::FillMask_Base<CompOp>::fillFunc;
+    case FillType::kAnalytic: return Reference::FillAnalytic_Base<CompOp>::fillFunc;
+    default:
+      return nullptr;
+  }
+}
+
 static BLResult BL_CDECL blPipeGenRuntimeGet(PipeRuntime* self_, uint32_t signature, DispatchData* dispatchData, PipeLookupCache* cache) noexcept {
   blUnused(self_);
 
-  Signature s(signature);
+  Signature s{signature};
   FillFunc fillFunc = nullptr;
   FetchFunc fetchFunc = nullptr;
 
-  if (!s.isSolid()) {
-    switch (s.fillType()) {
-      case FillType::kBoxA:
-        if (s.compOp() == BL_COMP_OP_SRC_COPY)
-          fillFunc = Reference::FillBoxA_Base<Reference::CompOp_SrcCopy_PRGB32_Linear>::fillFunc;
-        else if (s.compOp() == BL_COMP_OP_PLUS)
-          fillFunc = Reference::FillBoxA_Base<Reference::CompOp_Plus_PRGB32_Linear>::fillFunc;
-        else
-          fillFunc = Reference::FillBoxA_Base<Reference::CompOp_SrcOver_PRGB32_Linear>::fillFunc;
-        break;
+  switch (s.fetchType()) {
+    case FetchType::kSolid:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_Solid>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_Solid>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_Solid>(s.fillType()); break;
+      }
+      break;
 
-      case FillType::kBoxU:
-        if (s.compOp() == BL_COMP_OP_SRC_COPY)
-          fillFunc = Reference::FillBoxU_Base<Reference::CompOp_SrcCopy_PRGB32_Linear>::fillFunc;
-        else if (s.compOp() == BL_COMP_OP_PLUS)
-          fillFunc = Reference::FillBoxU_Base<Reference::CompOp_Plus_PRGB32_Linear>::fillFunc;
-        else
-          fillFunc = Reference::FillBoxU_Base<Reference::CompOp_SrcOver_PRGB32_Linear>::fillFunc;
-        break;
+    case FetchType::kPatternAlignedBlit:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternAlignedBlit_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternAlignedBlit_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternAlignedBlit_PRGB32>(s.fillType()); break;
+      }
+      break;
 
-      case FillType::kAnalytic:
-        if (s.compOp() == BL_COMP_OP_SRC_COPY)
-          fillFunc = Reference::FillAnalytic_Base<Reference::CompOp_SrcCopy_PRGB32_Linear>::fillFunc;
-        else if (s.compOp() == BL_COMP_OP_PLUS)
-          fillFunc = Reference::FillAnalytic_Base<Reference::CompOp_Plus_PRGB32_Linear>::fillFunc;
-        else
-          fillFunc = Reference::FillAnalytic_Base<Reference::CompOp_SrcOver_PRGB32_Linear>::fillFunc;
-        break;
+    case FetchType::kPatternAlignedPad:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternAlignedPad_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternAlignedPad_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternAlignedPad_PRGB32>(s.fillType()); break;
+      }
+      break;
 
-      default:
-        return blTraceError(BL_ERROR_NOT_IMPLEMENTED);
-    }
+    case FetchType::kPatternAlignedRepeat:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternAlignedRepeat_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternAlignedRepeat_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternAlignedRepeat_PRGB32>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kPatternAlignedRoR:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternAlignedRoR_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternAlignedRoR_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternAlignedRoR_PRGB32>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kPatternFxPad:
+    case FetchType::kPatternFyPad:
+    case FetchType::kPatternFxFyPad:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternFxFyPad_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternFxFyPad_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternFxFyPad_PRGB32>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kPatternFxRoR:
+    case FetchType::kPatternFyRoR:
+    case FetchType::kPatternFxFyRoR:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternFxFyRoR_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternFxFyRoR_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternFxFyRoR_PRGB32>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kPatternAffineNNAny:
+    case FetchType::kPatternAffineNNOpt:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternAffineNNAny_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternAffineNNAny_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternAffineNNAny_PRGB32>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kPatternAffineBIAny:
+    case FetchType::kPatternAffineBIOpt:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_PatternAffineBIAny_PRGB32>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_PatternAffineBIAny_PRGB32>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_PatternAffineBIAny_PRGB32>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientLinearNNPad:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_LinearPad_NN>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_LinearPad_NN>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_LinearPad_NN>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientLinearNNRoR:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_LinearRoR_NN>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_LinearRoR_NN>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_LinearRoR_NN>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientLinearDitherPad:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_LinearPad_Dither>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_LinearPad_Dither>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_LinearPad_Dither>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientLinearDitherRoR:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_LinearRoR_Dither>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_LinearRoR_Dither>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_LinearRoR_Dither>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientRadialNNPad:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_RadialPad_NN>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_RadialPad_NN>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_RadialPad_NN>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientRadialNNRoR:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_RadialRoR_NN>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_RadialRoR_NN>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_RadialRoR_NN>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientRadialDitherPad:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_RadialPad_Dither>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_RadialPad_Dither>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_RadialPad_Dither>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientRadialDitherRoR:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_RadialRoR_Dither>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_RadialRoR_Dither>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_RadialRoR_Dither>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientConicNN:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_Conic_NN>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_Conic_NN>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_Conic_NN>(s.fillType()); break;
+      }
+      break;
+
+    case FetchType::kGradientConicDither:
+      switch (s.compOp()) {
+        case CompOpExt::kSrcCopy: fillFunc = getFillFunc<Reference::CompOp_SrcCopy_PRGB32_Conic_Dither>(s.fillType()); break;
+        case CompOpExt::kSrcOver: fillFunc = getFillFunc<Reference::CompOp_SrcOver_PRGB32_Conic_Dither>(s.fillType()); break;
+        case CompOpExt::kPlus   : fillFunc = getFillFunc<Reference::CompOp_Plus_PRGB32_Conic_Dither>(s.fillType()); break;
+      }
+      break;
   }
-  else {
-    switch (s.fillType()) {
-      case FillType::kBoxA:
-        if (s.compOp() == BL_COMP_OP_SRC_COPY)
-          fillFunc = Reference::FillBoxA_Base<Reference::CompOp_SrcCopy_PRGB32_Solid>::fillFunc;
-        else if (s.compOp() == BL_COMP_OP_PLUS)
-          fillFunc = Reference::FillBoxA_Base<Reference::CompOp_Plus_PRGB32_Solid>::fillFunc;
-        else
-          fillFunc = Reference::FillBoxA_Base<Reference::CompOp_SrcOver_PRGB32_Solid>::fillFunc;
-        break;
 
-      case FillType::kBoxU:
-        if (s.compOp() == BL_COMP_OP_SRC_COPY)
-          fillFunc = Reference::FillBoxU_Base<Reference::CompOp_SrcCopy_PRGB32_Solid>::fillFunc;
-        else if (s.compOp() == BL_COMP_OP_PLUS)
-          fillFunc = Reference::FillBoxU_Base<Reference::CompOp_Plus_PRGB32_Solid>::fillFunc;
-        else
-          fillFunc = Reference::FillBoxU_Base<Reference::CompOp_SrcOver_PRGB32_Solid>::fillFunc;
-        break;
-
-      case FillType::kAnalytic:
-        if (s.compOp() == BL_COMP_OP_SRC_COPY)
-          fillFunc = Reference::FillAnalytic_Base<Reference::CompOp_SrcCopy_PRGB32_Solid>::fillFunc;
-        else if (s.compOp() == BL_COMP_OP_PLUS)
-          fillFunc = Reference::FillAnalytic_Base<Reference::CompOp_Plus_PRGB32_Solid>::fillFunc;
-        else
-          fillFunc = Reference::FillAnalytic_Base<Reference::CompOp_SrcOver_PRGB32_Solid>::fillFunc;
-        break;
-
-      default:
-        return blTraceError(BL_ERROR_NOT_IMPLEMENTED);
-    }
-  }
+  if (!fillFunc)
+    return blTraceError(BL_ERROR_NOT_IMPLEMENTED);
 
   dispatchData->init(fillFunc, fetchFunc);
 
@@ -118,7 +224,8 @@ PipeStaticRuntime::PipeStaticRuntime() noexcept {
 }
 PipeStaticRuntime::~PipeStaticRuntime() noexcept {}
 
-} // {BLPipeline}
+} // {Pipeline}
+} // {bl}
 
 // FixedPipelineRuntime - Runtime Registration
 // ===========================================
@@ -126,7 +233,5 @@ PipeStaticRuntime::~PipeStaticRuntime() noexcept {}
 void blStaticPipelineRtInit(BLRuntimeContext* rt) noexcept {
   blUnused(rt);
 
-  BLPipeline::PipeStaticRuntime::_global.init();
+  bl::Pipeline::PipeStaticRuntime::_global.init();
 }
-
-#endif

@@ -138,11 +138,7 @@ extension BLImageCodecCore: CoreStructure {
 
     @usableFromInline
     var impl: BLImageCodecImpl {
-        get {
-            _d.impl!.load(as: BLImageCodecImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLImageCodecImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

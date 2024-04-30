@@ -5,8 +5,14 @@ import blend2d
 
 /// Object type identifier.
 public extension BLObjectType {
-    /// Object represents a RGBA value stored as 4 32-bit floating point components (can be used as style).
+    /// Object represents a RGBA value stored as four 32-bit floating point components (can be used as Style).
     static let rgba = BL_OBJECT_TYPE_RGBA
+    
+    /// Object represents a RGBA32 value stored as 32-bit integer in `0xAARRGGBB` form.
+    static let rgba32 = BL_OBJECT_TYPE_RGBA32
+    
+    /// Object represents a RGBA64 value stored as 64-bit integer in `0xAAAARRRRGGGGBBBB` form.
+    static let rgba64 = BL_OBJECT_TYPE_RGBA64
     
     /// Object is `Null` (can be used as style).
     static let null = BL_OBJECT_TYPE_NULL
@@ -31,6 +37,12 @@ public extension BLObjectType {
     
     /// Object is `BLFontVariationSettings`.
     static let fontVariationSettings = BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS
+    
+    /// Object is `BLBitArray`.
+    static let bitArray = BL_OBJECT_TYPE_BIT_ARRAY
+    
+    /// Object is `BLBitSet`.
+    static let bitSet = BL_OBJECT_TYPE_BIT_SET
     
     /// Object represents a boolean value.
     static let bool = BL_OBJECT_TYPE_BOOL
@@ -137,15 +149,23 @@ public extension BLObjectType {
     /// Object is `BLFontManager`.
     static let fontManager = BL_OBJECT_TYPE_FONT_MANAGER
     
-    /// Object is `BLBitSet`.
-    static let bitSet = BL_OBJECT_TYPE_BIT_SET
+    /// Minimum object type of an array object.
+    static let minArray = BL_OBJECT_TYPE_MIN_ARRAY
     
-    static let arrayFirst = BL_OBJECT_TYPE_ARRAY_FIRST
+    /// Maximum object type of an array object.
+    static let maxArray = BL_OBJECT_TYPE_MAX_ARRAY
     
-    static let arrayLast = BL_OBJECT_TYPE_ARRAY_LAST
+    /// Minimum object type identifier that can be used as a style.
+    static let minStyle = BL_OBJECT_TYPE_MIN_STYLE
     
     /// Maximum object type identifier that can be used as a style.
-    static let maxStyleValue = BL_OBJECT_TYPE_MAX_STYLE_VALUE
+    static let maxStyle = BL_OBJECT_TYPE_MAX_STYLE
+    
+    /// Minimum object type of an object with virtual function table.
+    static let minVirtual = BL_OBJECT_TYPE_MIN_VIRTUAL
+    
+    /// Maximum object type of an object with virtual function table.
+    static let maxVirtual = BL_OBJECT_TYPE_MAX_VIRTUAL
     
     /// Maximum possible value of an object type, including identifiers reserved for the future.
     static let maxValue = BL_OBJECT_TYPE_MAX_VALUE

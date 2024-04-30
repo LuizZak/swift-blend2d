@@ -35,33 +35,33 @@ public class BLFontFeatureSettings: BLBaseClass<BLFontFeatureSettingsCore> {
         blFontFeatureSettingsGetView(&object, &view)
     }
 
-    /// Tests whether the settings contains the given `key`.
-    public func hasKey(_ key: BLTag) -> Bool {
-        blFontFeatureSettingsHasKey(&object, key)
+    /// Tests whether the settings contains the given `featureTag`.
+    public func hasValue(_ featureTag: BLTag) -> Bool {
+        blFontFeatureSettingsHasValue(&object, featureTag)
     }
 
-    /// Returns the value associated with the given `key`.
+    /// Returns the value associated with the given `featureTag`.
     ///
-    /// If the `key` doesn't exist or is invalid `BL_FONT_FEATURE_INVALID_VALUE`
+    /// If the `featureTag` doesn't exist or is invalid `BL_FONT_FEATURE_INVALID_VALUE`
     /// is returned.
-    public func getKey(_ key: BLTag) -> UInt32 {
-        blFontFeatureSettingsGetKey(&object, key)
+    public func getValue(_ featureTag: BLTag) -> UInt32 {
+        blFontFeatureSettingsGetValue(&object, featureTag)
     }
 
-    /// Sets or inserts the given `key` to the settings, associating the `key`
-    /// with `value`.
+    /// Sets or inserts the given `featureTag` to the settings, associating the
+    /// `featureTag` with `value`.
     @discardableResult
-    public func setKey(_ key: BLTag, value: UInt32) -> BLResult {
-        blFontFeatureSettingsSetKey(&object, key, value)
+    public func setValue(_ featureTag: BLTag, value: UInt32) -> BLResult {
+        blFontFeatureSettingsSetValue(&object, featureTag, value)
     }
 
-    /// Removes the given `key` from the settings.
+    /// Removes the given `featureTag` from the settings.
     ///
-    /// Nothing happens if the `key` is not in the settings (`BL_SUCCESS` is
-    /// returned).
+    /// Nothing happens if the `featureTag` is not in the settings (`BL_SUCCESS`
+    /// is returned).
     @discardableResult
-    public func removeKey(_ key: BLTag) -> BLResult {
-        blFontFeatureSettingsRemoveKey(&object, key)
+    public func removeValue(_ featureTag: BLTag) -> BLResult {
+        blFontFeatureSettingsRemoveValue(&object, featureTag)
     }
 }
 
@@ -78,11 +78,7 @@ extension BLFontFeatureSettingsCore: CoreStructure {
 
     @usableFromInline
     var impl: BLFontFeatureSettingsImpl {
-        get {
-            _d.impl!.load(as: BLFontFeatureSettingsImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLFontFeatureSettingsImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

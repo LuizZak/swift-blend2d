@@ -38,9 +38,9 @@ public extension BLGlyphRun {
 public struct BLGlyphRunIterator {
     public private(set) var index: Int
     public private(set) var size: Int
-    var glyphIdData: UnsafeMutableRawPointer?
+    var glyphData: UnsafeMutableRawPointer?
     var placementDataPointer: UnsafeMutableRawPointer?
-    var glyphIdAdvance: Int
+    var glyphAdvance: Int
     var placementAdvance: Int
     
     var glyphRun: BLGlyphRun
@@ -79,26 +79,16 @@ public struct BLGlyphRunIterator {
     public init(glyphRun: BLGlyphRun) {
         index = 0
         size = glyphRun.size
-        glyphIdData = glyphRun.glyphData
+        glyphData = glyphRun.glyphData
         placementDataPointer = glyphRun.placementData
-        glyphIdAdvance = Int(glyphRun.glyphAdvance)
+        glyphAdvance = Int(glyphRun.glyphAdvance)
         placementAdvance = Int(glyphRun.placementAdvance)
-        
-        if BLByteOrder.native == .be, var glyphIdData = glyphIdData {
-            glyphIdData =
-                UnsafeMutableRawPointer(
-                    glyphIdData.assumingMemoryBound(to: UInt8.self)
-                        + Int(max(glyphRun.glyphSize, 2) - 2)
-                )
-            
-            self.glyphIdData = glyphIdData
-        }
         
         self.glyphRun = glyphRun
     }
     
     public func glyphId() -> UInt32? {
-        glyphIdData?.load(as: UInt32.self)
+        glyphData?.load(as: UInt32.self)
     }
     
     public func placement<T>(as type: T.Type) -> T? {
@@ -111,7 +101,7 @@ public struct BLGlyphRunIterator {
         }
         
         index += 1
-        glyphIdData = glyphIdData.map { $0 + glyphIdAdvance }
+        glyphData = glyphData.map { $0 + glyphAdvance }
         placementDataPointer = placementDataPointer.map { $0 + placementAdvance }
     }
 

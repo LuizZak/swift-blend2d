@@ -11,11 +11,11 @@ public extension BLMatrix2D {
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(m00)
-        hasher.combine(m01)
-        hasher.combine(m10)
-        hasher.combine(m11)
-        hasher.combine(m20)
-        hasher.combine(m21)
+        hasher.combine(m.0)
+        hasher.combine(m.1)
+        hasher.combine(m.2)
+        hasher.combine(m.3)
+        hasher.combine(m.4)
+        hasher.combine(m.5)
     }
 }

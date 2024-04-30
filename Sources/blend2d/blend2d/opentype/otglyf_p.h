@@ -17,7 +17,8 @@
 //! \addtogroup blend2d_opentype_impl
 //! \{
 
-namespace BLOpenType {
+namespace bl {
+namespace OpenType {
 
 //! OpenType 'loca' table.
 //!
@@ -26,7 +27,7 @@ namespace BLOpenType {
 //!   - https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6loca.html
 struct LocaTable {
   // Minimum size would be 2 records (4 bytes) if the font has only 1 glyph and uses 16-bit LOCA.
-  enum : uint32_t { kMinSize = 4 };
+  enum : uint32_t { kBaseSize = 4 };
 
   /*
   union {
@@ -35,8 +36,8 @@ struct LocaTable {
   };
   */
 
-  BL_INLINE const Offset16* offsetArray16() const noexcept { return BLPtrOps::offset<const Offset16>(this, 0); }
-  BL_INLINE const Offset32* offsetArray32() const noexcept { return BLPtrOps::offset<const Offset32>(this, 0); }
+  BL_INLINE const Offset16* offsetArray16() const noexcept { return PtrOps::offset<const Offset16>(this, 0); }
+  BL_INLINE const Offset32* offsetArray32() const noexcept { return PtrOps::offset<const Offset32>(this, 0); }
 };
 
 //! OpenType 'glyf' table.
@@ -45,7 +46,7 @@ struct LocaTable {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/glyf
 //!   - https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6glyf.html
 struct GlyfTable {
-  enum : uint32_t { kMinSize = 10 };
+  enum : uint32_t { kBaseSize = 10 };
 
   struct Simple {
     enum Flags : uint8_t {
@@ -108,8 +109,8 @@ struct GlyfTable {
     FWord xMax;
     FWord yMax;
 
-    const Simple* simple() const noexcept { return BLPtrOps::offset<const Simple>(this, sizeof(GlyphData)); }
-    const Compound* compound() const noexcept { return BLPtrOps::offset<const Compound>(this, sizeof(GlyphData)); }
+    const Simple* simple() const noexcept { return PtrOps::offset<const Simple>(this, sizeof(GlyphData)); }
+    const Compound* compound() const noexcept { return PtrOps::offset<const Compound>(this, sizeof(GlyphData)); }
   };
 
   /*
@@ -119,9 +120,9 @@ struct GlyfTable {
 
 struct GlyfData {
   //! Content of 'glyf' table.
-  BLFontTable glyfTable;
+  RawTable glyfTable;
   //! Content of 'loca' table.
-  BLFontTable locaTable;
+  RawTable locaTable;
 };
 
 namespace {
@@ -133,40 +134,51 @@ struct CompoundEntry {
   const uint8_t* gPtr;
   size_t remainingSize;
   uint32_t compoundFlags;
-  BLMatrix2D matrix;
+  BLMatrix2D transform;
 };
 
 } // {anonymous}
 
 namespace GlyfImpl {
 
-BL_HIDDEN extern const BLLookupTable<uint32_t, ((GlyfTable::Simple::kImportantFlagsMask + 1) >> 1)> vertexSizeTable;
+BL_HIDDEN extern const LookupTable<uint32_t, ((GlyfTable::Simple::kImportantFlagsMask + 1) >> 1)> vertexSizeTable;
 
-#ifdef BL_BUILD_OPT_AVX2
-BL_HIDDEN BLResult BL_CDECL getGlyphOutlines_AVX2(
-  const BLFontFaceImpl* faceI_,
-  uint32_t glyphId,
-  const BLMatrix2D* matrix,
-  BLPath* out,
-  size_t* contourCountOut,
-  BLScopedBuffer* tmpBuffer) noexcept;
-#endif
-
-#ifdef BL_BUILD_OPT_SSE4_2
+#if defined(BL_BUILD_OPT_SSE4_2)
 BL_HIDDEN BLResult BL_CDECL getGlyphOutlines_SSE4_2(
   const BLFontFaceImpl* faceI_,
-  uint32_t glyphId,
-  const BLMatrix2D* matrix,
+  BLGlyphId glyphId,
+  const BLMatrix2D* transform,
   BLPath* out,
   size_t* contourCountOut,
-  BLScopedBuffer* tmpBuffer) noexcept;
-#endif
+  ScopedBuffer* tmpBuffer) noexcept;
+#endif // BL_BUILD_OPT_SSE4_2
 
-BLResult init(OTFaceImpl* faceI, BLFontTable glyfTable, BLFontTable locaTable) noexcept;
+#if defined(BL_BUILD_OPT_AVX2)
+BL_HIDDEN BLResult BL_CDECL getGlyphOutlines_AVX2(
+  const BLFontFaceImpl* faceI_,
+  BLGlyphId glyphId,
+  const BLMatrix2D* transform,
+  BLPath* out,
+  size_t* contourCountOut,
+  ScopedBuffer* tmpBuffer) noexcept;
+#endif // BL_BUILD_OPT_AVX2
+
+#if BL_TARGET_ARCH_ARM >= 64 && defined(BL_BUILD_OPT_ASIMD)
+BL_HIDDEN BLResult BL_CDECL getGlyphOutlines_ASIMD(
+  const BLFontFaceImpl* faceI_,
+  BLGlyphId glyphId,
+  const BLMatrix2D* transform,
+  BLPath* out,
+  size_t* contourCountOut,
+  ScopedBuffer* tmpBuffer) noexcept;
+#endif // BL_BUILD_OPT_ASIMD
+
+BLResult init(OTFaceImpl* faceI, OTFaceTables& tables) noexcept;
 
 } // {GlyfImpl}
 
-} // {BLOpenType}
+} // {OpenType}
+} // {bl}
 
 //! \}
 //! \endcond

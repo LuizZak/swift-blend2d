@@ -9,27 +9,32 @@
 #include "../raster/workermanager_p.h"
 #include "../support/intops_p.h"
 
-namespace BLRasterEngine {
+namespace bl {
+namespace RasterEngine {
 
-// RasterEngine::WorkerManager - Init
-// ==================================
+// bl::RasterEngine::WorkerManager - Init
+// ======================================
 
 BLResult WorkerManager::init(BLRasterContextImpl* ctxI, const BLContextCreateInfo* createInfo) noexcept {
   uint32_t initFlags = createInfo->flags;
   uint32_t threadCount = createInfo->threadCount;
-  uint32_t commandQueueLimit = createInfo->commandQueueLimit;
+  uint32_t commandQueueLimit = IntOps::alignUp(createInfo->commandQueueLimit, kRenderQueueCapacity);
 
   BL_ASSERT(!isActive());
   BL_ASSERT(threadCount > 0);
 
-  BLArenaAllocator& zone = ctxI->baseZone;
-  BLArenaAllocator::StatePtr zoneState = zone.saveState();
+  ArenaAllocator& zone = ctxI->baseZone;
+  ArenaAllocator::StatePtr zoneState = zone.saveState();
 
   // We must enforce some hard limit here...
   if (threadCount > BL_RUNTIME_MAX_THREAD_COUNT)
     threadCount = BL_RUNTIME_MAX_THREAD_COUNT;
 
-  // We count the user thread as a worker thread as well. In this case this one doens't need a separate workData
+  // If the command queue limit is not specified, use the default.
+  if (commandQueueLimit == 0)
+    commandQueueLimit = BL_RASTER_CONTEXT_DEFAULT_COMMAND_QUEUE_LIMIT;
+
+  // We count the user thread as a worker thread as well. In this case this one doesn't need a separate workData
   // as it can use the 'syncWorkData' owned by the rendering context.
   uint32_t workerCount = threadCount - 1;
 
@@ -40,14 +45,13 @@ BLResult WorkerManager::init(BLRasterContextImpl* ctxI, const BLContextCreateInf
   // Forces the zone-allocator to preallocate the first block of memory, if not allocated yet.
   size_t batchContextSize = sizeof(RenderBatch) +
                             RenderJobQueue::sizeOf() +
-                            RenderFetchQueue::sizeOf() +
                             RenderCommandQueue::sizeOf();
   BL_PROPAGATE(_allocator.ensure(batchContextSize));
 
   // Allocate space for worker threads data.
   if (workerCount) {
-    BLThread** workerThreads = zone.allocT<BLThread*>(BLIntOps::alignUp(workerCount * sizeof(void*), 8));
-    WorkData** workDataStorage = zone.allocT<WorkData*>(BLIntOps::alignUp(workerCount * sizeof(void*), 8));
+    BLThread** workerThreads = zone.allocT<BLThread*>(IntOps::alignUp(workerCount * sizeof(void*), 8));
+    WorkData** workDataStorage = zone.allocT<WorkData*>(IntOps::alignUp(workerCount * sizeof(void*), 8));
 
     if (!workerThreads || !workDataStorage) {
       zone.restoreState(zoneState);
@@ -76,7 +80,7 @@ BLResult WorkerManager::init(BLRasterContextImpl* ctxI, const BLContextCreateInf
     for (uint32_t i = 0; i < n; i++) {
       // NOTE: We really want work data to be aligned to the cache line as each instance will be used from a different
       // thread. This means that they should not interfere with each other as that could slow down things significantly.
-      WorkData* workData = zone.allocT<WorkData>(BLIntOps::alignUp(sizeof(WorkData), BL_CACHE_LINE_SIZE), BL_CACHE_LINE_SIZE);
+      WorkData* workData = zone.allocT<WorkData>(IntOps::alignUp(sizeof(WorkData), BL_CACHE_LINE_SIZE), BL_CACHE_LINE_SIZE);
       workDataStorage[i] = workData;
 
       if (!workData) {
@@ -125,8 +129,16 @@ BLResult WorkerManager::init(BLRasterContextImpl* ctxI, const BLContextCreateInf
   return BL_SUCCESS;
 }
 
-// RasterEngine::WorkerManager - Reset
-// ===================================
+BLResult WorkerManager::initWorkMemory(size_t zeroedMemorySize) noexcept {
+  uint32_t n = threadCount();
+  for (uint32_t i = 0; i < n; i++) {
+    BL_PROPAGATE(_workDataStorage[i]->zeroBuffer.ensure(zeroedMemorySize));
+  }
+  return BL_SUCCESS;
+}
+
+// bl::RasterEngine::WorkerManager - Reset
+// =======================================
 
 void WorkerManager::reset() noexcept {
   if (!isActive())
@@ -134,19 +146,17 @@ void WorkerManager::reset() noexcept {
 
   _isActive = false;
 
-  if (_threadCount) {
+  if (_threadPool) {
     for (uint32_t i = 0; i < _threadCount; i++)
       blCallDtor(*_workDataStorage[i]);
 
     _threadPool->releaseThreads(_workerThreads, _threadCount);
-    _threadCount = 0;
+    _threadPool->release();
+
+    _threadPool = nullptr;
     _workerThreads = nullptr;
     _workDataStorage = nullptr;
-  }
-
-  if (_threadPool) {
-    _threadPool->release();
-    _threadPool = nullptr;
+    _threadCount = 0;
   }
 
   _commandQueueCount = 0;
@@ -154,4 +164,5 @@ void WorkerManager::reset() noexcept {
   _stateSlotCount = 0;
 }
 
-} // {BLRasterEngine}
+} // {RasterEngine}
+} // {bl}

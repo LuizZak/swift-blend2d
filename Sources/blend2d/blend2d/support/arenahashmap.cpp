@@ -7,8 +7,10 @@
 #include "../support/arenaallocator_p.h"
 #include "../support/arenahashmap_p.h"
 
-// ArenaHashMap - Prime Table
-// ==========================
+namespace bl {
+
+// bl::ArenaHashMap - Prime Table
+// ==============================
 
 #define BLEND2D_POPULATE_PRIMES(ENTRY) \
   ENTRY(2         , 0x80000000, 32), /* [N * 0x80000000 >> 32] (rcp=2147483648) */ \
@@ -164,20 +166,20 @@ static const uint8_t blPrimeShiftTable[] = {
   #undef E
 };
 
-// ArenaHashMap - API
-// ==================
+// bl::ArenaHashMap - API
+// ======================
 
-void BLArenaHashMapBase::_rehash(uint32_t primeIndex) noexcept {
+void ArenaHashMapBase::_rehash(uint32_t primeIndex) noexcept {
   BL_ASSERT(primeIndex < BL_ARRAY_SIZE(blPrimeNumberTable));
 
   uint32_t newCount = blPrimeNumberTable[primeIndex].prime;
-  BLArenaHashMapNode** newData = _allocator->allocZeroedT<BLArenaHashMapNode*>(newCount * sizeof(BLArenaHashMapNode*));
+  ArenaHashMapNode** newData = _allocator->allocZeroedT<ArenaHashMapNode*>(newCount * sizeof(ArenaHashMapNode*));
 
   // We can still store nodes into the table, but it will degrade.
   if (BL_UNLIKELY(newData == nullptr))
     return;
 
-  BLArenaHashMapNode** oldData = _data;
+  ArenaHashMapNode** oldData = _data;
   uint32_t oldCount = _bucketCount;
 
   // 92.8% is the occupancy that causes rehashing. The multiplication should not overflow
@@ -190,9 +192,9 @@ void BLArenaHashMapBase::_rehash(uint32_t primeIndex) noexcept {
   _primeIndex = uint8_t(primeIndex);
 
   for (uint32_t i = 0; i < oldCount; i++) {
-    BLArenaHashMapNode* node = oldData[i];
+    ArenaHashMapNode* node = oldData[i];
     while (node) {
-      BLArenaHashMapNode* next = node->_hashNext;
+      ArenaHashMapNode* next = node->_hashNext;
       uint32_t hashMod = _calcMod(node->_hashCode);
 
       node->_hashNext = newData[hashMod];
@@ -203,12 +205,12 @@ void BLArenaHashMapBase::_rehash(uint32_t primeIndex) noexcept {
 
   memset(_embedded, 0, sizeof(_embedded));
   if (oldData != _embedded)
-    _allocator->release(reinterpret_cast<void*>(oldData), oldCount * sizeof(BLArenaHashMapNode*));
+    _allocator->release(reinterpret_cast<void*>(oldData), oldCount * sizeof(ArenaHashMapNode*));
 }
 
-void BLArenaHashMapBase::_insert(BLArenaHashMapNode* node) noexcept {
+void ArenaHashMapBase::_insert(ArenaHashMapNode* node) noexcept {
   uint32_t hashMod = _calcMod(node->_hashCode);
-  BLArenaHashMapNode* next = _data[hashMod];
+  ArenaHashMapNode* next = _data[hashMod];
 
   node->_hashNext = next;
   _data[hashMod] = node;
@@ -220,11 +222,11 @@ void BLArenaHashMapBase::_insert(BLArenaHashMapNode* node) noexcept {
   }
 }
 
-bool BLArenaHashMapBase::_remove(BLArenaHashMapNode* node) noexcept {
+bool ArenaHashMapBase::_remove(ArenaHashMapNode* node) noexcept {
   uint32_t hashMod = _calcMod(node->_hashCode);
 
-  BLArenaHashMapNode** pPrev = &_data[hashMod];
-  BLArenaHashMapNode* p = *pPrev;
+  ArenaHashMapNode** pPrev = &_data[hashMod];
+  ArenaHashMapNode* p = *pPrev;
 
   while (p) {
     if (p == node) {
@@ -240,61 +242,4 @@ bool BLArenaHashMapBase::_remove(BLArenaHashMapNode* node) noexcept {
   return false;
 }
 
-// ArenaHashMap - Tests
-// ====================
-
-#if defined(BL_TEST)
-struct MyHashMapNode : public BLArenaHashMapNode {
-  inline MyHashMapNode(uint32_t key) noexcept
-    : BLArenaHashMapNode(key),
-      _key(key) {}
-
-  uint32_t _key;
-};
-
-struct MyKeyMatcher {
-  inline MyKeyMatcher(uint32_t key) noexcept
-    : _key(key) {}
-
-  inline uint32_t hashCode() const noexcept { return _key; }
-  inline bool matches(const MyHashMapNode* node) const noexcept { return node->_key == _key; }
-
-  uint32_t _key;
-};
-
-UNIT(arena_hashmap, -5) {
-  uint32_t kCount = BrokenAPI::hasArg("--quick") ? 1000 : 10000;
-
-  BLArenaAllocator allocator(4096);
-  BLArenaHashMap<MyHashMapNode> hashTable(&allocator);
-  uint32_t key;
-
-  INFO("Inserting %u elements to HashTable", unsigned(kCount));
-  for (key = 0; key < kCount; key++) {
-    hashTable.insert(allocator.newT<MyHashMapNode>(key));
-  }
-
-  INFO("Removing %u elements from HashTable and validating each operation", unsigned(kCount));
-  uint32_t count = kCount;
-  do {
-    MyHashMapNode* node;
-
-    for (key = 0; key < count; key++) {
-      node = hashTable.get(MyKeyMatcher(key));
-      EXPECT_NE(node, nullptr);
-      EXPECT_EQ(node->_key, key);
-    }
-
-    {
-      count--;
-      node = hashTable.get(MyKeyMatcher(count));
-      hashTable.remove(node);
-
-      node = hashTable.get(MyKeyMatcher(count));
-      EXPECT_EQ(node, nullptr);
-    }
-  } while (count);
-
-  EXPECT_TRUE(hashTable.empty());
-}
-#endif
+} // {bl}

@@ -125,52 +125,58 @@ static constexpr bool blRuntimeIs32Bit() noexcept { return BL_TARGET_ARCH_BITS <
 
 namespace {
 
-#ifdef BL_TARGET_OPT_SSE2
+#if defined(BL_TARGET_OPT_SSE2)
 constexpr bool blRuntimeHasSSE2(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasSSE2(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_SSE2) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_SSE3
+#if defined(BL_TARGET_OPT_SSE3)
 constexpr bool blRuntimeHasSSE3(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasSSE3(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_SSE3) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_SSSE3
+#if defined(BL_TARGET_OPT_SSSE3)
 constexpr bool blRuntimeHasSSSE3(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasSSSE3(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_SSSE3) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_SSE4_1
+#if defined(BL_TARGET_OPT_SSE4_1)
 constexpr bool blRuntimeHasSSE4_1(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasSSE4_1(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_SSE4_1) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_SSE4_2
+#if defined(BL_TARGET_OPT_SSE4_2)
 constexpr bool blRuntimeHasSSE4_2(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasSSE4_2(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_SSE4_2) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_AVX
+#if defined(BL_TARGET_OPT_AVX)
 constexpr bool blRuntimeHasAVX(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasAVX(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_AVX) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_AVX2
+#if defined(BL_TARGET_OPT_AVX2)
 constexpr bool blRuntimeHasAVX2(BLRuntimeContext* rt) noexcept { return true; }
 #else
 BL_INLINE bool blRuntimeHasAVX2(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_AVX2) != 0; }
 #endif
 
-#ifdef BL_TARGET_OPT_NEON
-constexpr bool blRuntimeHasNEON(BLRuntimeContext* rt) noexcept { return true; }
+#if defined(BL_TARGET_OPT_AVX512)
+constexpr bool blRuntimeHasAVX512(BLRuntimeContext* rt) noexcept { return true; }
 #else
-constexpr bool blRuntimeHasNEON(BLRuntimeContext* rt) noexcept { return false; }
+BL_INLINE bool blRuntimeHasAVX512(BLRuntimeContext* rt) noexcept { return (rt->systemInfo.cpuFeatures & BL_RUNTIME_CPU_FEATURE_X86_AVX512) != 0; }
+#endif
+
+#if defined(BL_TARGET_OPT_ASIMD)
+constexpr bool blRuntimeHasASIMD(BLRuntimeContext* rt) noexcept { return true; }
+#else
+constexpr bool blRuntimeHasASIMD(BLRuntimeContext* rt) noexcept { return false; }
 #endif
 
 } // {anonymous}
@@ -184,6 +190,7 @@ BL_HIDDEN void blThreadRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blThreadPoolRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blZeroAllocatorRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blPixelOpsRtInit(BLRuntimeContext* rt) noexcept;
+BL_HIDDEN void blBitArrayRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blBitSetRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blArrayRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blStringRtInit(BLRuntimeContext* rt) noexcept;
@@ -204,10 +211,7 @@ BL_HIDDEN void blOpenTypeRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blFontRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blFontManagerRtInit(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blContextRtInit(BLRuntimeContext* rt) noexcept;
-
-#if !defined(BL_BUILD_NO_FIXED_PIPE)
 BL_HIDDEN void blStaticPipelineRtInit(BLRuntimeContext* rt) noexcept;
-#endif
 
 #if !defined(BL_BUILD_NO_JIT)
 BL_HIDDEN void blDynamicPipelineRtInit(BLRuntimeContext* rt) noexcept;

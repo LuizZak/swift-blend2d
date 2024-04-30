@@ -12,7 +12,8 @@
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace BLPipeline {
+namespace bl {
+namespace Pipeline {
 namespace JIT {
 
 //! Pipeline fill part.
@@ -60,7 +61,7 @@ public:
   BL_INLINE bool isAnalyticFill() const noexcept { return _fillType == FillType::kAnalytic; }
 
   //! Compiles the fill part.
-  virtual void compile() noexcept = 0;
+  virtual void compile() noexcept;
 };
 
 class FillBoxAPart final : public FillPart {
@@ -70,19 +71,12 @@ public:
   void compile() noexcept override;
 };
 
-class FillBoxUPart final : public FillPart {
-public:
-  FillBoxUPart(PipeCompiler* pc, FetchPixelPtrPart* dstPart, CompOpPart* compOpPart) noexcept;
-
-  void compile() noexcept override;
-};
-
 class FillMaskPart final : public FillPart {
 public:
   FillMaskPart(PipeCompiler* pc, FetchPixelPtrPart* dstPart, CompOpPart* compOpPart) noexcept;
 
   void compile() noexcept override;
-  void disadvanceDstPtr(const x86::Gp& dstPtr, const x86::Gp& x, int dstBpp) noexcept;
+  void disadvanceDstPtr(const Gp& dstPtr, const Gp& x, int dstBpp) noexcept;
 };
 
 class FillAnalyticPart final : public FillPart {
@@ -91,11 +85,11 @@ public:
 
   void compile() noexcept override;
 
-  //! Adds covers held by `val` to the accumulator `acc`.
-  void accumulateCells(const x86::Vec& acc, const x86::Vec& val) noexcept;
+  void accumulateCoverages(const Vec& cov) noexcept;
+  void normalizeCoverages(const Vec& cov) noexcept;
 
   //! Calculates masks for 4 pixels - this works for both NonZero and EvenOdd fill rules.
-  void calcMasksFromCells(const x86::Vec& dst, const x86::Vec& src, const x86::Vec& fillRuleMask, const x86::Vec& globalAlpha, bool unpack) noexcept;
+  void calcMasksFromCells(const Vec& dst, const Vec& cov, const Vec& fillRuleMask, const Vec& globalAlpha) noexcept;
 
   //! Emits the following:
   //!
@@ -103,11 +97,12 @@ public:
   //! dstPtr -= x * dstBpp;
   //! cellPtr -= x * 4;
   //! ```
-  void disadvanceDstPtrAndCellPtr(const x86::Gp& dstPtr, const x86::Gp& cellPtr, const x86::Gp& x, int dstBpp) noexcept;
+  void disadvanceDstPtrAndCellPtr(const Gp& dstPtr, const Gp& cellPtr, const Gp& x, uint32_t dstBpp) noexcept;
 };
 
 } // {JIT}
-} // {BLPipeline}
+} // {Pipeline}
+} // {bl}
 
 //! \}
 //! \endcond

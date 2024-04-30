@@ -37,7 +37,7 @@ public class BLFontFace: BLBaseClass<BLFontFaceCore> {
         BLFontOutlineType(BLFontFaceType.RawValue(faceInfo.outlineType))
     }
     /// Gets a number of glyphs the face provides.
-    public var glyphCount: UInt16 {
+    public var glyphCount: UInt32 {
         faceInfo.glyphCount
     }
     /// Gets a zero-based index of this font-face.
@@ -149,11 +149,7 @@ extension BLFontFaceCore: CoreStructure {
 
     @usableFromInline
     var impl: BLFontFaceImpl {
-        get {
-            _d.impl!.load(as: BLFontFaceImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLFontFaceImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

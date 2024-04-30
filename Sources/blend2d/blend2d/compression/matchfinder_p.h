@@ -12,10 +12,13 @@
 // You should have received a copy of the CC0 Public Domain Dedication along
 // with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-#include "../simd_p.h"
+#include "../simd/simd_p.h"
 #include "../support/memops_p.h"
 
-namespace BLCompression {
+//! \cond INTERNAL
+
+namespace bl {
+namespace Compression {
 namespace Deflate {
 
 #ifndef MATCHFINDER_WINDOW_ORDER
@@ -27,155 +30,11 @@ typedef int16_t mf_pos_t;
 #define MATCHFINDER_WINDOW_SIZE (1U << MATCHFINDER_WINDOW_ORDER)
 #define MATCHFINDER_WINDOW_SIZE_NEG ((mf_pos_t)(0 - int(MATCHFINDER_WINDOW_SIZE)))
 
-#if defined(BL_TARGET_OPT_AVX2)
-  static BL_INLINE bool matchfinder_init_avx2(mf_pos_t *data, size_t size) noexcept {
-    using namespace SIMD;
-
-    if (size % 128)
-      return false;
-
-    size_t n = size / 128u;
-    __m256i v = _mm256_set1_epi16(MATCHFINDER_WINDOW_SIZE_NEG);
-    __m256i* p = (__m256i *)data;
-
-    do {
-      p[0] = v;
-      p[1] = v;
-      p[2] = v;
-      p[3] = v;
-      p += 4;
-    } while (--n);
-
-    return true;
-  }
-
-  static BL_INLINE bool matchfinder_rebase_avx2(mf_pos_t *data, size_t size) noexcept {
-    using namespace SIMD;
-
-    if ((size % sizeof(__m256i) * 4 != 0))
-      return false;
-
-    size_t n = size / 128u;
-    __m256i v = v_fill_i256_i16((int16_t)-MATCHFINDER_WINDOW_SIZE);
-    __m256i* p = (__m256i *)data;
-
-    do {
-      p[0] = v_adds_i16(p[0], v);
-      p[1] = v_adds_i16(p[1], v);
-      p[2] = v_adds_i16(p[2], v);
-      p[3] = v_adds_i16(p[3], v);
-      p += 4;
-    } while (--n);
-
-    return true;
-  }
-
-#elif defined(BL_TARGET_OPT_SSE2)
-
-  static BL_INLINE bool matchfinder_init_sse2(mf_pos_t* data, size_t size) {
-    using namespace SIMD;
-
-    if (size % 64)
-      return false;
-
-    size_t n = size / 64u;
-    Vec128I v = v_fill_i128_i16(MATCHFINDER_WINDOW_SIZE_NEG);
-    Vec128I* p = reinterpret_cast<Vec128I*>(data);
-
-    do {
-      p[0] = v;
-      p[1] = v;
-      p[2] = v;
-      p[3] = v;
-      p += 4;
-    } while (--n);
-
-    return true;
-  }
-
-  static BL_INLINE bool matchfinder_rebase_sse2(mf_pos_t* data, size_t size) {
-    using namespace SIMD;
-
-    if (size % 64 != 0)
-      return false;
-
-    size_t n = size / 64u;
-    Vec128I v = _mm_set1_epi16(MATCHFINDER_WINDOW_SIZE_NEG);
-    Vec128I* p = reinterpret_cast<Vec128I*>(data);
-
-    do {
-      p[0] = v_adds_i16(p[0], v);
-      p[1] = v_adds_i16(p[1], v);
-      p[2] = v_adds_i16(p[2], v);
-      p[3] = v_adds_i16(p[3], v);
-      p += 4;
-    } while (--n);
-
-    return true;
-  }
-
-#endif
-
-#if defined(BL_TARGET_OPT_NEON)
-
-  static BL_INLINE bool matchfinder_init_neon(mf_pos_t *data, size_t size) noexcept {
-    BL_STATIC_ASSERT(sizeof(mf_pos_t) == 2);
-
-    if (size % 64 != 0)
-      return false;
-
-    size_t n = size / 64u;
-    int16x8_t v = (int16x8_t) {
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-    };
-    int16x8_t* p = (int16x8_t *)data;
-
-    do {
-      p[0] = v;
-      p[1] = v;
-      p[2] = v;
-      p[3] = v;
-      p += 4;
-    } while (--n);
-
-    return true;
-  }
-
-  static BL_INLINE bool matchfinder_rebase_neon(mf_pos_t *data, size_t size) noexcept {
-    BL_STATIC_ASSERT(sizeof(mf_pos_t) == 2);
-
-    if (size % 64 != 0)
-      return false;
-
-    size_t n = size / 64u;
-    int16x8_t v = (int16x8_t) {
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-      MATCHFINDER_WINDOW_SIZE_NEG, MATCHFINDER_WINDOW_SIZE_NEG,
-    };
-    int16x8_t* p = (int16x8_t *)data;
-
-    do {
-      p[0] = vqaddq_s16(p[0], v);
-      p[1] = vqaddq_s16(p[1], v);
-      p[2] = vqaddq_s16(p[2], v);
-      p[3] = vqaddq_s16(p[3], v);
-      p += 4;
-    } while (--n);
-
-    return true;
-  }
-
-#endif
-
 static BL_INLINE BLBitWord load_word_unaligned(const void* p) noexcept {
   if (sizeof(BLBitWord) == 4)
-    return BLBitWord(BLMemOps::readU32u(p));
+    return BLBitWord(MemOps::readU32u(p));
   else
-    return BLBitWord(BLMemOps::readU64u(p));
+    return BLBitWord(MemOps::readU64u(p));
 }
 
 /*
@@ -185,23 +44,38 @@ static BL_INLINE BLBitWord load_word_unaligned(const void* p) noexcept {
  */
 static BL_INLINE void matchfinder_init(mf_pos_t *data, size_t num_entries)
 {
-  size_t i;
+  size_t i = num_entries;
 
-#if defined(BL_TARGET_OPT_AVX2)
-  if (matchfinder_init_avx2(data, num_entries * sizeof(data[0])))
-    return;
-#elif defined(BL_TARGET_OPT_SSE2)
-  if (matchfinder_init_sse2(data, num_entries * sizeof(data[0])))
-    return;
+#if BL_TARGET_SIMD_I >= 256
+  using namespace SIMD;
+
+  Vec16xI16 ws = make256_i16(MATCHFINDER_WINDOW_SIZE_NEG);
+  while (i >= 64u) {
+    storea(data +  0, ws);
+    storea(data + 16, ws);
+    storea(data + 32, ws);
+    storea(data + 48, ws);
+    data += 64u;
+    i -= 64u;
+  }
+#elif BL_TARGET_SIMD_I == 128
+  using namespace SIMD;
+
+  Vec8xI16 ws = make128_i16(MATCHFINDER_WINDOW_SIZE_NEG);
+  while (i >= 32u) {
+    storea(data +  0, ws);
+    storea(data +  8, ws);
+    storea(data + 16, ws);
+    storea(data + 24, ws);
+    data += 32u;
+    i -= 32u;
+  }
 #endif
 
-#if defined(BL_TARGET_OPT_NEON)
-  if (matchfinder_init_neon(data, num_entries * sizeof(data[0])))
-    return;
-#endif
-
-  for (i = 0; i < num_entries; i++)
-    data[i] = MATCHFINDER_WINDOW_SIZE_NEG;
+  while (i) {
+    *data++ = MATCHFINDER_WINDOW_SIZE_NEG;
+    i--;
+  }
 }
 
 /*
@@ -226,41 +100,64 @@ static BL_INLINE void matchfinder_init(mf_pos_t *data, size_t num_entries)
  * the links need to be rebased in the same way.
  */
 static BL_INLINE void matchfinder_rebase(mf_pos_t *data, size_t num_entries) noexcept {
-  size_t i;
+  size_t i = num_entries;
 
-#if defined(BL_TARGET_OPT_AVX2)
-  if (matchfinder_rebase_avx2(data, num_entries * sizeof(data[0])))
-    return;
-#elif defined(BL_TARGET_OPT_SSE2)
-  if (matchfinder_rebase_sse2(data, num_entries * sizeof(data[0])))
-    return;
-#endif
+#if BL_TARGET_SIMD_I >= 256
+  using namespace SIMD;
 
-#if defined(BL_TARGET_OPT_NEON)
-  if (matchfinder_rebase_neon(data, num_entries * sizeof(data[0])))
-    return;
+  Vec16xI16 ws = make256_i16(MATCHFINDER_WINDOW_SIZE_NEG);
+  while (i >= 64) {
+    Vec16xI16 v0 = adds_i16(loada<Vec16xI16>(data +  0), ws);
+    Vec16xI16 v1 = adds_i16(loada<Vec16xI16>(data + 16), ws);
+    Vec16xI16 v2 = adds_i16(loada<Vec16xI16>(data + 32), ws);
+    Vec16xI16 v3 = adds_i16(loada<Vec16xI16>(data + 48), ws);
+
+    storea(data +  0, v0);
+    storea(data + 16, v1);
+    storea(data + 32, v2);
+    storea(data + 48, v3);
+
+    data += 64;
+    i -= 64;
+  }
+#elif BL_TARGET_SIMD_I >= 128
+  using namespace SIMD;
+
+  Vec8xI16 ws = make128_i16(MATCHFINDER_WINDOW_SIZE_NEG);
+  while (i >= 32) {
+    Vec8xI16 v0 = adds_i16(loada<Vec8xI16>(data +  0), ws);
+    Vec8xI16 v1 = adds_i16(loada<Vec8xI16>(data +  8), ws);
+    Vec8xI16 v2 = adds_i16(loada<Vec8xI16>(data + 16), ws);
+    Vec8xI16 v3 = adds_i16(loada<Vec8xI16>(data + 24), ws);
+
+    storea(data +  0, v0);
+    storea(data +  8, v1);
+    storea(data + 16, v2);
+    storea(data + 24, v3);
+
+    data += 32;
+    i -= 32;
+  }
 #endif
 
   if (MATCHFINDER_WINDOW_SIZE == 32768) {
-    /* Branchless version for 32768 byte windows.  If the value was
-     * already negative, clear all bits except the sign bit; this
-     * changes the value to -32768.  Otherwise, set the sign bit;
-     * this is equivalent to subtracting 32768.  */
-    for (i = 0; i < num_entries; i++) {
-      uint16_t v = data[i];
-      uint16_t sign_bit = v & 0x8000;
-      v &= sign_bit - ((sign_bit >> 15) ^ 1);
-      v |= 0x8000;
-      data[i] = v;
+    // Branchless version for 32768 byte windows. If the value was already negative, clear all
+    // bits except the sign bit; this changes the value to -32768. Otherwise, set the sign bit;
+    // this is equivalent to subtracting 32768.
+    while (i) {
+      uint16_t v = uint16_t(*data);
+      *data++ = int16_t((v & ~(int16_t(v) >> 15)) | 0x8000u);
+      i--;
     }
-    return;
   }
-
-  for (i = 0; i < num_entries; i++) {
-    if (data[i] >= 0)
-      data[i] -= MATCHFINDER_WINDOW_SIZE_NEG;
-    else
-      data[i] = MATCHFINDER_WINDOW_SIZE_NEG;
+  else {
+    while (i) {
+      if (*data >= 0)
+        *data++ -= MATCHFINDER_WINDOW_SIZE_NEG;
+      else
+        *data++ = MATCHFINDER_WINDOW_SIZE_NEG;
+      i--;
+    }
   }
 }
 
@@ -283,7 +180,7 @@ static BL_INLINE uint32_t lz_extend(const uint8_t* strptr, const uint8_t* matchp
   uint32_t len = start_len;
   BLBitWord v_word;
 
-  if (BLMemOps::kUnalignedMem) {
+  if (MemOps::kUnalignedMem) {
     if (BL_LIKELY(max_len - len >= uint32_t(4 * sizeof(BLBitWord)))) {
     #define COMPARE_WORD_STEP                                                           \
       v_word = load_word_unaligned(&matchptr[len]) ^ load_word_unaligned(&strptr[len]); \
@@ -312,13 +209,11 @@ static BL_INLINE uint32_t lz_extend(const uint8_t* strptr, const uint8_t* matchp
 
 word_differs:
   if (BL_BYTE_ORDER == 1234)
-    len += BLIntOps::ctz(v_word) >> 3;
+    len += IntOps::ctz(v_word) >> 3;
   else
-    len += BLIntOps::clz(v_word) >> 3;
+    len += IntOps::clz(v_word) >> 3;
   return len;
 }
-
-
 
 /*
  * Lempel-Ziv matchfinding with a hash table of binary trees
@@ -442,7 +337,7 @@ static BL_INLINE lz_match* bt_matchfinder_advance_one_byte(bt_matchfinder* BL_RE
   uint32_t len;
   uint32_t best_len = 3;
 
-  next_seq4 = BLMemOps::readU32u(in_next + 1);
+  next_seq4 = MemOps::readU32u(in_next + 1);
   next_seq3 = loaded_u32_to_u24(next_seq4);
 
   hash3 = next_hashes[0];
@@ -460,14 +355,14 @@ static BL_INLINE lz_match* bt_matchfinder_advance_one_byte(bt_matchfinder* BL_RE
   mf->hash3_tab[hash3][1] = mf_pos_t(cur_node);
 #endif
   if (record_matches && cur_node > cutoff) {
-    uint32_t seq3 = BLMemOps::readU24u(in_next);
-    if (seq3 == BLMemOps::readU24u(&in_base[cur_node])) {
+    uint32_t seq3 = MemOps::readU24u(in_next);
+    if (seq3 == MemOps::readU24u(&in_base[cur_node])) {
       lz_matchptr->length = 3;
       lz_matchptr->offset = uint16_t(in_next - &in_base[cur_node]);
       lz_matchptr++;
     }
   #if BT_MATCHFINDER_HASH3_WAYS >= 2
-    else if (cur_node_2 > cutoff && seq3 == BLMemOps::readU24u(&in_base[cur_node_2]))
+    else if (cur_node_2 > cutoff && seq3 == MemOps::readU24u(&in_base[cur_node_2]))
     {
       lz_matchptr->length = 3;
       lz_matchptr->offset = uint16_t(in_next - &in_base[cur_node_2]);
@@ -814,7 +709,7 @@ hc_matchfinder_longest_match(
   mf->next_tab[cur_pos] = mf_pos_t(cur_node4);
 
   /* Compute the next hash codes.  */
-  next_seq4 = BLMemOps::readU32u(in_next + 1);
+  next_seq4 = MemOps::readU32u(in_next + 1);
   next_seq3 = loaded_u32_to_u24(next_seq4);
   next_hashes[0] = lz_hash(next_seq3, HC_MATCHFINDER_HASH3_ORDER);
   next_hashes[1] = lz_hash(next_seq4, HC_MATCHFINDER_HASH4_ORDER);
@@ -828,10 +723,10 @@ hc_matchfinder_longest_match(
     if (cur_node3 <= cutoff)
       goto out;
 
-    seq4 = BLMemOps::readU32u(in_next);
+    seq4 = MemOps::readU32u(in_next);
     if (best_len < 3) {
       matchptr = &in_base[cur_node3];
-      if (BLMemOps::readU24u(matchptr) == loaded_u32_to_u24(seq4)) {
+      if (MemOps::readU24u(matchptr) == loaded_u32_to_u24(seq4)) {
         best_len = 3;
         best_matchptr = matchptr;
       }
@@ -844,7 +739,7 @@ hc_matchfinder_longest_match(
     for (;;) {
       /* No length 4 match found yet.  Check the first 4 bytes.  */
       matchptr = &in_base[cur_node4];
-      if (BLMemOps::readU32u(matchptr) == seq4)
+      if (MemOps::readU32u(matchptr) == seq4)
         break;
 
       /* The first 4 bytes did not match.  Keep trying.  */
@@ -873,20 +768,18 @@ hc_matchfinder_longest_match(
     for (;;) {
       matchptr = &in_base[cur_node4];
 
-      /* Already found a length 4 match.  Try for a longer
-       * match; start by checking either the last 4 bytes and
-       * the first 4 bytes, or the last byte.  (The last byte,
-       * the one which would extend the match length by 1, is
-       * the most important.)  */
+      // Already found a length 4 match.  Try for a longer match; start by checking either the last 4 bytes and
+      // the first 4 bytes, or the last byte.  (The last byte, the one which would extend the match length by 1,
+      // is the most important.)
 #if UNALIGNED_ACCESS_IS_FAST
-      if ((BLMemOps::readU32u(matchptr + best_len - 3) == BLMemOps::readU32u(in_next + best_len - 3)) && (BLMemOps::readU32u(matchptr) == BLMemOps::readU32u(in_next)))
+      if ((MemOps::readU32u(matchptr + best_len - 3) == MemOps::readU32u(in_next + best_len - 3)) && (MemOps::readU32u(matchptr) == MemOps::readU32u(in_next)))
         break;
 #else
       if (matchptr[best_len] == in_next[best_len])
         break;
 #endif
 
-      /* Continue to the next node in the list.  */
+      // Continue to the next node in the list.
       cur_node4 = mf->next_tab[cur_node4 & (MATCHFINDER_WINDOW_SIZE - 1)];
       if (cur_node4 <= cutoff || !--depth_remaining)
         goto out;
@@ -899,14 +792,14 @@ hc_matchfinder_longest_match(
   #endif
     len = lz_extend(in_next, matchptr, len, max_len);
     if (len > best_len) {
-      /* This is the new longest match.  */
+      // This is the new longest match.
       best_len = len;
       best_matchptr = matchptr;
       if (best_len >= nice_len)
         goto out;
     }
 
-    /* Continue to the next node in the list.  */
+    // Continue to the next node in the list.
     cur_node4 = mf->next_tab[cur_node4 & (MATCHFINDER_WINDOW_SIZE - 1)];
     if (cur_node4 <= cutoff || !--depth_remaining)
       goto out;
@@ -968,7 +861,7 @@ static BL_INLINE const uint8_t* hc_matchfinder_skip_positions(
     mf->next_tab[cur_pos] = mf->hash4_tab[hash4];
     mf->hash4_tab[hash4] = mf_pos_t(cur_pos);
 
-    next_seq4 = BLMemOps::readU32u(++in_next);
+    next_seq4 = MemOps::readU32u(++in_next);
     next_seq3 = loaded_u32_to_u24(next_seq4);
     hash3 = lz_hash(next_seq3, HC_MATCHFINDER_HASH3_ORDER);
     hash4 = lz_hash(next_seq4, HC_MATCHFINDER_HASH4_ORDER);
@@ -985,4 +878,7 @@ static BL_INLINE const uint8_t* hc_matchfinder_skip_positions(
 }
 
 } // {Deflate}
-} // {BLCompression}
+} // {Compression}
+} // {bl}
+
+//! \endcond

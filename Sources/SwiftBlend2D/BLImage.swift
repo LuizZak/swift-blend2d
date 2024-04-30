@@ -126,11 +126,13 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     ///   - size: Size of the image. Both width and height must be greater than 
     /// zero and less than or equal to (BLImage.maximumWidth, BLImage.maximumHeight).
     ///   - format: A valid image format to use for the image.
+    ///   - dataAccessFlags: Sets of flags for accessing data from `pixelData`.
     public init(
         fromUnownedData pixelData: UnsafeMutableRawPointer,
         stride: Int,
         size: BLSizeI,
-        format: BLFormat
+        format: BLFormat,
+        dataAccessFlags: BLDataAccessFlags = .rw
     ) {
 
         super.init {
@@ -141,6 +143,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
                 format,
                 pixelData,
                 stride,
+                dataAccessFlags,
                 nil,
                 nil
             )
@@ -160,17 +163,14 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// Throws in case one of the input values is invalid.
     public func scale(
         size: BLSizeI,
-        filter: BLImageScaleFilter,
-        options: BLImageScaleOptions? = nil
+        filter: BLImageScaleFilter
     ) throws {
 
         var size = size
         var objectCopy = object
         
         try resultToError(
-            withUnsafeNullablePointer(to: options) {
-                blImageScale(&object, &objectCopy, &size, UInt32(filter.rawValue), $0)
-            }
+            blImageScale(&object, &objectCopy, &size, filter)
         )
     }
     
@@ -260,11 +260,7 @@ extension BLImageCore: CoreStructure {
 
     @usableFromInline
     var impl: BLImageImpl {
-        get {
-            _d.impl!.load(as: BLImageImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLImageImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

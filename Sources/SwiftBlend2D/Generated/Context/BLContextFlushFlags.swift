@@ -3,12 +3,12 @@
 
 import blend2d
 
-/// Rendering context flush-flags, use with `BLContext.flush()`.
+/// Rendering context flush flags, used by `BLContext`::flush().
 extension BLContextFlushFlags: OptionSet { }
 
 public extension BLContextFlushFlags {
     static let noFlags = BL_CONTEXT_FLUSH_NO_FLAGS
     
-    /// Flush the command queue and wait for its completion (will block).
+    /// Flushes the command queue and waits for its completion (will block until done).
     static let sync = BL_CONTEXT_FLUSH_SYNC
 }

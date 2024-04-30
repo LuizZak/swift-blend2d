@@ -7,9 +7,9 @@
 #include "array_p.h"
 #include "filesystem_p.h"
 #include "runtime_p.h"
-#include "unicode_p.h"
 #include "support/ptrops_p.h"
 #include "threading/atomic_p.h"
+#include "unicode/unicode_p.h"
 
 #ifndef _WIN32
   #include <errno.h>
@@ -55,9 +55,9 @@ public:
 
   BL_NOINLINE BLResult fromUtf8(const char* src) noexcept {
     size_t srcSize = strlen(src);
-    BLUnicodeConversionState conversionState;
+    bl::Unicode::ConversionState conversionState;
 
-    BLResult result = blConvertUnicode(
+    BLResult result = bl::Unicode::convertUnicode(
       _data, _capacity * 2u, BL_TEXT_ENCODING_UTF16, src, srcSize, BL_TEXT_ENCODING_UTF8, conversionState);
 
     if (result == BL_SUCCESS) {
@@ -75,7 +75,7 @@ public:
     size_t procUtf8Size = conversionState.srcIndex;
     size_t procUtf16Size = conversionState.dstIndex / 2u;
 
-    BLUnicodeValidationState validationState;
+    bl::Unicode::ValidationState validationState;
     BL_PROPAGATE(blValidateUtf8(src + procUtf8Size, srcSize - procUtf8Size, validationState));
 
     size_t newSize = procUtf16Size + validationState.utf16Index;
@@ -88,7 +88,7 @@ public:
     }
 
     memcpy(newData, _data, procUtf16Size * sizeof(uint16_t));
-    blConvertUnicode(
+    bl::Unicode::convertUnicode(
       newData + procUtf16Size, (newSize - procUtf16Size) * 2u, BL_TEXT_ENCODING_UTF16,
       src + procUtf8Size, srcSize - procUtf8Size, BL_TEXT_ENCODING_UTF8, conversionState);
     BL_ASSERT(newSize == procUtf16Size + conversionState.dstIndex * 2u);
@@ -295,7 +295,7 @@ BL_API_IMPL BLResult blFileRead(BLFileCore* self, void* buffer, size_t n, size_t
     if (bytesRead < localSize || !result)
       break;
 
-    buffer = BLPtrOps::offset(buffer, bytesRead);
+    buffer = bl::PtrOps::offset(buffer, bytesRead);
   }
 
   *bytesReadOut = bytesReadTotal;
@@ -332,7 +332,7 @@ BL_API_IMPL BLResult blFileWrite(BLFileCore* self, const void* buffer, size_t n,
     if (bytesWritten < localSize || !result)
       break;
 
-    buffer = BLPtrOps::offset(buffer, bytesWritten);
+    buffer = bl::PtrOps::offset(buffer, bytesWritten);
   }
 
   *bytesWrittenOut = bytesWrittenTotal;
@@ -383,19 +383,6 @@ BL_API_IMPL BLResult blFileGetSize(BLFileCore* self, uint64_t* fileSizeOut) noex
 
 // BLFile - API - POSIX Implementation
 // ===================================
-
-// These OSes use 64-bit offsets by default.
-#if defined(__APPLE__    ) || \
-    defined(__HAIKU__    ) || \
-    defined(__bsdi__     ) || \
-    defined(__DragonFly__) || \
-    defined(__FreeBSD__  ) || \
-    defined(__NetBSD__   ) || \
-    defined(__OpenBSD__  )
-  #define BL_FILE64_API(NAME) NAME
-#else
-  #define BL_FILE64_API(NAME) NAME##64
-#endif
 
 BL_API_IMPL BLResult blFileOpen(BLFileCore* self, const char* fileName, BLFileOpenFlags openFlags) noexcept {
   int of = 0;
@@ -595,8 +582,6 @@ BL_API_IMPL BLResult blFileGetSize(BLFileCore* self, uint64_t* fileSizeOut) noex
   *fileSizeOut = uint64_t(s.st_size);
   return BL_SUCCESS;
 }
-
-#undef BL_FILE64_API
 #endif
 
 #if defined(_WIN32)
@@ -709,10 +694,13 @@ BLResult BLFileMapping::unmap() noexcept {
 // BLFileSystem - Memory Mapped File
 // =================================
 
+namespace bl {
+
 static void BL_CDECL destroyMemoryMappedFile(void* impl, void* externalData, void* userData) noexcept {
-  blUnused(impl, externalData);
-  BLFileMapping* fileMapping = static_cast<BLFileMapping*>(userData);
-  blCallDtor(*fileMapping);
+  blUnused(externalData, userData);
+
+  BLFileMapping* implFileMapping = PtrOps::offset<BLFileMapping>(impl, sizeof(BLArrayImpl));
+  blCallDtor(*implFileMapping);
 }
 
 static BLResult createMemoryMappedFile(BLArray<uint8_t>* dst, BLFile& file, size_t size) noexcept {
@@ -722,28 +710,24 @@ static BLResult createMemoryMappedFile(BLArray<uint8_t>* dst, BLFile& file, size
   BLFileMapping fileMapping;
   BL_PROPAGATE(fileMapping.map(file, size));
 
-  BLObjectImplSize implSize(sizeof(BLArrayImpl));
-  BLObjectInfo info = BLObjectInfo::packType(BL_OBJECT_TYPE_ARRAY_UINT8) | BL_OBJECT_INFO_IMMUTABLE_FLAG;
-
-  BLObjectExternalInfo* externalInfo;
-  void* externalOptData;
+  BLObjectImplSize implSize(sizeof(BLArrayImpl) + sizeof(BLFileMapping));
+  uint32_t info = BLObjectInfo::packTypeWithMarker(BL_OBJECT_TYPE_ARRAY_UINT8);
 
   BLArrayCore newO;
-  BLArrayImpl* impl = blObjectDetailAllocImplExternalT<BLArrayImpl>(&newO, info, implSize, &externalInfo, &externalOptData);
+  BL_PROPAGATE(ObjectInternal::allocImplExternalT<BLArrayImpl>(&newO, BLObjectInfo{info}, implSize, true, destroyMemoryMappedFile, nullptr));
 
-  if (BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-
+  BLArrayImpl* impl = bl::ArrayInternal::getImpl(&newO);
   impl->data = fileMapping.data<void>();
   impl->size = size;
   impl->capacity = size;
 
-  externalInfo->destroyFunc = destroyMemoryMappedFile;
-  externalInfo->userData = externalOptData;
-  blCallCtor(*static_cast<BLFileMapping*>(externalOptData), std::move(fileMapping));
+  BLFileMapping* implFileMapping = PtrOps::offset<BLFileMapping>(impl, sizeof(BLArrayImpl));
+  blCallCtor(*implFileMapping, std::move(fileMapping));
 
-  return BLArrayPrivate::replaceInstance(dst, &newO);
+  return bl::ArrayInternal::replaceInstance(dst, &newO);
 }
+
+} // {bl}
 
 // BLFileSystem - Read & Write File
 // ================================
@@ -777,7 +761,7 @@ BL_API_IMPL BLResult blFileSystemReadFile(const char* fileName, BLArrayCore* dst
   if (readFlags & BL_FILE_READ_MMAP_ENABLED) {
     bool isSmall = size < BLFileMapping::kSmallFileSizeThreshold;
     if (!(readFlags & BL_FILE_READ_MMAP_AVOID_SMALL) || !isSmall) {
-      BLResult result = createMemoryMappedFile(&dst, file, size);
+      BLResult result = bl::createMemoryMappedFile(&dst, file, size);
       if (result == BL_SUCCESS)
         return result;
 

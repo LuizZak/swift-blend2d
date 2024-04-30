@@ -39,51 +39,57 @@ static const BLRuntimeBuildInfo blRuntimeBuildInfo = {
 
   // Baseline CPU features.
   0
-#ifdef BL_TARGET_OPT_SSE2
+#if defined(BL_TARGET_OPT_SSE2)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE2
 #endif
-#ifdef BL_TARGET_OPT_SSE3
+#if defined(BL_TARGET_OPT_SSE3)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE3
 #endif
-#ifdef BL_TARGET_OPT_SSSE3
+#if defined(BL_TARGET_OPT_SSSE3)
   | BL_RUNTIME_CPU_FEATURE_X86_SSSE3
 #endif
-#ifdef BL_TARGET_OPT_SSE4_1
+#if defined(BL_TARGET_OPT_SSE4_1)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE4_1
 #endif
-#ifdef BL_TARGET_OPT_SSE4_2
+#if defined(BL_TARGET_OPT_SSE4_2)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE4_2
 #endif
-#ifdef BL_TARGET_OPT_AVX
+#if defined(BL_TARGET_OPT_AVX)
   | BL_RUNTIME_CPU_FEATURE_X86_AVX
 #endif
-#ifdef BL_TARGET_OPT_AVX2
+#if defined(BL_TARGET_OPT_AVX2)
   | BL_RUNTIME_CPU_FEATURE_X86_AVX2
+#endif
+#if defined(BL_TARGET_OPT_AVX512)
+  | BL_RUNTIME_CPU_FEATURE_X86_AVX512
 #endif
   ,
 
   // Supported CPU features.
   0
-#ifdef BL_BUILD_OPT_SSE2
+#if defined(BL_BUILD_OPT_SSE2)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE2
 #endif
-#ifdef BL_BUILD_OPT_SSE3
+#if defined(BL_BUILD_OPT_SSE3)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE3
 #endif
-#ifdef BL_BUILD_OPT_SSSE3
+#if defined(BL_BUILD_OPT_SSSE3)
   | BL_RUNTIME_CPU_FEATURE_X86_SSSE3
 #endif
-#ifdef BL_BUILD_OPT_SSE4_1
+#if defined(BL_BUILD_OPT_SSE4_1)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE4_1
 #endif
-#ifdef BL_BUILD_OPT_SSE4_2
+#if defined(BL_BUILD_OPT_SSE4_2)
   | BL_RUNTIME_CPU_FEATURE_X86_SSE4_2
 #endif
-#ifdef BL_BUILD_OPT_AVX
+#if defined(BL_BUILD_OPT_AVX)
   | BL_RUNTIME_CPU_FEATURE_X86_AVX
 #endif
-#ifdef BL_BUILD_OPT_AVX2
+#if defined(BL_BUILD_OPT_AVX2)
   | BL_RUNTIME_CPU_FEATURE_X86_AVX2
+#endif
+#if defined(BL_BUILD_OPT_AVX512)
+  | BL_RUNTIME_CPU_FEATURE_X86_AVX512
 #endif
   ,
 
@@ -97,9 +103,7 @@ static const BLRuntimeBuildInfo blRuntimeBuildInfo = {
   { 0 },
 
   // Compiler Info.
-#if defined(__INTEL_COMPILER)
-  "ICC"
-#elif defined(__clang_minor__)
+#if defined(__clang_minor__)
   "Clang " BL_STRINGIFY(__clang_major__) "." BL_STRINGIFY(__clang_minor__)
 #elif defined(__GNUC_MINOR__)
   "GCC "  BL_STRINGIFY(__GNUC__) "." BL_STRINGIFY(__GNUC_MINOR__)
@@ -125,6 +129,15 @@ static BL_INLINE uint32_t blRuntimeDetectCpuFeatures(const asmjit::CpuInfo& asmC
   if (asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kSSE4_2)) features |= BL_RUNTIME_CPU_FEATURE_X86_SSE4_2;
   if (asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kAVX   )) features |= BL_RUNTIME_CPU_FEATURE_X86_AVX;
   if (asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kAVX2  )) features |= BL_RUNTIME_CPU_FEATURE_X86_AVX2;
+
+  if (asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kAVX512_F) &&
+      asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kAVX512_BW) &&
+      asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kAVX512_DQ) &&
+      asmCpuInfo.hasFeature(asmjit::CpuFeatures::X86::kAVX512_VL)) {
+    features |= BL_RUNTIME_CPU_FEATURE_X86_AVX512;
+  }
+#else
+  blUnused(asmCpuInfo);
 #endif
 
   return features;
@@ -168,20 +181,30 @@ static BL_INLINE void blRuntimeInitSystemInfo(BLRuntimeContext* rt) noexcept {
 #endif
 
   // NOTE: It seems that on some archs 16kB stack-size is the bare minimum even when sysconf() or PTHREAD_STACK_MIN
-  // report a smaller value. Even if we don't need it we slighly increase the bare minimum to 128kB to make it safer
-  // especially on archs that have a big register file. In addition, some compilers like GCC/clang will use stack
-  // slot for every variable in code, which means that heavily inlined code may need relatively large stack when
-  // compiled in debug mode.
-  info.threadStackSize = BLIntOps::alignUp(blMax<uint32_t>(info.threadStackSize, 128u * 1024u), info.allocationGranularity);
+  // report a smaller value. Even if we don't need it we slightly increase the bare minimum to 128kB in release
+  // builds and to 256kB in debug builds to make it safer especially on archs that have a big register file.
+  // Additionally, modern compilers like GCC/Clang use stack slot for every variable in code in debug builds, which
+  // means that heavily inlined code may need relatively large stack when compiled in debug mode - using sanitizers
+  // such as ASAN makes the problem even bigger.
+#if defined(BL_BUILD_DEBUG)
+  constexpr uint32_t kMinStackKiB = 256;
+#else
+  constexpr uint32_t kMinStackKiB = 128;
+#endif
+
+  info.threadStackSize = bl::IntOps::alignUp(blMax<uint32_t>(info.threadStackSize, kMinStackKiB * 1024u), info.allocationGranularity);
 }
 
 static BL_INLINE void blRuntimeInitOptimizationInfo(BLRuntimeContext* rt) noexcept {
-  BLRuntimeOptimizationInfo& info = rt->optimizationInfo;
+  // Maybe unused.
+  blUnused(rt);
 
 #ifndef BL_BUILD_NO_JIT
 
 #if BL_TARGET_ARCH_X86
+  BLRuntimeOptimizationInfo& info = rt->optimizationInfo;
   const asmjit::CpuInfo& asmCpuInfo = asmjit::CpuInfo::host();
+
   if (asmCpuInfo.isVendor("AMD")) {
     info.cpuVendor = BL_RUNTIME_CPU_VENDOR_AMD;
     info.cpuHints |= BL_RUNTIME_CPU_HINT_FAST_PSHUFB;
@@ -227,6 +250,7 @@ BL_API_IMPL BLResult blRuntimeInit() noexcept {
   blThreadPoolRtInit(rt);
   blZeroAllocatorRtInit(rt);
   blPixelOpsRtInit(rt);
+  blBitArrayRtInit(rt);
   blBitSetRtInit(rt);
   blArrayRtInit(rt);
   blStringRtInit(rt);
@@ -246,10 +270,7 @@ BL_API_IMPL BLResult blRuntimeInit() noexcept {
   blOpenTypeRtInit(rt);
   blFontRtInit(rt);
   blFontManagerRtInit(rt);
-
-#if !defined(BL_BUILD_NO_FIXED_PIPE)
   blStaticPipelineRtInit(rt);
-#endif
 
 #if !defined(BL_BUILD_NO_JIT)
   blDynamicPipelineRtInit(rt);

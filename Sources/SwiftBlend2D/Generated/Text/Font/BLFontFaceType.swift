@@ -3,12 +3,12 @@
 
 import blend2d
 
-/// Type of a font or font-face, see `BLFontFace` (or `BLFontFaceCore`).
+/// Type of a font or font face, see `BLFontFace` (or `BLFontFaceCore`).
 public extension BLFontFaceType {
     /// None or unknown font type.
     static let none = BL_FONT_FACE_TYPE_NONE
     
-    /// TrueType/OpenType font type.
+    /// TrueType/OpenType font type (.ttf/.otf files and font collections).
     static let opentype = BL_FONT_FACE_TYPE_OPENTYPE
     
     /// Maximum value of `BLFontFaceType`.

@@ -16,7 +16,6 @@ public extension BLGlyphInfo {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(cluster)
-        hasher.combine(reserved.0)
-        hasher.combine(reserved.1)
+        hasher.combine(reserved)
     }
 }

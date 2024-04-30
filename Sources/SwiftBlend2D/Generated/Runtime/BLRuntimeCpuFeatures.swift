@@ -20,4 +20,6 @@ public extension BLRuntimeCpuFeatures {
     static let x86_avx = BL_RUNTIME_CPU_FEATURE_X86_AVX
     
     static let x86_avx2 = BL_RUNTIME_CPU_FEATURE_X86_AVX2
+    
+    static let x86_avx512 = BL_RUNTIME_CPU_FEATURE_X86_AVX512
 }

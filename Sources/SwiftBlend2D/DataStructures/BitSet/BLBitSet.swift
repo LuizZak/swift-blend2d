@@ -14,14 +14,8 @@ import blend2d
 ///
 ///   1. Representing character coverage of fonts and unicode text. This use-case
 ///      requires sparseness and ranges as some fonts, especially those designed
-///      for Chinese/Japan languages, provide thousands of glyphs that have pretty
-///      high code points - using a simple BitVector would be pretty wasteful in
-///      this case.
-///
-///   2. Storing OpenType processing instructions, where each bit represents one
-///      operation in the OpenType pipeline.
-///      SSO BitSet will be most likely enough to describe this as most fonts
-///      have less than 96 GPOS/GSUB instructions.
+///      for CJK use, provide thousands of glyphs that have pretty high code
+///      points - using BLBitArray would be very wasteful in this particular case.
 ///
 public class BLBitSet: BLBaseClass<BLBitSetCore> {
     /// Tests whether the BitSet is empty (has no content).

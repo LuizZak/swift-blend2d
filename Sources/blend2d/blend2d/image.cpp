@@ -12,50 +12,97 @@
 #include "imagedecoder.h"
 #include "imageencoder.h"
 #include "imagescale_p.h"
+#include "object_p.h"
 #include "pixelconverter_p.h"
 #include "runtime_p.h"
 #include "support/intops_p.h"
 #include "support/memops_p.h"
 
-namespace BLImagePrivate {
+namespace bl {
+namespace ImageInternal {
 
-// BLImage - Globals
-// =================
-
-static BLObjectEthernalImpl<BLImagePrivateImpl> defaultImage;
-
-// BLImage - Constants
+// bl::Image - Globals
 // ===================
 
-static constexpr uint32_t kSmallDataAlignment = 8;
+static BLObjectEternalImpl<BLImagePrivateImpl> defaultImage;
+
+// bl::Image - Constants
+// =====================
+
 static constexpr uint32_t kLargeDataAlignment = 64;
 static constexpr uint32_t kLargeDataThreshold = 1024;
+static constexpr uint32_t kMaxAddressableOffset = 0x7FFFFFFFu;
 
-// BLImage - Utilities
-// ===================
+// bl::Image - Utilities
+// =====================
 
-static BL_INLINE size_t strideForWidth(uint32_t width, uint32_t depth, BLOverflowFlag* of) noexcept {
-  if (depth <= 8)
-    return (size_t(width) * depth + 7u) / 8u;
+static BL_INLINE uint32_t strideForWidth(uint32_t width, uint32_t depth) noexcept {
+  return (uint32_t(width) * depth + 7u) / 8u;
+}
 
-  size_t bytesPerPixel = size_t(depth / 8u);
-  return BLIntOps::mulOverflow(size_t(width), bytesPerPixel, of);
+static BL_INLINE bool checkSizeAndFormat(int w, int h, BLFormat format) noexcept {
+  return !(unsigned(w - 1) >= BL_RUNTIME_MAX_IMAGE_SIZE ||
+           unsigned(h - 1) >= BL_RUNTIME_MAX_IMAGE_SIZE ||
+           unsigned(format - 1) >= BL_FORMAT_MAX_VALUE);
+}
+
+static BL_INLINE BLResultT<intptr_t> calcStrideFromCreateParams(int w, int h, BLFormat format) noexcept {
+  if (BL_UNLIKELY(!checkSizeAndFormat(w, h, format))) {
+    BLResult result =
+      w <= 0 || h <= 0 || unsigned(format - 1) >= BL_FORMAT_MAX_VALUE
+        ? BL_ERROR_INVALID_VALUE
+        : BL_ERROR_IMAGE_TOO_LARGE;
+    return BLResultT<intptr_t>{result, 0};
+  }
+  else {
+    uint32_t bytesPerLine = strideForWidth(w, blFormatInfo[format].depth);
+    uint64_t bytesPerImage = uint64_t(bytesPerLine) * unsigned(h);
+
+    // NOTE: Align the stride to 16 bytes if bytesPerLine is not too small. The reason is that when multi-threaded
+    // rendering is used and bytesPerLine not aligned, some bands could share a cache line, which would potentially
+    // affect the performance in a very negative way.
+    if (bytesPerLine > 256u)
+      bytesPerLine = IntOps::alignUp(bytesPerLine, 16);
+
+    BLResult result = bytesPerImage <= kMaxAddressableOffset ? BL_SUCCESS : BL_ERROR_IMAGE_TOO_LARGE;
+    return BLResultT<intptr_t>{result, intptr_t(bytesPerLine)};
+  }
+}
+
+// Make sure that the external image won't cause any kind of overflow in rasterization and texture fetching.
+static BL_INLINE BLResult checkCreateFromDataParams(int w, int h, BLFormat format, intptr_t stride) noexcept {
+  uint32_t minimumStride = strideForWidth(w, blFormatInfo[format].depth);
+  uintptr_t bytesPerLine = uintptr_t(blAbs(stride));
+
+  if (BL_UNLIKELY(!checkSizeAndFormat(w, h, format) || bytesPerLine < minimumStride))
+    return BL_ERROR_INVALID_VALUE;
+
+  // Make sure that the image height multiplied by stride is not greater than 2^31 - this makes sure that we
+  // can handle also negative strides properly and that we can guarantee that all pixels are addressable via
+  // 32-bit offsets, which is required by some SIMD fetchers.
+  //
+  // NOTE: BytesPerImage also considers all parent images in case this image is indeed a sub-image. The reason
+  // is that we have to address all pixels in this sub-image too, so basically we include the parent in the
+  // computation as well. Since a sub-image may be managed by the user (outside of Blend2D) we have to check
+  // this every time an external pixel data is used.
+  uint64_t bytesPerImage = uint64_t(bytesPerLine) * uint64_t(uint32_t(h));
+  return bytesPerLine > uintptr_t(kMaxAddressableOffset) || bytesPerImage > kMaxAddressableOffset ? BL_ERROR_IMAGE_TOO_LARGE : BL_SUCCESS;
 }
 
 static void copyImageData(uint8_t* dstData, intptr_t dstStride, const uint8_t* srcData, intptr_t srcStride, int w, int h, BLFormat format) noexcept {
   size_t bytesPerLine = (size_t(unsigned(w)) * blFormatInfo[format].depth + 7u) / 8u;
 
   if (intptr_t(bytesPerLine) == dstStride && intptr_t(bytesPerLine) == srcStride) {
-    // Special case that happens offen - stride equals bytes-per-line (no gaps).
+    // Special case that happens often - stride equals bytes-per-line (no gaps).
     memcpy(dstData, srcData, bytesPerLine * unsigned(h));
     return;
   }
   else {
-    // Generic case - there are either gaps or source/destination is a subimage.
+    // Generic case - there are either gaps or source/destination is a sub-image.
     size_t gap = dstStride > 0 ? size_t(dstStride) - bytesPerLine : size_t(0);
     for (unsigned y = unsigned(h); y; y--) {
       memcpy(dstData, srcData, bytesPerLine);
-      BLMemOps::fillSmallT(dstData + bytesPerLine, uint8_t(0), gap);
+      bl::MemOps::fillSmallT(dstData + bytesPerLine, uint8_t(0), gap);
 
       dstData += dstStride;
       srcData += srcStride;
@@ -63,64 +110,10 @@ static void copyImageData(uint8_t* dstData, intptr_t dstStride, const uint8_t* s
   }
 }
 
-// BLImage - Alloc & Free Impl
-// ===========================
+// bl::Image - Alloc & Free Impl
+// =============================
 
-static BL_NOINLINE BLResult allocImpl(BLImageCore* self, int w, int h, BLFormat format) noexcept {
-  BL_ASSERT(w > 0 && h > 0);
-  BL_ASSERT(format <= BL_FORMAT_MAX_VALUE);
-
-  BLOverflowFlag of = 0;
-  uint32_t depth = blFormatInfo[format].depth;
-  size_t stride = strideForWidth(unsigned(w), depth, &of);
-
-  BLObjectImplSize baseSize(sizeof(BLImagePrivateImpl));
-  BLObjectImplSize implSize(BLIntOps::mulOverflow<size_t>(size_t(h), stride, &of));
-
-  size_t dataAlignment = implSize <= kLargeDataThreshold ? kSmallDataAlignment : kLargeDataAlignment;
-  baseSize = BLIntOps::alignUp(baseSize.value(), dataAlignment);
-  implSize = BLIntOps::addOverflow<size_t>(baseSize.value(), implSize.value(), &of);
-
-  if (BL_UNLIKELY(of))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-
-  BLImagePrivateImpl* impl = blObjectDetailAllocImplT<BLImagePrivateImpl>(self, BLObjectInfo::packType(BL_OBJECT_TYPE_IMAGE), implSize, &implSize);
-  if (BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-
-  uint8_t* pixelData = reinterpret_cast<uint8_t*>(impl) + baseSize.value();
-  impl->pixelData = pixelData;
-  impl->size.reset(w, h);
-  impl->stride = intptr_t(stride);
-  impl->format = uint8_t(format);
-  impl->flags = uint8_t(0);
-  impl->depth = uint16_t(depth);
-  memset(impl->reserved, 0, sizeof(impl->reserved));
-  impl->writerCount = 0;
-
-  return BL_SUCCESS;
-}
-
-static BL_NOINLINE BLResult allocExternal(BLImageCore* self, int w, int h, BLFormat format, void* pixelData, intptr_t stride, BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
-  BL_ASSERT(w > 0 && h > 0);
-  BL_ASSERT(format <= BL_FORMAT_MAX_VALUE);
-
-  void* externalOptData;
-  BLObjectExternalInfo* externalInfo;
-
-  BLObjectImplSize implSize(sizeof(BLImagePrivateImpl));
-  BLImagePrivateImpl* impl = blObjectDetailAllocImplExternalT<BLImagePrivateImpl>(self,
-    BLObjectInfo::packType(BL_OBJECT_TYPE_IMAGE),
-    implSize,
-    &externalInfo,
-    &externalOptData);
-
-  if (BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-
-  externalInfo->destroyFunc = destroyFunc ? destroyFunc : blObjectDestroyExternalDataDummy;
-  externalInfo->userData = userData;
-
+static BL_INLINE void initImplData(BLImagePrivateImpl* impl, int w, int h, BLFormat format, void* pixelData, intptr_t stride) noexcept {
   impl->pixelData = pixelData;
   impl->size.reset(w, h);
   impl->stride = stride;
@@ -128,39 +121,80 @@ static BL_NOINLINE BLResult allocExternal(BLImageCore* self, int w, int h, BLFor
   impl->flags = uint8_t(0);
   impl->depth = uint16_t(blFormatInfo[format].depth);
   memset(impl->reserved, 0, sizeof(impl->reserved));
-  impl->writerCount = 0;
+}
 
+static BL_NOINLINE BLResult allocImpl(BLImageCore* self, int w, int h, BLFormat format, intptr_t stride) noexcept {
+  BL_ASSERT(w > 0);
+  BL_ASSERT(h > 0);
+  BL_ASSERT(format != BL_FORMAT_NONE);
+  BL_ASSERT(format <= BL_FORMAT_MAX_VALUE);
+  BL_ASSERT(stride > 0);
+
+  size_t kBaseImplSize = IntOps::alignUp(sizeof(BLImagePrivateImpl), BL_OBJECT_IMPL_ALIGNMENT);
+  size_t pixelDataSize = size_t(h) * size_t(stride);
+
+  BLObjectImplSize implSize(kBaseImplSize + pixelDataSize);
+  if (pixelDataSize >= kLargeDataThreshold)
+    implSize += kLargeDataAlignment - BL_OBJECT_IMPL_ALIGNMENT;
+
+  BLObjectInfo info = BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_IMAGE);
+  BL_PROPAGATE(ObjectInternal::allocImplT<BLImagePrivateImpl>(self, info, implSize));
+
+  BLImagePrivateImpl* impl = getImpl(self);
+  uint8_t* pixelData = reinterpret_cast<uint8_t*>(impl) + kBaseImplSize;
+
+  if (pixelDataSize >= kLargeDataThreshold)
+    pixelData = bl::IntOps::alignUp(pixelData, kLargeDataAlignment);
+
+  initImplData(impl, w, h, format, pixelData, stride);
+  impl->writerCount = 0;
+  return BL_SUCCESS;
+}
+
+static BL_NOINLINE BLResult allocExternal(BLImageCore* self, int w, int h, BLFormat format, void* pixelData, intptr_t stride, bool immutable, BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
+  BL_ASSERT(w > 0);
+  BL_ASSERT(h > 0);
+  BL_ASSERT(format != BL_FORMAT_NONE);
+  BL_ASSERT(format <= BL_FORMAT_MAX_VALUE);
+
+  BLObjectInfo info = BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_IMAGE);
+  BL_PROPAGATE(ObjectInternal::allocImplExternalT<BLImagePrivateImpl>(self, info, immutable, destroyFunc, userData));
+
+  BLImagePrivateImpl* impl = getImpl(self);
+  initImplData(impl, w, h, format, pixelData, stride);
+  impl->writerCount = 0;
   return BL_SUCCESS;
 }
 
 // Must be available outside of BLImage implementation.
-BLResult freeImpl(BLImagePrivateImpl* impl, BLObjectInfo info) noexcept {
+BLResult freeImpl(BLImagePrivateImpl* impl) noexcept {
   // Postpone the deletion in case that the image still has writers attached. This is required as the rendering
   // context doesn't manipulate the reference count of `BLImage` (otherwise it would not be possible to attach
   // multiple rendering contexts, for example).
   if (impl->writerCount != 0)
     return BL_SUCCESS;
 
-  if (info.xFlag())
-    blObjectDetailCallExternalDestroyFunc(impl, info, BLObjectImplSize(sizeof(BLImagePrivateImpl)), impl->pixelData);
+  if (ObjectInternal::isImplExternal(impl))
+    ObjectInternal::callExternalDestroyFunc(impl, impl->pixelData);
 
-  return blObjectImplFreeInline(impl, info);
+  return ObjectInternal::freeImpl(impl);
 }
 
-} // {BLImagePrivate}
+} // {ImageInternal}
+} // {bl}
 
-// BLImage - API - Init & Destroy
-// ==============================
+// bl::Image - API - Init & Destroy
+// ================================
 
 BL_API_IMPL BLResult blImageInit(BLImageCore* self) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   self->_d = blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d;
   return BL_SUCCESS;
 }
 
 BL_API_IMPL BLResult blImageInitMove(BLImageCore* self, BLImageCore* other) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self != other);
   BL_ASSERT(other->_d.isImage());
@@ -172,50 +206,56 @@ BL_API_IMPL BLResult blImageInitMove(BLImageCore* self, BLImageCore* other) noex
 }
 
 BL_API_IMPL BLResult blImageInitWeak(BLImageCore* self, const BLImageCore* other) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self != other);
   BL_ASSERT(other->_d.isImage());
 
-  return blObjectPrivateInitWeakTagged(self, other);
+  self->_d = other->_d;
+  return retainInstance(self);
 }
 
 BL_API_IMPL BLResult blImageInitAs(BLImageCore* self, int w, int h, BLFormat format) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   self->_d = blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d;
   return blImageCreate(self, w, h, format);
 }
 
-BL_API_IMPL BLResult blImageInitAsFromData(BLImageCore* self, int w, int h, BLFormat format, void* pixelData, intptr_t stride, BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
-  using namespace BLImagePrivate;
+BL_API_IMPL BLResult blImageInitAsFromData(
+    BLImageCore* self, int w, int h, BLFormat format,
+    void* pixelData, intptr_t stride,
+    BLDataAccessFlags accessFlags,
+    BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
+
+  using namespace bl::ImageInternal;
 
   self->_d = blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d;
-  return blImageCreateFromData(self, w, h, format, pixelData, stride, destroyFunc, userData);
+  return blImageCreateFromData(self, w, h, format, pixelData, stride, accessFlags, destroyFunc, userData);
 }
 
 BL_API_IMPL BLResult blImageDestroy(BLImageCore* self) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   return releaseInstance(self);
 }
 
-// BLImage - API - Reset
-// =====================
+// bl::Image - API - Reset
+// =======================
 
 BL_API_IMPL BLResult blImageReset(BLImageCore* self) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   return replaceInstance(self, static_cast<BLImageCore*>(&blObjectDefaults[BL_OBJECT_TYPE_IMAGE]));
 }
 
-// BLImage - API - Assign
-// ======================
+// bl::Image - API - Assign
+// ========================
 
 BL_API_IMPL BLResult blImageAssignMove(BLImageCore* self, BLImageCore* other) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(other->_d.isImage());
@@ -226,17 +266,17 @@ BL_API_IMPL BLResult blImageAssignMove(BLImageCore* self, BLImageCore* other) no
 }
 
 BL_API_IMPL BLResult blImageAssignWeak(BLImageCore* self, const BLImageCore* other) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(other->_d.isImage());
 
-  blObjectPrivateAddRefTagged(other);
+  retainInstance(other);
   return replaceInstance(self, other);
 }
 
 BL_API_IMPL BLResult blImageAssignDeep(BLImageCore* self, const BLImageCore* other) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(other->_d.isImage());
@@ -262,58 +302,73 @@ BL_API_IMPL BLResult blImageAssignDeep(BLImageCore* self, const BLImageCore* oth
   return BL_SUCCESS;
 }
 
-// BLImage - API - Create
-// ======================
+// bl::Image - API - Create
+// ========================
 
 BL_API_IMPL BLResult blImageCreate(BLImageCore* self, int w, int h, BLFormat format) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
 
-  if (BL_UNLIKELY(w <= 0 || h <= 0 || format == BL_FORMAT_NONE || format > BL_FORMAT_MAX_VALUE)) {
-    if (w == 0 && h == 0 && format == BL_FORMAT_NONE)
+  BLResultT<intptr_t> result = calcStrideFromCreateParams(w, h, format);
+  if (BL_UNLIKELY(result.code != BL_SUCCESS)) {
+    if ((w | h) == 0 && format == BL_FORMAT_NONE)
       return blImageReset(self);
     else
-      return blTraceError(BL_ERROR_INVALID_VALUE);
+      return blTraceError(result.code);
   }
-
-  if (BL_UNLIKELY(unsigned(w) >= BL_RUNTIME_MAX_IMAGE_SIZE ||
-                  unsigned(h) >= BL_RUNTIME_MAX_IMAGE_SIZE))
-    return blTraceError(BL_ERROR_IMAGE_TOO_LARGE);
 
   BLImagePrivateImpl* selfI = getImpl(self);
   if (selfI->size == BLSizeI(w, h) && selfI->format == format)
-    if (isMutable(self) && !self->_d.xFlag())
+    if (bl::ObjectInternal::isImplMutable(selfI) && !bl::ObjectInternal::isImplExternal(selfI))
       return BL_SUCCESS;
 
   BLImageCore newO;
-  BL_PROPAGATE(allocImpl(&newO, w, h, format));
+  BL_PROPAGATE(allocImpl(&newO, w, h, format, result.value));
 
   return replaceInstance(self, &newO);
 }
 
-BL_API_IMPL BLResult blImageCreateFromData(BLImageCore* self, int w, int h, BLFormat format, void* pixelData, intptr_t stride, BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
-  using namespace BLImagePrivate;
+BL_API_IMPL BLResult blImageCreateFromData(
+    BLImageCore* self, int w, int h, BLFormat format,
+    void* pixelData, intptr_t stride,
+    BLDataAccessFlags accessFlags,
+    BLDestroyExternalDataFunc destroyFunc, void* userData) noexcept {
+
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
 
-  if (BL_UNLIKELY(w <= 0 || h <= 0 || format == BL_FORMAT_NONE || format > BL_FORMAT_MAX_VALUE))
-    return blTraceError(BL_ERROR_INVALID_VALUE);
+  BLResult result = checkCreateFromDataParams(w, h, format, stride);
+  if (BL_UNLIKELY(result != BL_SUCCESS))
+    return blTraceError(result);
 
-  if (BL_UNLIKELY(unsigned(w) >= BL_RUNTIME_MAX_IMAGE_SIZE || unsigned(h) >= BL_RUNTIME_MAX_IMAGE_SIZE))
-    return blTraceError(BL_ERROR_IMAGE_TOO_LARGE);
+  BLImagePrivateImpl* selfI = getImpl(self);
+  bool immutable = !(accessFlags & BL_DATA_ACCESS_WRITE);
 
-  BLImageCore newO;
-  BL_PROPAGATE(allocExternal(&newO, w, h, format, pixelData, stride, destroyFunc, userData));
+  if (bl::ObjectInternal::isImplExternal(selfI) && bl::ObjectInternal::isImplRefCountEqualToBase(selfI) && selfI->writerCount == 0) {
+    // OPTIMIZATION: If the user code calls BLImage::createFromData() for every frame, use the same Impl
+    // if the `refCount == 1` and the Impl is external to avoid a malloc()/free() roundtrip for each call.
+    bl::ObjectInternal::callExternalDestroyFunc(selfI, selfI->pixelData);
+    bl::ObjectInternal::initExternalDestroyFunc(selfI, destroyFunc, userData);
+    bl::ObjectInternal::initRefCountToBase(selfI, immutable);
 
-  return replaceInstance(self, &newO);
+    initImplData(selfI, w, h, format, pixelData, stride);
+    return BL_SUCCESS;
+  }
+  else {
+    BLImageCore newO;
+    BL_PROPAGATE(allocExternal(&newO, w, h, format, pixelData, stride, immutable, destroyFunc, userData));
+
+    return replaceInstance(self, &newO);
+  }
 }
 
-// BLImage - API - Accessors
-// =========================
+// bl::Image - API - Accessors
+// ===========================
 
 BL_API_IMPL BLResult blImageGetData(const BLImageCore* self, BLImageData* dataOut) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BLImagePrivateImpl* selfI = getImpl(self);
@@ -328,7 +383,7 @@ BL_API_IMPL BLResult blImageGetData(const BLImageCore* self, BLImageData* dataOu
 }
 
 BL_API_IMPL BLResult blImageMakeMutable(BLImageCore* self, BLImageData* dataOut) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BLImagePrivateImpl* selfI = getImpl(self);
@@ -336,9 +391,9 @@ BL_API_IMPL BLResult blImageMakeMutable(BLImageCore* self, BLImageData* dataOut)
   BLSizeI size = selfI->size;
   BLFormat format = (BLFormat)selfI->format;
 
-  if (format != BL_FORMAT_NONE && !isMutable(self)) {
+  if (format != BL_FORMAT_NONE && !isImplMutable(selfI)) {
     BLImageCore newO;
-    BL_PROPAGATE(allocImpl(&newO, size.w, size.h, format));
+    BL_PROPAGATE(allocImpl(&newO, size.w, size.h, format, strideForWidth(size.w, blFormatInfo[format].depth)));
 
     BLImagePrivateImpl* newI = getImpl(&newO);
     dataOut->pixelData = newI->pixelData;
@@ -348,7 +403,7 @@ BL_API_IMPL BLResult blImageMakeMutable(BLImageCore* self, BLImageData* dataOut)
     dataOut->flags = 0;
 
     copyImageData(static_cast<uint8_t*>(newI->pixelData), newI->stride,
-                static_cast<uint8_t*>(selfI->pixelData), selfI->stride, size.w, size.h, format);
+                  static_cast<uint8_t*>(selfI->pixelData), selfI->stride, size.w, size.h, format);
 
     return replaceInstance(self, &newO);
   }
@@ -362,11 +417,11 @@ BL_API_IMPL BLResult blImageMakeMutable(BLImageCore* self, BLImageData* dataOut)
   }
 }
 
-// BLImage - API - Convert
-// =======================
+// bl::Image - API - Convert
+// =========================
 
 BL_API_IMPL BLResult blImageConvert(BLImageCore* self, BLFormat format) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BLImagePrivateImpl* selfI = getImpl(self);
@@ -395,7 +450,7 @@ BL_API_IMPL BLResult blImageConvert(BLImageCore* self, BLFormat format) noexcept
     return blTraceError(BL_ERROR_INVALID_STATE);
   }
 
-  if (di.depth == si.depth && isMutable(self)) {
+  if (di.depth == si.depth && isImplMutable(selfI)) {
     // Prefer in-place conversion if the depths are equal and the image mutable.
     pc.convertFunc(&pc, static_cast<uint8_t*>(selfI->pixelData), selfI->stride,
                         static_cast<uint8_t*>(selfI->pixelData), selfI->stride, uint32_t(size.w), uint32_t(size.h), nullptr);
@@ -420,11 +475,11 @@ BL_API_IMPL BLResult blImageConvert(BLImageCore* self, BLFormat format) noexcept
   return result;
 }
 
-// BLImage - API - Equality & Comparison
-// =====================================
+// bl::Image - API - Equality & Comparison
+// =======================================
 
 BL_API_IMPL bool blImageEquals(const BLImageCore* a, const BLImageCore* b) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(a->_d.isImage());
   BL_ASSERT(b->_d.isImage());
@@ -458,11 +513,11 @@ BL_API_IMPL bool blImageEquals(const BLImageCore* a, const BLImageCore* b) noexc
   return true;
 }
 
-// BLImage - API - Scale
-// =====================
+// bl::Image - API - Scale
+// =======================
 
-BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, const BLSizeI* size, uint32_t filter, const BLImageScaleOptions* options) noexcept {
-  using namespace BLImagePrivate;
+BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, const BLSizeI* size, BLImageScaleFilter filter) noexcept {
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(dst->_d.isImage());
   BL_ASSERT(src->_d.isImage());
@@ -471,8 +526,8 @@ BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, cons
   if (srcI->format == BL_FORMAT_NONE)
     return blImageReset(dst);
 
-  BLImageScaleContext scaleCtx;
-  BL_PROPAGATE(scaleCtx.create(*size, srcI->size, filter, options));
+  bl::ImageScaleContext scaleCtx;
+  BL_PROPAGATE(scaleCtx.create(*size, srcI->size, filter));
 
   BLFormat format = BLFormat(srcI->format);
   int tw = scaleCtx.dstWidth();
@@ -512,11 +567,11 @@ BL_API_IMPL BLResult blImageScale(BLImageCore* dst, const BLImageCore* src, cons
   return BL_SUCCESS;
 }
 
-// BLImage - API - Read File
-// =========================
+// bl::Image - API - Read File
+// ===========================
 
 BL_API_IMPL BLResult blImageReadFromFile(BLImageCore* self, const char* fileName, const BLArrayCore* codecs) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
 
@@ -537,11 +592,11 @@ BL_API_IMPL BLResult blImageReadFromFile(BLImageCore* self, const char* fileName
   return decoder.readFrame(*self, buffer);
 }
 
-// BLImage - API - Read Data
-// =========================
+// bl::Image - API - Read Data
+// ===========================
 
 BL_API_IMPL BLResult blImageReadFromData(BLImageCore* self, const void* data, size_t size, const BLArrayCore* codecs) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
 
@@ -556,14 +611,13 @@ BL_API_IMPL BLResult blImageReadFromData(BLImageCore* self, const void* data, si
   return decoder.readFrame(*self, data, size);
 }
 
-// BLImage - API - Write File
-// ==========================
+// bl::Image - API - Write File
+// ============================
 
-namespace BLImagePrivate {
+namespace bl {
+namespace ImageInternal {
 
 static BLResult writeToFileInternal(const BLImageCore* self, const char* fileName, const BLImageCodecCore* codec) noexcept {
-  using namespace BLImagePrivate;
-
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(codec->_d.isImageCodec());
 
@@ -572,10 +626,11 @@ static BLResult writeToFileInternal(const BLImageCore* self, const char* fileNam
   return BLFileSystem::writeFile(fileName, buffer);
 }
 
-} // {BLImagePrivate}
+} // {ImageInternal}
+} // {bl}
 
 BL_API_IMPL BLResult blImageWriteToFile(const BLImageCore* self, const char* fileName, const BLImageCodecCore* codec) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
 
@@ -590,11 +645,11 @@ BL_API_IMPL BLResult blImageWriteToFile(const BLImageCore* self, const char* fil
   }
 }
 
-// BLImage - API - Write Data
-// ==========================
+// bl::Image - API - Write Data
+// ============================
 
 BL_API_IMPL BLResult blImageWriteToData(const BLImageCore* self, BLArrayCore* dst, const BLImageCodecCore* codec) noexcept {
-  using namespace BLImagePrivate;
+  using namespace bl::ImageInternal;
 
   BL_ASSERT(self->_d.isImage());
   BL_ASSERT(codec->_d.isImageCodec());
@@ -607,55 +662,13 @@ BL_API_IMPL BLResult blImageWriteToData(const BLImageCore* self, BLArrayCore* ds
   return encoder.writeFrame(dst->dcast<BLArray<uint8_t>>(), self->dcast());
 }
 
-// BLImage - Runtime Registration
-// ==============================
+// bl::Image - Runtime Registration
+// ================================
 
 void blImageRtInit(BLRuntimeContext* rt) noexcept {
   blUnused(rt);
 
-  auto& defaultImage = BLImagePrivate::defaultImage;
+  auto& defaultImage = bl::ImageInternal::defaultImage;
   blObjectDefaults[BL_OBJECT_TYPE_IMAGE]._d.initDynamic(
-    BL_OBJECT_TYPE_IMAGE,
-    BLObjectInfo{BL_OBJECT_INFO_IMMUTABLE_FLAG},
-    &defaultImage.impl);
+    BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_IMAGE), &defaultImage.impl);
 }
-
-// BLImage - Tests
-// ===============
-
-#if defined(BL_TEST)
-UNIT(image) {
-  INFO("Image data");
-  {
-    constexpr uint32_t kSize = 256;
-
-    BLImage img0;
-    BLImage img1;
-
-    EXPECT_SUCCESS(img0.create(kSize, kSize, BL_FORMAT_PRGB32));
-    EXPECT_SUCCESS(img1.create(kSize, kSize, BL_FORMAT_PRGB32));
-
-    EXPECT_EQ(img0.width(), 256);
-    EXPECT_EQ(img0.height(), 256);
-    EXPECT_EQ(img0.format(), BL_FORMAT_PRGB32);
-
-    EXPECT_EQ(img1.width(), 256);
-    EXPECT_EQ(img1.height(), 256);
-    EXPECT_EQ(img1.format(), BL_FORMAT_PRGB32);
-
-    BLImageData imgData0;
-    BLImageData imgData1;
-
-    EXPECT_SUCCESS(img0.getData(&imgData0));
-    EXPECT_SUCCESS(img1.getData(&imgData1));
-
-    // Direct memory manipulation.
-    for (uint32_t i = 0; i < kSize; i++) {
-      memset(static_cast<uint8_t*>(imgData0.pixelData) + i * imgData0.stride, 0xFF, kSize * 4);
-      memset(static_cast<uint8_t*>(imgData1.pixelData) + i * imgData1.stride, 0xFF, kSize * 4);
-    }
-
-    EXPECT_TRUE(img0.equals(img1));
-  }
-}
-#endif

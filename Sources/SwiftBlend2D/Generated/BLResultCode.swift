@@ -181,6 +181,9 @@ public extension BLResultCode {
     /// No states to restore (BLContext).
     static let errorNoStatesToRestore = BL_ERROR_NO_STATES_TO_RESTORE
     
+    /// Cannot save state as the number of saved states reached the limit (BLContext).
+    static let errorTooManySavedStates = BL_ERROR_TOO_MANY_SAVED_STATES
+    
     /// The size of the image is too large.
     static let errorImageTooLarge = BL_ERROR_IMAGE_TOO_LARGE
     
@@ -232,7 +235,7 @@ public extension BLResultCode {
     /// Font doesn't have any data as it's not initialized.
     static let errorFontNotInitialized = BL_ERROR_FONT_NOT_INITIALIZED
     
-    /// Font or font-face was not matched (BLFontManager).
+    /// Font or font face was not matched (BLFontManager).
     static let errorFontNoMatch = BL_ERROR_FONT_NO_MATCH
     
     /// Font has no character to glyph mapping data.
@@ -249,6 +252,9 @@ public extension BLResultCode {
     
     /// Font program terminated because the execution reached the limit.
     static let errorFontProgramTerminated = BL_ERROR_FONT_PROGRAM_TERMINATED
+    
+    /// Glyph substitution requires too much space and was terminated.
+    static let errorGlyphSubstitutionTooLarge = BL_ERROR_GLYPH_SUBSTITUTION_TOO_LARGE
     
     /// Invalid glyph identifier.
     static let errorInvalidGlyph = BL_ERROR_INVALID_GLYPH

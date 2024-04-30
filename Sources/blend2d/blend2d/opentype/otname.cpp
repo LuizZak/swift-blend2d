@@ -4,19 +4,20 @@
 // SPDX-License-Identifier: Zlib
 
 #include "../api-build_p.h"
-#include "../tables_p.h"
-#include "../unicode_p.h"
 #include "../trace_p.h"
 #include "../opentype/otface_p.h"
 #include "../opentype/otname_p.h"
 #include "../opentype/otplatform_p.h"
 #include "../support/intops_p.h"
+#include "../support/lookuptable_p.h"
+#include "../unicode/unicode_p.h"
 
-namespace BLOpenType {
+namespace bl {
+namespace OpenType {
 namespace NameImpl {
 
-// OpenType::NameImpl - Tracing
-// ============================
+// bl::OpenType::NameImpl - Tracing
+// ================================
 
 #if defined(BL_TRACE_OT_ALL) || defined(BL_TRACE_OT_NAME)
   #define Trace BLDebugTrace
@@ -24,8 +25,8 @@ namespace NameImpl {
   #define Trace BLDummyTrace
 #endif
 
-// OpenType::NameImpl - Utilities
-// ==============================
+// bl::OpenType::NameImpl - Utilities
+// ==================================
 
 static BLTextEncoding encodingFromPlatformId(uint32_t platformId) noexcept {
   // Both Unicode and Windows platform use 'UTF16-BE' encoding.
@@ -43,7 +44,7 @@ static BLResult convertNameStringToUtf8(BLString& dst, BLArrayView<uint8_t> src,
   char* dstStart;
   BL_PROPAGATE(dst.modifyOp(BL_MODIFY_OP_ASSIGN_GROW, dstSize, &dstStart));
 
-  BLUtf8Writer dstWriter(dstStart, dstSize);
+  Unicode::Utf8Writer dstWriter(dstStart, dstSize);
   size_t nullTerminatorCount = 0;
 
   if (encoding == BL_TEXT_ENCODING_LATIN1) {
@@ -62,10 +63,10 @@ static BLResult convertNameStringToUtf8(BLString& dst, BLArrayView<uint8_t> src,
   }
   else {
     // UTF16-BE.
-    BLUtf16Reader srcReader(src.data, src.size & ~size_t(0x1));
+    Unicode::Utf16Reader srcReader(src.data, src.size & ~size_t(0x1));
     while (srcReader.hasNext()) {
       uint32_t uc;
-      BL_PROPAGATE(srcReader.next<BL_UNICODE_IO_UNALIGNED | BL_UNICODE_IO_BYTE_ORDER_BE | BL_UNICODE_IO_STRICT>(uc));
+      BL_PROPAGATE(srcReader.next<Unicode::IOFlags::kUnaligned | Unicode::IOFlags::kByteOrderBE | Unicode::IOFlags::kStrict>(uc));
 
       nullTerminatorCount += (uc == 0);
       BL_PROPAGATE(dstWriter.writeUnsafe(uc));
@@ -105,25 +106,25 @@ static void normalizeFamilyAndSubfamily(OTFaceImpl* faceI, Trace trace) noexcept
   }
 }
 
-// OpenType::NameImpl - Init
-// =========================
+// bl::OpenType::NameImpl - Init
+// =============================
 
-BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
+BLResult init(OTFaceImpl* faceI, OTFaceTables& tables) noexcept {
   typedef NameTable::NameRecord NameRecord;
 
-  BLFontTableT<NameTable> name;
-  if (fontData->queryTable(faceI->faceInfo.faceIndex, &name, BL_MAKE_TAG('n', 'a', 'm', 'e')) == 0)
+  Table<NameTable> name(tables.name);
+  if (!name)
     return blTraceError(BL_ERROR_FONT_MISSING_IMPORTANT_TABLE);
 
-  if (!blFontTableFitsT<NameTable>(name))
+  if (!name.fits())
     return blTraceError(BL_ERROR_INVALID_DATA);
 
   Trace trace;
-  trace.info("BLOpenType::OTFaceImpl::InitName [Size=%zu]\n", name.size);
+  trace.info("bl::OpenType::OTFaceImpl::InitName [Size=%u]\n", name.size);
   trace.indent();
 
-  if (BL_UNLIKELY(name.size < NameTable::kMinSize)) {
-    trace.warn("Table is too small\n");
+  if (BL_UNLIKELY(name.size < NameTable::kBaseSize)) {
+    trace.warn("Table is truncated\n");
     return blTraceError(BL_ERROR_INVALID_DATA);
   }
 
@@ -143,14 +144,14 @@ BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
 
   // There must be some names otherwise this table is invalid. Also make sure that the number of records doesn't
   // overflow the size of 'name' itself.
-  if (BL_UNLIKELY(recordCount == 0) || !blFontTableFitsN(name, 6 + recordCount * sizeof(NameRecord)))
+  if (BL_UNLIKELY(!recordCount || !name.fits(6u + recordCount * uint32_t(sizeof(NameRecord)))))
     return blTraceError(BL_ERROR_INVALID_DATA);
 
   // Mask of name IDs which we are interested in.
   //
   // NOTE: We are not interested in WWS family and subfamily names as those may include subfamilies, which we expect
   // to be separate. We would only use WWS names if there is no other choice.
-  constexpr uint32_t kImportantNameIdMask = BLIntOps::lsbBitsAt<uint32_t>(
+  constexpr uint32_t kImportantNameIdMask = IntOps::lsbBitsAt<uint32_t>(
     BL_FONT_STRING_ID_FAMILY_NAME,
     BL_FONT_STRING_ID_SUBFAMILY_NAME,
     BL_FONT_STRING_ID_FULL_NAME,
@@ -284,27 +285,27 @@ BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
       if (score > nameIdScore[nameId]) {
         nameIdScore[nameId] = uint16_t(score);
         nameIdIndex[nameId] = i;
-        nameIdMask |= BLIntOps::lsbBitAt<uint32_t>(nameId);
+        nameIdMask |= IntOps::lsbBitAt<uint32_t>(nameId);
       }
     }
   }
 
   // Prefer TypographicFamilyName over FamilyName and WWSFamilyName.
-  if (BLIntOps::bitTest(nameIdMask, BL_FONT_STRING_ID_TYPOGRAPHIC_FAMILY_NAME)) {
-    nameIdMask &= ~BLIntOps::lsbBitsAt<uint32_t>(BL_FONT_STRING_ID_FAMILY_NAME, BL_FONT_STRING_ID_WWS_FAMILY_NAME);
+  if (IntOps::bitTest(nameIdMask, BL_FONT_STRING_ID_TYPOGRAPHIC_FAMILY_NAME)) {
+    nameIdMask &= ~IntOps::lsbBitsAt<uint32_t>(BL_FONT_STRING_ID_FAMILY_NAME, BL_FONT_STRING_ID_WWS_FAMILY_NAME);
   }
 
   // Prefer TypographicSubfamilyName over SubfamilyName and WWSSubfamilyName.
-  if (BLIntOps::bitTest(nameIdMask, BL_FONT_STRING_ID_TYPOGRAPHIC_SUBFAMILY_NAME)) {
-    nameIdMask &= ~BLIntOps::lsbBitsAt<uint32_t>(BL_FONT_STRING_ID_SUBFAMILY_NAME, BL_FONT_STRING_ID_WWS_SUBFAMILY_NAME);
+  if (IntOps::bitTest(nameIdMask, BL_FONT_STRING_ID_TYPOGRAPHIC_SUBFAMILY_NAME)) {
+    nameIdMask &= ~IntOps::lsbBitsAt<uint32_t>(BL_FONT_STRING_ID_SUBFAMILY_NAME, BL_FONT_STRING_ID_WWS_SUBFAMILY_NAME);
   }
 
-  if (BLIntOps::bitMatch(nameIdMask, BLIntOps::lsbBitsAt<uint32_t>(BL_FONT_STRING_ID_TYPOGRAPHIC_FAMILY_NAME, BL_FONT_STRING_ID_TYPOGRAPHIC_SUBFAMILY_NAME))) {
+  if (IntOps::bitMatch(nameIdMask, IntOps::lsbBitsAt<uint32_t>(BL_FONT_STRING_ID_TYPOGRAPHIC_FAMILY_NAME, BL_FONT_STRING_ID_TYPOGRAPHIC_SUBFAMILY_NAME))) {
     trace.info("Has Typographic FamilyName and SubfamilyName\n");
     faceI->faceInfo.faceFlags |= BL_FONT_FACE_FLAG_TYPOGRAPHIC_NAMES;
   }
 
-  BLBitWordIterator<uint32_t> bitWordIterator(nameIdMask);
+  BitWordIterator<uint32_t> bitWordIterator(nameIdMask);
   while (bitWordIterator.hasNext()) {
     uint32_t nameId = bitWordIterator.next();
     const NameRecord& nameRecord = nameRecords[nameIdIndex[nameId]];
@@ -360,4 +361,5 @@ BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
 }
 
 } // {NameImpl}
-} // {BLOpenType}
+} // {OpenType}
+} // {bl}

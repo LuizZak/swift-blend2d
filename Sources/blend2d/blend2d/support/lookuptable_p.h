@@ -12,12 +12,14 @@
 //! \addtogroup blend2d_internal
 //! \{
 
+namespace bl {
+
 //! \name Compile-Time Lookup Table
 //! \{
 
 //! Struct that holds `N` items of `T` type - output of lookup table generators.
 template<typename T, size_t N>
-struct BLLookupTable {
+struct LookupTable {
   T data[N];
 
   BL_INLINE constexpr size_t size() const noexcept { return N; }
@@ -58,19 +60,89 @@ template<> struct make_index_sequence<1> : index_sequence<0> {};
 #endif
 
 template<typename T, size_t N, class Gen, size_t... Indexes>
-static BL_INLINE constexpr BLLookupTable<T, N> blMakeLookupTableImpl(Internal::index_sequence<Indexes...>) noexcept {
-  return BLLookupTable<T, N> {{ T(Gen::value(Indexes))... }};
+static BL_INLINE constexpr LookupTable<T, N> makeLookupTableImpl(Internal::index_sequence<Indexes...>) noexcept {
+  return LookupTable<T, N> {{ T(Gen::value(Indexes))... }};
 }
+
+template<typename Generator>
+struct BitTableGeneratorAdapter {
+  static constexpr BLBitWord gen8(size_t index) noexcept {
+    return (BLBitWord(Generator::value(index + 0u)) << 0u) |
+           (BLBitWord(Generator::value(index + 1u)) << 1u) |
+           (BLBitWord(Generator::value(index + 2u)) << 2u) |
+           (BLBitWord(Generator::value(index + 3u)) << 3u) |
+           (BLBitWord(Generator::value(index + 4u)) << 4u) |
+           (BLBitWord(Generator::value(index + 5u)) << 5u) |
+           (BLBitWord(Generator::value(index + 6u)) << 6u) |
+           (BLBitWord(Generator::value(index + 7u)) << 7u) ;
+  }
+
+  static constexpr BLBitWord gen32(size_t index) noexcept {
+    return (uint32_t(gen8(index +  0u)) <<  0u) |
+           (uint32_t(gen8(index +  8u)) <<  8u) |
+           (uint32_t(gen8(index + 16u)) << 16u) |
+           (uint32_t(gen8(index + 24u)) << 24u) ;
+  }
+
+  static constexpr BLBitWord gen64(size_t index) noexcept {
+    return (uint64_t(gen8(index +  0u)) <<  0u) |
+           (uint64_t(gen8(index +  8u)) <<  8u) |
+           (uint64_t(gen8(index + 16u)) << 16u) |
+           (uint64_t(gen8(index + 24u)) << 24u) |
+           (uint64_t(gen8(index + 32u)) << 32u) |
+           (uint64_t(gen8(index + 40u)) << 40u) |
+           (uint64_t(gen8(index + 48u)) << 48u) |
+           (uint64_t(gen8(index + 56u)) << 56u) ;
+  }
+
+  static constexpr BLBitWord value(size_t index) noexcept {
+    return sizeof(BLBitWord) <= 4 ? BLBitWord(gen32(index * 32u) & ~BLBitWord(0))
+                                  : BLBitWord(gen64(index * 64u) & ~BLBitWord(0));
+  }
+};
 
 }
 
-//! Creates a lookup table of `BLLookupTable<T[N]>` by using the generator `Gen`.
+//! Creates a lookup table of `LookupTable<T[N]>` by using the generator `Gen`.
 template<typename T, size_t N, class Gen>
-static BL_INLINE constexpr BLLookupTable<T, N> blMakeLookupTable() noexcept {
-  return Internal::blMakeLookupTableImpl<T, N, Gen>(Internal::make_index_sequence<N>{});
+static BL_INLINE constexpr LookupTable<T, N> makeLookupTable() noexcept {
+  return Internal::makeLookupTableImpl<T, N, Gen>(Internal::make_index_sequence<N>{});
 }
+
+template<size_t N>
+struct BitLookupTable {
+  enum : size_t {
+    kBitsPerBitWord = sizeof(BLBitWord) * 8,
+
+    kBitCount = N,
+    kWordCount = (N + kBitsPerBitWord - 1) / (kBitsPerBitWord)
+  };
+
+  LookupTable<BLBitWord, kWordCount> data;
+
+  BL_INLINE constexpr size_t size() const noexcept { return N; }
+
+  BL_INLINE bool operator[](size_t i) const noexcept {
+    BL_ASSERT(i < N);
+    return bool((data[i / kBitsPerBitWord] >> (i % kBitsPerBitWord)) & 0x1u);
+  }
+};
+
+template<size_t N, class Generator>
+static BL_INLINE constexpr BitLookupTable<N> makeBitTable() noexcept {
+  return BitLookupTable<N>{
+    Internal::makeLookupTableImpl<BLBitWord, BitLookupTable<N>::kWordCount,
+                                  Internal::BitTableGeneratorAdapter<Generator>>(Internal::make_index_sequence<BitLookupTable<N>::kWordCount>{})
+  };
+}
+
+#define BL_CONSTEXPR_TABLE(Name, Generator, T, N) \
+  static constexpr const LookupTable<T, N> Name##_constexpr = makeLookupTable<T, N, Generator>(); \
+  const LookupTable<T, N> Name = Name##_constexpr
 
 //! \}
+
+} // {bl}
 
 //! \}
 //! \endcond

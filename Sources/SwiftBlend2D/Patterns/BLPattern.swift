@@ -20,25 +20,25 @@ public struct BLPattern {
     /// Whether this pattern has a transformation matrix different than
     /// `BLMatrix2D.identity`.
     public var hasMatrix: Bool {
-        matrixType != .identity
+        transformType != .identity
     }
     
     /// Type of the transformation matrix.
-    public var matrixType: BLMatrix2DType {
-        blPatternGetMatrixType(&box.object)
+    public var transformType: BLTransformType {
+        blPatternGetTransformType(&box.object)
     }
     
     /// Gradient transformation matrix.
     public var matrix: BLMatrix2D {
         get {
             var matrix = BLMatrix2D()
-            blPatternGetMatrix(&box.object, &matrix)
+            blPatternGetTransform(&box.object, &matrix)
             return matrix
         }
         set {
             ensureUnique()
 
-            _=_applyMatrixOp(.assign, newValue)
+            _=_applyTransformOp(.assign, newValue)
         }
     }
     
@@ -129,193 +129,193 @@ public extension BLPattern {
     @discardableResult
     mutating func resetMatrix() -> BLResult {
         ensureUnique()
-        return blPatternApplyMatrixOp(&box.object, .reset, nil)
+        return blPatternApplyTransformOp(&box.object, .reset, nil)
     }
     @inlinable
     @discardableResult
     mutating func translate(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.translate, x, y)
+        _applyTransformOpV(.translate, x, y)
     }
     @inlinable
     @discardableResult
     mutating func translate(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.translate, p.x, p.y)
+        _applyTransformOpV(.translate, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func translate(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.translate, p)
+        _applyTransformOp(.translate, p)
     }
     @inlinable
     @discardableResult
     mutating func scale(xy: Double) -> BLResult {
-        _applyMatrixOpV(.scale, xy, xy)
+        _applyTransformOpV(.scale, xy, xy)
     }
     @inlinable
     @discardableResult
     mutating func scale(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.scale, x, y)
+        _applyTransformOpV(.scale, x, y)
     }
     @inlinable
     @discardableResult
     mutating func scale(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.scale, p.x, p.y)
+        _applyTransformOpV(.scale, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func scale(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.scale, p)
+        _applyTransformOp(.scale, p)
     }
     @inlinable
     @discardableResult
     mutating func skew(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.skew, x, y)
+        _applyTransformOpV(.skew, x, y)
     }
     @inlinable
     @discardableResult
     mutating func skew(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.skew, p)
+        _applyTransformOp(.skew, p)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double) -> BLResult {
-        _applyMatrixOp(.rotate, angle)
+        _applyTransformOp(.rotate, angle)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, x, y)
+        _applyTransformOpV(.rotatePt, angle, x, y)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
+        _applyTransformOpV(.rotatePt, angle, point.x, point.y)
     }
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
+        _applyTransformOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
     @inlinable
     @discardableResult
     mutating func transform(_ matrix: BLMatrix2D) -> BLResult {
-        _applyMatrixOp(.transform, matrix)
+        _applyTransformOp(.transform, matrix)
     }
     @inlinable
     @discardableResult
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postTranslate, x, y)
+        _applyTransformOpV(.postTranslate, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postTranslate(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postTranslate, p.x, p.y)
+        _applyTransformOpV(.postTranslate, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func postTranslate(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postTranslate, p)
+        _applyTransformOp(.postTranslate, p)
     }
     @inlinable
     @discardableResult
     mutating func postScale(xy: Double) -> BLResult {
-        _applyMatrixOpV(.postScale, xy, xy)
+        _applyTransformOpV(.postScale, xy, xy)
     }
     @inlinable
     @discardableResult
     mutating func postScale(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postScale, x, y)
+        _applyTransformOpV(.postScale, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postScale(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postScale, p.x, p.y)
+        _applyTransformOpV(.postScale, p.x, p.y)
     }
     @inlinable
     @discardableResult
     mutating func postScale(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postScale, p)
+        _applyTransformOp(.postScale, p)
     }
     @inlinable
     @discardableResult
     mutating func postSkew(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postSkew, x, y)
+        _applyTransformOpV(.postSkew, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postSkew(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postSkew, p)
+        _applyTransformOp(.postSkew, p)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double) -> BLResult {
-        _applyMatrixOp(.postRotate, angle)
+        _applyTransformOp(.postRotate, angle)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, x, y)
+        _applyTransformOpV(.postRotatePt, angle, x, y)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, point: BLPoint) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
+        _applyTransformOpV(.postRotatePt, angle, point.x, point.y)
     }
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double, point: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
+        _applyTransformOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
     @inlinable
     @discardableResult
     mutating func postTransform(_ matrix: BLMatrix2D) -> BLResult {
-        _applyMatrixOp(.postTransform, matrix)
+        _applyTransformOp(.postTransform, matrix)
     }
 }
 
 internal extension BLPattern {
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
+    mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLMatrix2D) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blPatternApplyMatrixOp(&box.object, opType, pointer)
+            blPatternApplyTransformOp(&box.object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
+    mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLPoint) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blPatternApplyMatrixOp(&box.object, opType, pointer)
+            blPatternApplyTransformOp(&box.object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
+    mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: Double) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blPatternApplyMatrixOp(&box.object, opType, pointer)
+            blPatternApplyTransformOp(&box.object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
+    mutating func _applyTransformOpV(_ opType: BLTransformOp, _ args: Double...) -> BLResult {
         ensureUnique()
         return args.withUnsafeBytes { pointer in
-            blPatternApplyMatrixOp(&box.object, opType, pointer.baseAddress)
+            blPatternApplyTransformOp(&box.object, opType, pointer.baseAddress)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
+    mutating func _applyTransformOpV<T: BinaryInteger>(_ opType: BLTransformOp, _ args: T...) -> BLResult {
         ensureUnique()
         return args.map { Double($0) }.withUnsafeBytes { pointer in
-            blPatternApplyMatrixOp(&box.object, opType, pointer.baseAddress)
+            blPatternApplyTransformOp(&box.object, opType, pointer.baseAddress)
         }
     }
 }
@@ -333,11 +333,7 @@ extension BLPatternCore: CoreStructure {
     
     @usableFromInline
     var impl: BLPatternImpl {
-        get {
-            _d.impl!.load(as: BLPatternImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLPatternImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

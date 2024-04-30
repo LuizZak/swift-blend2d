@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// A presentation attribute defining the shape to be used at the end of open subpaths.
+/// A presentation attribute defining the shape to be used at the end of open sub-paths.
 public extension BLStrokeCap {
     /// Butt cap [default].
     static let butt = BL_STROKE_CAP_BUTT

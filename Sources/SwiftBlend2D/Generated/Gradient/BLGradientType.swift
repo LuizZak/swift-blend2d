@@ -11,8 +11,8 @@ public extension BLGradientType {
     /// Radial gradient type.
     static let radial = BL_GRADIENT_TYPE_RADIAL
     
-    /// Conical gradient type.
-    static let conical = BL_GRADIENT_TYPE_CONICAL
+    /// Conic gradient type.
+    static let conic = BL_GRADIENT_TYPE_CONIC
     
     /// Maximum value of `BLGradientType`.
     static let maxValue = BL_GRADIENT_TYPE_MAX_VALUE

@@ -27,13 +27,4 @@ public extension BLFontFaceDiagFlags {
     
     /// Wrong format in 'cmap' (sub)table.
     static let wrongCmapFormat = BL_FONT_FACE_DIAG_WRONG_CMAP_FORMAT
-    
-    /// Wrong data in 'GDEF' table.
-    static let wrongGdefData = BL_FONT_FACE_DIAG_WRONG_GDEF_DATA
-    
-    /// Wrong data in 'GPOS' table.
-    static let wrongGposData = BL_FONT_FACE_DIAG_WRONG_GPOS_DATA
-    
-    /// Wrong data in 'GSUB' table.
-    static let wrongGsubData = BL_FONT_FACE_DIAG_WRONG_GSUB_DATA
 }

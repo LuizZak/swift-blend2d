@@ -8,6 +8,12 @@ public extension BLGradientQuality {
     /// Nearest neighbor.
     static let nearest = BL_GRADIENT_QUALITY_NEAREST
     
+    /// Use smoothing, if available (currently never available).
+    static let smooth = BL_GRADIENT_QUALITY_SMOOTH
+    
+    /// The renderer will use an implementation-specific dithering algorithm to prevent banding.
+    static let dither = BL_GRADIENT_QUALITY_DITHER
+    
     /// Maximum value of `BLGradientQuality`.
     static let maxValue = BL_GRADIENT_QUALITY_MAX_VALUE
 }

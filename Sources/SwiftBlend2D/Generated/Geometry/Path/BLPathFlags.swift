@@ -19,6 +19,9 @@ public extension BLPathFlags {
     /// Path contains one or more quad curves.
     static let quads = BL_PATH_FLAG_QUADS
     
+    /// Path contains one or more conic curves.
+    static let conics = BL_PATH_FLAG_CONICS
+    
     /// Path contains one or more cubic curves.
     static let cubics = BL_PATH_FLAG_CUBICS
     

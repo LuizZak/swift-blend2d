@@ -13,30 +13,13 @@
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace BLPipeline {
+namespace bl {
+namespace Pipeline {
 namespace JIT {
 
 //! Base class for all pattern fetch parts.
 class FetchPatternPart : public FetchPart {
 public:
-  //! Common registers (used by all fetch types).
-  struct CommonRegs {
-    //! Pattern width (32-bit).
-    x86::Gp w;
-    //! Pattern height (32-bit).
-    x86::Gp h;
-    //! Pattern pixels (pointer to the first scanline).
-    x86::Gp srctop;
-    //! Pattern stride.
-    x86::Gp stride;
-    //! Pattern stride (original value, used by PatternSimple only).
-    x86::Gp strideOrig;
-    //! Pointer to the previous scanline and/or pixel (fractional).
-    x86::Gp srcp0;
-    //! Pointer to the current scanline and/or pixel (aligned).
-    x86::Gp srcp1;
-  };
-
   //! How many bits to shift the `x` index to get the address to the pixel. If this value is 0xFF it means that
   //! shifting is not possible or that the pixel was already pre-shifted.
   uint8_t _idxShift = 0xFFu;
@@ -44,7 +27,7 @@ public:
   //! Extend in X direction, used only by `FetchSimplePatternPart`.
   ExtendMode _extendX {};
 
-  FetchPatternPart(PipeCompiler* pc, FetchType fetchType, uint32_t format) noexcept;
+  FetchPatternPart(PipeCompiler* pc, FetchType fetchType, FormatExt format) noexcept;
 
   //! Tests whether the fetch-type is simple pattern {axis-aligned or axis-unaligned}.
   BL_INLINE bool isSimple() const noexcept { return isFetchType(FetchType::kPatternSimpleFirst, FetchType::kPatternSimpleLast); }
@@ -59,53 +42,68 @@ public:
 class FetchSimplePatternPart : public FetchPatternPart {
 public:
   //! Aligned and fractional blits.
-  struct SimpleRegs : public CommonRegs {
+  struct SimpleRegs {
+    //! Pointer to the previous scanline and/or pixel (fractional).
+    Gp srcp0;
+    //! Pointer to the current scanline and/or pixel (aligned).
+    Gp srcp1;
+    //! Pattern stride, used only by aligned blits.
+    Gp stride;
+
+    //! Vertical extend data.
+    Mem vExtendData;
+
     //! X position.
-    x86::Gp x;
+    Gp x;
     //! Y position (counter, decreases to zero).
-    x86::Gp y;
+    Gp y;
+
+    //! Pattern width (32-bit).
+    Gp w;
+    //! Pattern height (32-bit).
+    Gp h;
 
     //! X repeat/reflect.
-    x86::Gp rx;
+    Gp rx;
     //! Y repeat/reflect.
-    x86::Gp ry;
+    Gp ry;
 
     //! X padded to [0-W) range.
-    x86::Gp xPadded;
+    Gp xPadded;
     //! X origin, assigned to `x` at the beginning of each scanline.
-    x86::Gp xOrigin;
+    Gp xOrigin;
     //! X restart (used by scalar implementation, points to either -W or 0).
-    x86::Gp xRestart;
+    Gp xRestart;
 
     //! Last loaded pixel (or combined pixel) of the first (srcp0) scanline.
-    x86::Xmm pixL;
+    Vec pixL;
 
     // Weights used in RGBA mode.
-    x86::Xmm wb_wb;
-    x86::Xmm wd_wd;
-    x86::Xmm wa_wb;
-    x86::Xmm wc_wd;
+    Vec wb_wb;
+    Vec wd_wd;
+    Vec wa_wb;
+    Vec wc_wd;
 
     // Weights used in alpha-only mode.
-    x86::Xmm wd_wb;
-    x86::Xmm wa_wc;
-    x86::Xmm wb_wd;
+    Vec wd_wb;
+    Vec wa_wc;
+    Vec wb_wd;
 
     //! X position vector  `[  x, x+1, x+2, x+3]`.
-    x86::Xmm xVec4;
+    Vec xVec4;
     //! X setup vector     `[  0,   1,   2,   3]`.
-    x86::Xmm xSet4;
+    Vec xSet4;
     //! X increment vector `[  4,   4,   4,   4]`.
-    x86::Xmm xInc4;
+    Vec xInc4;
     //! X normalize vector.
-    x86::Xmm xNrm4;
+    Vec xNrm4;
     //! X maximum vector   `[max, max, max, max]`.
-    x86::Xmm xMax4;
+    Vec xMax4;
   };
 
-  BLWrap<SimpleRegs> f;
+  Wrap<SimpleRegs> f;
 
-  FetchSimplePatternPart(PipeCompiler* pc, FetchType fetchType, uint32_t format) noexcept;
+  FetchSimplePatternPart(PipeCompiler* pc, FetchType fetchType, FormatExt format) noexcept;
 
   //! Tests whether the fetch-type is axis-aligned blit (no extend modes, no overflows)
   BL_INLINE bool isAlignedBlit() const noexcept { return isFetchType(FetchType::kPatternAlignedBlit); }
@@ -128,89 +126,64 @@ public:
   //! Returns the extend-x mode.
   BL_INLINE ExtendMode extendX() const noexcept { return _extendX; }
 
-  void _initPart(x86::Gp& x, x86::Gp& y) noexcept override;
+  void _initPart(Gp& x, Gp& y) noexcept override;
   void _finiPart() noexcept override;
 
+  void swapStrideStopData(VecArray& v) noexcept;
+
   void advanceY() noexcept override;
-  void startAtX(x86::Gp& x) noexcept override;
-  void advanceX(x86::Gp& x, x86::Gp& diff) noexcept override;
+  void startAtX(const Gp& x) noexcept override;
+  void advanceX(const Gp& x, const Gp& diff) noexcept override;
 
   void advanceXByOne() noexcept;
   void repeatOrReflectX() noexcept;
   void prefetchAccX() noexcept;
 
-  // NOTE: We don't do prefetch here. Since the prefetch we need is the same
-  // for `prefetch1()` and `prefetchN()` we always prefetch by `prefetchAccX()`
-  // during `startAtX()` and `advanceX()`.
-  void fetch1(Pixel& p, PixelFlags flags) noexcept override;
-
   void enterN() noexcept override;
   void leaveN() noexcept override;
   void prefetchN() noexcept override;
   void postfetchN() noexcept override;
-  void fetch4(Pixel& p, PixelFlags flags) noexcept override;
-  void fetch8(Pixel& p, PixelFlags flags) noexcept override;
+
+  void fetch(Pixel& p, PixelCount n, PixelFlags flags, PixelPredicate& predicate) noexcept override;
 };
 
 //! Affine pattern fetch part.
 class FetchAffinePatternPart : public FetchPatternPart {
 public:
-  struct AffineRegs : public CommonRegs {
+  struct AffineRegs {
+    //! Pattern pixels (pointer to the first scanline).
+    Gp srctop;
+    //! Pattern stride.
+    Gp stride;
+
     //! Horizontal X/Y increments.
-    x86::Xmm xx_xy;
+    Vec xx_xy;
     //! Vertical X/Y increments.
-    x86::Xmm yx_yy;
-    x86::Xmm tx_ty;
-    x86::Xmm px_py;
-    x86::Xmm ox_oy;
+    Vec yx_yy;
+    Vec tx_ty;
+    Vec px_py;
+    Vec ox_oy;
     //! Normalization after `px_py` gets out of bounds.
-    x86::Xmm rx_ry;
+    Vec rx_ry;
     //! Like `px_py` but one pixel ahead [fetch4].
-    x86::Xmm qx_qy;
+    Vec qx_qy;
     //! Advance twice (like `xx_xy`, but doubled) [fetch4].
-    x86::Xmm xx2_xy2;
+    Vec xx2_xy2;
 
     //! Pad minimum coords.
-    x86::Xmm minx_miny;
+    Vec minx_miny;
     //! Pad maximum coords.
-    x86::Xmm maxx_maxy;
+    Vec maxx_maxy;
     //! Correction values (bilinear only).
-    x86::Xmm corx_cory;
+    Vec corx_cory;
     //! Pattern width and height as doubles.
-    x86::Xmm tw_th;
+    Vec tw_th;
 
     //! Vector of pattern indexes.
-    x86::Xmm vIdx;
+    Vec vIdx;
     //! Vector containing multipliers for Y/X pairs.
-    x86::Xmm vAddrMul;
+    Vec vAddrMul;
   };
-
-  BLWrap<AffineRegs> f;
-
-  FetchAffinePatternPart(PipeCompiler* pc, FetchType fetchType, uint32_t format) noexcept;
-
-  BL_INLINE bool isAffineNn() const noexcept { return isFetchType(FetchType::kPatternAffineNNAny) || isFetchType(FetchType::kPatternAffineNNOpt); }
-  BL_INLINE bool isAffineBi() const noexcept { return isFetchType(FetchType::kPatternAffineBIAny) || isFetchType(FetchType::kPatternAffineBIOpt); }
-  BL_INLINE bool isOptimized() const noexcept { return isFetchType(FetchType::kPatternAffineNNOpt) || isFetchType(FetchType::kPatternAffineBIOpt); }
-
-  void _initPart(x86::Gp& x, x86::Gp& y) noexcept override;
-  void _finiPart() noexcept override;
-
-  void advanceY() noexcept override;
-  void startAtX(x86::Gp& x) noexcept override;
-  void advanceX(x86::Gp& x, x86::Gp& diff) noexcept override;
-
-  void advancePxPy(x86::Xmm& px_py, const x86::Gp& i) noexcept;
-  void normalizePxPy(x86::Xmm& px_py) noexcept;
-
-  void prefetch1() noexcept override;
-  void fetch1(Pixel& p, PixelFlags flags) noexcept override;
-
-  void enterN() noexcept override;
-  void leaveN() noexcept override;
-  void prefetchN() noexcept override;
-  void postfetchN() noexcept override;
-  void fetch4(Pixel& p, PixelFlags flags) noexcept override;
 
   enum ClampStep : uint32_t {
     kClampStepA_NN,
@@ -223,11 +196,37 @@ public:
     kClampStepC_BI
   };
 
-  void clampVIdx32(x86::Xmm& dst, const x86::Xmm& src, uint32_t step) noexcept;
+  Wrap<AffineRegs> f;
+
+  FetchAffinePatternPart(PipeCompiler* pc, FetchType fetchType, FormatExt format) noexcept;
+
+  BL_INLINE bool isAffineNn() const noexcept { return isFetchType(FetchType::kPatternAffineNNAny) || isFetchType(FetchType::kPatternAffineNNOpt); }
+  BL_INLINE bool isAffineBi() const noexcept { return isFetchType(FetchType::kPatternAffineBIAny) || isFetchType(FetchType::kPatternAffineBIOpt); }
+  BL_INLINE bool isOptimized() const noexcept { return isFetchType(FetchType::kPatternAffineNNOpt) || isFetchType(FetchType::kPatternAffineBIOpt); }
+
+  void _initPart(Gp& x, Gp& y) noexcept override;
+  void _finiPart() noexcept override;
+
+  void advanceY() noexcept override;
+  void startAtX(const Gp& x) noexcept override;
+  void advanceX(const Gp& x, const Gp& diff) noexcept override;
+
+  void advancePxPy(Vec& px_py, const Gp& i) noexcept;
+  void normalizePxPy(Vec& px_py) noexcept;
+  void clampVIdx32(Vec& dst, const Vec& src, ClampStep step) noexcept;
+
+  void prefetch1() noexcept override;
+  void enterN() noexcept override;
+  void leaveN() noexcept override;
+  void prefetchN() noexcept override;
+  void postfetchN() noexcept override;
+
+  void fetch(Pixel& p, PixelCount n, PixelFlags flags, PixelPredicate& predicate) noexcept override;
 };
 
 } // {JIT}
-} // {BLPipeline}
+} // {Pipeline}
+} // {bl}
 
 //! \}
 //! \endcond

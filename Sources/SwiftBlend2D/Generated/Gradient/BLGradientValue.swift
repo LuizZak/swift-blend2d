@@ -5,10 +5,10 @@ import blend2d
 
 /// Gradient data index.
 public extension BLGradientValue {
-    /// x0 - start 'x' for Linear/Radial and center 'x' for Conical.
+    /// x0 - start 'x' for Linear/Radial and 'x' center for Conic.
     static let commonX0 = BL_GRADIENT_VALUE_COMMON_X0
     
-    /// y0 - start 'y' for Linear/Radial and center 'y' for Conical.
+    /// y0 - start 'y' for Linear/Radial and 'y' center for Conic.
     static let commonY0 = BL_GRADIENT_VALUE_COMMON_Y0
     
     /// x1 - end 'x' for Linear/Radial.
@@ -20,8 +20,8 @@ public extension BLGradientValue {
     /// Radial gradient r0 radius.
     static let radialR0 = BL_GRADIENT_VALUE_RADIAL_R0
     
-    /// Conical gradient angle.
-    static let conicalAngle = BL_GRADIENT_VALUE_CONICAL_ANGLE
+    /// Conic gradient angle.
+    static let conicAngle = BL_GRADIENT_VALUE_CONIC_ANGLE
     
     /// Maximum value of `BLGradientValue`.
     static let maxValue = BL_GRADIENT_VALUE_MAX_VALUE

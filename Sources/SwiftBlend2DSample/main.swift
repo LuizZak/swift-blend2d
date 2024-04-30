@@ -32,7 +32,8 @@ func sample1WithCBindings() {
     
     blContextSetCompOp(&ctx, BL_COMP_OP_SRC_OVER)
     blContextSetFillStyleRgba32(&ctx, 0xFFFFFFFF)
-    blContextFillPathD(&ctx, &path)
+    var zero = BLPoint.zero
+    blContextFillPathD(&ctx, &zero, &path)
     
     // Detach the rendering context from `img`.
     blContextEnd(&ctx)

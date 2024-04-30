@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// Rendering context create-flags.
+/// Rendering context creation flags.
 extension BLContextCreateFlags: OptionSet { }
 
 public extension BLContextCreateFlags {

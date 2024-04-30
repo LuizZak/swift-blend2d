@@ -5,10 +5,10 @@ import blend2d
 
 /// Pattern quality.
 public extension BLPatternQuality {
-    /// Nearest neighbor.
+    /// Nearest neighbor interpolation.
     static let nearest = BL_PATTERN_QUALITY_NEAREST
     
-    /// Bilinear.
+    /// Bilinear interpolation.
     static let bilinear = BL_PATTERN_QUALITY_BILINEAR
     
     /// Maximum value of `BLPatternQuality`.

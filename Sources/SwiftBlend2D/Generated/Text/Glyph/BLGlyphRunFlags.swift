@@ -19,6 +19,6 @@ public extension BLGlyphRunFlags {
     /// Not the whole text was mapped to glyphs (contains undefined glyphs).
     static let undefinedGlyphs = BL_GLYPH_RUN_FLAG_UNDEFINED_GLYPHS
     
-    /// Encountered invalid font-data during text / glyph processing.
+    /// Encountered invalid font data during text / glyph processing.
     static let invalidFontData = BL_GLYPH_RUN_FLAG_INVALID_FONT_DATA
 }

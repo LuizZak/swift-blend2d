@@ -35,32 +35,32 @@ public class BLFontVariationSettings: BLBaseClass<BLFontVariationSettingsCore> {
         blFontVariationSettingsGetView(&object, &view)
     }
 
-    /// Tests whether the settings contains the given `key`.
-    public func hasKey(_ key: BLTag) -> Bool {
-        blFontVariationSettingsHasKey(&object, key)
+    /// Tests whether the settings contains the given `variationTag`.
+    public func hasValue(_ variationTag: BLTag) -> Bool {
+        blFontVariationSettingsHasValue(&object, variationTag)
     }
 
-    /// Returns the value associated with the given `key`.
+    /// Returns the value associated with the given `variationTag`.
     ///
-    /// If the `key` doesn't exist or is invalid `NaN` is returned.
-    public func getKey(_ key: BLTag) -> Float {
-        blFontVariationSettingsGetKey(&object, key)
+    /// If the `variationTag` doesn't exist or is invalid `NaN` is returned.
+    public func getValue(_ variationTag: BLTag) -> Float {
+        blFontVariationSettingsGetValue(&object, variationTag)
     }
 
-    /// Sets or inserts the given `key` to the settings, associating the `key`
+    /// Sets or inserts the given `variationTag` to the settings, associating the `variationTag`
     /// with `value`.
     @discardableResult
-    public func setKey(_ key: BLTag, value: Float) -> BLResult {
-        blFontVariationSettingsSetKey(&object, key, value)
+    public func setValue(_ variationTag: BLTag, value: Float) -> BLResult {
+        blFontVariationSettingsSetValue(&object, variationTag, value)
     }
 
-    /// Removes the given `key` from the settings.
+    /// Removes the given `variationTag` from the settings.
     ///
-    /// Nothing happens if the `key` is not in the settings (`BL_SUCCESS` is
+    /// Nothing happens if the `variationTag` is not in the settings (`BL_SUCCESS` is
     /// returned).
     @discardableResult
-    public func removeKey(_ key: BLTag) -> BLResult {
-        blFontVariationSettingsRemoveKey(&object, key)
+    public func removeValue(_ variationTag: BLTag) -> BLResult {
+        blFontVariationSettingsRemoveValue(&object, variationTag)
     }
 }
 
@@ -77,11 +77,7 @@ extension BLFontVariationSettingsCore: CoreStructure {
 
     @usableFromInline
     var impl: BLFontVariationSettingsImpl {
-        get {
-            _d.impl!.load(as: BLFontVariationSettingsImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLFontVariationSettingsImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

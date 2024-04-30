@@ -7,17 +7,15 @@
 #include "../runtime_p.h"
 #include "../codec/pngops_p.h"
 
-// ============================================================================
-// [Global Variables]
-// ============================================================================
+namespace bl {
+namespace Png {
 
-BLPngOps blPngOps;
+FuncOpts opts;
 
-// ============================================================================
-// [BLPngOps - InverseFilter]
-// ============================================================================
+// bl::png::Opts - Inverse Filter
+// ==============================
 
-BLResult BL_CDECL blPngInverseFilter(uint8_t* p, uint32_t bpp, uint32_t bpl, uint32_t h) noexcept {
+BLResult BL_CDECL inverseFilterImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, uint32_t h) noexcept {
   BL_ASSERT(bpp > 0);
   BL_ASSERT(bpl > 1);
   BL_ASSERT(h   > 0);
@@ -33,7 +31,7 @@ BLResult BL_CDECL blPngInverseFilter(uint8_t* p, uint32_t bpp, uint32_t bpl, uin
   uint32_t filterType = *p++;
   if (BL_UNLIKELY(filterType >= BL_PNG_FILTER_TYPE_COUNT))
     return blTraceError(BL_ERROR_INVALID_DATA);
-  filterType = blPngFirstRowFilterReplacement(filterType);
+  filterType = simplifyFilterOfFirstRow(filterType);
 
   for (;;) {
     uint32_t i;
@@ -45,36 +43,39 @@ BLResult BL_CDECL blPngInverseFilter(uint8_t* p, uint32_t bpp, uint32_t bpl, uin
 
       case BL_PNG_FILTER_TYPE_SUB: {
         for (i = bpl - bpp; i != 0; i--, p++)
-          p[bpp] = blPngSumFilter(p[bpp], p[0]);
+          p[bpp] = applySumFilter(p[bpp], p[0]);
 
         p += bpp;
         break;
       }
 
       case BL_PNG_FILTER_TYPE_UP: {
+        BL_ASSERT(u != nullptr);
         for (i = bpl; i != 0; i--, p++, u++)
-          p[0] = blPngSumFilter(p[0], u[0]);
+          p[0] = applySumFilter(p[0], u[0]);
         break;
       }
 
       case BL_PNG_FILTER_TYPE_AVG: {
+        BL_ASSERT(u != nullptr);
         for (i = 0; i < bpp; i++)
-          p[i] = blPngSumFilter(p[i], u[i] >> 1);
+          p[i] = applySumFilter(p[i], u[i] >> 1);
 
         u += bpp;
         for (i = bpl - bpp; i != 0; i--, p++, u++)
-          p[bpp] = blPngSumFilter(p[bpp], blPngAvgFilter(p[0], u[0]));
+          p[bpp] = applySumFilter(p[bpp], applyAvgFilter(p[0], u[0]));
 
         p += bpp;
         break;
       }
 
       case BL_PNG_FILTER_TYPE_PAETH: {
+        BL_ASSERT(u != nullptr);
         for (i = 0; i < bpp; i++)
-          p[i] = blPngSumFilter(p[i], u[i]);
+          p[i] = applySumFilter(p[i], u[i]);
 
         for (i = bpl - bpp; i != 0; i--, p++, u++)
-          p[bpp] = blPngSumFilter(p[bpp], blPngPaethFilter(p[0], u[bpp], u[0]));
+          p[bpp] = applySumFilter(p[bpp], blPngPaethFilter(p[0], u[bpp], u[0]));
 
         p += bpp;
         break;
@@ -82,7 +83,7 @@ BLResult BL_CDECL blPngInverseFilter(uint8_t* p, uint32_t bpp, uint32_t bpl, uin
 
       case BL_PNG_FILTER_TYPE_AVG0: {
         for (i = bpl - bpp; i != 0; i--, p++)
-          p[bpp] = blPngSumFilter(p[bpp], p[0] >> 1);
+          p[bpp] = applySumFilter(p[bpp], p[0] >> 1);
 
         p += bpp;
         break;
@@ -102,16 +103,5 @@ BLResult BL_CDECL blPngInverseFilter(uint8_t* p, uint32_t bpp, uint32_t bpl, uin
   return BL_SUCCESS;
 }
 
-// ============================================================================
-// [BLPngOps - Runtime]
-// ============================================================================
-
-void blPngOpsOnInit(BLRuntimeContext* rt) noexcept {
-  blPngOps.inverseFilter = blPngInverseFilter;
-
-  #ifdef BL_BUILD_OPT_SSE2
-  if (blRuntimeHasSSE2(rt)) {
-    blPngOps.inverseFilter = blPngInverseFilter_SSE2;
-  }
-  #endif
-}
+} // {Png}
+} // {bl}

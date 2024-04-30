@@ -14,7 +14,8 @@
 //! \addtogroup blend2d_opentype_impl
 //! \{
 
-namespace BLOpenType {
+namespace bl {
+namespace OpenType {
 
 //! OpenType 'CFF' or 'CFF2' table (Compact Font Format).
 //!
@@ -44,7 +45,7 @@ namespace BLOpenType {
 //! NOTE 2: Many enums inside this structure are just for reference purposes. They would be useful if we want
 //! to implement support for RAW PostScript fonts (CFF) that are not part of OpenType.
 struct CFFTable {
-  enum : uint32_t { kMinSize = 4 };
+  enum : uint32_t { kBaseSize = 4 };
   enum : uint32_t { kOffsetAdjustment = 1 };
 
   enum CharsetId : uint32_t {
@@ -131,7 +132,7 @@ struct CFFTable {
   struct IndexV1 {
     //! \note An empty Index is represented by a `count` field with a 0 value and no additional fields, thus,
     //! the total size of bytes required by a zero index is 2.
-    enum : uint32_t { kMinSize = 2 };
+    enum : uint32_t { kBaseSize = 2 };
 
     UInt16 count;
     UInt8 offsetSize;
@@ -140,14 +141,14 @@ struct CFFTable {
     UInt8 data[...];
     */
 
-    BL_INLINE const uint8_t* offsetArray() const noexcept { return BLPtrOps::offset<const uint8_t>(this, 3); }
+    BL_INLINE const uint8_t* offsetArray() const noexcept { return PtrOps::offset<const uint8_t>(this, 3); }
   };
 
   //! Index table (v2).
   struct IndexV2 {
     //! \note An empty Index is represented by a `count` field with a 0 value and no additional fields, thus,
     //! the total size of bytes required by a zero index is 4.
-    enum : uint32_t { kMinSize = 4 };
+    enum : uint32_t { kBaseSize = 4 };
 
     UInt32 count;
     UInt8 offsetSize;
@@ -156,13 +157,13 @@ struct CFFTable {
     UInt8 data[...];
     */
 
-    BL_INLINE const uint8_t* offsetArray() const noexcept { return BLPtrOps::offset<const uint8_t>(this, 5); }
+    BL_INLINE const uint8_t* offsetArray() const noexcept { return PtrOps::offset<const uint8_t>(this, 5); }
   };
 
   Header header;
 
-  BL_INLINE const HeaderV1* headerV1() const noexcept { return BLPtrOps::offset<const HeaderV1>(this, 0); }
-  BL_INLINE const HeaderV2* headerV2() const noexcept { return BLPtrOps::offset<const HeaderV2>(this, 0); }
+  BL_INLINE const HeaderV1* headerV1() const noexcept { return PtrOps::offset<const HeaderV1>(this, 0); }
+  BL_INLINE const HeaderV2* headerV2() const noexcept { return PtrOps::offset<const HeaderV2>(this, 0); }
 };
 
 //! CFF data stored in \ref OTFontFace.
@@ -209,7 +210,7 @@ struct CFFData {
   };
 
   //! Content of 'CFF ' or 'CFF2' table.
-  BLFontTableT<CFFTable> table;
+  Table<CFFTable> table;
   //! GSubR, LSubR, and CharString indexes.
   IndexData index[kIndexCount];
   //! Associates an FD (font dict) with a glyph by specifying an FD index for that glyph.
@@ -220,10 +221,62 @@ struct CFFData {
 };
 
 namespace CFFImpl {
-BL_HIDDEN BLResult init(OTFaceImpl* faceI, BLFontTable fontTable, uint32_t cffVersion) noexcept;
-} // {CFFImpl}
 
-} // {BLOpenType}
+//! Reads a CFF floating point value as specified by the CFF specification. The format is binary, but it's just
+//! a simplified text representation in the end.
+//!
+//! Each byte is divided into 2 nibbles (4 bits), which are accessed separately. Each nibble contains either a
+//! decimal value (0..9), decimal point, or other instructions which meaning is described by `NibbleAbove9` enum.
+BL_HIDDEN BLResult readFloat(const uint8_t* p, const uint8_t* pEnd, double& valueOut, size_t& valueSizeInBytes) noexcept;
+
+// bl::OpenType::CFFImpl - DictEntry
+// =================================
+
+//! CFF dictionary entry.
+struct DictEntry {
+  enum : uint32_t { kValueCapacity = 48 };
+
+  uint32_t op;
+  uint32_t count;
+  uint64_t fpMask;
+  double values[kValueCapacity];
+
+  BL_INLINE bool isFpValue(uint32_t index) const noexcept {
+    return (fpMask & (uint64_t(1) << index)) != 0;
+  }
+};
+
+//! CFF dictionary iterator.
+class DictIterator {
+public:
+  const uint8_t* _dataPtr;
+  const uint8_t* _dataEnd;
+
+  BL_INLINE DictIterator() noexcept
+    : _dataPtr(nullptr),
+      _dataEnd(nullptr) {}
+
+  BL_INLINE DictIterator(const uint8_t* data, size_t size) noexcept
+    : _dataPtr(data),
+      _dataEnd(data + size) {}
+
+  BL_INLINE void reset(const uint8_t* data, size_t size) noexcept {
+    _dataPtr = data;
+    _dataEnd = data + size;
+  }
+
+  BL_INLINE bool hasNext() const noexcept {
+    return _dataPtr != _dataEnd;
+  }
+
+  BLResult next(DictEntry& entry) noexcept;
+};
+
+BL_HIDDEN BLResult init(OTFaceImpl* faceI, OTFaceTables& tables, uint32_t cffVersion) noexcept;
+
+} // {CFFImpl}
+} // {OpenType}
+} // {bl}
 
 //! \}
 //! \endcond

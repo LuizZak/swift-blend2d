@@ -96,20 +96,20 @@ public class BLFont: BLBaseClass<BLFontCore> {
         return state
     }
     
-    public func positionGlyphs(_ buf: BLGlyphBuffer, positioningFlags: UInt32) {
-        blFontPositionGlyphs(&object, &buf.object, positioningFlags)
+    public func positionGlyphs(_ buf: BLGlyphBuffer) {
+        blFontPositionGlyphs(&object, &buf.object)
     }
     
     public func applyKerning(_ buf: BLGlyphBuffer) {
         blFontApplyKerning(&object, &buf.object)
     }
     
-    public func applyGSub(_ buf: BLGlyphBuffer, lookups: BLBitSet) {
-        blFontApplyGSub(&object, &buf.object, &lookups.object)
+    public func applyGSub(_ buf: BLGlyphBuffer, lookups: BLBitArray) {
+        blFontApplyGSub(&object, &buf.object, &lookups.box.object)
     }
     
-    public func applyGPos(_ buf: BLGlyphBuffer, lookups: BLBitSet) {
-        blFontApplyGPos(&object, &buf.object, &lookups.object)
+    public func applyGPos(_ buf: BLGlyphBuffer, lookups: BLBitArray) {
+        blFontApplyGPos(&object, &buf.object, &lookups.box.object)
     }
 
     @inlinable
@@ -243,11 +243,7 @@ extension BLFontCore: CoreStructure {
 
     @usableFromInline
     var impl: BLFontImpl {
-        get {
-            _d.impl!.load(as: BLFontImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLFontImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

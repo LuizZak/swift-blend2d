@@ -11,11 +11,11 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
         super.init(weakAssign: object)
     }
     
-    public func listTags(faceIndex: UInt32) throws -> [BLTag] {
+    public func tableTags(faceIndex: UInt32) throws -> [BLTag] {
         let array = BLArray<UInt32>()
         
         try resultToError(
-            blFontDataListTags(&object, faceIndex, &array.object)
+            blFontDataGetTableTags(&object, faceIndex, &array.object)
         )
         
         return array.unsafeAsArray(of: BLTag.self)
@@ -28,7 +28,7 @@ public class BLFontData: BLBaseClass<BLFontDataCore> {
     public func queryTables(faceIndex: UInt32, fontTable: inout BLFontTable, tags: [BLTag]) -> Int {
         var tags = tags
 
-        return blFontDataQueryTables(&object, faceIndex, &fontTable, &tags, tags.count)
+        return blFontDataGetTables(&object, faceIndex, &fontTable, &tags, tags.count)
     }
 }
 
@@ -39,11 +39,7 @@ extension BLFontDataCore: CoreStructure {
 
     @usableFromInline
     var impl: BLFontDataImpl {
-        get {
-            _d.impl!.load(as: BLFontDataImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLFontDataImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

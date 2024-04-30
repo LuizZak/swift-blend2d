@@ -8,6 +8,7 @@ import blend2d
 import SwiftBlend2D
 import TigerSample
 import LibPNG
+import CLibPNG
 
 class SwiftBlend2DTests: XCTestCase {
     
@@ -276,7 +277,7 @@ class SwiftBlend2DTests: XCTestCase {
         ctx.clearAll()
 
         var gradient = BLGradient(
-            conical: BLConicalGradientValues(x0: 100, y0: 100, angle: .pi / 2)
+            conic: BLConicGradientValues(x0: 100, y0: 100, angle: .pi / 2)
         )
         gradient.addStop(0, BLRgba32.green)
         gradient.addStop(1, BLRgba32.yellow)
@@ -439,10 +440,12 @@ func pngFileFromImage(_ image: BLImage) -> PNGFile {
 }
 
 extension SwiftBlend2DTests {
-    func assertImageMatch(_ image: BLImage,
-                          _ testName: String,
-                          record: Bool = false,
-                          line: UInt = #line) {
+    func assertImageMatch(
+        _ image: BLImage,
+        _ testName: String,
+        record: Bool = false,
+        line: UInt = #line
+    ) {
         
         let snapshotsFolder = pathToSnapshots()
         let failuresFolder = pathToSnapshotFailures()
@@ -481,15 +484,17 @@ extension SwiftBlend2DTests {
                 let actualData = pngFileFromImage(image)
 
                 if recordedData != actualData {
-                    XCTFail("Snapshot \(testName) did not match recorded data. Please inspect image at \(failurePath) for further information.", line: line)
-                    
                     try createDirectory(atPath: pathToSnapshotFailures())
                     
                     try copyFile(source: recordPath, dest: expectedPath)
                     try writePngFile(file: actualData, filename: failurePath)
                     
-                    if let diffData = produceDiffImage(recordedData, actualData) {
+                    if let (diffData, stats) = produceDiffImage(recordedData, actualData) {
                         try writePngFile(file: diffData, filename: diffPath)
+
+                        XCTFail("Snapshot \(testName) did not match recorded data. Please inspect image at \(diffPath) for further information.\n\(stats.description)", line: line)
+                    } else {
+                        XCTFail("Snapshot \(testName) did not match recorded data. Please inspect image at \(failurePath) for further information.", line: line)
                     }
                 }
             } catch {
@@ -498,7 +503,7 @@ extension SwiftBlend2DTests {
         }
     }
     
-    func produceDiffImage(_ image1: PNGFile, _ image2: PNGFile) -> PNGFile? {
+    func produceDiffImage(_ image1: PNGFile, _ image2: PNGFile) -> (PNGFile, ImageDiffStatistics)? {
         guard image1.width == image2.width && image1.height == image2.height else {
             return nil
         }
@@ -507,11 +512,16 @@ extension SwiftBlend2DTests {
         }
         
         var diffImage = image1
+        var statistics = ImageDiffStatistics(
+            changed: 0,
+            total: image1.width * image2.width,
+            largestDifference: 0
+        )
         
         // Loop through all pixels, applying a white overlay
         for y in 0..<diffImage.rows.count {
-            for x in stride(from: 0, to: diffImage.rowLength, by: 4) {
-                diffImage.rows[y].withUnsafeMutableBufferPointer { pointer -> Void in
+            diffImage.rows[y].withUnsafeMutableBufferPointer { pointer -> Void in
+                for x in stride(from: 0, to: diffImage.rowLength, by: 4) {
                     // Color pixel red if two images differ here
                     if
                         image1.rows[y][x] != image2.rows[y][x]
@@ -519,6 +529,10 @@ extension SwiftBlend2DTests {
                         || image1.rows[y][x + 2] != image2.rows[y][x + 2]
                         || image1.rows[y][x + 3] != image2.rows[y][x + 3]
                     {
+                        statistics.changed += 1
+                        let dist = colorDistance(image1.rows[y][x...(x+3)], image2.rows[y][x...(x+3)])
+                        statistics.largestDifference = max(dist, statistics.largestDifference)
+
                         pointer[x] = 255
                         pointer[x + 1] = 0
                         pointer[x + 2] = 0
@@ -535,8 +549,45 @@ extension SwiftBlend2DTests {
             }
         }
         
-        return diffImage
+        return (diffImage, statistics)
     }
+
+    struct ImageDiffStatistics {
+        /// The number of pixels that differed between expected/actual images.
+        var changed: Int
+
+        /// Total number of pixels that where tested.
+        var total: Int
+
+        /// The ratio of changed/total pixels in the image.
+        var changeRatio: Double {
+            Double(changed) / Double(total)
+        }
+
+        /// The largest difference in color between the expected and actual images,
+        /// as the magnitude of the difference of the two colors interpreted as
+        /// two 4-dimensional vectors.
+        var largestDifference: Int
+
+        var description: String {
+            """
+            Changed: \(changed) of \(total) (\(String(format: "%.2f %%", changeRatio * 100)))
+            Largest difference: \(largestDifference) (out of possible \(colorDistance([0, 0, 0, 0], [255, 255, 255, 255])))
+            """
+        }
+    }
+}
+
+/// Gets four bytes from each sequence, returning the absolute magnitude of
+/// the difference between each grouping of four bytes interpreted as a vector.
+private func colorDistance<S1: Sequence<png_byte>, S2: Sequence<png_byte>>(_ p1: S1, _ p2: S2) -> Int {
+    let c1 = Array(p1.prefix(4))
+    let c2 = Array(p2.prefix(4))
+
+    let diff = zip(c1, c2).map({ Int($0) - Int($1) })
+    let mag = diff.map({ $0 * $0 }).reduce(0, +)
+
+    return Int(Double(mag).squareRoot())
 }
 
 #endif

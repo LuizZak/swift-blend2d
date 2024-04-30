@@ -68,8 +68,8 @@ public struct BLGradient: Equatable {
                 return .linear(linear)
             case .radial:
                 return .radial(radial)
-            case .conical:
-                return .conical(conical)
+            case .conic:
+                return .conic(conical)
             default:
                 return .linear(linear)
             }
@@ -82,8 +82,8 @@ public struct BLGradient: Equatable {
             case .radial(let values):
                 type = .radial
                 radial = values
-            case .conical(let values):
-                type = .conical
+            case .conic(let values):
+                type = .conic
                 conical = values
             }
         }
@@ -111,11 +111,11 @@ public struct BLGradient: Equatable {
     
     /// Conical parameters.
     @inlinable
-    public var conical: BLConicalGradientValues {
-        get { box.object.impl.conical }
+    public var conical: BLConicGradientValues {
+        get { box.object.impl.conic }
         set {
             ensureUnique()
-            box.object.impl.conical = newValue
+            box.object.impl.conic = newValue
         }
     }
     
@@ -154,33 +154,40 @@ public struct BLGradient: Equatable {
         set { setValue(.radialR0, newValue) }
     }
     
-    /// Conical gradient angle.
+    /// Conic gradient angle.
     @inlinable
     public var angle: Double {
-        get { getValue(atIndex: .conicalAngle) }
-        set { setValue(.conicalAngle, newValue) }
+        get { getValue(atIndex: .conicAngle) }
+        set { setValue(.conicAngle, newValue) }
     }
     
     // MARK: Transformations
+    
+    /// Whether this gradient has a transformation matrix different than
+    /// `BLMatrix2D.identity`.
     @inlinable
-    public var hasMatrix: Bool {
-        matrixType != .identity
+    public var hasTransform: Bool {
+        transformType != .identity
     }
     
     /// Type of the transformation matrix.
     @inlinable
-    public var matrixType: BLMatrix2DType {
-        BLMatrix2DType(BLMatrix2DType.RawValue(box.object.impl.matrixType))
+    public var transformType: BLTransformType {
+        blGradientGetTransformType(&box.object)
     }
     
     /// Gradient transformation matrix.
     @inlinable
     public var matrix: BLMatrix2D {
-        get { box.object.impl.matrix }
+        get {
+            var matrix = BLMatrix2D()
+            blGradientGetTransform(&box.object, &matrix)
+            return matrix
+        }
         set {
             ensureUnique()
             
-            _=_applyMatrixOp(.assign, newValue)
+            _=_applyTransformOp(.assign, newValue)
         }
     }
     
@@ -258,20 +265,20 @@ public struct BLGradient: Equatable {
     
     @inlinable
     public init(
-        conical: BLConicalGradientValues,
+        conic: BLConicGradientValues,
         extendMode: BLExtendMode = .pad,
         stops: [BLGradientStop]? = nil,
         matrix: BLMatrix2D? = nil
     ) {
         
         box = BLBaseClass { pointer -> BLResult in
-            var conical = conical
+            var conic = conic
             
             return withUnsafeNullablePointer(to: matrix) { matrix in
                 blGradientInitAs(
                     pointer,
-                    BLGradientType.conical,
-                    &conical,
+                    BLGradientType.conic,
+                    &conic,
                     extendMode,
                     stops,
                     stops?.count ?? 0,
@@ -447,193 +454,193 @@ public extension BLGradient {
     @inlinable
     mutating func resetMatrix() -> BLResult {
         ensureUnique()
-        return blGradientApplyMatrixOp(&box.object, BLMatrix2DOp.reset, nil)
+        return blGradientApplyTransformOp(&box.object, BLTransformOp.reset, nil)
     }
     @discardableResult
     @inlinable
     mutating func translate(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.translate, x, y)
+        _applyTransformOpV(.translate, x, y)
     }
     @discardableResult
     @inlinable
     mutating func translate(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.translate, p.x, p.y)
+        _applyTransformOpV(.translate, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func translate(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.translate, p)
+        _applyTransformOp(.translate, p)
     }
     @discardableResult
     @inlinable
     mutating func scale(xy: Double) -> BLResult {
-        _applyMatrixOpV(.scale, xy, xy)
+        _applyTransformOpV(.scale, xy, xy)
     }
     @discardableResult
     @inlinable
     mutating func scale(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.scale, x, y)
+        _applyTransformOpV(.scale, x, y)
     }
     @discardableResult
     @inlinable
     mutating func scale(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.scale, p.x, p.y)
+        _applyTransformOpV(.scale, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func scale(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.scale, p)
+        _applyTransformOp(.scale, p)
     }
     @discardableResult
     @inlinable
     mutating func skew(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.skew, x, y)
+        _applyTransformOpV(.skew, x, y)
     }
     @discardableResult
     @inlinable
     mutating func skew(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.skew, p)
+        _applyTransformOp(.skew, p)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double) -> BLResult {
-        _applyMatrixOp(.rotate, angle)
+        _applyTransformOp(.rotate, angle)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double, x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, x, y)
+        _applyTransformOpV(.rotatePt, angle, x, y)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double, point: BLPoint) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
+        _applyTransformOpV(.rotatePt, angle, point.x, point.y)
     }
     @discardableResult
     @inlinable
     mutating func rotate(angle: Double, point: BLPointI) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
+        _applyTransformOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
     @discardableResult
     @inlinable
     mutating func transform(_ matrix: BLMatrix2D) -> BLResult {
-        _applyMatrixOp(.transform, matrix)
+        _applyTransformOp(.transform, matrix)
     }
     @discardableResult
     @inlinable
     mutating func postTranslate(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postTranslate, x, y)
+        _applyTransformOpV(.postTranslate, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postTranslate(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postTranslate, p.x, p.y)
+        _applyTransformOpV(.postTranslate, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func postTranslate(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postTranslate, p)
+        _applyTransformOp(.postTranslate, p)
     }
     @discardableResult
     @inlinable
     mutating func postScale(xy: Double) -> BLResult {
-        _applyMatrixOpV(.postScale, xy, xy)
+        _applyTransformOpV(.postScale, xy, xy)
     }
     @discardableResult
     @inlinable
     mutating func postScale(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postScale, x, y)
+        _applyTransformOpV(.postScale, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postScale(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postScale, p.x, p.y)
+        _applyTransformOpV(.postScale, p.x, p.y)
     }
     @discardableResult
     @inlinable
     mutating func postScale(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postScale, p)
+        _applyTransformOp(.postScale, p)
     }
     @discardableResult
     @inlinable
     mutating func postSkew(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postSkew, x, y)
+        _applyTransformOpV(.postSkew, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postSkew(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postSkew, p)
+        _applyTransformOp(.postSkew, p)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double) -> BLResult {
-        _applyMatrixOp(.postRotate, angle)
+        _applyTransformOp(.postRotate, angle)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, x, y)
+        _applyTransformOpV(.postRotatePt, angle, x, y)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double, point: BLPoint) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
+        _applyTransformOpV(.postRotatePt, angle, point.x, point.y)
     }
     @discardableResult
     @inlinable
     mutating func postRotate(angle: Double, point: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
+        _applyTransformOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
     @discardableResult
     @inlinable
     mutating func postTransform(_ matrix: BLMatrix2D) -> BLResult {
-        _applyMatrixOp(.postTransform, matrix)
+        _applyTransformOp(.postTransform, matrix)
     }
 }
 
 internal extension BLGradient {
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
+    mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLMatrix2D) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blGradientApplyMatrixOp(&box.object, opType, pointer)
+            blGradientApplyTransformOp(&box.object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
+    mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLPoint) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blGradientApplyMatrixOp(&box.object, opType, pointer)
+            blGradientApplyTransformOp(&box.object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
+    mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: Double) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blGradientApplyMatrixOp(&box.object, opType, pointer)
+            blGradientApplyTransformOp(&box.object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
+    mutating func _applyTransformOpV(_ opType: BLTransformOp, _ args: Double...) -> BLResult {
         ensureUnique()
         return args.withUnsafeBytes { pointer in
-            blGradientApplyMatrixOp(&box.object, opType, pointer.baseAddress)
+            blGradientApplyTransformOp(&box.object, opType, pointer.baseAddress)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    mutating func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
+    mutating func _applyTransformOpV<T: BinaryInteger>(_ opType: BLTransformOp, _ args: T...) -> BLResult {
         ensureUnique()
         return args.map { Double($0) }.withUnsafeBytes { pointer in
-            blGradientApplyMatrixOp(&box.object, opType, pointer.baseAddress)
+            blGradientApplyTransformOp(&box.object, opType, pointer.baseAddress)
         }
     }
 }
@@ -642,7 +649,7 @@ public extension BLGradient {
     enum GradientValues {
         case linear(BLLinearGradientValues)
         case radial(BLRadialGradientValues)
-        case conical(BLConicalGradientValues)
+        case conic(BLConicGradientValues)
     }
 }
 
@@ -653,11 +660,7 @@ extension BLGradientCore: CoreStructure {
     
     @usableFromInline
     var impl: BLGradientImpl {
-        get {
-            _d.impl!.load(as: BLGradientImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLGradientImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

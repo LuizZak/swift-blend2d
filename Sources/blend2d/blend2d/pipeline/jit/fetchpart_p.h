@@ -12,7 +12,8 @@
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace BLPipeline {
+namespace bl {
+namespace Pipeline {
 namespace JIT {
 
 //! Pipeline fetch part.
@@ -25,8 +26,8 @@ public:
   //! Fetch type.
   FetchType _fetchType;
 
-  //! Source pixel format, see `BLFormat`.
-  uint8_t _format = BL_FORMAT_NONE;
+  //! Source pixel format.
+  FormatExt _format = FormatExt::kNone;
   //! Source bytes-per-pixel (only required by pattern fetcher).
   uint8_t _bpp = 0;
   //! Maximum pixel step that the fetcher can fetch at a time (0=unlimited).
@@ -51,7 +52,7 @@ public:
   //! If the fetched pixels contain alpha channel.
   bool _hasAlpha = false;
 
-  FetchPart(PipeCompiler* pc, FetchType fetchType, uint32_t format) noexcept;
+  FetchPart(PipeCompiler* pc, FetchType fetchType, FormatExt format) noexcept;
 
   //! Returns the fetch type.
   BL_INLINE FetchType fetchType() const noexcept { return _fetchType; }
@@ -70,8 +71,8 @@ public:
   BL_INLINE bool isLinearGradient() const noexcept { return isFetchType(FetchType::kGradientLinearFirst, FetchType::kGradientLinearLast); }
   //! Tests whether the fetch-type is radial gradient.
   BL_INLINE bool isRadialGradient() const noexcept { return isFetchType(FetchType::kGradientRadialFirst, FetchType::kGradientRadialLast); }
-  //! Tests whether the fetch-type is conical gradient.
-  BL_INLINE bool isConicalGradient() const noexcept { return isFetchType(FetchType::kGradientConicalFirst, FetchType::kGradientConicalLast); }
+  //! Tests whether the fetch-type is conic gradient.
+  BL_INLINE bool isConicGradient() const noexcept { return isFetchType(FetchType::kGradientConicFirst, FetchType::kGradientConicLast); }
 
   //! Tests whether the fetch-type is pattern.
   BL_INLINE bool isPattern() const noexcept { return isFetchType(FetchType::kPatternAnyFirst, FetchType::kPatternAnyLast); }
@@ -79,9 +80,9 @@ public:
   BL_INLINE bool isPixelPtr() const noexcept { return isFetchType(FetchType::kPixelPtr); }
 
   //! Returns source pixel format.
-  BL_INLINE uint32_t format() const noexcept { return _format; }
+  BL_INLINE FormatExt format() const noexcept { return _format; }
   //! Returns source pixel format information.
-  BL_INLINE BLFormatInfo formatInfo() const noexcept { return blFormatInfo[_format]; }
+  BL_INLINE BLFormatInfo formatInfo() const noexcept { return blFormatInfo[size_t(_format)]; }
 
   //! Returns source bytes-per-pixel (only used when `isPattern()` is true).
   BL_INLINE uint32_t bpp() const noexcept { return _bpp; }
@@ -107,10 +108,10 @@ public:
   BL_INLINE bool isComplexFetch() const noexcept { return _isComplexFetch; }
   BL_INLINE void setComplexFetch(bool value) noexcept { _isComplexFetch = value; }
 
-  void init(x86::Gp& x, x86::Gp& y, PixelType pixelType, uint32_t pixelGranularity) noexcept;
+  void init(Gp& x, Gp& y, PixelType pixelType, uint32_t pixelGranularity) noexcept;
   void fini() noexcept;
 
-  virtual void _initPart(x86::Gp& x, x86::Gp& y) noexcept;
+  virtual void _initPart(Gp& x, Gp& y) noexcept;
   virtual void _finiPart() noexcept;
 
   //! Advances the current y coordinate by one pixel.
@@ -121,47 +122,45 @@ public:
   //! \note This initializer is generally called once per scanline to setup the current position by initializing it
   //! to `x`. The position is then advanced automatically by pixel fetchers and by `advanceX()`, which is used when
   //! there is a gap in the scanline that has to be skipped.
-  virtual void startAtX(x86::Gp& x) noexcept;
+  virtual void startAtX(const Gp& x) noexcept;
 
   //! Advances the current x coordinate by `diff` pixels. The final x position after advance will be `x`. The fetcher
   //! can decide whether to use `x`, `diff`, or both.
-  virtual void advanceX(x86::Gp& x, x86::Gp& diff) noexcept;
+  virtual void advanceX(const Gp& x, const Gp& diff) noexcept;
 
-  //! Called before `fetch1()`.
+  //! Called before `fetch()` with `n == 1`.
   virtual void prefetch1() noexcept;
 
-  //! Fetches 1 RGBA pixel to `p` and advances by 1.
-  virtual void fetch1(Pixel& p, PixelFlags flags) noexcept = 0;
-
-  //! Called as a prolog before fetching multiple fixels at once. This must be called before any loop that would call
-  //! `fetch4()` or `fetch8()` unless the fetcher is in a vector mode because of `pixelGranularity`.
+  //! Called as a prolog before fetching multiple pixels at once. This must be called before any loop that would call
+  //! `fetch()` with `n` greater than 1 unless the fetcher is in a vector mode because of `pixelGranularity`.
   virtual void enterN() noexcept;
 
-  //! Called as an epilog after fetching multiple fixels at once. This must be called after a loop that uses `fetch4()`
-  //! or `fetch8()` unless the fetcher is in a vector mode because of `pixelGranularity`.
+  //! Called as an epilog after fetching multiple pixels at once. This must be called after a loop that uses `fetch()`
+  //! with `n` greater than 1 unless the fetcher is in a vector mode because of `pixelGranularity`.
   virtual void leaveN() noexcept;
 
-  //! Called before a loop that calls `fetch4()` or `fetch8()`. In some cases there will be some instructions placed
-  //! between `prefetch` and `fetch`, which means that if the fetcher requires an expensive operation that has greater
-  //! latency then it would be better to place that code into the prefetch area.
+  //! Called before a loop that calls `fetch()` with `n` greater than 1. In some cases there will be some instructions
+  //! placed between `prefetch()` and `fetch()`, which means that if the fetcher requires an expensive operation that
+  //! has greater latency then it would be better to place that code into the prefetch area.
   virtual void prefetchN() noexcept;
 
-  //! Cancels the effect of `prefetchN()` and also automatic prefetch that happens inside `fetch4()` or `fetch8()`.
-  //! Must be called after a loop that calls `fetch4()`, `fetch8()`, or immediately after `prefetchN()` if no loop has
-  //! been entered.
+  //! Cancels the effect of `prefetchN()` and also automatic prefetch that happens inside `fetch()` with `n` greater than
+  //! 1. Must be called after a loop that calls `fetch()` to fetch multiple pixels, or immediately after `prefetchN()` if
+  //! no loop would be entered, but prefetchN() was already used.
   virtual void postfetchN() noexcept;
 
-  //! Fetches 4 pixels to `p` and advances by 4.
-  virtual void fetch4(Pixel& p, PixelFlags flags) noexcept = 0;
+  //! Fetches N pixels to `p` and advances by N.
+  virtual void fetch(Pixel& p, PixelCount n, PixelFlags flags, PixelPredicate& predicate) noexcept;
 
-  //! Fetches 8 pixels to `p` and advances by 8.
-  //!
-  //! \note The default implementation uses `fetch4()` twice.
-  virtual void fetch8(Pixel& p, PixelFlags flags) noexcept;
+#if defined(BL_JIT_ARCH_X86)
+  //! Fetches 8 pixels by calling fetch() twice to fetch 4 pixels each time.
+  void _fetch2x4(Pixel& p, PixelFlags flags) noexcept;
+#endif
 };
 
 } // {JIT}
-} // {BLPipeline}
+} // {Pipeline}
+} // {bl}
 
 //! \}
 //! \endcond

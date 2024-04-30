@@ -13,188 +13,71 @@
 #include "string_p.h"
 #include "support/hashops_p.h"
 
-// BLFontManager - Globals
-// =======================
+namespace bl {
+namespace FontManagerInternal {
 
-static BLObjectEthernalVirtualImpl<BLFontManagerPrivateImpl, BLFontManagerVirt> blFontManagerDefaultImpl;
+// bl::FontManager - Internals - Globals
+// =====================================
 
-// BLFontManager - Constants
-// =========================
+static BLObjectEternalVirtualImpl<BLFontManagerPrivateImpl, BLFontManagerVirt> defaultImpl;
 
-static constexpr uint32_t BL_FONT_QUERY_INVALID_DIFF = 0xFFFFFFFFu;
+// bl::FontManager - Internals - Constants
+// =======================================
 
-enum BLFontPrecedenceBits : uint32_t {
-  BL_FONT_QUERY_DIFF_FAMILY_NAME_SHIFT   = 24, // 0xFF000000 [8 bits].
-  BL_FONT_QUERY_DIFF_STYLE_VALUE_SHIFT   = 22, // 0x00C00000 [2 bits].
-  BL_FONT_QUERY_DIFF_STYLE_SIGN_SHIFT    = 21, // 0x00200000 [1 bit].
-  BL_FONT_QUERY_DIFF_WEIGHT_VALUE_SHIFT  = 10, // 0x001FFC00 [11 bits].
-  BL_FONT_QUERY_DIFF_WEIGHT_SIGN_SHIFT   =  9, // 0x00000200 [1 bit].
-  BL_FONT_QUERY_DIFF_STRETCH_VALUE_SHIFT =  5, // 0x000001E0 [4 bits].
-  BL_FONT_QUERY_DIFF_STRETCH_SIGN_SHIFT  =  4  // 0x00000010 [1 bit].
+enum QueryPrecedenceBits : uint32_t {
+  kQueryDiffFamilyNameShift   = 24, // 0xFF000000 [8 bits].
+  kQueryDiffStyleValueShift   = 22, // 0x00C00000 [2 bits].
+  kQueryDiffStyleSignShift    = 21, // 0x00200000 [1 bit].
+  kQueryDiffWeightValueShift  = 10, // 0x001FFC00 [11 bits].
+  kQueryDiffWeightSignShift   =  9, // 0x00000200 [1 bit].
+  kQueryDiffStretchValueShift =  5, // 0x000001E0 [4 bits].
+  kQueryDiffStretchSignShift  =  4  // 0x00000010 [1 bit].
 };
 
-// BLFontManager - Aloc & Free Impl
-// ================================
+static constexpr uint32_t kQueryInvalidDiff = 0xFFFFFFFFu;
 
-static BLResult blFontManagerImplInit(BLFontManagerCore* self) noexcept {
-  BLFontManagerPrivateImpl* impl = blObjectDetailAllocImplT<BLFontManagerPrivateImpl>(self, BLObjectInfo::packType(BL_OBJECT_TYPE_FONT_MANAGER));
-  if (BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
+// bl::FontManager - Internals - Alloc & Free Impl
+// ===============================================
 
-  blCallCtor(*impl, &blFontManagerDefaultImpl.virt);
+static BLResult allocImpl(BLFontManagerCore* self) noexcept {
+  BLObjectInfo info = BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_MANAGER);
+  BL_PROPAGATE(ObjectInternal::allocImplT<BLFontManagerPrivateImpl>(self, info));
+
+  BLFontManagerPrivateImpl* impl = getImpl(self);
+  blCallCtor(*impl, &defaultImpl.virt);
   return BL_SUCCESS;
 }
 
-static BLResult BL_CDECL blFontManagerImplDestroy(BLObjectImpl* impl, uint32_t info) noexcept {
+static BLResult BL_CDECL destroyImpl(BLObjectImpl* impl) noexcept {
   blCallDtor(*static_cast<BLFontManagerPrivateImpl*>(impl));
-  return blObjectDetailFreeImpl(impl, info);
+  return blObjectFreeImpl(impl);
 }
 
-// BLFontManager - API - Init & Destroy
-// ====================================
+// bl::FontManager - Internals - Faces
+// ===================================
 
-BLResult blFontManagerInit(BLFontManagerCore* self) noexcept {
-  self->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
-  return BL_SUCCESS;
-}
-
-BLResult blFontManagerInitMove(BLFontManagerCore* self, BLFontManagerCore* other) noexcept {
-  BL_ASSERT(self != other);
-  BL_ASSERT(other->_d.isFontManager());
-
-  self->_d = other->_d;
-  other->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
-
-  return BL_SUCCESS;
-
-}
-
-BLResult blFontManagerInitWeak(BLFontManagerCore* self, const BLFontManagerCore* other) noexcept {
-  BL_ASSERT(self != other);
-  BL_ASSERT(other->_d.isFontManager());
-
-  return blObjectPrivateInitWeakTagged(self, other);
-}
-
-BLResult blFontManagerInitNew(BLFontManagerCore* self) noexcept {
-  self->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
-  return blFontManagerImplInit(self);
-}
-
-BLResult blFontManagerDestroy(BLFontManagerCore* self) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-
-  return blObjectPrivateReleaseVirtual(self);
-}
-
-// BLFontManager - API - Reset
-// ===========================
-
-BLResult blFontManagerReset(BLFontManagerCore* self) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-
-  return blObjectPrivateReplaceVirtual(self, static_cast<BLFontManagerCore*>(&blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]));
-}
-
-// BLFontManager - API - Assign
-// ============================
-
-BLResult blFontManagerAssignMove(BLFontManagerCore* self, BLFontManagerCore* other) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-  BL_ASSERT(other->_d.isFontManager());
-
-  BLFontManagerCore tmp = *other;
-  other->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
-  return blObjectPrivateReplaceVirtual(self, &tmp);
-}
-
-BLResult blFontManagerAssignWeak(BLFontManagerCore* self, const BLFontManagerCore* other) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-  BL_ASSERT(other->_d.isFontManager());
-
-  return blObjectPrivateAssignWeakVirtual(self, other);
-}
-
-// BLFontManager - API - Equals
-// ============================
-
-bool blFontManagerEquals(const BLFontManagerCore* a, const BLFontManagerCore* b) noexcept {
-  BL_ASSERT(a->_d.isFontManager());
-  BL_ASSERT(b->_d.isFontManager());
-
-  return a->_d.impl == b->_d.impl;
-}
-
-// BLFontManager - API - Create
-// ============================
-
-BLResult blFontManagerCreate(BLFontManagerCore* self) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-
-  BLFontManagerCore newO;
-  BL_PROPAGATE(blFontManagerImplInit(&newO));
-
-  return blObjectPrivateReplaceVirtual(self, &newO);
-}
-
-// BLFontManager - API - Accessors
-// ===============================
-
-size_t blFontManagerGetFaceCount(const BLFontManagerCore* self) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-
-  BLFontManagerPrivateImpl* selfI = blFontManagerGetImpl(self);
-  BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
-
-  return selfI->faceCount;
-}
-
-size_t blFontManagerGetFamilyCount(const BLFontManagerCore* self) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-
-  BLFontManagerPrivateImpl* selfI = blFontManagerGetImpl(self);
-  BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
-
-  return selfI->familiesMap.size();
-}
-
-// BLFontManager - Internal Utilities
-// ==================================
-
-static BL_INLINE BLResult blFontManagerMakeMutable(BLFontManagerCore* self) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
-
-  if (!self->dcast().isValid())
-    return blFontManagerCreate(self);
-
-  return BL_SUCCESS;
-}
-
-// BLFontManager - API - Font Face Management
-// ==========================================
-
-static BL_INLINE size_t blFontManagerIndexOfFace(const BLFontFace* array, size_t size, BLFontFaceImpl* faceI) noexcept {
+static BL_INLINE size_t indexOfFace(const BLFontFace* array, size_t size, BLFontFaceImpl* faceI) noexcept {
   for (size_t i = 0; i < size; i++)
     if (array[i]._d.impl == faceI)
       return i;
   return SIZE_MAX;
 }
 
-static BL_INLINE uint32_t blFontManagerCalcFaceOrder(const BLFontFaceImpl* faceI) noexcept {
+static BL_INLINE uint32_t calcFaceOrder(const BLFontFaceImpl* faceI) noexcept {
   uint32_t style = faceI->style;
   uint32_t weight = faceI->weight;
 
-  return (style << BL_FONT_QUERY_DIFF_STYLE_VALUE_SHIFT) |
-         (weight << BL_FONT_QUERY_DIFF_WEIGHT_VALUE_SHIFT);
+  return (style << kQueryDiffStyleValueShift) |
+         (weight << kQueryDiffWeightValueShift);
 }
 
-static BL_INLINE size_t blFontManagerIndexForInsertion(const BLFontFace* array, size_t size, BLFontFaceImpl* faceI) noexcept {
-  uint32_t faceOrder = blFontManagerCalcFaceOrder(faceI);
+static BL_INLINE size_t indexForInsertion(const BLFontFace* array, size_t size, BLFontFaceImpl* faceI) noexcept {
+  uint32_t faceOrder = calcFaceOrder(faceI);
   size_t i;
 
   for (i = 0; i < size; i++) {
-    BLFontFacePrivateImpl* storedFaceI = blFontFaceGetImpl(&array[i]);
-    uint32_t storedFaceOrder = blFontManagerCalcFaceOrder(storedFaceI);
+    BLFontFacePrivateImpl* storedFaceI = FontFaceInternal::getImpl(&array[i]);
+    uint32_t storedFaceOrder = calcFaceOrder(storedFaceI);
     if (storedFaceOrder >= faceOrder) {
       if (storedFaceOrder == faceOrder)
         return SIZE_MAX;
@@ -205,81 +88,16 @@ static BL_INLINE size_t blFontManagerIndexForInsertion(const BLFontFace* array, 
   return i;
 }
 
-bool blFontManagerHasFace(const BLFontManagerCore* self, const BLFontFaceCore* face) noexcept {
-  BL_ASSERT(self->_d.isFontManager());
+// bl::FontManager - Query - Utilities
+// ===================================
 
-  BLFontManagerPrivateImpl* selfI = blFontManagerGetImpl(self);
-  BLFontFacePrivateImpl* faceI = blFontFaceGetImpl(face);
-
-  uint32_t nameHash = BLHashOps::hashStringCI(faceI->familyName.dcast().view());
-
-  BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
-  BLFontManagerPrivateImpl::FamiliesMapNode* familiesNode =
-    selfI->familiesMap.get(BLFontManagerPrivateImpl::FamilyMatcher{faceI->familyName.dcast().view(), nameHash});
-
-  if (!familiesNode)
-    return false;
-
-  size_t index = blFontManagerIndexOfFace(familiesNode->faces.data(), familiesNode->faces.size(), faceI);
-  return index != SIZE_MAX;
-}
-
-BLResult blFontManagerAddFace(BLFontManagerCore* self, const BLFontFaceCore* face) noexcept {
-  if (!face->dcast().isValid())
-    return blTraceError(BL_ERROR_FONT_NOT_INITIALIZED);
-
-  BL_PROPAGATE(blFontManagerMakeMutable(self));
-
-  BLFontManagerPrivateImpl* selfI = blFontManagerGetImpl(self);
-  BLFontFacePrivateImpl* faceI = blFontFaceGetImpl(face);
-
-  uint32_t nameHash = BLHashOps::hashStringCI(faceI->familyName.dcast().view());
-
-  BLLockGuard<BLSharedMutex> guard(selfI->mutex);
-  BLArenaAllocator::StatePtr allocatorState = selfI->allocator.saveState();
-
-  BLFontManagerPrivateImpl::FamiliesMapNode* familiesNode =
-    selfI->familiesMap.get(BLFontManagerPrivateImpl::FamilyMatcher{faceI->familyName.dcast().view(), nameHash});
-
-  if (!familiesNode) {
-    familiesNode = selfI->allocator.newT<BLFontManagerPrivateImpl::FamiliesMapNode>(nameHash, faceI->familyName.dcast());
-    if (!familiesNode)
-      return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-
-    // Reserve for only one item at the beginning. This helps to decrease
-    // memory footprint when loading a lot of font-faces that don't share
-    // family names.
-    BLResult result = familiesNode->faces.reserve(1u);
-    if (BL_UNLIKELY(result != BL_SUCCESS)) {
-      blCallDtor(*familiesNode);
-      selfI->allocator.restoreState(allocatorState);
-      return result;
-    }
-
-    familiesNode->faces.append(face->dcast());
-    selfI->familiesMap.insert(familiesNode);
-  }
-  else {
-    size_t index = blFontManagerIndexForInsertion(familiesNode->faces.data(), familiesNode->faces.size(), faceI);
-    if (index == SIZE_MAX)
-      return BL_SUCCESS;
-    BL_PROPAGATE(familiesNode->faces.insert(index, face->dcast()));
-  }
-
-  selfI->faceCount++;
-  return BL_SUCCESS;
-}
-
-// BLFontManager - Query - Utilities
-// =================================
-
-static const BLFontQueryProperties blFontFaceDefaultQueryProperties = {
+static const BLFontQueryProperties defaultQueryProperties = {
   BL_FONT_STYLE_NORMAL,
   BL_FONT_WEIGHT_NORMAL,
   BL_FONT_STRETCH_NORMAL
 };
 
-static bool blFontQuerySanitizeQueryProperties(BLFontQueryProperties& dst, const BLFontQueryProperties& src) noexcept {
+static bool sanitizeQueryProperties(BLFontQueryProperties& dst, const BLFontQueryProperties& src) noexcept {
   bool valid = src.weight <= 1000u &&
                src.style <= BL_FONT_STYLE_MAX_VALUE &&
                src.stretch <= BL_FONT_STRETCH_ULTRA_EXPANDED;
@@ -293,10 +111,10 @@ static bool blFontQuerySanitizeQueryProperties(BLFontQueryProperties& dst, const
   return true;
 }
 
-// BLFontManager - Query - Prepared Query
-// ======================================
+// bl::FontManager - Query - Prepared Query
+// ========================================
 
-struct BLFontPreparedQuery {
+struct PreparedQuery {
   BLStringView _name;
   uint32_t _hashCode;
 
@@ -308,23 +126,23 @@ struct BLFontPreparedQuery {
   BL_INLINE bool matches(const FamiliesMapNode* node) const noexcept { return node->familyName.equals(_name); }
 };
 
-static bool blFontManagerPrepareQuery(const BLFontManagerPrivateImpl* impl, const char* name, size_t nameSize, BLFontPreparedQuery* out) noexcept {
+static bool prepareQuery(const BLFontManagerPrivateImpl* impl, const char* name, size_t nameSize, PreparedQuery* out) noexcept {
   blUnused(impl);
 
   if (nameSize == SIZE_MAX)
     nameSize = strlen(name);
 
   out->_name.reset(name, nameSize);
-  out->_hashCode = BLHashOps::hashStringCI(name, nameSize);
+  out->_hashCode = HashOps::hashStringCI(name, nameSize);
   return nameSize != 0;
 }
 
-// BLFontManager - Query - Diff Calculation
-// ========================================
+// bl::FontManager - Query - Diff Calculation
+// ==========================================
 
-static uint32_t blFontQueryCalcFamilyNameDiff(BLStringView aStr, BLStringView bStr) noexcept {
+static BL_INLINE uint32_t calcFamilyNameDiff(BLStringView aStr, BLStringView bStr) noexcept {
   if (aStr.size != bStr.size)
-    return BL_FONT_QUERY_INVALID_DIFF;
+    return kQueryInvalidDiff;
 
   uint32_t diff = 0;
 
@@ -335,11 +153,11 @@ static uint32_t blFontQueryCalcFamilyNameDiff(BLStringView aStr, BLStringView bS
     if (a == b)
       continue;
 
-    a = blAsciiToLower(a);
-    b = blAsciiToLower(b);
+    a = Unicode::asciiToLower(a);
+    b = Unicode::asciiToLower(b);
 
     if (a != b)
-      return BL_FONT_QUERY_INVALID_DIFF;
+      return kQueryInvalidDiff;
 
     diff++;
   }
@@ -347,10 +165,10 @@ static uint32_t blFontQueryCalcFamilyNameDiff(BLStringView aStr, BLStringView bS
   if (diff > 255)
     diff = 255;
 
-  return diff << BL_FONT_QUERY_DIFF_FAMILY_NAME_SHIFT;
+  return diff << kQueryDiffFamilyNameShift;
 }
 
-static uint32_t blFontQueryCalcPropertyDiff(const BLFontFaceImpl* faceI, const BLFontQueryProperties* properties) noexcept {
+static BL_INLINE uint32_t calcPropertyDiff(const BLFontFaceImpl* faceI, const BLFontQueryProperties* properties) noexcept {
   uint32_t diff = 0;
 
   uint32_t fStyle = faceI->style;
@@ -365,28 +183,28 @@ static uint32_t blFontQueryCalcPropertyDiff(const BLFontFaceImpl* faceI, const B
   uint32_t weightDiff = uint32_t(blAbs(int(pWeight) - int(fWeight)));
   uint32_t stretchDiff = uint32_t(blAbs(int(pStretch) - int(fStretch)));
 
-  diff |= styleDiff << BL_FONT_QUERY_DIFF_STYLE_VALUE_SHIFT;
-  diff |= uint32_t(pStyle < fStyle) << BL_FONT_QUERY_DIFF_STYLE_SIGN_SHIFT;
+  diff |= styleDiff << kQueryDiffStyleValueShift;
+  diff |= uint32_t(pStyle < fStyle) << kQueryDiffStyleSignShift;
 
-  diff |= weightDiff << BL_FONT_QUERY_DIFF_WEIGHT_VALUE_SHIFT;
-  diff |= uint32_t(pWeight < fWeight) << BL_FONT_QUERY_DIFF_WEIGHT_SIGN_SHIFT;
+  diff |= weightDiff << kQueryDiffWeightValueShift;
+  diff |= uint32_t(pWeight < fWeight) << kQueryDiffWeightSignShift;
 
-  diff |= stretchDiff << BL_FONT_QUERY_DIFF_STRETCH_VALUE_SHIFT;
-  diff |= uint32_t(pStretch < fStretch) << BL_FONT_QUERY_DIFF_STRETCH_SIGN_SHIFT;
+  diff |= stretchDiff << kQueryDiffStretchValueShift;
+  diff |= uint32_t(pStretch < fStretch) << kQueryDiffStretchSignShift;
 
   return diff;
 }
 
-// BLFontManager - Query - Match
-// =============================
+// bl::FontManager - Query - Match
+// ===============================
 
-class BLFontQueryBestMatch {
+class QueryBestMatch {
 public:
   const BLFontQueryProperties* properties;
   const BLFontFace* face;
   uint32_t diff;
 
-  BL_INLINE BLFontQueryBestMatch(const BLFontQueryProperties* properties) noexcept
+  BL_INLINE QueryBestMatch(const BLFontQueryProperties* properties) noexcept
     : properties(properties),
       face(nullptr),
       diff(0xFFFFFFFFu) {}
@@ -394,7 +212,7 @@ public:
   BL_INLINE bool hasFace() const noexcept { return face != nullptr; }
 
   void match(const BLFontFace& faceIn, uint32_t baseDiff = 0) noexcept {
-    uint32_t localDiff = baseDiff + blFontQueryCalcPropertyDiff(faceIn._impl(), properties);
+    uint32_t localDiff = baseDiff + calcPropertyDiff(faceIn._impl(), properties);
     if (diff > localDiff) {
       face = &faceIn;
       diff = localDiff;
@@ -402,25 +220,231 @@ public:
   }
 };
 
-// BLFontManager - Query - API
-// ===========================
+} // {FontManagerInternal}
+} // {bl}
 
-BLResult blFontManagerQueryFacesByFamilyName(const BLFontManagerCore* self, const char* name, size_t nameSize, BLArrayCore* out) noexcept {
+// bl::FontManager - API - Init & Destroy
+// ======================================
+
+BL_API_IMPL BLResult blFontManagerInit(BLFontManagerCore* self) noexcept {
+  self->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
+  return BL_SUCCESS;
+}
+
+BL_API_IMPL BLResult blFontManagerInitMove(BLFontManagerCore* self, BLFontManagerCore* other) noexcept {
+  BL_ASSERT(self != other);
+  BL_ASSERT(other->_d.isFontManager());
+
+  self->_d = other->_d;
+  other->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
+
+  return BL_SUCCESS;
+
+}
+
+BL_API_IMPL BLResult blFontManagerInitWeak(BLFontManagerCore* self, const BLFontManagerCore* other) noexcept {
+  BL_ASSERT(self != other);
+  BL_ASSERT(other->_d.isFontManager());
+
+  return blObjectPrivateInitWeakTagged(self, other);
+}
+
+BL_API_IMPL BLResult blFontManagerInitNew(BLFontManagerCore* self) noexcept {
+  using namespace bl::FontManagerInternal;
+
+  self->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
+  return allocImpl(self);
+}
+
+BL_API_IMPL BLResult blFontManagerDestroy(BLFontManagerCore* self) noexcept {
+  BL_ASSERT(self->_d.isFontManager());
+
+  return bl::ObjectInternal::releaseVirtualInstance(self);
+}
+
+// bl::FontManager - API - Reset
+// =============================
+
+BL_API_IMPL BLResult blFontManagerReset(BLFontManagerCore* self) noexcept {
+  BL_ASSERT(self->_d.isFontManager());
+
+  return bl::ObjectInternal::replaceVirtualInstance(self, static_cast<BLFontManagerCore*>(&blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]));
+}
+
+// bl::FontManager - API - Assign
+// ==============================
+
+BL_API_IMPL BLResult blFontManagerAssignMove(BLFontManagerCore* self, BLFontManagerCore* other) noexcept {
+  BL_ASSERT(self->_d.isFontManager());
+  BL_ASSERT(other->_d.isFontManager());
+
+  BLFontManagerCore tmp = *other;
+  other->_d = blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d;
+  return bl::ObjectInternal::replaceVirtualInstance(self, &tmp);
+}
+
+BL_API_IMPL BLResult blFontManagerAssignWeak(BLFontManagerCore* self, const BLFontManagerCore* other) noexcept {
+  BL_ASSERT(self->_d.isFontManager());
+  BL_ASSERT(other->_d.isFontManager());
+
+  return bl::ObjectInternal::assignVirtualInstance(self, other);
+}
+
+// bl::FontManager - API - Equals
+// ==============================
+
+bool blFontManagerEquals(const BLFontManagerCore* a, const BLFontManagerCore* b) noexcept {
+  BL_ASSERT(a->_d.isFontManager());
+  BL_ASSERT(b->_d.isFontManager());
+
+  return a->_d.impl == b->_d.impl;
+}
+
+// bl::FontManager - API - Create
+// ==============================
+
+BL_API_IMPL BLResult blFontManagerCreate(BLFontManagerCore* self) noexcept {
+  using namespace bl::FontManagerInternal;
+  BL_ASSERT(self->_d.isFontManager());
+
+  BLFontManagerCore newO;
+  BL_PROPAGATE(allocImpl(&newO));
+
+  return bl::ObjectInternal::replaceVirtualInstance(self, &newO);
+}
+
+// bl::FontManager - API - Accessors
+// =================================
+
+BL_API_IMPL size_t blFontManagerGetFaceCount(const BLFontManagerCore* self) noexcept {
+  using namespace bl::FontManagerInternal;
+  BL_ASSERT(self->_d.isFontManager());
+
+  BLFontManagerPrivateImpl* selfI = getImpl(self);
+  BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
+
+  return selfI->faceCount;
+}
+
+BL_API_IMPL size_t blFontManagerGetFamilyCount(const BLFontManagerCore* self) noexcept {
+  using namespace bl::FontManagerInternal;
+  BL_ASSERT(self->_d.isFontManager());
+
+  BLFontManagerPrivateImpl* selfI = getImpl(self);
+  BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
+
+  return selfI->familiesMap.size();
+}
+
+// bl::FontManager - Internal Utilities
+// ====================================
+
+static BL_INLINE BLResult blFontManagerMakeMutable(BLFontManagerCore* self) noexcept {
+  BL_ASSERT(self->_d.isFontManager());
+
+  if (!self->dcast().isValid())
+    return blFontManagerCreate(self);
+
+  return BL_SUCCESS;
+}
+
+// bl::FontManager - API - Font Face Management
+// ============================================
+
+BL_API_IMPL bool blFontManagerHasFace(const BLFontManagerCore* self, const BLFontFaceCore* face) noexcept {
+  using namespace bl::FontManagerInternal;
+
+  BL_ASSERT(self->_d.isFontManager());
+  BL_ASSERT(self->_d.isFontFace());
+
+  BLFontManagerPrivateImpl* selfI = getImpl(self);
+  BLFontFacePrivateImpl* faceI = bl::FontFaceInternal::getImpl(face);
+
+  uint32_t nameHash = bl::HashOps::hashStringCI(faceI->familyName.dcast().view());
+
+  BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
+  BLFontManagerPrivateImpl::FamiliesMapNode* familiesNode =
+    selfI->familiesMap.get(BLFontManagerPrivateImpl::FamilyMatcher{faceI->familyName.dcast().view(), nameHash});
+
+  if (!familiesNode)
+    return false;
+
+  size_t index = indexOfFace(familiesNode->faces.data(), familiesNode->faces.size(), faceI);
+  return index != SIZE_MAX;
+}
+
+BL_API_IMPL BLResult blFontManagerAddFace(BLFontManagerCore* self, const BLFontFaceCore* face) noexcept {
+  using namespace bl::FontManagerInternal;
+
+  BL_ASSERT(self->_d.isFontManager());
+  BL_ASSERT(self->_d.isFontFace());
+
+  if (!face->dcast().isValid())
+    return blTraceError(BL_ERROR_FONT_NOT_INITIALIZED);
+
+  BL_PROPAGATE(blFontManagerMakeMutable(self));
+
+  BLFontManagerPrivateImpl* selfI = getImpl(self);
+  BLFontFacePrivateImpl* faceI = bl::FontFaceInternal::getImpl(face);
+
+  uint32_t nameHash = bl::HashOps::hashStringCI(faceI->familyName.dcast().view());
+
+  BLLockGuard<BLSharedMutex> guard(selfI->mutex);
+  bl::ArenaAllocator::StatePtr allocatorState = selfI->allocator.saveState();
+
+  BLFontManagerPrivateImpl::FamiliesMapNode* familiesNode =
+    selfI->familiesMap.get(BLFontManagerPrivateImpl::FamilyMatcher{faceI->familyName.dcast().view(), nameHash});
+
+  if (!familiesNode) {
+    familiesNode = selfI->allocator.newT<BLFontManagerPrivateImpl::FamiliesMapNode>(nameHash, faceI->familyName.dcast());
+    if (!familiesNode)
+      return blTraceError(BL_ERROR_OUT_OF_MEMORY);
+
+    // Reserve for only one item at the beginning. This helps to decrease memory footprint when loading a lot of font
+    // faces that don't share family names.
+    BLResult result = familiesNode->faces.reserve(1u);
+    if (BL_UNLIKELY(result != BL_SUCCESS)) {
+      blCallDtor(*familiesNode);
+      selfI->allocator.restoreState(allocatorState);
+      return result;
+    }
+
+    familiesNode->faces.append(face->dcast());
+    selfI->familiesMap.insert(familiesNode);
+  }
+  else {
+    size_t index = indexForInsertion(familiesNode->faces.data(), familiesNode->faces.size(), faceI);
+    if (index == SIZE_MAX)
+      return BL_SUCCESS;
+    BL_PROPAGATE(familiesNode->faces.insert(index, face->dcast()));
+  }
+
+  selfI->faceCount++;
+  return BL_SUCCESS;
+}
+
+// bl::FontManager - Query - API
+// =============================
+
+BL_API_IMPL BLResult blFontManagerQueryFacesByFamilyName(const BLFontManagerCore* self, const char* name, size_t nameSize, BLArrayCore* out) noexcept {
+  using namespace bl::FontManagerInternal;
+  BL_ASSERT(self->_d.isFontManager());
+
   if (BL_UNLIKELY(out->_d.rawType() != BL_OBJECT_TYPE_ARRAY_OBJECT))
     return blTraceError(BL_ERROR_INVALID_VALUE);
 
   {
-    BLFontManagerPrivateImpl* selfI = blFontManagerGetImpl(self);
+    BLFontManagerPrivateImpl* selfI = getImpl(self);
     BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
 
-    BLFontPreparedQuery query;
+    PreparedQuery query;
     uint32_t candidateDiff = 0xFFFFFFFF;
     BLFontManagerPrivateImpl::FamiliesMapNode* candidate = nullptr;
 
-    if (blFontManagerPrepareQuery(selfI, name, nameSize, &query)) {
+    if (prepareQuery(selfI, name, nameSize, &query)) {
       BLFontManagerPrivateImpl::FamiliesMapNode* node = selfI->familiesMap.get(query);
       while (node) {
-        uint32_t familyDiff = blFontQueryCalcFamilyNameDiff(node->familyName.view(), query.name());
+        uint32_t familyDiff = calcFamilyNameDiff(node->familyName.view(), query.name());
         if (candidateDiff > familyDiff) {
           candidateDiff = familyDiff;
           candidate = node;
@@ -438,31 +462,34 @@ BLResult blFontManagerQueryFacesByFamilyName(const BLFontManagerCore* self, cons
   return BL_ERROR_FONT_NO_MATCH;
 }
 
-BLResult blFontManagerQueryFace(
+BL_API_IMPL BLResult blFontManagerQueryFace(
   const BLFontManagerCore* self,
   const char* name, size_t nameSize,
   const BLFontQueryProperties* properties,
   BLFontFaceCore* out) noexcept {
 
+  using namespace bl::FontManagerInternal;
+  BL_ASSERT(self->_d.isFontManager());
+
   if (!properties)
-    properties = &blFontFaceDefaultQueryProperties;
+    properties = &defaultQueryProperties;
 
   BLFontQueryProperties sanitizedProperties;
-  if (!blFontQuerySanitizeQueryProperties(sanitizedProperties, *properties))
+  if (!sanitizeQueryProperties(sanitizedProperties, *properties))
     return blTraceError(BL_ERROR_INVALID_VALUE);
 
   {
-    BLFontManagerPrivateImpl* selfI = blFontManagerGetImpl(self);
+    BLFontManagerPrivateImpl* selfI = getImpl(self);
     BLSharedLockGuard<BLSharedMutex> guard(selfI->mutex);
 
-    BLFontPreparedQuery query;
-    BLFontQueryBestMatch bestMatch(&sanitizedProperties);
+    PreparedQuery query;
+    QueryBestMatch bestMatch(&sanitizedProperties);
 
-    if (blFontManagerPrepareQuery(selfI, name, nameSize, &query)) {
+    if (prepareQuery(selfI, name, nameSize, &query)) {
       BLFontManagerPrivateImpl::FamiliesMapNode* node = selfI->familiesMap.nodesByHashCode(query.hashCode());
       while (node) {
-        uint32_t familyDiff = blFontQueryCalcFamilyNameDiff(node->familyName.view(), query.name());
-        if (familyDiff != BL_FONT_QUERY_INVALID_DIFF) {
+        uint32_t familyDiff = calcFamilyNameDiff(node->familyName.view(), query.name());
+        if (familyDiff != kQueryInvalidDiff) {
           for (const BLFontFace& face : node->faces.dcast<BLArray<BLFontFace>>())
             bestMatch.match(face, familyDiff);
         }
@@ -479,19 +506,19 @@ BLResult blFontManagerQueryFace(
   return BL_ERROR_FONT_NO_MATCH;
 }
 
-// BLFontManager - Runtime Registration
-// ====================================
+// bl::FontManager - Runtime Registration
+// ======================================
 
 void blFontManagerRtInit(BLRuntimeContext* rt) noexcept {
   blUnused(rt);
 
-  blFontManagerDefaultImpl.virt.base.destroy = blFontManagerImplDestroy;
-  blFontManagerDefaultImpl.virt.base.getProperty = blObjectImplGetProperty;
-  blFontManagerDefaultImpl.virt.base.setProperty = blObjectImplSetProperty;
-  blFontManagerDefaultImpl.impl.init(&blFontManagerDefaultImpl.virt);
+  auto& defaultImpl = bl::FontManagerInternal::defaultImpl;
+
+  defaultImpl.virt.base.destroy = bl::FontManagerInternal::destroyImpl;
+  defaultImpl.virt.base.getProperty = blObjectImplGetProperty;
+  defaultImpl.virt.base.setProperty = blObjectImplSetProperty;
+  defaultImpl.impl.init(&defaultImpl.virt);
 
   blObjectDefaults[BL_OBJECT_TYPE_FONT_MANAGER]._d.initDynamic(
-    BL_OBJECT_TYPE_FONT_MANAGER,
-    BLObjectInfo{BL_OBJECT_INFO_IMMUTABLE_FLAG},
-    &blFontManagerDefaultImpl.impl);
+    BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_MANAGER) | BLObjectInfo::fromAbcp(1), &defaultImpl.impl);
 }

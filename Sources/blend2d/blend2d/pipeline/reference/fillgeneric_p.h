@@ -16,8 +16,10 @@
 //! \addtogroup blend2d_pipeline_reference
 //! \{
 
-namespace BLPipeline {
+namespace bl {
+namespace Pipeline {
 namespace Reference {
+namespace {
 
 template<typename CompOp>
 struct FillBoxA_Base {
@@ -27,11 +29,11 @@ struct FillBoxA_Base {
     intptr_t dstStride = ctxData->dst.stride;
     uint8_t* dstPtr = static_cast<uint8_t*>(ctxData->dst.pixelData);
 
-    uint32_t x0 = uint32_t(fillData->box.x0);
     uint32_t y0 = uint32_t(fillData->box.y0);
-
-    dstPtr += size_t(x0) * CompOp::kDstBPP;
     dstPtr += intptr_t(y0) * dstStride;
+
+    uint32_t x0 = uint32_t(fillData->box.x0);
+    dstPtr += size_t(x0) * CompOp::kDstBPP;
 
     uint32_t w = uint32_t(fillData->box.x1) - uint32_t(fillData->box.x0);
     uint32_t h = uint32_t(fillData->box.y1) - uint32_t(fillData->box.y0);
@@ -39,13 +41,13 @@ struct FillBoxA_Base {
     dstStride -= intptr_t(size_t(w) * CompOp::kDstBPP);
     uint32_t msk = fillData->alpha.u;
 
-    CompOp compOp(fetchData_);
-    compOp.initRectY(x0, y0, w);
+    CompOp compOp;
+    compOp.rectInitFetch(ctxData, fetchData_, x0, y0, w);
 
     BL_ASSUME(h > 0);
     if (CompOp::kOptimizeOpaque && msk == 255) {
       while (h) {
-        compOp.beginRectX(x0);
+        compOp.rectStartX(x0);
         dstPtr = compOp.compositeCSpanOpaque(dstPtr, w);
         dstPtr += dstStride;
         compOp.advanceY();
@@ -54,7 +56,7 @@ struct FillBoxA_Base {
     }
     else {
       while (h) {
-        compOp.beginRectX(x0);
+        compOp.rectStartX(x0);
         dstPtr = compOp.compositeCSpanMasked(dstPtr, w, msk);
         dstPtr += dstStride;
         compOp.advanceY();
@@ -65,67 +67,98 @@ struct FillBoxA_Base {
 };
 
 template<typename CompOp>
-struct FillBoxU_Base {
+struct FillMask_Base {
   static void BL_CDECL fillFunc(ContextData* ctxData, const void* fillData_, const void* fetchData_) noexcept {
-    const FillData::BoxU* fillData = static_cast<const FillData::BoxU*>(fillData_);
+    const FillData::Mask* fillData = static_cast<const FillData::Mask*>(fillData_);
 
-    intptr_t dstStride = ctxData->dst.stride;
     uint8_t* dstPtr = static_cast<uint8_t*>(ctxData->dst.pixelData);
+    intptr_t dstStride = ctxData->dst.stride;
 
-    uint32_t x0 = uint32_t(fillData->box.x0);
     uint32_t y0 = uint32_t(fillData->box.y0);
-
-    dstPtr += size_t(x0) * CompOp::kDstBPP;
     dstPtr += intptr_t(y0) * dstStride;
 
-    uint32_t w = uint32_t(fillData->box.x1) - uint32_t(fillData->box.x0);
-    dstStride -= intptr_t(size_t(w) * CompOp::kDstBPP);
+    CompOp compOp;
+    compOp.spanInitY(ctxData, fetchData_, y0);
 
-    uint32_t startWidth = fillData->startWidth;
-    uint32_t innerWidth = fillData->innerWidth;
-    const uint32_t* pMasks = fillData->masks;
+    uint32_t alpha = fillData->alpha.u;
+    MaskCommand* cmdPtr = fillData->maskCommandData;
 
-    CompOp compOp(fetchData_);
-    compOp.initRectY(x0, y0, w);
+    uint32_t h = uint32_t(fillData->box.y1) - y0;
 
-    uint32_t y = 1;
     for (;;) {
-      uint32_t x = startWidth;
-      uint32_t masks = pMasks[0];
+      uint32_t x1AndType = cmdPtr->_x1AndType;
+      uint32_t x = cmdPtr->x0();
 
-      BL_ASSUME(x > 0);
-      compOp.beginRectX(x0);
+      MaskCommand* cmdBegin = cmdPtr;
 
-      for (;;) {
-        do {
-          dstPtr = compOp.compositePixelMasked(dstPtr, masks & 0xFF);
-          masks >>= 8;
-        } while (--x);
+      // This is not really common to not be true, however, it's possible to skip entire scanlines
+      // with kEndOrRepeat command, which is zero.
+      if (BL_LIKELY((x1AndType & MaskCommand::kTypeMask) != 0u)) {
+        compOp.spanStartX(x);
+        dstPtr += size_t(x) * CompOp::kDstBPP;
 
-        if (!masks)
-          break;
+        uint32_t i = x1AndType >> MaskCommand::kTypeBits;
+        MaskCommandType cmdType = MaskCommandType(x1AndType & MaskCommand::kTypeMask);
 
-        uint32_t cMask = masks & 0xFF;
-        dstPtr = compOp.compositeCSpan(dstPtr, innerWidth, cMask);
+        i -= x;
+        x += i;
 
-        masks >>= 8;
-        x = 1;
+        uintptr_t maskValue = cmdPtr->_value.data;
+        cmdPtr++;
+
+        for (;;) {
+          if (cmdType == MaskCommandType::kCMask) {
+            BL_ASSUME(maskValue <= 255);
+            dstPtr = compOp.compositeCSpan(dstPtr, i, uint32_t(maskValue));
+          }
+          else {
+            // Increments the advance in the mask command in case it would be repeated.
+            cmdPtr[-1]._value.data = maskValue + uintptr_t(cmdPtr[-1].maskAdvance());
+            if (cmdType == MaskCommandType::kVMaskA8WithoutGA) {
+              dstPtr = compOp.compositeVSpanWithoutGA(dstPtr, reinterpret_cast<const uint8_t*>(maskValue), alpha, i);
+            }
+            else {
+              dstPtr = compOp.compositeVSpanWithGA(dstPtr, reinterpret_cast<const uint8_t*>(maskValue), i);
+            }
+          }
+
+          x1AndType = cmdPtr->_x1AndType;
+
+          // Terminates this command span.
+          if ((x1AndType & MaskCommand::kTypeMask) == 0u)
+            break;
+
+          uint32_t x0 = cmdPtr->x0();
+          if (x != x0) {
+            compOp.spanAdvanceX(x0, x0 - x);
+            x = x0;
+          }
+
+          i = (x1AndType >> MaskCommand::kTypeBits) - x;
+          x += i;
+          cmdType = MaskCommandType(x1AndType & MaskCommand::kTypeMask);
+
+          maskValue = cmdPtr->_value.data;
+          cmdPtr++;
+        }
+
+        compOp.spanEndX(x);
+        dstPtr -= size_t(x) * CompOp::kDstBPP;
       }
 
-      dstPtr += dstStride;
-      compOp.advanceY();
-
-      // FillBoxU can use up to 3 different scanline masks, everytime `y`
-      // decreases to zero we advance pMasks and verify whether it was the
-      // last one.
-      if (--y != 0)
-        continue;
-
-      // We have reached the number of scanlines required, terminate...
-      if (!*++pMasks)
+      uint32_t repeatCount = cmdPtr->repeatCount();
+      if (--h == 0)
         break;
 
-      y = pMasks[3];
+      cmdPtr++;
+      dstPtr += dstStride;
+
+      compOp.advanceY();
+      repeatCount--;
+      cmdPtr[-1].updateRepeatCount(repeatCount);
+
+      if (repeatCount != 0)
+        cmdPtr = cmdBegin;
     }
   }
 };
@@ -135,10 +168,10 @@ struct FillAnalytic_Base {
   enum : uint32_t {
     kDstBPP = CompOp::kDstBPP,
     kPixelsPerOneBit = 4,
-    kPixelsPerBitWord = kPixelsPerOneBit * BLIntOps::bitSizeOf<BLBitWord>()
+    kPixelsPerBitWord = kPixelsPerOneBit * IntOps::bitSizeOf<BLBitWord>()
   };
 
-  typedef BLPrivateBitWordOps BitOps;
+  typedef PrivateBitWordOps BitOps;
 
   static void BL_CDECL fillFunc(ContextData* ctxData, const void* fillData_, const void* fetchData_) noexcept {
     const FillData::Analytic* fillData = static_cast<const FillData::Analytic*>(fillData_);
@@ -157,8 +190,8 @@ struct FillAnalytic_Base {
     uint32_t globalAlpha = fillData->alpha.u << 7;
     uint32_t fillRuleMask = fillData->fillRuleMask;
 
-    CompOp compOp(fetchData_);
-    compOp.initSpanY(y);
+    CompOp compOp;
+    compOp.spanInitY(ctxData, fetchData_, y);
 
     y = uint32_t(fillData->box.y1) - y;
 
@@ -192,7 +225,7 @@ L_BitScan_Init:
     // of the raster there is still one cell that is non-zero. This makes sure it's cleared.
     dstPtr += x0 * kDstBPP;
     cellPtr += x0;
-    compOp.beginSpanX(uint32_t(x0));
+    compOp.spanStartX(uint32_t(x0));
 
     // Rare case - line rasterized at the end of the raster boundary. In 99% cases this is a clipped line that was
     // rasterized as vertical-only line at the end of the render box. This is a completely valid case that produces
@@ -298,7 +331,7 @@ VLoop_CalcMsk:
 
     if (!msk) {
       dstPtr += i * kDstBPP;
-      compOp.advanceSpanX(uint32_t(x0), uint32_t(i));
+      compOp.spanAdvanceX(uint32_t(x0), uint32_t(i));
     }
     else {
       dstPtr = compOp.compositeCSpan(dstPtr, i, msk);
@@ -321,7 +354,7 @@ L_Scanline_Done0:
 L_Scanline_Done1:
     dstPtr -= x0 * kDstBPP;
     cellPtr -= x0;
-    compOp.endSpanX(uint32_t(x0));
+    compOp.spanEndX(uint32_t(x0));
 
     if (--y == 0)
       return;
@@ -329,13 +362,13 @@ L_Scanline_Done1:
     bitPtr = bitPtrEnd;
     do {
       dstPtr += dstStride;
-      cellPtr = BLPtrOps::offset(cellPtr, cellStride);
+      cellPtr = PtrOps::offset(cellPtr, cellStride);
       compOp.advanceY();
 
 L_Scanline_Init:
       xOff = 0;
       bitWord = 0;
-      bitPtrEnd = BLPtrOps::offset(bitPtr, bitStride);
+      bitPtrEnd = PtrOps::offset(bitPtr, bitStride);
 
       do {
         bitWord |= *bitPtr++;
@@ -349,15 +382,17 @@ L_Scanline_Init:
 
   static BL_INLINE uint32_t calcMask(uint32_t cov, uint32_t fillRuleMask, uint32_t globalAlpha) noexcept {
     uint32_t c = A8Info::kScale << 1;
-    uint32_t m = (BLIntOps::sar(cov, A8Info::kShift) & fillRuleMask) - c;
+    uint32_t m = (IntOps::sar(cov, A8Info::kShift) & fillRuleMask) - c;
     m = blMin<uint32_t>(uint32_t(blAbs(int32_t(m))), c);
 
     return (m * globalAlpha) >> 16;
   }
 };
 
+} // {anonymous}
 } // {Reference}
-} // {BLPipeline}
+} // {Pipeline}
+} // {bl}
 
 //! \}
 //! \endcond

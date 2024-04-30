@@ -25,7 +25,7 @@ public extension BLFormatFlags {
     /// A combination of `BLFormatFlags.lum | BLFormatFlags.alpha`.
     static let luma = BL_FORMAT_FLAG_LUMA
     
-    /// Indexed pixel format the requres a palette (I/O only).
+    /// Indexed pixel format the requires a palette (I/O only).
     static let indexed = BL_FORMAT_FLAG_INDEXED
     
     /// RGB components are premultiplied by alpha component.

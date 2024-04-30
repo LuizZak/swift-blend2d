@@ -1,6 +1,7 @@
 # Requires Python 3.10
 
 import argparse
+import glob
 import os
 import shutil
 import subprocess
@@ -13,6 +14,15 @@ from os import PathLike
 
 from utils.cli.cli_printing import print_stage_name
 from utils.cli.console_color import ConsoleColor
+
+
+# List of glob patterns to remove from the Blend2D/ASMJIT folders after code is
+# initially cloned.
+rmFilePatterns: list[str] = [
+    "**/*_test.cpp",
+    "**/*.natvis",
+]
+
 
 # -----
 # Utility functions
@@ -99,6 +109,17 @@ def create_temporary_folder() -> Path:
 
     return temp_path
 
+def remove_files_with_pattern(base_folder: Path, patterns: list[str]):
+    for pattern in patterns:
+        for result in glob.iglob(pattern, root_dir=base_folder, recursive=True):
+            rel_path = os.path.relpath(Path(base_folder, result), base_folder)
+            final_path = Path(base_folder, rel_path).resolve()
+            
+            if not str(final_path).startswith(str(base_folder.resolve())):
+                continue
+
+            os.remove(final_path)
+
 
 def clone_repo(tag_or_branch: str | None, repo: str, clone_path: str):
     if tag_or_branch is None:
@@ -114,6 +135,7 @@ def clone_blend2d(tag_or_branch: str | None, base_folder: Path) -> Path:
     blend2d_clone_path = str(path(base_folder, "blend2d").absolute())
 
     clone_repo(tag_or_branch, BLEND2D_REPO, blend2d_clone_path)
+    remove_files_with_pattern(Path(blend2d_clone_path), rmFilePatterns)
 
     return Path(blend2d_clone_path)
 
@@ -124,6 +146,7 @@ def clone_asmjit(tag_or_branch: str | None, base_folder: Path) -> Path:
     asmjit_clone_path = str(path(base_folder, "asmjit").absolute())
 
     clone_repo(tag_or_branch, ASMJIT_REPO, asmjit_clone_path)
+    remove_files_with_pattern(Path(asmjit_clone_path), rmFilePatterns)
 
     return Path(asmjit_clone_path)
 

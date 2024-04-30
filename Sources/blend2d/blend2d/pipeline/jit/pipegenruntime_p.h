@@ -17,7 +17,8 @@
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace BLPipeline {
+namespace bl {
+namespace Pipeline {
 namespace JIT {
 
 //! PipeGen function cache.
@@ -25,12 +26,12 @@ namespace JIT {
 //! \note No locking is preformed implicitly as `BLPipeGenRuntime` synchronizes the access on its own.
 class FunctionCache {
 public:
-  struct FuncNode : public BLArenaHashMapNode {
+  struct FuncNode : public ArenaHashMapNode {
     //! Function pointer.
     void* _func;
 
     BL_INLINE FuncNode(uint32_t signature, void* func) noexcept
-      : BLArenaHashMapNode(signature) {
+      : ArenaHashMapNode(signature) {
       _customData = signature;
       _func = func;
     }
@@ -49,8 +50,8 @@ public:
     BL_INLINE bool matches(const FuncNode* node) const noexcept { return node->signature() == _signature; }
   };
 
-  BLArenaAllocator _allocator;
-  BLArenaHashMap<FuncNode> _funcMap;
+  ArenaAllocator _allocator;
+  ArenaHashMap<FuncNode> _funcMap;
 
   FunctionCache() noexcept;
   ~FunctionCache() noexcept;
@@ -77,6 +78,8 @@ public:
 
   //! CPU features to use (either detected or restricted by the user).
   asmjit::CpuFeatures _cpuFeatures;
+  //! Optimization flags.
+  PipeOptFlags _optFlags;
   //! Maximum pixels at a time, 0 if no limit (debug).
   uint32_t _maxPixels;
 
@@ -86,12 +89,10 @@ public:
   //! one GP register, which is always useful.
   bool _emitStackFrames;
 
-  #ifndef ASMJIT_NO_LOGGING
-  asmjit::FileLogger _logger;
-  #endif
-
   explicit PipeDynamicRuntime(PipeRuntimeFlags runtimeFlags = PipeRuntimeFlags::kNone) noexcept;
   ~PipeDynamicRuntime() noexcept;
+
+  void _initCpuInfo(const asmjit::CpuInfo& cpuInfo) noexcept;
 
   //! Restricts CPU features not provided in the given mask. This function is only used by isolated runtimes
   //! to setup the runtime. It should never be used after the runtime is in use.
@@ -103,11 +104,12 @@ public:
 
   FillFunc _compileFillFunc(uint32_t signature) noexcept;
 
-  static BLWrap<PipeDynamicRuntime> _global;
+  static Wrap<PipeDynamicRuntime> _global;
 };
 
 } // {JIT}
-} // {BLPipeline}
+} // {Pipeline}
+} // {bl}
 
 //! \}
 //! \endcond

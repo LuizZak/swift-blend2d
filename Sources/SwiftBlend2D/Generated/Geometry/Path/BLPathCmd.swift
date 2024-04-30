@@ -14,11 +14,21 @@ public extension BLPathCmd {
     /// Quad-to control point.
     static let quad = BL_PATH_CMD_QUAD
     
+    /// Conic-to control point
+    static let conic = BL_PATH_CMD_CONIC
+    
     /// Cubic-to control point (always used as a pair of commands).
     static let cubic = BL_PATH_CMD_CUBIC
     
     /// Close path.
     static let close = BL_PATH_CMD_CLOSE
+    
+    /// Conic weight.
+    /// 
+    /// - note: This is not a point. This is a pair of values from which only the first (x) is used to represent weight
+    /// as used by conic curve. The other value (y) is always set to NaN by Blend2D, but can be arbitrary as it has
+    /// no meaning.
+    static let weight = BL_PATH_CMD_WEIGHT
     
     /// Maximum value of `BLPathCmd`.
     static let maxValue = BL_PATH_CMD_MAX_VALUE

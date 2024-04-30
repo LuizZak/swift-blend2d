@@ -113,9 +113,6 @@ let package = Package(
         .target(
             name: "blend2d",
             dependencies: ["asmjit"],
-            exclude: [
-                "blend2d.natvis"
-            ],
             cSettings: [
                 .define("NDEBUG", .when(configuration: .release)),
                 .define("BL_EMBED"),

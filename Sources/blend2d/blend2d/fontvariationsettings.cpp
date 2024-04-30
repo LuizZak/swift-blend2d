@@ -5,32 +5,34 @@
 
 #include "api-build_p.h"
 #include "array_p.h"
-#include "fonttags_p.h"
+#include "fonttagdata_p.h"
 #include "fontvariationsettings_p.h"
-#include "math_p.h"
 #include "object_p.h"
 #include "runtime_p.h"
 #include "string_p.h"
 #include "support/algorithm_p.h"
+#include "support/math_p.h"
 #include "support/memops_p.h"
 #include "support/ptrops_p.h"
 
-namespace BLFontVariationSettingsPrivate {
+namespace bl {
+namespace FontVariationSettingsInternal {
 
-// BLFontVariationSettings - SSO Utilities
-// =======================================
+// bl::FontVariationSettings - SSO Utilities
+// =========================================
 
 //! A constant that can be used to increment / decrement a size in SSO representation.
 static constexpr uint32_t kSSOSizeIncrement = (1u << BL_OBJECT_INFO_A_SHIFT);
 
 //! Number of bits that represents a variation id in SSO mode.
-static constexpr uint32_t kSSOTagBitSize = 6u;
+static constexpr uint32_t kSSOTagBitSize = 5u;
 
-//! Mask of a single SSO key value (id).
+//! Mask of a single SSO tag value (id).
 static constexpr uint32_t kSSOTagBitMask = (1u << kSSOTagBitSize) - 1;
 
 static BL_INLINE BLResult initSSO(BLFontVariationSettingsCore* self, size_t size = 0) noexcept {
-  self->_d.initStatic(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS, BLObjectInfo::packFields(uint32_t(size)));
+  self->_d.initStatic(BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS) |
+                      BLObjectInfo::fromAbcp(uint32_t(size)));
   return BL_SUCCESS;
 }
 
@@ -44,7 +46,7 @@ static BL_INLINE BLResult setSSOValueAt(BLFontVariationSettingsCore* self, size_
   return BL_SUCCESS;
 }
 
-static BL_INLINE bool findSSOKey(const BLFontVariationSettingsCore* self, uint32_t id, size_t* indexOut) noexcept {
+static BL_INLINE bool findSSOTag(const BLFontVariationSettingsCore* self, uint32_t id, size_t* indexOut) noexcept {
   uint32_t ssoBits = self->_d.info.bits;
   size_t size = getSSOSize(self);
 
@@ -71,10 +73,10 @@ static bool convertItemsToSSO(BLFontVariationSettingsCore* dst, const BLFontVari
   float* ssoValues = dst->_d.f32_data;
 
   for (size_t i = 0; i < size; i++, idShift += kSSOTagBitSize) {
-    uint32_t id = BLFontTagsPrivate::variationTagToId(items[i].tag);
+    uint32_t id = FontTagData::variationTagToId(items[i].tag);
     float value = items[i].value;
 
-    if (id == BLFontTagsPrivate::kInvalidId)
+    if (id == FontTagData::kInvalidId)
       return false;
 
     ssoBits |= id << idShift;
@@ -85,134 +87,84 @@ static bool convertItemsToSSO(BLFontVariationSettingsCore* dst, const BLFontVari
   return true;
 }
 
-// BLFontVariationSettings - Impl Utilities
-// ========================================
-
-static BL_INLINE constexpr BLObjectImplSize implSizeFromCapacity(size_t capacity) noexcept {
-  return BLObjectImplSize(sizeof(BLFontVariationSettingsImpl) + capacity * sizeof(BLFontVariationItem));
-}
-
-static BL_INLINE constexpr size_t capacityFromImplSize(BLObjectImplSize implSize) noexcept {
-  return (implSize.value() - sizeof(BLFontVariationSettingsImpl)) / sizeof(BLFontVariationItem);
-}
+// bl::FontVariationSettings - Impl Utilities
+// ==========================================
 
 static BL_INLINE constexpr size_t getMaximumSize() noexcept {
-  return BLFontTagsPrivate::kUniqueTagCount;
+  return FontTagData::kUniqueTagCount;
 }
 
 static BL_INLINE BLObjectImplSize expandImplSize(BLObjectImplSize implSize) noexcept {
   return blObjectExpandImplSize(implSize);
 }
 
-static BL_INLINE BLFontVariationSettingsImpl* getImpl(const BLFontVariationSettingsCore* self) noexcept {
-  return static_cast<BLFontVariationSettingsImpl*>(self->_d.impl);
-}
-
-static BL_INLINE bool isMutable(const BLFontVariationSettingsCore* self) noexcept {
-  const size_t* refCountPtr = blObjectDummyRefCount;
-  if (!self->_d.sso())
-    refCountPtr = blObjectImplGetRefCountPtr(self->_d.impl);
-  return *refCountPtr == 1;
-}
-
 static BL_INLINE BLResult initDynamic(BLFontVariationSettingsCore* self, BLObjectImplSize implSize, size_t size = 0u) noexcept {
-  BLFontVariationSettingsImpl* impl = blObjectDetailAllocImplT<BLFontVariationSettingsImpl>(self,
-    BLObjectInfo::packType(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS), implSize, &implSize);
+  BLObjectInfo info = BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS);
+  BL_PROPAGATE(ObjectInternal::allocImplT<BLFontVariationSettingsImpl>(self, info, implSize));
 
-  if(BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
+  BLFontVariationSettingsImpl* impl = getImpl(self);
+  BLFontVariationItem* items = PtrOps::offset<BLFontVariationItem>(impl, sizeof(BLFontVariationSettingsImpl));
 
-  BLFontVariationItem* items = BLPtrOps::offset<BLFontVariationItem>(impl, sizeof(BLFontVariationSettingsImpl));
   impl->data = items;
   impl->size = size;
   impl->capacity = capacityFromImplSize(implSize);
-  BL_ASSERT(size <= impl->capacity);
 
+  BL_ASSERT(size <= impl->capacity);
   return BL_SUCCESS;
 }
 
 static BL_NOINLINE BLResult initDynamicFromSSO(BLFontVariationSettingsCore* self, BLObjectImplSize implSize, const BLFontVariationSettingsCore* ssoMap) noexcept {
   size_t size = getSSOSize(ssoMap);
+  BLObjectInfo info = BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS);
+  BL_PROPAGATE(ObjectInternal::allocImplT<BLFontVariationSettingsImpl>(self, info, implSize));
 
-  BLFontVariationSettingsImpl* impl = blObjectDetailAllocImplT<BLFontVariationSettingsImpl>(self,
-    BLObjectInfo::packType(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS), implSize, &implSize);
+  BLFontVariationSettingsImpl* impl = getImpl(self);
+  BLFontVariationItem* items = PtrOps::offset<BLFontVariationItem>(impl, sizeof(BLFontVariationSettingsImpl));
 
-  if(BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
-
-  BLFontVariationItem* items = BLPtrOps::offset<BLFontVariationItem>(impl, sizeof(BLFontVariationSettingsImpl));
   impl->data = items;
   impl->size = size;
   impl->capacity = capacityFromImplSize(implSize);
+
   BL_ASSERT(size <= impl->capacity);
-
   uint32_t ssoBits = ssoMap->_d.info.bits;
-  const float* ssoValues = ssoMap->_d.f32_data;
 
+  const float* ssoValues = ssoMap->_d.f32_data;
   for (size_t i = 0; i < size; i++, ssoBits >>= kSSOTagBitSize)
-    items[i] = BLFontVariationItem{BLFontTagsPrivate::variationIdToTagTable[ssoBits & kSSOTagBitMask], ssoValues[i]};
+    items[i] = BLFontVariationItem{FontTagData::variationIdToTagTable[ssoBits & kSSOTagBitMask], ssoValues[i]};
 
   return BL_SUCCESS;
 }
 
 static BL_NOINLINE BLResult initDynamicFromData(BLFontVariationSettingsCore* self, BLObjectImplSize implSize, const BLFontVariationItem* src, size_t size) noexcept {
-  BLFontVariationSettingsImpl* impl = blObjectDetailAllocImplT<BLFontVariationSettingsImpl>(self,
-    BLObjectInfo::packType(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS), implSize, &implSize);
+  BLObjectInfo info = BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS);
+  BL_PROPAGATE(ObjectInternal::allocImplT<BLFontVariationSettingsImpl>(self, info, implSize));
 
-  if(BL_UNLIKELY(!impl))
-    return blTraceError(BL_ERROR_OUT_OF_MEMORY);
+  BLFontVariationSettingsImpl* impl = getImpl(self);
+  BLFontVariationItem* items = PtrOps::offset<BLFontVariationItem>(impl, sizeof(BLFontVariationSettingsImpl));
 
-  BLFontVariationItem* items = BLPtrOps::offset<BLFontVariationItem>(impl, sizeof(BLFontVariationSettingsImpl));
   impl->data = items;
   impl->size = size;
   impl->capacity = capacityFromImplSize(implSize);
+
   BL_ASSERT(size <= impl->capacity);
-
   memcpy(items, src, size * sizeof(BLFontVariationItem));
-  return BL_SUCCESS;
-}
-
-BLResult freeImpl(BLFontVariationSettingsImpl* impl, BLObjectInfo info) noexcept {
-  return blObjectImplFreeInline(impl, info);
-}
-
-// BLFontVariationSettings - Instance Utilities
-// ============================================
-
-static BL_INLINE BLResult releaseInstance(BLFontVariationSettingsCore* self) noexcept {
-  BLFontVariationSettingsImpl* impl = getImpl(self);
-  BLObjectInfo info = self->_d.info;
-
-  if (info.isRefCountedObject() && blObjectImplDecRefAndTest(impl, info))
-    return freeImpl(impl, info);
 
   return BL_SUCCESS;
 }
 
-static BL_INLINE BLResult replaceInstance(BLFontVariationSettingsCore* self, const BLFontVariationSettingsCore* other) noexcept {
-  BLFontVariationSettingsImpl* impl = getImpl(self);
-  BLObjectInfo info = self->_d.info;
+} // {FontVariationSettingsInternal}
+} // {bl}
 
-  self->_d = other->_d;
+// bl::FontVariationSettings - API - Init & Destroy
+// ================================================
 
-  if (info.isRefCountedObject() && blObjectImplDecRefAndTest(impl, info))
-    return freeImpl(impl, info);
-
-  return BL_SUCCESS;
-}
-
-} // {BLFontVariationSettingsPrivate}
-
-// BLFontVariationSettings - API - Init & Destroy
-// ==============================================
-
-BLResult blFontVariationSettingsInit(BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsInit(BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   return initSSO(self);
 }
 
-BLResult blFontVariationSettingsInitMove(BLFontVariationSettingsCore* self, BLFontVariationSettingsCore* other) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsInitMove(BLFontVariationSettingsCore* self, BLFontVariationSettingsCore* other) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
 
   BL_ASSERT(self != other);
   BL_ASSERT(other->_d.isFontVariationSettings());
@@ -221,40 +173,43 @@ BLResult blFontVariationSettingsInitMove(BLFontVariationSettingsCore* self, BLFo
   return initSSO(other);
 }
 
-BLResult blFontVariationSettingsInitWeak(BLFontVariationSettingsCore* self, const BLFontVariationSettingsCore* other) noexcept {
+BL_API_IMPL BLResult blFontVariationSettingsInitWeak(BLFontVariationSettingsCore* self, const BLFontVariationSettingsCore* other) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
+
   BL_ASSERT(self != other);
   BL_ASSERT(other->_d.isFontVariationSettings());
 
-  return blObjectPrivateInitWeakTagged(self, other);
+  self->_d = other->_d;
+  return retainInstance(self);
 }
 
-BLResult blFontVariationSettingsDestroy(BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsDestroy(BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   return releaseInstance(self);
 }
 
-// BLFontVariationSettings - API - Reset & Clear
-// =============================================
+// bl::FontVariationSettings - API - Reset & Clear
+// ===============================================
 
-BLResult blFontVariationSettingsReset(BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsReset(BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   releaseInstance(self);
   return initSSO(self);
 }
 
-BLResult blFontVariationSettingsClear(BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsClear(BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   if (self->_d.sso())
     return initSSO(self);
 
-  if (isMutable(self)) {
-    BLFontVariationSettingsImpl* selfI = getImpl(self);
+  BLFontVariationSettingsImpl* selfI = getImpl(self);
+  if (isImplMutable(selfI)) {
     selfI->size = 0;
     return BL_SUCCESS;
   }
@@ -264,11 +219,11 @@ BLResult blFontVariationSettingsClear(BLFontVariationSettingsCore* self) noexcep
   }
 }
 
-// BLFontVariationSettings - API - Shrink
-// ======================================
+// bl::FontVariationSettings - API - Shrink
+// ========================================
 
-BLResult blFontVariationSettingsShrink(BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsShrink(BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   if (self->_d.sso())
@@ -292,11 +247,11 @@ BLResult blFontVariationSettingsShrink(BLFontVariationSettingsCore* self) noexce
   return replaceInstance(self, &tmp);
 }
 
-// BLFontVariationSettings - API - Assign
-// ======================================
+// bl::FontVariationSettings - API - Assign
+// ========================================
 
-BLResult blFontVariationSettingsAssignMove(BLFontVariationSettingsCore* self, BLFontVariationSettingsCore* other) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsAssignMove(BLFontVariationSettingsCore* self, BLFontVariationSettingsCore* other) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
 
   BL_ASSERT(self->_d.isFontVariationSettings());
   BL_ASSERT(other->_d.isFontVariationSettings());
@@ -306,21 +261,21 @@ BLResult blFontVariationSettingsAssignMove(BLFontVariationSettingsCore* self, BL
   return replaceInstance(self, &tmp);
 }
 
-BLResult blFontVariationSettingsAssignWeak(BLFontVariationSettingsCore* self, const BLFontVariationSettingsCore* other) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsAssignWeak(BLFontVariationSettingsCore* self, const BLFontVariationSettingsCore* other) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
 
   BL_ASSERT(self->_d.isFontVariationSettings());
   BL_ASSERT(other->_d.isFontVariationSettings());
 
-  blObjectPrivateAddRefTagged(other);
+  retainInstance(other);
   return replaceInstance(self, other);
 }
 
-// BLFontVariationSettings - API - Accessors
-// =========================================
+// bl::FontVariationSettings - API - Accessors
+// ===========================================
 
-size_t blFontVariationSettingsGetSize(const BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL size_t blFontVariationSettingsGetSize(const BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   if (self->_d.sso())
@@ -329,8 +284,8 @@ size_t blFontVariationSettingsGetSize(const BLFontVariationSettingsCore* self) n
     return getImpl(self)->size;
 }
 
-size_t blFontVariationSettingsGetCapacity(const BLFontVariationSettingsCore* self) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL size_t blFontVariationSettingsGetCapacity(const BLFontVariationSettingsCore* self) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   if (self->_d.sso())
@@ -339,8 +294,8 @@ size_t blFontVariationSettingsGetCapacity(const BLFontVariationSettingsCore* sel
     return getImpl(self)->capacity;
 }
 
-BLResult blFontVariationSettingsGetView(const BLFontVariationSettingsCore* self, BLFontVariationSettingsView* out) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsGetView(const BLFontVariationSettingsCore* self, BLFontVariationSettingsView* out) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   // SSO Mode
@@ -357,7 +312,7 @@ BLResult blFontVariationSettingsGetView(const BLFontVariationSettingsCore* self,
     out->size = size;
 
     for (size_t i = 0; i < size; i++, ssoBits >>= kSSOTagBitSize)
-      items[i] = BLFontVariationItem{BLFontTagsPrivate::variationIdToTagTable[ssoBits & kSSOTagBitMask], ssoValues[i]};
+      items[i] = BLFontVariationItem{bl::FontTagData::variationIdToTagTable[ssoBits & kSSOTagBitMask], ssoValues[i]};
 
     return BL_SUCCESS;
   }
@@ -371,20 +326,20 @@ BLResult blFontVariationSettingsGetView(const BLFontVariationSettingsCore* self,
   return BL_SUCCESS;
 }
 
-bool blFontVariationSettingsHasKey(const BLFontVariationSettingsCore* self, BLTag key) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL bool blFontVariationSettingsHasValue(const BLFontVariationSettingsCore* self, BLTag variationTag) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   // SSO Mode
   // --------
 
   if (self->_d.sso()) {
-    uint32_t id = BLFontTagsPrivate::variationTagToId(key);
-    if (id == BLFontTagsPrivate::kInvalidId)
+    uint32_t id = bl::FontTagData::variationTagToId(variationTag);
+    if (id == bl::FontTagData::kInvalidId)
       return false;
 
     size_t index;
-    return findSSOKey(self, id, &index);
+    return findSSOTag(self, id, &index);
   }
 
   // Dynamic Mode
@@ -394,28 +349,28 @@ bool blFontVariationSettingsHasKey(const BLFontVariationSettingsCore* self, BLTa
   const BLFontVariationItem* data = selfI->data;
 
   size_t size = selfI->size;
-  size_t index = BLAlgorithm::lowerBound(data, selfI->size, key, [](const BLFontVariationItem& item, uint32_t key) noexcept { return item.tag < key; });
+  size_t index = bl::lowerBound(data, selfI->size, variationTag, [](const BLFontVariationItem& item, uint32_t tag) noexcept { return item.tag < tag; });
 
-  return index < size && data[index].tag == key;
+  return index < size && data[index].tag == variationTag;
 }
 
-float blFontVariationSettingsGetKey(const BLFontVariationSettingsCore* self, BLTag key) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL float blFontVariationSettingsGetValue(const BLFontVariationSettingsCore* self, BLTag variationTag) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   // SSO Mode
   // --------
 
   if (self->_d.sso()) {
-    uint32_t id = BLFontTagsPrivate::variationTagToId(key);
-    if (id == BLFontTagsPrivate::kInvalidId)
-      return blNaN<float>();
+    uint32_t id = bl::FontTagData::variationTagToId(variationTag);
+    if (id == bl::FontTagData::kInvalidId)
+      return bl::Math::nan<float>();
 
     size_t index;
-    if (findSSOKey(self, id, &index))
+    if (findSSOTag(self, id, &index))
       return getSSOValueAt(self, index);
     else
-      return blNaN<float>();
+      return bl::Math::nan<float>();
   }
 
   // Dynamic Mode
@@ -425,16 +380,16 @@ float blFontVariationSettingsGetKey(const BLFontVariationSettingsCore* self, BLT
   const BLFontVariationItem* data = selfI->data;
 
   size_t size = selfI->size;
-  size_t index = BLAlgorithm::lowerBound(data, selfI->size, key, [](const BLFontVariationItem& item, uint32_t key) noexcept { return item.tag < key; });
+  size_t index = bl::lowerBound(data, selfI->size, variationTag, [](const BLFontVariationItem& item, uint32_t tag) noexcept { return item.tag < tag; });
 
-  if (index < size && data[index].tag == key)
+  if (index < size && data[index].tag == variationTag)
     return data[index].value;
   else
-    return blNaN<float>();
+    return bl::Math::nan<float>();
 }
 
-BLResult blFontVariationSettingsSetKey(BLFontVariationSettingsCore* self, BLTag key, float value) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsSetValue(BLFontVariationSettingsCore* self, BLTag variationTag, float value) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   if (BL_UNLIKELY(value > 65535u))
@@ -449,38 +404,38 @@ BLResult blFontVariationSettingsSetKey(BLFontVariationSettingsCore* self, BLTag 
     size_t size = getSSOSize(self);
 
     if (value <= 1) {
-      uint32_t id = BLFontTagsPrivate::variationTagToId(key);
-      if (id != BLFontTagsPrivate::kInvalidId) {
+      uint32_t id = bl::FontTagData::variationTagToId(variationTag);
+      if (id != bl::FontTagData::kInvalidId) {
         size_t index;
-        if (findSSOKey(self, id, &index)) {
+        if (findSSOTag(self, id, &index)) {
           setSSOValueAt(self, index, value);
           return BL_SUCCESS;
         }
 
         if (size < BLFontVariationSettings::kSSOCapacity) {
-          // Every inserted key must be inserted in a way to make keys sorted and we know where to insert (index).
+          // Every inserted tag must be inserted in a way to make tags sorted and we know where to insert (index).
           float* ssoValues = self->_d.f32_data;
-          size_t nKeysAfterIndex = size - index;
-          BLMemOps::copyBackwardInlineT(ssoValues + index + 1u, ssoValues + index, nKeysAfterIndex);
+          size_t nTagsAfterIndex = size - index;
+          bl::MemOps::copyBackwardInlineT(ssoValues + index + 1u, ssoValues + index, nTagsAfterIndex);
           ssoValues[index] = value;
 
-          // Update the key and object info - updates the size (increments one), adds a new key, and shifts all ids after `index`.
+          // Update the tag and object info - updates the size (increments one), adds a new tag, and shifts all ids after `index`.
           uint32_t ssoBits = self->_d.info.bits + kSSOSizeIncrement;
           uint32_t bitIndex = uint32_t(index * kSSOTagBitSize);
-          uint32_t keysAfterIndexMask = ((1u << (nKeysAfterIndex * kSSOTagBitSize)) - 1u) << bitIndex;
-          self->_d.info.bits = (ssoBits & ~keysAfterIndexMask) | ((ssoBits & keysAfterIndexMask) << kSSOTagBitSize) | (id << bitIndex);
+          uint32_t tagsAfterIndexMask = ((1u << (nTagsAfterIndex * kSSOTagBitSize)) - 1u) << bitIndex;
+          self->_d.info.bits = (ssoBits & ~tagsAfterIndexMask) | ((ssoBits & tagsAfterIndexMask) << kSSOTagBitSize) | (id << bitIndex);
           return BL_SUCCESS;
         }
       }
       else {
-        if (BL_UNLIKELY(!BLFontTagsPrivate::isTagValid(key)))
+        if (BL_UNLIKELY(!bl::FontTagData::isValidTag(variationTag)))
           return blTraceError(BL_ERROR_INVALID_VALUE);
       }
     }
 
     // Turn the SSO settings to dynamic settings, because some (or multiple) cases below are true:
-    //   a) The `key` doesn't have a corresponding variation id, thus it cannot be used in SSO mode.
-    //   b) There is no room in SSO storage to insert another key/value pair.
+    //   a) The `tag` doesn't have a corresponding variation id, thus it cannot be used in SSO mode.
+    //   b) There is no room in SSO storage to insert another tag/value pair.
     BLObjectImplSize implSize = blObjectAlignImplSize(implSizeFromCapacity(blMax<size_t>(size + 1, 4u)));
     BLFontVariationSettingsCore tmp;
 
@@ -489,10 +444,10 @@ BLResult blFontVariationSettingsSetKey(BLFontVariationSettingsCore* self, BLTag 
     *self = tmp;
   }
   else {
-    if (BL_UNLIKELY(!BLFontTagsPrivate::isTagValid(key)))
+    if (BL_UNLIKELY(!bl::FontTagData::isValidTag(variationTag)))
       return blTraceError(BL_ERROR_INVALID_VALUE);
 
-    canModify = isMutable(self);
+    canModify = isImplMutable(getImpl(self));
   }
 
   // Dynamic Mode
@@ -502,10 +457,10 @@ BLResult blFontVariationSettingsSetKey(BLFontVariationSettingsCore* self, BLTag 
   BLFontVariationItem* items = selfI->data;
 
   size_t size = selfI->size;
-  size_t index = BLAlgorithm::lowerBound(items, size, key, [](const BLFontVariationItem& item, uint32_t key) noexcept { return item.tag < key; });
+  size_t index = bl::lowerBound(items, size, variationTag, [](const BLFontVariationItem& item, uint32_t tag) noexcept { return item.tag < tag; });
 
-  // Overwrite the value if the `key` is already in the settings.
-  if (index < size && items[index].tag == key) {
+  // Overwrite the value if the `variationTag` is already in the settings.
+  if (index < size && items[index].tag == variationTag) {
     if (items[index].value == value)
       return BL_SUCCESS;
 
@@ -521,14 +476,14 @@ BLResult blFontVariationSettingsSetKey(BLFontVariationSettingsCore* self, BLTag 
     }
   }
 
-  if (BL_UNLIKELY(!BLFontTagsPrivate::isTagValid(key)))
+  if (BL_UNLIKELY(!bl::FontTagData::isValidTag(variationTag)))
     return blTraceError(BL_ERROR_INVALID_VALUE);
 
-  // Insert a new key if the `key` is not in the settings.
-  size_t nKeysAfterIndex = size - index;
+  // Insert a new variation tag if it's not in the settings.
+  size_t nTagsAfterIndex = size - index;
   if (canModify && selfI->capacity > size) {
-    BLMemOps::copyBackwardInlineT(items + index + 1, items + index, nKeysAfterIndex);
-    items[index] = BLFontVariationItem{key, value};
+    bl::MemOps::copyBackwardInlineT(items + index + 1, items + index, nTagsAfterIndex);
+    items[index] = BLFontVariationItem{variationTag, value};
     selfI->size = size + 1;
     return BL_SUCCESS;
   }
@@ -537,30 +492,30 @@ BLResult blFontVariationSettingsSetKey(BLFontVariationSettingsCore* self, BLTag 
     BL_PROPAGATE(initDynamic(&tmp, expandImplSize(implSizeFromCapacity(size + 1)), size + 1));
 
     BLFontVariationItem* dst = getImpl(&tmp)->data;
-    BLMemOps::copyForwardInlineT(dst, items, index);
-    dst[index] = BLFontVariationItem{key, value};
-    BLMemOps::copyForwardInlineT(dst + index + 1, items + index, nKeysAfterIndex);
+    bl::MemOps::copyForwardInlineT(dst, items, index);
+    dst[index] = BLFontVariationItem{variationTag, value};
+    bl::MemOps::copyForwardInlineT(dst + index + 1, items + index, nTagsAfterIndex);
 
     return replaceInstance(self, &tmp);
   }
 }
 
-BLResult blFontVariationSettingsRemoveKey(BLFontVariationSettingsCore* self, BLTag key) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL BLResult blFontVariationSettingsRemoveValue(BLFontVariationSettingsCore* self, BLTag variationTag) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
   BL_ASSERT(self->_d.isFontVariationSettings());
 
   // SSO Mode
   // --------
 
   if (self->_d.sso()) {
-    uint32_t id = BLFontTagsPrivate::variationTagToId(key);
-    if (id == BLFontTagsPrivate::kInvalidId)
+    uint32_t id = bl::FontTagData::variationTagToId(variationTag);
+    if (id == bl::FontTagData::kInvalidId)
       return BL_SUCCESS;
 
     size_t size = getSSOSize(self);
     size_t index;
 
-    if (!findSSOKey(self, id, &index))
+    if (!findSSOTag(self, id, &index))
       return BL_SUCCESS;
 
     size_t i = index;
@@ -575,11 +530,11 @@ BLResult blFontVariationSettingsRemoveKey(BLFontVariationSettingsCore* self, BLT
     // the same SSO data would be binary equal (there would not be garbage in data after the size in SSO storage).
     ssoValues[size - 1] = 0.0f;
 
-    // Shift the bit data representing keys (ids) so they are in correct places  after the removal operation.
+    // Shift the bit data representing tags (ids) so they are in correct places  after the removal operation.
     uint32_t ssoBits = self->_d.info.bits;
     uint32_t bitIndex = uint32_t(index * kSSOTagBitSize);
-    uint32_t keysToShift = uint32_t(size - index - 1);
-    uint32_t remainingKeysAfterIndexMask = ((1u << (keysToShift * kSSOTagBitSize)) - 1u) << (bitIndex + kSSOTagBitSize);
+    uint32_t tagsToShift = uint32_t(size - index - 1);
+    uint32_t remainingKeysAfterIndexMask = ((1u << (tagsToShift * kSSOTagBitSize)) - 1u) << (bitIndex + kSSOTagBitSize);
 
     self->_d.info.bits = (ssoBits & ~(BL_OBJECT_INFO_A_MASK | remainingKeysAfterIndexMask | (kSSOTagBitMask << bitIndex))) |
                          ((ssoBits & remainingKeysAfterIndexMask) >> kSSOTagBitSize) |
@@ -594,14 +549,14 @@ BLResult blFontVariationSettingsRemoveKey(BLFontVariationSettingsCore* self, BLT
   BLFontVariationItem* items = selfI->data;
 
   size_t size = selfI->size;
-  size_t index = BLAlgorithm::lowerBound(items, selfI->size, key, [](const BLFontVariationItem& item, uint32_t key) noexcept { return item.tag < key; });
+  size_t index = bl::lowerBound(items, selfI->size, variationTag, [](const BLFontVariationItem& item, uint32_t tag) noexcept { return item.tag < tag; });
 
-  if (index >= size || items[index].tag != key)
+  if (index >= size || items[index].tag != variationTag)
     return BL_SUCCESS;
 
-  if (isMutable(self)) {
+  if (isImplMutable(selfI)) {
     selfI->size = size - 1;
-    BLMemOps::copyForwardInlineT(items + index, items + index + 1, size - index - 1);
+    bl::MemOps::copyForwardInlineT(items + index, items + index + 1, size - index - 1);
     return BL_SUCCESS;
   }
   else {
@@ -609,23 +564,23 @@ BLResult blFontVariationSettingsRemoveKey(BLFontVariationSettingsCore* self, BLT
     BL_PROPAGATE(initDynamic(&tmp, expandImplSize(implSizeFromCapacity(size - 1)), size - 1));
 
     BLFontVariationItem* dst = getImpl(&tmp)->data;
-    BLMemOps::copyForwardInlineT(dst, items, index);
-    BLMemOps::copyForwardInlineT(dst + index, items + index + 1, size - index - 1);
+    bl::MemOps::copyForwardInlineT(dst, items, index);
+    bl::MemOps::copyForwardInlineT(dst + index, items + index + 1, size - index - 1);
 
     return replaceInstance(self, &tmp);
   }
 }
 
-// BLFontVariationSettings - API - Equals
-// ======================================
+// bl::FontVariationSettings - API - Equals
+// ========================================
 
-bool blFontVariationSettingsEquals(const BLFontVariationSettingsCore* a, const BLFontVariationSettingsCore* b) noexcept {
-  using namespace BLFontVariationSettingsPrivate;
+BL_API_IMPL bool blFontVariationSettingsEquals(const BLFontVariationSettingsCore* a, const BLFontVariationSettingsCore* b) noexcept {
+  using namespace bl::FontVariationSettingsInternal;
 
   BL_ASSERT(a->_d.isFontVariationSettings());
   BL_ASSERT(b->_d.isFontVariationSettings());
 
-  if (blObjectPrivateBinaryEquals(a, b))
+  if (a->_d == b->_d)
     return true;
 
   if (a->_d.sso() == b->_d.sso()) {
@@ -659,7 +614,7 @@ bool blFontVariationSettingsEquals(const BLFontVariationSettingsCore* a, const B
     const BLFontVariationItem* bItems = bImpl->data;
 
     for (size_t i = 0; i < size; i++, aBits >>= kSSOTagBitSize) {
-      uint32_t aTag = BLFontTagsPrivate::variationIdToTagTable[aBits & kSSOTagBitMask];
+      uint32_t aTag = bl::FontTagData::variationIdToTagTable[aBits & kSSOTagBitMask];
       float aValue = aValues[i];
 
       if (bItems[i].tag != aTag || bItems[i].value != aValue)
@@ -670,183 +625,13 @@ bool blFontVariationSettingsEquals(const BLFontVariationSettingsCore* a, const B
   }
 }
 
-// BLFontVariationSettings - Runtime Registration
-// ==============================================
+// bl::FontVariationSettings - Runtime Registration
+// ================================================
 
 void blFontVariationSettingsRtInit(BLRuntimeContext* rt) noexcept {
   blUnused(rt);
 
   // Initialize BLFontVariationSettings.
-  blObjectDefaults[BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS]._d.initStatic(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS, BLObjectInfo{});
+  blObjectDefaults[BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS]._d.initStatic(
+    BLObjectInfo::fromTypeWithMarker(BL_OBJECT_TYPE_FONT_VARIATION_SETTINGS));
 }
-
-// BLFontVariationSettings - Tests
-// ===============================
-
-#if defined(BL_TEST)
-static void verifyFontVariationSettings(const BLFontVariationSettings& ffs) noexcept {
-  BLFontVariationSettingsView view;
-  ffs.getView(&view);
-
-  if (view.size == 0)
-    return;
-
-  uint32_t prevTag = view.data[0].tag;
-  for (size_t i = 1; i < view.size; i++) {
-    EXPECT_LT(prevTag, view.data[i].tag)
-      .message("BLFontVariationSettings is corrupted - previous tag 0x%08X is not less than current tag 0x%08X at [%zu]", prevTag, view.data[i].tag, i);
-  }
-}
-
-UNIT(fontvariationsettings, -999) {
-  // These are not sorted on purpose - we want BLFontVariationSettings to sort them.
-  static const uint32_t ssoTags[] = {
-    BL_MAKE_TAG('w', 'g', 'h', 't'),
-    BL_MAKE_TAG('i', 't', 'a', 'l'),
-    BL_MAKE_TAG('w', 'd', 't', 'h')
-  };
-
-  static const uint32_t dynamicTags[] = {
-    BL_MAKE_TAG('w', 'g', 'h', 't'),
-    BL_MAKE_TAG('i', 't', 'a', 'l'),
-    BL_MAKE_TAG('w', 'd', 't', 'h'),
-    BL_MAKE_TAG('s', 'l', 'n', 't'),
-    BL_MAKE_TAG('o', 'p', 's', 'z')
-  };
-
-  INFO("SSO representation");
-  {
-    BLFontVariationSettings ffs;
-
-    EXPECT_TRUE(ffs._d.sso());
-    EXPECT_TRUE(ffs.empty());
-    EXPECT_EQ(ffs.size(), 0u);
-    EXPECT_EQ(ffs.capacity(), BLFontVariationSettings::kSSOCapacity);
-
-    // Getting an unknown key should return invalid value.
-    EXPECT_TRUE(blIsNaN(ffs.getKey(BL_MAKE_TAG('-', '-', '-', '-'))));
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(ssoTags); i++) {
-      EXPECT_SUCCESS(ffs.setKey(ssoTags[i], 1u));
-      EXPECT_EQ(ffs.getKey(ssoTags[i]), 1u);
-      EXPECT_EQ(ffs.size(), i + 1);
-      EXPECT_TRUE(ffs._d.sso());
-      verifyFontVariationSettings(ffs);
-    }
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(ssoTags); i++) {
-      EXPECT_SUCCESS(ffs.setKey(ssoTags[i], 0u));
-      EXPECT_EQ(ffs.getKey(ssoTags[i]), 0u);
-      EXPECT_EQ(ffs.size(), BL_ARRAY_SIZE(ssoTags));
-      EXPECT_TRUE(ffs._d.sso());
-      verifyFontVariationSettings(ffs);
-    }
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(ssoTags); i++) {
-      EXPECT_SUCCESS(ffs.removeKey(ssoTags[i]));
-      EXPECT_TRUE(blIsNaN(ffs.getKey(ssoTags[i])));
-      EXPECT_EQ(ffs.size(), BL_ARRAY_SIZE(ssoTags) - i - 1);
-      EXPECT_TRUE(ffs._d.sso());
-      verifyFontVariationSettings(ffs);
-    }
-  }
-
-  INFO("SSO border cases");
-  {
-    // First veriation ids use R/I bits, which is used for reference counted dynamic objects.
-    // What we want to test here is that this bit is not checked when destroying SSO instances.
-    BLFontVariationSettings settings;
-    settings.setKey(BLFontTagsPrivate::variationIdToTagTable[0], 0.5f);
-    settings.setKey(BLFontTagsPrivate::variationIdToTagTable[1], 0.5f);
-  }
-
-  INFO("Dynamic representation");
-  {
-    BLFontVariationSettings ffs;
-
-    EXPECT_TRUE(ffs._d.sso());
-    EXPECT_TRUE(ffs.empty());
-    EXPECT_EQ(ffs.size(), 0u);
-    EXPECT_EQ(ffs.capacity(), BLFontVariationSettings::kSSOCapacity);
-
-    // Getting an unknown key should return invalid value.
-    EXPECT_TRUE(blIsNaN(ffs.getKey(BL_MAKE_TAG('-', '-', '-', '-'))));
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(dynamicTags); i++) {
-      EXPECT_SUCCESS(ffs.setKey(dynamicTags[i], 1u));
-      EXPECT_EQ(ffs.getKey(dynamicTags[i]), 1u);
-      EXPECT_EQ(ffs.size(), i + 1);
-      verifyFontVariationSettings(ffs);
-    }
-
-    EXPECT_FALSE(ffs._d.sso());
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(dynamicTags); i++) {
-      EXPECT_SUCCESS(ffs.setKey(dynamicTags[i], 0u));
-      EXPECT_EQ(ffs.getKey(dynamicTags[i]), 0u);
-      EXPECT_EQ(ffs.size(), BL_ARRAY_SIZE(dynamicTags));
-      verifyFontVariationSettings(ffs);
-    }
-
-    EXPECT_FALSE(ffs._d.sso());
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(dynamicTags); i++) {
-      EXPECT_SUCCESS(ffs.removeKey(dynamicTags[i]));
-      EXPECT_TRUE(blIsNaN(ffs.getKey(dynamicTags[i])));
-      EXPECT_EQ(ffs.size(), BL_ARRAY_SIZE(dynamicTags) - i - 1);
-      verifyFontVariationSettings(ffs);
-    }
-
-    EXPECT_FALSE(ffs._d.sso());
-  }
-
-  INFO("Equality");
-  {
-    BLFontVariationSettings ffs1;
-    BLFontVariationSettings ffs2;
-
-    for (uint32_t i = 0; i < BL_ARRAY_SIZE(ssoTags); i++) {
-      EXPECT_SUCCESS(ffs1.setKey(ssoTags[i], 1u));
-      EXPECT_SUCCESS(ffs2.setKey(ssoTags[BL_ARRAY_SIZE(ssoTags) - i - 1], 1u));
-    }
-
-    EXPECT_TRUE(ffs1.equals(ffs2));
-
-    // Make ffs1 go out of SSO mode.
-    EXPECT_SUCCESS(ffs1.setKey(BL_MAKE_TAG('a', 'a', 'a', 'a'), 1));
-    EXPECT_SUCCESS(ffs1.removeKey(BL_MAKE_TAG('a', 'a', 'a', 'a')));
-    EXPECT_TRUE(ffs1.equals(ffs2));
-
-    // Make ffs2 go out of SSO mode.
-    EXPECT_SUCCESS(ffs2.setKey(BL_MAKE_TAG('a', 'a', 'a', 'a'), 1));
-    EXPECT_SUCCESS(ffs2.removeKey(BL_MAKE_TAG('a', 'a', 'a', 'a')));
-    EXPECT_TRUE(ffs1.equals(ffs2));
-  }
-
-  INFO("Dynamic memory allocation strategy");
-  {
-    BLFontVariationSettings ffs;
-    size_t capacity = ffs.capacity();
-
-    constexpr uint32_t kCharRange = BLFontTagsPrivate::kCharRangeInTag;
-    constexpr uint32_t kNumItems = BLFontTagsPrivate::kUniqueTagCount;
-
-    for (uint32_t i = 0; i < kNumItems; i++) {
-      BLTag key = BL_MAKE_TAG(
-        uint32_t(' ') + (i / (kCharRange * kCharRange * kCharRange)),
-        uint32_t(' ') + (i / (kCharRange * kCharRange)) % kCharRange,
-        uint32_t(' ') + (i / (kCharRange)) % kCharRange,
-        uint32_t(' ') + (i % kCharRange));
-
-      ffs.setKey(key, float(i & 0xFFFFu));
-      if (capacity != ffs.capacity()) {
-        size_t implSize = BLFontVariationSettingsPrivate::implSizeFromCapacity(ffs.capacity()).value();
-        INFO("  Capacity increased from %zu to %zu [ImplSize=%zu]\n", capacity, ffs.capacity(), implSize);
-        capacity = ffs.capacity();
-      }
-    }
-
-    verifyFontVariationSettings(ffs);
-  }
-}
-#endif

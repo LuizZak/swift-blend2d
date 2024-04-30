@@ -4,22 +4,23 @@
 // SPDX-License-Identifier: Zlib
 
 #include "api-build_p.h"
-#include "math_p.h"
 #include "matrix_p.h"
 #include "runtime_p.h"
-#include "simd_p.h"
+#include "simd/simd_p.h"
+#include "support/math_p.h"
 
-BLMapPointDArrayFunc blMatrix2DMapPointDArrayFuncs[BL_MATRIX2D_TYPE_MAX_VALUE + 1];
+namespace bl {
+namespace TransformInternal {
 
-namespace BLTransformPrivate {
+// bl::Transform - Private - Globals
+// =================================
 
-// BLTransform - Private - Globals
-// ===============================
+BLMapPointDArrayFunc mapPointDArrayFuncs[BL_TRANSFORM_TYPE_MAX_VALUE + 1];
 
 const BLMatrix2D identityTransform { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 
-// BLTransform - Private - MapPointDArray
-// ======================================
+// bl::Transform - Private - MapPointDArray
+// ========================================
 
 BL_DIAGNOSTIC_PUSH(BL_DIAGNOSTIC_NO_UNUSED_FUNCTIONS)
 
@@ -88,10 +89,11 @@ static BLResult BL_CDECL blMatrix2DMapPointDArrayAffine(const BLMatrix2D* self, 
 
 BL_DIAGNOSTIC_POP
 
-} // {BLTransformPrivate}
+} // {TransformInternal}
+} // {bl}
 
-// BLTransform - API - Reset
-// =========================
+// bl::Transform - API - Reset
+// ===========================
 
 BL_API_IMPL BLResult blMatrix2DSetIdentity(BLMatrix2D* self) noexcept {
   self->reset(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
@@ -109,25 +111,25 @@ BL_API_IMPL BLResult blMatrix2DSetScaling(BLMatrix2D* self, double x, double y) 
 }
 
 BL_API_IMPL BLResult blMatrix2DSetSkewing(BLMatrix2D* self, double x, double y) noexcept {
-  double xTan = blTan(x);
-  double yTan = blTan(y);
+  double xTan = bl::Math::tan(x);
+  double yTan = bl::Math::tan(y);
 
   self->reset(1.0, yTan, xTan, 1.0, 0.0, 0.0);
   return BL_SUCCESS;
 }
 
 BL_API_IMPL BLResult blMatrix2DSetRotation(BLMatrix2D* self, double angle, double x, double y) noexcept {
-  double as = blSin(angle);
-  double ac = blCos(angle);
+  double as = bl::Math::sin(angle);
+  double ac = bl::Math::cos(angle);
 
   self->reset(ac, as, -as, ac, x, y);
   return BL_SUCCESS;
 }
 
-// BLTransform - API - Accessors
-// =============================
+// bl::Transform - API - Accessors
+// ===============================
 
-BL_API_IMPL BLMatrix2DType blMatrix2DGetType(const BLMatrix2D* self) noexcept {
+BL_API_IMPL BLTransformType blMatrix2DGetType(const BLMatrix2D* self) noexcept {
   double m00 = self->m00;
   double m01 = self->m01;
   double m10 = self->m10;
@@ -140,19 +142,17 @@ BL_API_IMPL BLMatrix2DType blMatrix2DGetType(const BLMatrix2D* self) noexcept {
   const uint32_t kBit10 = 1u << 1;
   const uint32_t kBit11 = 1u << 0;
 
-  #if defined(BL_TARGET_OPT_SSE2)
-
-  // NOTE: Ideally this should be somewhere else, but for simplicity and easier
-  // displatch it was placed here. We do this as C++ compilers still cannot figure
-  // out how to do this and this is a much better solution compared to scalar
-  // versions compilers produce.
+#if defined(BL_TARGET_OPT_SSE2)
+  // NOTE: Ideally this should be somewhere else, but for simplicity and easier dispatch it was placed here.
+  // We do this as C++ compilers still cannot figure out how to do this and this is a much better solution
+  // compared to scalar versions compilers produce.
   using namespace SIMD;
-  uint32_t valueMsk = uint32_t(_mm_movemask_pd(v_cmp_ne_f64(v_fill_d128(m00, m01), v_zero_d128())) << 2) |
-                      uint32_t(_mm_movemask_pd(v_cmp_ne_f64(v_fill_d128(m10, m11), v_zero_d128())) << 0) ;
-  #else
+  uint32_t valueMsk = uint32_t(extract_sign_bits_i64(cmp_ne_f64(make128_f64(m00, m01), make_zero<Vec2xF64>())) << 2) |
+                      uint32_t(extract_sign_bits_i64(cmp_ne_f64(make128_f64(m10, m11), make_zero<Vec2xF64>())) << 0) ;
+#else
   uint32_t valueMsk = (uint32_t(m00 != 0.0) << 3) | (uint32_t(m01 != 0.0) << 2) |
                       (uint32_t(m10 != 0.0) << 1) | (uint32_t(m11 != 0.0) << 0) ;
-  #endif
+#endif
 
   // Bit-table that contains ones for `valueMsk` combinations that are considered valid.
   uint32_t validTab = (0u << (0      | 0      | 0      | 0     )) | // [m00==0 m01==0 m10==0 m11==0]
@@ -173,39 +173,46 @@ BL_API_IMPL BLMatrix2DType blMatrix2DGetType(const BLMatrix2D* self) noexcept {
                       (1u << (kBit00 | kBit01 | kBit10 | kBit11)) ; // [m00!=0 m01!=0 m10!=0 m11!=0] [AFFINE]
 
   double d = m00 * m11 - m01 * m10;
-  if (!((1u << valueMsk) & validTab) || !blIsFinite(d) || !blIsFinite(m20) || !blIsFinite(m21))
-    return BL_MATRIX2D_TYPE_INVALID;
+  if (!((1u << valueMsk) & validTab) ||
+      !bl::Math::isFinite(d) ||
+      !bl::Math::isFinite(m20) ||
+      !bl::Math::isFinite(m21)) {
+    return BL_TRANSFORM_TYPE_INVALID;
+  }
 
-  // Matrix is not swap/affine if:
+  // Transformation matrix is not swap/affine if:
   //   [. 0]
   //   [0 .]
   //   [. .]
-  if (valueMsk != (kBit00 | kBit11))
+  if (valueMsk != (kBit00 | kBit11)) {
     return (valueMsk == (kBit01 | kBit10))
-      ? BL_MATRIX2D_TYPE_SWAP
-      : BL_MATRIX2D_TYPE_AFFINE;
+      ? BL_TRANSFORM_TYPE_SWAP
+      : BL_TRANSFORM_TYPE_AFFINE;
+  }
 
-  // Matrix is not scaling if:
+  // Transformation matrix is not scaling if:
   //   [1 .]
   //   [. 1]
   //   [. .]
-  if (!((m00 == 1.0) & (m11 == 1.0)))
-    return BL_MATRIX2D_TYPE_SCALE;
+  if (!((m00 == 1.0) & (m11 == 1.0))) {
+    return BL_TRANSFORM_TYPE_SCALE;
+  }
 
-  // Matrix is not translation if:
+  // Transformation matrix is not translation if:
   //   [. .]
   //   [. .]
   //   [0 0]
-  if (!((m20 == 0.0) & (m21 == 0.0)))
-    return BL_MATRIX2D_TYPE_TRANSLATE;
+  if (!((m20 == 0.0) & (m21 == 0.0))) {
+    return BL_TRANSFORM_TYPE_TRANSLATE;
+  }
 
-  return BL_MATRIX2D_TYPE_IDENTITY;
+  return BL_TRANSFORM_TYPE_IDENTITY;
 }
 
-// BLTransform - API - Operations
-// ==============================
+// bl::Transform - API - Operations
+// ================================
 
-BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, const void* opData) noexcept {
+BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLTransformOp opType, const void* opData) noexcept {
   BLMatrix2D* a = self;
   const double* data = static_cast<const double*>(opData);
 
@@ -213,21 +220,21 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //      |1 0|
     // A' = |0 1|
     //      |0 0|
-    case BL_MATRIX2D_OP_RESET:
+    case BL_TRANSFORM_OP_RESET:
       a->reset();
       return BL_SUCCESS;
 
     //
     // A' = B
     //
-    case BL_MATRIX2D_OP_ASSIGN:
+    case BL_TRANSFORM_OP_ASSIGN:
       a->reset(*static_cast<const BLMatrix2D*>(opData));
       return BL_SUCCESS;
 
     //      [1 0]
     // A' = [0 1] * A
     //      [X Y]
-    case BL_MATRIX2D_OP_TRANSLATE: {
+    case BL_TRANSFORM_OP_TRANSLATE: {
       double x = data[0];
       double y = data[1];
 
@@ -240,7 +247,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //      [X 0]
     // A' = [0 Y] * A
     //      [0 0]
-    case BL_MATRIX2D_OP_SCALE: {
+    case BL_TRANSFORM_OP_SCALE: {
       double x = data[0];
       double y = data[1];
 
@@ -255,11 +262,11 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //      [  1    tan(y)]
     // A' = [tan(x)   1   ] * A
     //      [  0      0   ]
-    case BL_MATRIX2D_OP_SKEW: {
+    case BL_TRANSFORM_OP_SKEW: {
       double x = data[0];
       double y = data[1];
-      double xTan = blTan(x);
-      double yTan = blTan(y);
+      double xTan = bl::Math::tan(x);
+      double yTan = bl::Math::tan(y);
 
       double t00 = yTan * a->m10;
       double t01 = yTan * a->m11;
@@ -281,18 +288,18 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //      [ cos(a) sin(a)]
     // A' = [-sin(a) cos(a)] * A
     //      [   Tx     Ty  ]
-    case BL_MATRIX2D_OP_ROTATE:
-    case BL_MATRIX2D_OP_ROTATE_PT: {
+    case BL_TRANSFORM_OP_ROTATE:
+    case BL_TRANSFORM_OP_ROTATE_PT: {
       double angle = data[0];
-      double as = blSin(angle);
-      double ac = blCos(angle);
+      double as = bl::Math::sin(angle);
+      double ac = bl::Math::cos(angle);
 
       double t00 = as * a->m10 + ac * a->m00;
       double t01 = as * a->m11 + ac * a->m01;
       double t10 = ac * a->m10 - as * a->m00;
       double t11 = ac * a->m11 - as * a->m01;
 
-      if (opType == BL_MATRIX2D_OP_ROTATE_PT) {
+      if (opType == BL_TRANSFORM_OP_ROTATE_PT) {
         double px = data[1];
         double py = data[2];
 
@@ -316,7 +323,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     }
 
     // A' = B * A
-    case BL_MATRIX2D_OP_TRANSFORM: {
+    case BL_TRANSFORM_OP_TRANSFORM: {
       const BLMatrix2D* b = static_cast<const BLMatrix2D*>(opData);
 
       a->reset(b->m00 * a->m00 + b->m01 * a->m10,
@@ -332,7 +339,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //          [1 0]
     // A' = A * [0 1]
     //          [X Y]
-    case BL_MATRIX2D_OP_POST_TRANSLATE: {
+    case BL_TRANSFORM_OP_POST_TRANSLATE: {
       double x = data[0];
       double y = data[1];
 
@@ -345,7 +352,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //          [X 0]
     // A' = A * [0 Y]
     //          [0 0]
-    case BL_MATRIX2D_OP_POST_SCALE: {
+    case BL_TRANSFORM_OP_POST_SCALE: {
       double x = data[0];
       double y = data[1];
 
@@ -362,11 +369,11 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //          [  1    tan(y)]
     // A' = A * [tan(x)   1   ]
     //          [  0      0   ]
-    case BL_MATRIX2D_OP_POST_SKEW:{
+    case BL_TRANSFORM_OP_POST_SKEW:{
       double x = data[0];
       double y = data[1];
-      double xTan = blTan(x);
-      double yTan = blTan(y);
+      double xTan = bl::Math::tan(x);
+      double yTan = bl::Math::tan(y);
 
       double t00 = a->m01 * xTan;
       double t10 = a->m11 * xTan;
@@ -386,11 +393,11 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     //          [ cos(a) sin(a)]
     // A' = A * [-sin(a) cos(a)]
     //          [   x'     y'  ]
-    case BL_MATRIX2D_OP_POST_ROTATE:
-    case BL_MATRIX2D_OP_POST_ROTATE_PT: {
+    case BL_TRANSFORM_OP_POST_ROTATE:
+    case BL_TRANSFORM_OP_POST_ROTATE_PT: {
       double angle = data[0];
-      double as = blSin(angle);
-      double ac = blCos(angle);
+      double as = bl::Math::sin(angle);
+      double ac = bl::Math::cos(angle);
 
       double t00 = a->m00 * ac - a->m01 * as;
       double t01 = a->m00 * as + a->m01 * ac;
@@ -400,7 +407,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
       double t21 = a->m20 * as + a->m21 * ac;
 
       a->reset(t00, t01, t10, t11, t20, t21);
-      if (opType != BL_MATRIX2D_OP_POST_ROTATE_PT)
+      if (opType != BL_TRANSFORM_OP_POST_ROTATE_PT)
         return BL_SUCCESS;
 
       double px = data[1];
@@ -413,7 +420,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
     }
 
     // A' = A * B
-    case BL_MATRIX2D_OP_POST_TRANSFORM: {
+    case BL_TRANSFORM_OP_POST_TRANSFORM: {
       const BLMatrix2D* b = static_cast<const BLMatrix2D*>(opData);
 
       a->reset(a->m00 * b->m00 + a->m01 * b->m10,
@@ -434,7 +441,7 @@ BL_API_IMPL BLResult blMatrix2DApplyOp(BLMatrix2D* self, BLMatrix2DOp opType, co
 BL_API_IMPL BLResult blMatrix2DInvert(BLMatrix2D* dst, const BLMatrix2D* src) noexcept {
   double d = src->m00 * src->m11 - src->m01 * src->m10;
 
-  if (d == 0.0)
+  if (d == 0.0 || !bl::Math::isFinite(d))
     return blTraceError(BL_ERROR_INVALID_VALUE);
 
   double t00 =  src->m11;
@@ -454,22 +461,23 @@ BL_API_IMPL BLResult blMatrix2DInvert(BLMatrix2D* dst, const BLMatrix2D* src) no
   return BL_SUCCESS;
 }
 
-// BLTransform - API - Map
-// =======================
+// bl::Transform - API - Map
+// =========================
 
 BL_API_IMPL BLResult blMatrix2DMapPointDArray(const BLMatrix2D* self, BLPoint* dst, const BLPoint* src, size_t count) noexcept {
-  uint32_t matrixType = BL_MATRIX2D_TYPE_AFFINE;
+  BLTransformType transformType = BL_TRANSFORM_TYPE_AFFINE;
 
   if (count >= BL_MATRIX_TYPE_MINIMUM_SIZE)
-    matrixType = self->type();
+    transformType = self->type();
 
-  return blMatrix2DMapPointDArrayFuncs[matrixType](self, dst, src, count);
+  return bl::TransformInternal::mapPointDArrayFuncs[transformType](self, dst, src, count);
 }
 
-// BLTransform - Runtime Registration
-// ==================================
+// bl::Transform - Runtime Registration
+// ====================================
 
-namespace BLTransformPrivate {
+namespace bl {
+namespace TransformInternal {
 
 #ifdef BL_BUILD_OPT_SSE2
 BL_HIDDEN void blTransformRtInit_SSE2(BLRuntimeContext* rt) noexcept;
@@ -479,177 +487,32 @@ BL_HIDDEN void blTransformRtInit_SSE2(BLRuntimeContext* rt) noexcept;
 BL_HIDDEN void blTransformRtInit_AVX(BLRuntimeContext* rt) noexcept;
 #endif
 
-} // {BLTransformPrivate}
+} // {TransformInternal}
+} // {bl}
 
 void blTransformRtInit(BLRuntimeContext* rt) noexcept {
+  // Maybe unused.
+  blUnused(rt);
+
 #if !defined(BL_TARGET_OPT_SSE2)
   blUnused(rt);
-  BLMapPointDArrayFunc* funcs = blMatrix2DMapPointDArrayFuncs;
+  BLMapPointDArrayFunc* funcs = bl::TransformInternal::mapPointDArrayFuncs;
 
-  blAssignFunc(&funcs[BL_MATRIX2D_TYPE_IDENTITY ], BLTransformPrivate::blMatrix2DMapPointDArrayIdentity);
-  blAssignFunc(&funcs[BL_MATRIX2D_TYPE_TRANSLATE], BLTransformPrivate::blMatrix2DMapPointDArrayTranslate);
-  blAssignFunc(&funcs[BL_MATRIX2D_TYPE_SCALE    ], BLTransformPrivate::blMatrix2DMapPointDArrayScale);
-  blAssignFunc(&funcs[BL_MATRIX2D_TYPE_SWAP     ], BLTransformPrivate::blMatrix2DMapPointDArraySwap);
-  blAssignFunc(&funcs[BL_MATRIX2D_TYPE_AFFINE   ], BLTransformPrivate::blMatrix2DMapPointDArrayAffine);
-  blAssignFunc(&funcs[BL_MATRIX2D_TYPE_INVALID  ], BLTransformPrivate::blMatrix2DMapPointDArrayAffine);
+  blAssignFunc(&funcs[BL_TRANSFORM_TYPE_IDENTITY ], bl::TransformInternal::blMatrix2DMapPointDArrayIdentity);
+  blAssignFunc(&funcs[BL_TRANSFORM_TYPE_TRANSLATE], bl::TransformInternal::blMatrix2DMapPointDArrayTranslate);
+  blAssignFunc(&funcs[BL_TRANSFORM_TYPE_SCALE    ], bl::TransformInternal::blMatrix2DMapPointDArrayScale);
+  blAssignFunc(&funcs[BL_TRANSFORM_TYPE_SWAP     ], bl::TransformInternal::blMatrix2DMapPointDArraySwap);
+  blAssignFunc(&funcs[BL_TRANSFORM_TYPE_AFFINE   ], bl::TransformInternal::blMatrix2DMapPointDArrayAffine);
+  blAssignFunc(&funcs[BL_TRANSFORM_TYPE_INVALID  ], bl::TransformInternal::blMatrix2DMapPointDArrayAffine);
 #endif
 
 #ifdef BL_BUILD_OPT_SSE2
   if (blRuntimeHasSSE2(rt))
-    BLTransformPrivate::blTransformRtInit_SSE2(rt);
+    bl::TransformInternal::blTransformRtInit_SSE2(rt);
 #endif
 
 #ifdef BL_BUILD_OPT_AVX
   if (blRuntimeHasAVX(rt))
-    BLTransformPrivate::blTransformRtInit_AVX(rt);
+    bl::TransformInternal::blTransformRtInit_AVX(rt);
 #endif
 }
-
-// BLTransform - Tests
-// ===================
-
-#ifdef BL_TEST
-UNIT(matrix) {
-  INFO("Testing matrix types");
-  {
-    BLMatrix2D m;
-
-    m = BLMatrix2D::makeIdentity();
-    EXPECT_EQ(m.type(), BL_MATRIX2D_TYPE_IDENTITY);
-
-    m = BLMatrix2D::makeTranslation(1.0, 2.0);
-    EXPECT_EQ(m.type(), BL_MATRIX2D_TYPE_TRANSLATE);
-
-    m = BLMatrix2D::makeScaling(2.0, 2.0);
-    EXPECT_EQ(m.type(), BL_MATRIX2D_TYPE_SCALE);
-
-    m.m10 = 3.0;
-    EXPECT_EQ(m.type(), BL_MATRIX2D_TYPE_AFFINE);
-
-    m.reset(0.0, 1.0, 1.0, 0.0, 0.0, 0.0);
-    EXPECT_EQ(m.type(), BL_MATRIX2D_TYPE_SWAP);
-
-    m.reset(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    EXPECT_EQ(m.type(), BL_MATRIX2D_TYPE_INVALID);
-  }
-
-  INFO("Testing whether special-case transformations match matrix multiplication");
-  {
-    enum BL_TEST_MATRIX : uint32_t {
-      BL_TEST_MATRIX_IDENTITY,
-      BL_TEST_MATRIX_TRANSLATE,
-      BL_TEST_MATRIX_SCALE,
-      BL_TEST_MATRIX_SKEW,
-      BL_TEST_MATRIX_ROTATE,
-      BL_TEST_MATRIX_COUNT
-    };
-
-    static const BLPoint ptOffset(128.0, 64.0);
-    static const BLPoint ptScale(1.5, 2.0);
-    static const BLPoint ptSkew(1.5, 2.0);
-    static const double angle = 0.9;
-
-    auto testMatrixName = [](uint32_t type) noexcept -> const char* {
-      switch (type) {
-        case BL_TEST_MATRIX_IDENTITY : return "Identity";
-        case BL_TEST_MATRIX_TRANSLATE: return "Translate";
-        case BL_TEST_MATRIX_SCALE    : return "Scale";
-        case BL_TEST_MATRIX_SKEW     : return "Skew";
-        case BL_TEST_MATRIX_ROTATE   : return "Rotate";
-        default: return "Unknown";
-      }
-    };
-
-    auto createTestMatrix = [](uint32_t type) noexcept -> BLMatrix2D {
-      switch (type) {
-        case BL_TEST_MATRIX_TRANSLATE: return BLMatrix2D::makeTranslation(ptOffset);
-        case BL_TEST_MATRIX_SCALE    : return BLMatrix2D::makeScaling(ptScale);
-        case BL_TEST_MATRIX_SKEW     : return BLMatrix2D::makeSkewing(ptSkew);
-        case BL_TEST_MATRIX_ROTATE   : return BLMatrix2D::makeRotation(angle);
-
-        default:
-          return BLMatrix2D::makeIdentity();
-      }
-    };
-
-    auto compare = [](const BLMatrix2D& a, const BLMatrix2D& b) noexcept -> bool {
-      double diff = blMax(blAbs(a.m00 - b.m00),
-                          blAbs(a.m01 - b.m01),
-                          blAbs(a.m10 - b.m10),
-                          blAbs(a.m11 - b.m11),
-                          blAbs(a.m20 - b.m20),
-                          blAbs(a.m21 - b.m21));
-      // If Blend2D is compiled with FMA enabled there could be a difference
-      // greater than our blEpsilon<double>, so use a more relaxed value here.
-      return diff < 1e-8;
-    };
-
-    BLMatrix2D m, n;
-    BLMatrix2D a = BLMatrix2D::makeIdentity();
-    BLMatrix2D b;
-
-    for (uint32_t aType = 0; aType < BL_TEST_MATRIX_COUNT; aType++) {
-      for (uint32_t bType = 0; bType < BL_TEST_MATRIX_COUNT; bType++) {
-        a = createTestMatrix(aType);
-        b = createTestMatrix(bType);
-
-        m = a;
-        n = a;
-
-        for (uint32_t post = 0; post < 2; post++) {
-          if (!post)
-            m.transform(b);
-          else
-            m.postTransform(b);
-
-          switch (bType) {
-            case BL_TEST_MATRIX_IDENTITY:
-              break;
-
-            case BL_TEST_MATRIX_TRANSLATE:
-              if (!post)
-                n.translate(ptOffset);
-              else
-                n.postTranslate(ptOffset);
-              break;
-
-            case BL_TEST_MATRIX_SCALE:
-              if (!post)
-                n.scale(ptScale);
-              else
-                n.postScale(ptScale);
-              break;
-
-            case BL_TEST_MATRIX_SKEW:
-              if (!post)
-                n.skew(ptSkew);
-              else
-                n.postSkew(ptSkew);
-              break;
-
-            case BL_TEST_MATRIX_ROTATE:
-              if (!post)
-                n.rotate(angle);
-              else
-                n.postRotate(angle);
-              break;
-          }
-
-          if (!compare(m, n)) {
-            INFO("Matrices don't match [%s x %s]\n", testMatrixName(aType), testMatrixName(bType));
-            INFO("    [% 3.14f | % 3.14f]      [% 3.14f | % 3.14f]\n", a.m00, a.m01, b.m00, b.m01);
-            INFO("  A [% 3.14f | % 3.14f]    B [% 3.14f | % 3.14f]\n", a.m10, a.m11, b.m10, b.m11);
-            INFO("    [% 3.14f | % 3.14f]      [% 3.14f | % 3.14f]\n", a.m20, a.m21, b.m20, b.m21);
-            INFO("\n");
-            INFO("Operation: %s\n", post ? "M = A * B" : "M = B * A");
-            INFO("    [% 3.14f | % 3.14f]      [% 3.14f | % 3.14f]\n", m.m00, m.m01, n.m00, n.m01);
-            INFO("  M [% 3.14f | % 3.14f] != N [% 3.14f | % 3.14f]\n", m.m10, m.m11, n.m10, n.m11);
-            INFO("    [% 3.14f | % 3.14f]      [% 3.14f | % 3.14f]\n", m.m20, m.m21, n.m20, n.m21);
-            EXPECT_TRUE(false);
-          }
-        }
-      }
-    }
-  }
-}
-#endif

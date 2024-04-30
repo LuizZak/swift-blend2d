@@ -9,16 +9,17 @@
 #include "../geometry_p.h"
 #include "../image.h"
 #include "../path.h"
-#include "../zeroallocator_p.h"
 #include "../raster/edgebuilder_p.h"
 #include "../raster/rasterdefs_p.h"
 #include "../support/arenaallocator_p.h"
+#include "../support/zeroallocator_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_raster_engine_impl
 //! \{
 
-namespace BLRasterEngine {
+namespace bl {
+namespace RasterEngine {
 
 class RenderBatch;
 
@@ -38,7 +39,7 @@ public:
   //! Batch data to process in case this data is used in a worker thread.
   RenderBatch* batch;
   //! Context data used by pipelines (either the destination data or layer).
-  BLPipeline::ContextData ctxData;
+  Pipeline::ContextData ctxData;
 
   //! Clip mode.
   uint8_t clipMode;
@@ -57,11 +58,11 @@ public:
   BLGlyphBuffer glyphBuffer;
 
   //! Zone memory used by the worker context.
-  BLArenaAllocator workZone;
+  ArenaAllocator workZone;
   //! The last state of the zone to be reverted to in case of failure.
-  BLArenaAllocator::StatePtr workState;
+  ArenaAllocator::StatePtr workState;
   //! Zero memory filled by rasterizers and zeroed back by pipelines.
-  BLZeroBuffer zeroBuffer;
+  ZeroBuffer zeroBuffer;
   //! Edge storage.
   EdgeStorage<int> edgeStorage;
   //! Edge builder.
@@ -72,27 +73,41 @@ public:
 
   // NOTE: `initContextData()` is called after `initBandData()` in `blRasterContextImplAttach()`.
 
-  BL_INLINE void initContextData(const BLImageData& dstData) noexcept { ctxData.dst = dstData; }
+  BL_INLINE_NODEBUG void initContextData(const BLImageData& dstData, const BLPointI& pixelOrigin) noexcept {
+    ctxData.dst = dstData;
+    ctxData.pixelOrigin = pixelOrigin;
+  }
+
   BLResult initBandData(uint32_t bandHeight, uint32_t bandCount) noexcept;
 
-  BL_INLINE bool isSync() const noexcept { return _workerId == kSyncWorkerId; }
+  BL_INLINE_NODEBUG bool isSync() const noexcept { return _workerId == kSyncWorkerId; }
 
-  BL_INLINE const BLSizeI& dstSize() const noexcept { return ctxData.dst.size; }
-  BL_INLINE uint32_t workerId() const noexcept { return _workerId; }
-  BL_INLINE uint32_t bandHeight() const noexcept { return _bandHeight; }
-  BL_INLINE uint32_t bandCount() const noexcept { return edgeStorage.bandCount(); }
+  BL_INLINE_NODEBUG const BLSizeI& dstSize() const noexcept { return ctxData.dst.size; }
+  BL_INLINE_NODEBUG uint32_t workerId() const noexcept { return _workerId; }
+  BL_INLINE_NODEBUG uint32_t bandHeight() const noexcept { return _bandHeight; }
+  BL_INLINE_NODEBUG uint32_t bandCount() const noexcept { return edgeStorage.bandCount(); }
 
-  BL_INLINE uint32_t accumulatedErrorFlags() const noexcept { return _accumulatedErrorFlags; }
-  BL_INLINE void cleanAccumulatedErrorFlags() noexcept { _accumulatedErrorFlags = 0; }
+  BL_INLINE_NODEBUG void accumulateErrorFlag(BLContextErrorFlags flag) noexcept { _accumulatedErrorFlags |= uint32_t(flag); }
+
+  BL_INLINE_NODEBUG BLContextErrorFlags accumulatedErrorFlags() const noexcept { return BLContextErrorFlags(_accumulatedErrorFlags); }
+  BL_INLINE_NODEBUG void cleanAccumulatedErrorFlags() noexcept { _accumulatedErrorFlags = 0; }
+
+  BL_INLINE void avoidCacheLineSharing() noexcept {
+    workZone.align(BL_CACHE_LINE_SIZE);
+  }
 
   BL_INLINE void startOver() noexcept {
     workZone.clear();
-    workState = BLArenaAllocator::StatePtr{};
+    workState = ArenaAllocator::StatePtr{};
     edgeStorage.clear();
   }
 
   BL_INLINE void saveState() noexcept {
     workState = workZone.saveState();
+  }
+
+  BL_INLINE void restoreState() noexcept {
+    workZone.restoreState(workState);
   }
 
   BL_INLINE void revertEdgeBuilder() noexcept {
@@ -106,7 +121,8 @@ public:
   BLResult accumulateError(BLResult error) noexcept;
 };
 
-} // {BLRasterEngine}
+} // {RasterEngine}
+} // {bl}
 
 //! \}
 //! \endcond

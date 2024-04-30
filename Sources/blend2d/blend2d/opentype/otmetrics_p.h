@@ -13,7 +13,8 @@
 //! \addtogroup blend2d_opentype_impl
 //! \{
 
-namespace BLOpenType {
+namespace bl {
+namespace OpenType {
 
 //! OpenType 'hhea' and 'vhea' tables.
 //!
@@ -21,7 +22,7 @@ namespace BLOpenType {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/hhea
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/vhea
 struct XHeaTable {
-  enum : uint32_t { kMinSize = 36 };
+  enum : uint32_t { kBaseSize = 36 };
 
   F16x16 version;
   Int16 ascender;
@@ -46,7 +47,7 @@ struct XHeaTable {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/vmtx
 struct XMtxTable {
   // At least one LongMetric.
-  enum : uint32_t { kMinSize = 4  };
+  enum : uint32_t { kBaseSize = 4  };
 
   struct LongMetric {
     UInt16 advance;
@@ -59,14 +60,14 @@ struct XMtxTable {
   */
 
   //! Paired advance width and left side bearing values, indexed by glyph ID.
-  BL_INLINE const LongMetric* lmArray() const noexcept { return BLPtrOps::offset<const LongMetric>(this, 0); }
+  BL_INLINE const LongMetric* lmArray() const noexcept { return PtrOps::offset<const LongMetric>(this, 0); }
   //! Leading side bearings for glyph IDs greater than or equal to `metricCount`.
-  BL_INLINE const Int16* lsbArray(size_t metricCount) const noexcept { return BLPtrOps::offset<const Int16>(this, metricCount * sizeof(LongMetric)); }
+  BL_INLINE const Int16* lsbArray(size_t metricCount) const noexcept { return PtrOps::offset<const Int16>(this, metricCount * sizeof(LongMetric)); }
 };
 
 struct MetricsData {
   //! Metrics tables - 'hmtx' and 'vmtx' (if present).
-  BLFontTableT<XMtxTable> xmtxTable[2];
+  Table<XMtxTable> xmtxTable[2];
   //! Count of LongMetric entries.
   uint16_t longMetricCount[2];
   //! Count of LSB entries.
@@ -74,10 +75,11 @@ struct MetricsData {
 };
 
 namespace MetricsImpl {
-BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept;
+BLResult init(OTFaceImpl* faceI, OTFaceTables& tables) noexcept;
 } // {MetricsImpl}
 
-} // {BLOpenType}
+} // {OpenType}
+} // {bl}
 
 //! \}
 //! \endcond

@@ -48,7 +48,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
         blContextGetType(&object)
     }
 
-    /// Returns meta-matrix.
+    /// Returns meta-transform matrix.
     ///
     /// Meta matrix is a core transformation matrix that is normally not changed
     /// by transformations applied to the context. Instead it acts as a secondary
@@ -62,22 +62,22 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// To change the meta-matrix you must first change user-matrix and then call
     /// `userToMeta()`, which would update meta-matrix and clear user-matrix.
     ///
-    /// See `userMatrix` and `userToMeta()`.
+    /// See `userTransform` and `userToMeta()`.
     @inlinable
-    public var metaMatrix: BLMatrix2D {
+    public var metaTransform: BLMatrix2D {
         var matrix = BLMatrix2D()
-        blContextGetMetaMatrix(&object, &matrix)
+        blContextGetMetaTransform(&object, &matrix)
         return matrix
     }
 
-    /// Returns user-matrix.
+    /// Returns user-transform matrix.
     ///
     /// User matrix contains all transformations that happened to the rendering
     /// context unless the context was restored or `userToMeta()` was called.
     @inlinable
-    public var userMatrix: BLMatrix2D {
+    public var userTransform: BLMatrix2D {
         var matrix = BLMatrix2D()
-        blContextGetUserMatrix(&object, &matrix)
+        blContextGetUserTransform(&object, &matrix)
         return matrix
     }
 
@@ -113,25 +113,18 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Gets or sets the composition operator.
     @inlinable
     public var compOp: BLCompOp {
-        get {
-            BLCompOp(BLCompOp.RawValue(_state.compOp))
-        }
-        set {
-            blContextSetCompOp(&object, newValue)
-        }
+        get { blContextGetCompOp(&object) }
+        set { blContextSetCompOp(&object, newValue) }
     }
 
     /// Gets or sets the global alpha value.
     @inlinable
     public var globalAlpha: Double {
-        get {
-            _state.globalAlpha
-        }
-        set {
-            blContextSetGlobalAlpha(&object, newValue)
-        }
+        get { blContextGetGlobalAlpha(&object) }
+        set { blContextSetGlobalAlpha(&object, newValue) }
     }
     
+    /* TODO: BLContextOpType was removed or refactored; remove fill/strokeStyleType as well?
     @inlinable
     public var fillStyleType: UInt32 {
         assert(BLContextOpType.fill.rawValue == 0)
@@ -143,6 +136,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
         assert(BLContextOpType.stroke.rawValue == 1)
         return UInt32(_state.styleType.1)
     }
+    */
     
     /// Gets an enumeration specifying the fill style and their current associated
     /// values.
@@ -173,7 +167,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public var fillRule: BLFillRule {
         get {
-            BLFillRule(BLFillRule.RawValue(_state.fillRule))
+            blContextGetFillRule(&object)
         }
         set {
             blContextSetFillRule(&object, newValue)
@@ -183,13 +177,8 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Gets or sets fill alpha value.
     @inlinable
     public var fillAlpha: Double {
-        get {
-            assert(BL_CONTEXT_OP_TYPE_STROKE.rawValue == 0)
-            return _state.styleAlpha.0
-        }
-        set {
-            blContextSetFillAlpha(&object, newValue)
-        }
+        get { blContextGetFillAlpha(&object) }
+        set { blContextSetFillAlpha(&object, newValue) }
     }
     
     /// Gets an enumeration specifying the stroke style and their current associated
@@ -220,13 +209,8 @@ public class BLContext: BLBaseClass<BLContextCore> {
     /// Gets or sets stroke alpha value.
     @inlinable
     public var strokeAlpha: Double {
-        get {
-            assert(BL_CONTEXT_OP_TYPE_STROKE.rawValue == 1)
-            return _state.styleAlpha.1
-        }
-        set {
-            blContextSetStrokeAlpha(&object, newValue)
-        }
+        get { blContextGetStrokeAlpha(&object) }
+        set { blContextSetStrokeAlpha(&object, newValue) }
     }
 
     @inlinable
@@ -734,7 +718,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func fillText<S: StringProtocol>(_ text: S, at point: BLPointI, font: BLFont) -> BLResult {
         var point = point
         return text.withCString { pointer in
-            blContextFillTextI(&object, &point, &font.object, pointer, text.utf8.count, .utf8)
+            blContextFillUtf8TextI(&object, &point, &font.object, pointer, text.utf8.count)
         }
     }
 
@@ -743,7 +727,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func fillText<S: StringProtocol>(_ text: S, at point: BLPoint, font: BLFont) -> BLResult {
         var point = point
         return text.withCString { pointer in
-            blContextFillTextD(&object, &point, &font.object, pointer, text.utf8.count, .utf8)
+            blContextFillUtf8TextD(&object, &point, &font.object, pointer, text.utf8.count)
         }
     }
 
@@ -779,7 +763,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
         var point = point
 
         return text.withCString { cString -> BLResult in
-            blContextStrokeTextD(&object, &point, &font.object, cString, text.utf8.count, .utf8)
+            blContextStrokeUtf8TextD(&object, &point, &font.object, cString, text.utf8.count)
         }
     }
     
@@ -1090,8 +1074,9 @@ public extension BLContext {
     
     @discardableResult
     @inlinable
-    func fillPath(_ path: BLPath) -> BLResult {
-        blContextFillPathD(&object, &path.object)
+    func fillPath(origin: BLPoint = .zero, _ path: BLPath) -> BLResult {
+        var origin = origin
+        return blContextFillPathD(&object, &origin, &path.object)
     }
     
 }
@@ -1171,7 +1156,7 @@ public extension BLContext {
 
     /// Returns the number of saved states in the context (0 means no saved states).
     var savedStateCount: Int {
-        _state.savedStateCount
+        Int(clamping: _state.savedStateCount)
     }
 
     /// Saves the current rendering context state.
@@ -1249,195 +1234,195 @@ public extension BLContext {
     @inlinable
     @discardableResult
     func resetMatrix() -> BLResult {
-        _applyMatrixOp(.reset)
+        _applyTransformOp(.reset)
     }
     @inlinable
     @discardableResult
     func translate(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.translate, x, y)
+        _applyTransformOpV(.translate, x, y)
     }
     @inlinable
     @discardableResult
     func translate(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.translate, p.x, p.y)
+        _applyTransformOpV(.translate, p.x, p.y)
     }
     @inlinable
     @discardableResult
     func translate(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.translate, p)
+        _applyTransformOp(.translate, p)
     }
     @inlinable
     @discardableResult
     func scale(xy: Double) -> BLResult {
-        _applyMatrixOpV(.scale, xy, xy)
+        _applyTransformOpV(.scale, xy, xy)
     }
     @inlinable
     @discardableResult
     func scale(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.scale, x, y)
+        _applyTransformOpV(.scale, x, y)
     }
     @inlinable
     @discardableResult
     func scale(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.scale, p.x, p.y)
+        _applyTransformOpV(.scale, p.x, p.y)
     }
     @inlinable
     @discardableResult
     func scale(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.scale, p)
+        _applyTransformOp(.scale, p)
     }
     @inlinable
     @discardableResult
     func skew(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.skew, x, y)
+        _applyTransformOpV(.skew, x, y)
     }
     @inlinable
     @discardableResult
     func skew(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.skew, p)
+        _applyTransformOp(.skew, p)
     }
     @inlinable
     @discardableResult
     func rotate(angle: Double) -> BLResult {
-        _applyMatrixOp(.rotate, angle)
+        _applyTransformOp(.rotate, angle)
     }
     @inlinable
     @discardableResult
     func rotate(angle: Double, x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, x, y)
+        _applyTransformOpV(.rotatePt, angle, x, y)
     }
     @inlinable
     @discardableResult
     func rotate(angle: Double, point: BLPoint) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, point.x, point.y)
+        _applyTransformOpV(.rotatePt, angle, point.x, point.y)
     }
     @inlinable
     @discardableResult
     func rotate(angle: Double, point: BLPointI) -> BLResult {
-        _applyMatrixOpV(.rotatePt, angle, Double(point.x), Double(point.y))
+        _applyTransformOpV(.rotatePt, angle, Double(point.x), Double(point.y))
     }
     @inlinable
     @discardableResult
     func transform(_ matrix: BLMatrix2D) -> BLResult {
-        _applyMatrixOp(.transform, matrix)
+        _applyTransformOp(.transform, matrix)
     }
     @inlinable
     @discardableResult
     func postTranslate(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postTranslate, x, y)
+        _applyTransformOpV(.postTranslate, x, y)
     }
     @inlinable
     @discardableResult
     func postTranslate(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postTranslate, p.x, p.y)
+        _applyTransformOpV(.postTranslate, p.x, p.y)
     }
     @inlinable
     @discardableResult
     func postTranslate(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postTranslate, p)
+        _applyTransformOp(.postTranslate, p)
     }
     @inlinable
     @discardableResult
     func postScale(xy: Double) -> BLResult {
-        _applyMatrixOpV(.postScale, xy, xy)
+        _applyTransformOpV(.postScale, xy, xy)
     }
     @inlinable
     @discardableResult
     func postScale(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postScale, x, y)
+        _applyTransformOpV(.postScale, x, y)
     }
     @inlinable
     @discardableResult
     func postScale(by p: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postScale, p.x, p.y)
+        _applyTransformOpV(.postScale, p.x, p.y)
     }
     @inlinable
     @discardableResult
     func postScale(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postScale, p)
+        _applyTransformOp(.postScale, p)
     }
     @inlinable
     @discardableResult
     func postSkew(x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postSkew, x, y)
+        _applyTransformOpV(.postSkew, x, y)
     }
     @inlinable
     @discardableResult
     func postSkew(by p: BLPoint) -> BLResult {
-        _applyMatrixOp(.postSkew, p)
+        _applyTransformOp(.postSkew, p)
     }
     @inlinable
     @discardableResult
     func postRotate(angle: Double) -> BLResult {
-        _applyMatrixOp(.postRotate, angle)
+        _applyTransformOp(.postRotate, angle)
     }
     @inlinable
     @discardableResult
     func postRotate(angle: Double, x: Double, y: Double) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, x, y)
+        _applyTransformOpV(.postRotatePt, angle, x, y)
     }
     @inlinable
     @discardableResult
     func postRotate(angle: Double, point: BLPoint) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, point.x, point.y)
+        _applyTransformOpV(.postRotatePt, angle, point.x, point.y)
     }
     @inlinable
     @discardableResult
     func postRotate(angle: Double, point: BLPointI) -> BLResult {
-        _applyMatrixOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
+        _applyTransformOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
     
     @inlinable
     @discardableResult
     func postTransform(_ matrix: BLMatrix2D) -> BLResult {
-        _applyMatrixOp(.postTransform, matrix)
+        _applyTransformOp(.postTransform, matrix)
     }
 }
 
 internal extension BLContext {
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    func _applyMatrixOp(_ opType: BLMatrix2DOp) -> BLResult {
-        blContextMatrixOp(&object, opType, nil)
+    func _applyTransformOp(_ opType: BLTransformOp) -> BLResult {
+        blContextApplyTransformOp(&object, opType, nil)
     }
 
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLMatrix2D) -> BLResult {
+    func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLMatrix2D) -> BLResult {
         withUnsafePointer(to: opData) { pointer in
-            blContextMatrixOp(&object, opType, pointer)
+            blContextApplyTransformOp(&object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: BLPoint) -> BLResult {
+    func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLPoint) -> BLResult {
         withUnsafePointer(to: opData) { pointer in
-            blContextMatrixOp(&object, opType, pointer)
+            blContextApplyTransformOp(&object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    func _applyMatrixOp(_ opType: BLMatrix2DOp, _ opData: Double) -> BLResult {
+    func _applyTransformOp(_ opType: BLTransformOp, _ opData: Double) -> BLResult {
         withUnsafePointer(to: opData) { pointer in
-            blContextMatrixOp(&object, opType, pointer)
+            blContextApplyTransformOp(&object, opType, pointer)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    func _applyMatrixOpV(_ opType: BLMatrix2DOp, _ args: Double...) -> BLResult {
+    func _applyTransformOpV(_ opType: BLTransformOp, _ args: Double...) -> BLResult {
         args.withUnsafeBytes { pointer in
-            blContextMatrixOp(&object, opType, pointer.baseAddress)
+            blContextApplyTransformOp(&object, opType, pointer.baseAddress)
         }
     }
     
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
-    func _applyMatrixOpV<T: BinaryInteger>(_ opType: BLMatrix2DOp, _ args: T...) -> BLResult {
+    func _applyTransformOpV<T: BinaryInteger>(_ opType: BLTransformOp, _ args: T...) -> BLResult {
         args.map { Double($0) }.withUnsafeBytes { pointer in
-            blContextMatrixOp(&object, opType, pointer.baseAddress)
+            blContextApplyTransformOp(&object, opType, pointer.baseAddress)
         }
     }
 }
@@ -1449,11 +1434,7 @@ extension BLContextCore: CoreStructure {
 
     @usableFromInline
     var impl: BLContextImpl {
-        get {
-            _d.impl!.load(as: BLContextImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLContextImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }

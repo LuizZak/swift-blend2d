@@ -31,7 +31,4 @@ public extension BLFormat {
     static let a8 = BL_FORMAT_A8
     
     static let maxValue = BL_FORMAT_MAX_VALUE
-    
-    /// Count of pixel formats (reserved for future use).
-    static let reservedCount = BL_FORMAT_RESERVED_COUNT
 }

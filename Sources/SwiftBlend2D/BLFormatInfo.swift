@@ -2,6 +2,7 @@ import Foundation
 import blend2d
 
 public extension BLFormatInfo {
+    /* FIXME: Change to layout of blFormatInfo from const size to pointer broke the getter in Swift; omit for now.
     static var none: BLFormatInfo {
         blFormatInfo.0
     }
@@ -14,6 +15,7 @@ public extension BLFormatInfo {
     static var a8: BLFormatInfo {
         blFormatInfo.3
     }
+    */
     
     init?(query format: BLFormat) {
         self.init()

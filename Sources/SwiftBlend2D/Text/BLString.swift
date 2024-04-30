@@ -150,12 +150,8 @@ extension BLStringCore: CoreStructure {
 
     @usableFromInline
     var impl: BLStringImpl {
-        get {
-            _d.impl!.load(as: BLStringImpl.self)
-        }
-        set {
-            _d.impl!.storeBytes(of: newValue, as: BLStringImpl.self)
-        }
+        get { UnsafeMutablePointer(_d.impl)!.pointee }
+        set { UnsafeMutablePointer(_d.impl)!.pointee = newValue }
     }
 }
 

@@ -8,7 +8,6 @@
 
 #include "../context_p.h"
 #include "../geometry_p.h"
-#include "../zeroallocator_p.h"
 #include "../pipeline/pipedefs_p.h"
 #include "../raster/analyticrasterizer_p.h"
 #include "../raster/edgebuilder_p.h"
@@ -17,40 +16,22 @@
 #include "../raster/workdata_p.h"
 #include "../support/arenaallocator_p.h"
 #include "../support/intops_p.h"
+#include "../support/zeroallocator_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_raster_engine_impl
 //! \{
 
-namespace BLRasterEngine {
+namespace bl {
+namespace RasterEngine {
 namespace CommandProcSync {
 
-static BL_INLINE BLResult fillBoxA(WorkData& workData, const RenderCommand& command) noexcept {
-  const void* fillData = command.getPipeFillDataOfBoxA();
-  const void* fetchData = command.getPipeFetchData();
+static BL_INLINE BLResult fillBoxA(WorkData& workData, const Pipeline::DispatchData& dispatchData, uint32_t alpha, const BLBoxI& boxA, const void* fetchData) noexcept {
+  Pipeline::FillData fillData;
+  fillData.initBoxA8bpc(alpha, boxA.x0, boxA.y0, boxA.x1, boxA.y1);
 
-  BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-  BLPipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
-
-  if (fetchFunc == nullptr) {
-    fillFunc(&workData.ctxData, fillData, fetchData);
-  }
-  else {
-    // TODO:
-  }
-
-  return BL_SUCCESS;
-}
-
-static BL_INLINE BLResult fillBoxU(WorkData& workData, const RenderCommand& command) noexcept {
-  BLPipeline::FillData fillData;
-  if (!fillData.initBoxU8bpc24x8(command.alpha(), command.boxI().x0, command.boxI().y0, command.boxI().x1, command.boxI().y1))
-    return BL_SUCCESS;
-
-  const void* fetchData = command.getPipeFetchData();
-
-  BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-  BLPipeline::FetchFunc fetchFunc = command.pipeDispatchData()->fetchFunc;
+  Pipeline::FillFunc fillFunc = dispatchData.fillFunc;
+  Pipeline::FetchFunc fetchFunc = dispatchData.fetchFunc;
 
   if (fetchFunc == nullptr) {
     fillFunc(&workData.ctxData, &fillData, fetchData);
@@ -62,70 +43,80 @@ static BL_INLINE BLResult fillBoxU(WorkData& workData, const RenderCommand& comm
   return BL_SUCCESS;
 }
 
-static BL_NOINLINE BLResult fillMaskRaw(WorkData& workData, const RenderCommand& command) noexcept {
-  const RenderCommand::FillMaskRaw& payload = command._payload.maskRaw;
-  const BLImageImpl* maskI = payload.maskImageI;
+static BL_INLINE BLResult fillBoxU(WorkData& workData, const Pipeline::DispatchData& dispatchData, uint32_t alpha, const BLBoxI& boxU, const void* fetchData) noexcept {
+  Pipeline::FillData fillData;
+  Pipeline::BoxUToMaskData boxUToMaskData;
+
+  if (!fillData.initBoxU8bpc24x8(alpha, boxU.x0, boxU.y0, boxU.x1, boxU.y1, boxUToMaskData))
+    return BL_SUCCESS;
+
+  Pipeline::FillFunc fillFunc = dispatchData.fillFunc;
+  Pipeline::FetchFunc fetchFunc = dispatchData.fetchFunc;
+
+  if (fetchFunc == nullptr) {
+    fillFunc(&workData.ctxData, &fillData, fetchData);
+  }
+  else {
+    // TODO:
+  }
+
+  return BL_SUCCESS;
+}
+
+static BL_INLINE BLResult fillBoxMaskedA(WorkData& workData, const Pipeline::DispatchData& dispatchData, uint32_t alpha, const RenderCommand::FillBoxMaskA& payload, const void* fetchData) noexcept {
+  const BLImageImpl* maskI = payload.maskImageI.ptr;
   const BLPointI& maskOffset = payload.maskOffsetI;
   const uint8_t* maskData = static_cast<const uint8_t*>(maskI->pixelData) + maskI->stride * maskOffset.y + maskOffset.x * (maskI->depth / 8u);
 
   const BLBoxI& boxI = payload.boxI;
 
-  BLPipeline::MaskCommand maskCommands[2];
-  BLPipeline::MaskCommandType vMaskCmd = command.alpha() >= 255 ? BLPipeline::MaskCommandType::kA8 : BLPipeline::MaskCommandType::kA8WithoutGA;
+  Pipeline::MaskCommand maskCommands[2];
+  Pipeline::MaskCommandType vMaskCmd = alpha >= 255 ? Pipeline::MaskCommandType::kVMaskA8WithGA : Pipeline::MaskCommandType::kVMaskA8WithoutGA;
 
-  maskCommands[0].initVariableMask(vMaskCmd, uint32_t(boxI.x0), uint32_t(boxI.x1), maskData, maskI->stride);
+  maskCommands[0].initVMask(vMaskCmd, uint32_t(boxI.x0), uint32_t(boxI.x1), maskData, maskI->stride);
   maskCommands[1].initRepeat();
 
-  BLPipeline::FillData fillData;
-  fillData.initMaskA(command.alpha(), boxI.x0, boxI.y0, boxI.x1, boxI.y1, maskCommands);
+  Pipeline::FillData fillData;
+  fillData.initMaskA(alpha, boxI.x0, boxI.y0, boxI.x1, boxI.y1, maskCommands);
 
-  BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-  const void* fetchData = command.getPipeFetchData();
-
+  Pipeline::FillFunc fillFunc = dispatchData.fillFunc;
   fillFunc(&workData.ctxData, &fillData, fetchData);
+
   return BL_SUCCESS;
 }
 
-static BL_NOINLINE BLResult fillAnalytic(WorkData& workData, const RenderCommand& command) noexcept {
+static BL_NOINLINE BLResult fillAnalytic(WorkData& workData, const Pipeline::DispatchData& dispatchData, uint32_t alpha, const EdgeStorage<int>* edgeStorage, BLFillRule fillRule, const void* fetchData) noexcept {
   // Rasterizer options to use - do not change unless you are improving the existing rasterizers.
-  constexpr uint32_t kRasterizerOptions =
-    AnalyticRasterizer::kOptionBandOffset     |
-    AnalyticRasterizer::kOptionRecordMinXMaxX ;
+  constexpr uint32_t kRasterizerOptions = AnalyticRasterizer::kOptionBandOffset | AnalyticRasterizer::kOptionRecordMinXMaxX;
 
   // Can only be called if there is something to fill.
-  const EdgeStorage<int>* edgeStorage = command.analyticEdgesSync();
   BL_ASSERT(edgeStorage != nullptr);
-
-  // NOTE: This doesn't happen often, but it's possible. If, for any reason, the data in bands is all horizontal
-  // lines or no data at all it would trigger this check.
-  if (BL_UNLIKELY(edgeStorage->boundingBox().y0 >= edgeStorage->boundingBox().y1))
-    return BL_SUCCESS;
+  // Should have been verified by the caller.
+  BL_ASSERT(edgeStorage->boundingBox().y0 < edgeStorage->boundingBox().y1);
 
   uint32_t bandHeight = edgeStorage->bandHeight();
   uint32_t bandHeightMask = bandHeight - 1;
 
-  const uint32_t yStart = (uint32_t(edgeStorage->boundingBox().y0)                            ) >> BLPipeline::A8Info::kShift;
-  const uint32_t yEnd   = (uint32_t(edgeStorage->boundingBox().y1) + BLPipeline::A8Info::kMask) >> BLPipeline::A8Info::kShift;
+  const uint32_t yStart = (uint32_t(edgeStorage->boundingBox().y0)                            ) >> Pipeline::A8Info::kShift;
+  const uint32_t yEnd   = (uint32_t(edgeStorage->boundingBox().y1) + Pipeline::A8Info::kMask) >> Pipeline::A8Info::kShift;
 
-  size_t requiredWidth = BLIntOps::alignUp(uint32_t(workData.dstSize().w) + 1u + BL_PIPE_PIXELS_PER_ONE_BIT, BL_PIPE_PIXELS_PER_ONE_BIT);
+  size_t requiredWidth = IntOps::alignUp(uint32_t(workData.dstSize().w) + 1u + BL_PIPE_PIXELS_PER_ONE_BIT, BL_PIPE_PIXELS_PER_ONE_BIT);
   size_t requiredHeight = bandHeight;
   size_t cellAlignment = 16;
 
-  size_t bitStride = BLIntOps::wordCountFromBitCount<BLBitWord>(requiredWidth / BL_PIPE_PIXELS_PER_ONE_BIT) * sizeof(BLBitWord);
+  size_t bitStride = IntOps::wordCountFromBitCount<BLBitWord>(requiredWidth / BL_PIPE_PIXELS_PER_ONE_BIT) * sizeof(BLBitWord);
   size_t cellStride = requiredWidth * sizeof(uint32_t);
 
   size_t bitsStart = 0;
   size_t bitsSize = requiredHeight * bitStride;
 
-  size_t cellsStart = BLIntOps::alignUp(bitsStart + bitsSize, cellAlignment);
-  size_t cellsSize = requiredHeight * cellStride;
-
-  BL_PROPAGATE(workData.zeroBuffer.ensure(cellsStart + cellsSize));
+  size_t cellsStart = IntOps::alignUp(bitsStart + bitsSize, cellAlignment);
+  BL_ASSERT(workData.zeroBuffer.size >= cellsStart + requiredHeight * cellStride);
 
   AnalyticCellStorage cellStorage;
   cellStorage.init(
     reinterpret_cast<BLBitWord*>(workData.zeroBuffer.data + bitsStart), bitStride,
-    BLIntOps::alignUp(reinterpret_cast<uint32_t*>(workData.zeroBuffer.data + cellsStart), cellAlignment), cellStride);
+    IntOps::alignUp(reinterpret_cast<uint32_t*>(workData.zeroBuffer.data + cellsStart), cellAlignment), cellStride);
 
   AnalyticActiveEdge<int>* active = nullptr;
   AnalyticActiveEdge<int>* pooled = nullptr;
@@ -136,11 +127,11 @@ static BL_NOINLINE BLResult fillAnalytic(WorkData& workData, const RenderCommand
 
   uint32_t dstWidth = uint32_t(workData.dstSize().w);
 
-  BLPipeline::FillFunc fillFunc = command.pipeDispatchData()->fillFunc;
-  BLPipeline::FillData fillData;
+  Pipeline::FillFunc fillFunc = dispatchData.fillFunc;
+  Pipeline::FillData fillData;
 
-  fillData.initAnalytic(command.alpha(),
-                        command.analyticFillRule(),
+  fillData.initAnalytic(alpha,
+                        uint32_t(fillRule),
                         cellStorage.bitPtrTop, cellStorage.bitStride,
                         cellStorage.cellPtrTop, cellStorage.cellStride);
 
@@ -150,9 +141,7 @@ static BL_NOINLINE BLResult fillAnalytic(WorkData& workData, const RenderCommand
            bandId * bandHeight, bandHeight);
   ras._bandOffset = yStart;
 
-  BLArenaAllocator* workZone = &workData.workZone;
-  const void* fetchData = command.getPipeFetchData();
-
+  ArenaAllocator* workZone = &workData.workZone;
   do {
     EdgeVector<int>* edges = bandEdges[bandId].first();
     bandEdges[bandId].reset();
@@ -251,7 +240,7 @@ SaveState:
 
     if (ras.hasBounds()) {
       fillData.analytic.box.x0 = int(ras._cellMinX);
-      fillData.analytic.box.x1 = int(blMin(dstWidth, BLIntOps::alignUp(ras._cellMaxX + 1, BL_PIPE_PIXELS_PER_ONE_BIT)));
+      fillData.analytic.box.x1 = int(blMin(dstWidth, IntOps::alignUp(ras._cellMaxX + 1, BL_PIPE_PIXELS_PER_ONE_BIT)));
       fillData.analytic.box.y0 = int(ras._bandOffset);
       fillData.analytic.box.y1 = int(ras._bandEnd) + 1;
 
@@ -266,7 +255,8 @@ SaveState:
 }
 
 } // {CommandProcSync}
-} // {BLRasterEngine}
+} // {RasterEngine}
+} // {bl}
 
 //! \}
 //! \endcond

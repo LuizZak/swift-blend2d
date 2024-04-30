@@ -14,7 +14,7 @@ public extension BLFontOutlineType {
     /// OpenType (CFF) outlines.
     static let cff = BL_FONT_OUTLINE_TYPE_CFF
     
-    /// OpenType (CFF2) outlines (font variations support).
+    /// OpenType (CFF2) outlines with font variations support.
     static let cff2 = BL_FONT_OUTLINE_TYPE_CFF2
     
     /// Maximum value of `BLFontOutlineType`.

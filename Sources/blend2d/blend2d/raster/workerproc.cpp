@@ -16,16 +16,17 @@
 #include "../support/bitops_p.h"
 #include "../support/intops_p.h"
 
-namespace BLRasterEngine {
+namespace bl {
+namespace RasterEngine {
 namespace WorkerProc {
 
 // TODO: HARDCODED.
 static const uint32_t fpScale = 256;
 
-// RasterEngine::WorkerProc - ProcessJobs
-// ======================================
+// bl::RasterEngine::WorkerProc - ProcessJobs
+// ==========================================
 
-static void processJobs(WorkData* workData) noexcept {
+static BL_NOINLINE void processJobs(WorkData* workData) noexcept {
   RenderBatch* batch = workData->batch;
   size_t jobCount = batch->jobCount();
 
@@ -54,21 +55,22 @@ static void processJobs(WorkData* workData) noexcept {
     RenderJob* job = queue->at(jobIndex - queueIndex);
     BL_ASSERT(job != nullptr);
 
-    blRasterJobProcAsync(workData, job);
+    JobProc::processJob(workData, job);
   }
 
+  workData->avoidCacheLineSharing();
   batch->_synchronization->waitForJobsToFinish();
 }
 
-// RasterEngine::WorkerProc - ProcessBand
-// ======================================
+// bl::RasterEngine::WorkerProc - ProcessBand
+// ==========================================
 
 static void processBand(CommandProcAsync::ProcData& procData, bool isInitialBand) noexcept {
   // Should not happen.
   if (!procData.pendingCommandBitSetSize())
     return;
 
-  typedef BLPrivateBitWordOps BitOps;
+  typedef PrivateBitWordOps BitOps;
   RenderBatch* batch = procData.batch();
 
   BLBitWord* bitSetPtr = procData.pendingCommandBitSetData();
@@ -76,7 +78,8 @@ static void processBand(CommandProcAsync::ProcData& procData, bool isInitialBand
   BLBitWord bitSetMask = procData.pendingCommandBitSetMask();
 
   const RenderCommandQueue* commandQueue = batch->_commandList.first();
-  const RenderCommand* commandQueueData = commandQueue->data();
+  const RenderCommand* commandData = commandQueue->data();
+  const RenderCommand* commandDataEnd = commandQueue->end();
 
   for (;;) {
 #ifdef __SANITIZE_ADDRESS__
@@ -89,11 +92,10 @@ static void processBand(CommandProcAsync::ProcData& procData, bool isInitialBand
     BitOps::BitIterator it(bitWord);
     while (it.hasNext()) {
       uint32_t bitIndex = it.next();
-      const RenderCommand& command = commandQueueData[bitIndex];
+      const RenderCommand& command = commandData[bitIndex];
 
-      if (CommandProcAsync::processCommand(procData, command, isInitialBand)) {
-        bitWord &= ~BitOps::indexAsMask(bitIndex);
-      }
+      bool finished = CommandProcAsync::processCommand(procData, command, isInitialBand);
+      bitWord ^= BitOps::indexAsMask(bitIndex, finished);
     }
 
     *bitSetPtr = bitWord;
@@ -104,56 +106,27 @@ static void processBand(CommandProcAsync::ProcData& procData, bool isInitialBand
         break;
     }
 
-    commandQueueData += BLIntOps::bitSizeOf<BLBitWord>();
-    if (commandQueueData == commandQueue->end()) {
+    commandData += IntOps::bitSizeOf<BLBitWord>();
+
+    if (commandData == commandDataEnd) {
       commandQueue = commandQueue->next();
       BL_ASSERT(commandQueue != nullptr);
-      commandQueueData = commandQueue->data();
+
+      commandData = commandQueue->data();
+      commandDataEnd = commandQueue->end();
     }
   }
 
   procData.clearPendingCommandBitSetMask();
 }
 
-// RasterEngine::WorkerProc - ProcessCommands
-// ==========================================
+// bl::RasterEngine::WorkerProc - ProcessCommands
+// ==============================================
 
-#if 1
 static void processCommands(WorkData* workData) noexcept {
   RenderBatch* batch = workData->batch;
 
-  BLArenaAllocator::StatePtr zoneState = workData->workZone.saveState();
-  CommandProcAsync::ProcData procData(workData);
-
-  BLResult result = procData.initProcData();
-  if (result != BL_SUCCESS) {
-    workData->accumulateError(result);
-    return;
-  }
-
-  bool isInitialBand = true;
-  size_t bandCount = batch->bandCount();
-
-  for (;;) {
-    size_t bandId = batch->nextBandIndex();
-    if (bandId >= bandCount)
-      break;
-
-    procData.initBand(uint32_t(bandId), workData->bandHeight(), fpScale);
-    processBand(procData, isInitialBand);
-
-    isInitialBand = false;
-  }
-
-  workData->workZone.restoreState(zoneState);
-}
-#endif
-
-#if 0
-static void processCommands(WorkData* workData) noexcept {
-  RenderBatch* batch = workData->batch;
-
-  BLArenaAllocator::StatePtr zoneState = workData->workZone.saveState();
+  ArenaAllocator::StatePtr zoneState = workData->workZone.saveState();
   CommandProcAsync::ProcData procData(workData);
 
   BLResult result = procData.initProcData();
@@ -165,22 +138,32 @@ static void processCommands(WorkData* workData) noexcept {
   bool isInitialBand = true;
   uint32_t workerCount = batch->workerCount();
   uint32_t bandCount = batch->bandCount();
-  uint32_t bandId = workData->workerId();
 
-  while (bandId < bandCount) {
-    procData.initBand(uint32_t(bandId), workData->bandHeight(), fpScale);
+  // We can process several consecutive bands at once when there is enough of bands for all the threads.
+  //
+  // TODO: At the moment this feature is not used as it regressed bl_bench using 4+ threads.
+  uint32_t consecutiveBandCount = 1;
+
+  uint32_t bandId = workData->workerId() * consecutiveBandCount;
+  uint32_t consecutiveIndex = 0;
+
+  while (bandId + consecutiveIndex < bandCount) {
+    procData.initBand(bandId + consecutiveIndex, workData->bandHeight(), fpScale);
     processBand(procData, isInitialBand);
 
     isInitialBand = false;
-    bandId += workerCount;
+
+    if (++consecutiveIndex == consecutiveBandCount) {
+      consecutiveIndex = 0;
+      bandId += workerCount * consecutiveBandCount;
+    }
   }
 
   workData->workZone.restoreState(zoneState);
 }
-#endif
 
-// RasterEngine::WorkerProc - Finished
-// ===================================
+// bl::RasterEngine::WorkerProc - Finished
+// =======================================
 
 static void finished(WorkData* workData) noexcept {
   RenderBatch* batch = workData->batch;
@@ -197,8 +180,8 @@ static void finished(WorkData* workData) noexcept {
   workData->cleanAccumulatedErrorFlags();
 }
 
-// RasterEngine::WorkerProc - ProcessWorkData
-// ==========================================
+// bl::RasterEngine::WorkerProc - ProcessWorkData
+// ==============================================
 
 // Can be also called by the rendering context from user thread.
 void processWorkData(WorkData* workData) noexcept {
@@ -208,6 +191,12 @@ void processWorkData(WorkData* workData) noexcept {
   // is basically only guaranteed when we enter the proc again (or by the rendering context once it finishes).
   if (!workData->isSync())
     workData->startOver();
+
+  // Fix the alignment of the arena allocator in case it's currently not aligned - this prevents possible sharing of
+  // a cache line that was used for something that could be used by all worker threads with a possible allocation
+  // that is only intended to be used by the worker - for a memory region that the worker can write to frequently
+  // (like active edges during rasterization).
+  workData->avoidCacheLineSharing();
 
   // Pass 1 - Process jobs.
   //
@@ -227,8 +216,8 @@ void processWorkData(WorkData* workData) noexcept {
   finished(workData);
 }
 
-// RasterEngine::WorkerProc - WorkerThreadEntry
-// ============================================
+// bl::RasterEngine::WorkerProc - WorkerThreadEntry
+// ================================================
 
 void workerThreadEntry(BLThread* thread, void* data) noexcept {
   blUnused(thread);
@@ -244,4 +233,5 @@ void workerThreadEntry(BLThread* thread, void* data) noexcept {
 }
 
 } // {WorkerProc}
-} // {BLRasterEngine}
+} // {RasterEngine}
+} // {bl}

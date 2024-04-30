@@ -5,18 +5,19 @@
 
 #include "../api-build_p.h"
 #include "../font_p.h"
-#include "../unicode_p.h"
 #include "../opentype/otcmap_p.h"
 #include "../opentype/otface_p.h"
 #include "../opentype/otplatform_p.h"
 #include "../support/memops_p.h"
 #include "../support/ptrops_p.h"
+#include "../unicode/unicode_p.h"
 
-namespace BLOpenType {
+namespace bl {
+namespace OpenType {
 namespace CMapImpl {
 
-// OpenType::CMapImpl - None
-// =========================
+// bl::OpenType::CMapImpl - None
+// =============================
 
 static BLResult BL_CDECL mapTextToGlyphsNone(const BLFontFaceImpl* faceI_, uint32_t* content, size_t count, BLGlyphMappingState* state) noexcept {
   blUnused(faceI_, content, count);
@@ -24,12 +25,12 @@ static BLResult BL_CDECL mapTextToGlyphsNone(const BLFontFaceImpl* faceI_, uint3
   return blTraceError(BL_ERROR_FONT_NO_CHARACTER_MAPPING);
 }
 
-// OpenType::CMapImpl - Format0
-// ============================
+// bl::OpenType::CMapImpl - Format0
+// ================================
 
 static BLResult BL_CDECL mapTextToGlyphsFormat0(const BLFontFaceImpl* faceI_, uint32_t* content, size_t count, BLGlyphMappingState* state) noexcept {
   const OTFaceImpl* faceI = static_cast<const OTFaceImpl*>(faceI_);
-  const CMapTable::Format0* subTable = BLPtrOps::offset<CMapTable::Format0>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+  const CMapTable::Format0* subTable = PtrOps::offset<CMapTable::Format0>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
   const UInt8* glyphIdArray = subTable->glyphIdArray;
 
   uint32_t* ptr = content;
@@ -40,7 +41,7 @@ static BLResult BL_CDECL mapTextToGlyphsFormat0(const BLFontFaceImpl* faceI_, ui
 
   while (ptr != end) {
     uint32_t uc = ptr[0];
-    uint32_t glyphId = uc < 256 ? uint32_t(glyphIdArray[uc].value()) : uint32_t(0);
+    BLGlyphId glyphId = uc < 256 ? uint32_t(glyphIdArray[uc].value()) : uint32_t(0);
 
     ptr[0] = glyphId;
     if (BL_UNLIKELY(glyphId == 0)) {
@@ -58,8 +59,8 @@ static BLResult BL_CDECL mapTextToGlyphsFormat0(const BLFontFaceImpl* faceI_, ui
   return BL_SUCCESS;
 }
 
-// OpenType::CMapImpl - Format4
-// ============================
+// bl::OpenType::CMapImpl - Format4
+// ================================
 
 static BL_INLINE const UInt16* findSegmentFormat4(
   uint32_t uc,
@@ -69,7 +70,7 @@ static BL_INLINE const UInt16* findSegmentFormat4(
   uint32_t& ucFirst, uint32_t& ucLast) noexcept {
 
   for (size_t i = numSearchableSeg; i != 0; i >>= 1) {
-    const UInt16* endCountPtr = BLPtrOps::offset(lastCharArray, (i & ~size_t(1)));
+    const UInt16* endCountPtr = PtrOps::offset(lastCharArray, (i & ~size_t(1)));
 
     ucLast = endCountPtr[0].value();
     if (ucLast < uc) {
@@ -78,7 +79,7 @@ static BL_INLINE const UInt16* findSegmentFormat4(
       continue;
     }
 
-    ucFirst = BLMemOps::readU16uBE(BLPtrOps::offset(endCountPtr, 2u + numSeg * 2u));
+    ucFirst = MemOps::readU16uBE(PtrOps::offset(endCountPtr, 2u + numSeg * 2u));
     if (ucFirst <= uc)
       return endCountPtr;
   }
@@ -88,7 +89,7 @@ static BL_INLINE const UInt16* findSegmentFormat4(
 
 static BLResult BL_CDECL mapTextToGlyphsFormat4(const BLFontFaceImpl* faceI_, uint32_t* content, size_t count, BLGlyphMappingState* state) noexcept {
   const OTFaceImpl* faceI = static_cast<const OTFaceImpl*>(faceI_);
-  const CMapTable::Format4* subTable = BLPtrOps::offset<CMapTable::Format4>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+  const CMapTable::Format4* subTable = PtrOps::offset<CMapTable::Format4>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
 
   uint32_t* ptr = content;
   uint32_t* end = content + count;
@@ -121,7 +122,7 @@ NewMatch:
       //   - match[2 + numSeg * 2] == firstCharArray[Segment]
       //   - match[2 + numSeg * 4] == idDeltaArray  [Segment]
       //   - match[2 + numSeg * 6] == idOffsetArray [Segment]
-      uint32_t offset = BLPtrOps::offset(match, idOffsetArrayOffset)->value();
+      uint32_t offset = PtrOps::offset(match, idOffsetArrayOffset)->value();
       for (;;) {
         // If the `offset` is not zero then we have to get the GlyphId from the array.
         if (offset != 0) {
@@ -132,10 +133,10 @@ NewMatch:
           if (BL_UNLIKELY(rawOffset >= rawRemain))
             goto UndefinedGlyph;
 
-          uc = BLPtrOps::offset(match, rawOffset)->value();
+          uc = PtrOps::offset(match, rawOffset)->value();
         }
 
-        uc += BLPtrOps::offset(match, idDeltaArrayOffset)->value();
+        uc += PtrOps::offset(match, idDeltaArrayOffset)->value();
         uc &= 0xFFFFu;
 
         if (BL_UNLIKELY(uc == 0))
@@ -167,12 +168,12 @@ Done:
   return BL_SUCCESS;
 }
 
-// OpenType::CMapImpl - Format6
-// ============================
+// bl::OpenType::CMapImpl - Format6
+// ================================
 
 static BLResult BL_CDECL mapTextToGlyphsFormat6(const BLFontFaceImpl* faceI_, uint32_t* content, size_t count, BLGlyphMappingState* state) noexcept {
   const OTFaceImpl* faceI = static_cast<const OTFaceImpl*>(faceI_);
-  const CMapTable::Format6* subTable = BLPtrOps::offset<CMapTable::Format6>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+  const CMapTable::Format6* subTable = PtrOps::offset<CMapTable::Format6>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
 
   uint32_t* ptr = content;
   uint32_t* end = content + count;
@@ -186,7 +187,7 @@ static BLResult BL_CDECL mapTextToGlyphsFormat6(const BLFontFaceImpl* faceI_, ui
 
   while (ptr != end) {
     uint32_t uc = ptr[0] - ucFirst;
-    uint32_t glyphId = uc < ucCount ? uint32_t(glyphIdArray[uc].value()) : uint32_t(0);
+    BLGlyphId glyphId = uc < ucCount ? uint32_t(glyphIdArray[uc].value()) : uint32_t(0);
 
     *ptr++ = glyphId;
     if (BL_UNLIKELY(glyphId == 0)) {
@@ -202,12 +203,12 @@ static BLResult BL_CDECL mapTextToGlyphsFormat6(const BLFontFaceImpl* faceI_, ui
   return BL_SUCCESS;
 }
 
-// OpenType::CMapImpl - Format10
-// =============================
+// bl::OpenType::CMapImpl - Format10
+// =================================
 
 static BLResult BL_CDECL mapTextToGlyphsFormat10(const BLFontFaceImpl* faceI_, uint32_t* content, size_t count, BLGlyphMappingState* state) noexcept {
   const OTFaceImpl* faceI = static_cast<const OTFaceImpl*>(faceI_);
-  const CMapTable::Format10* subTable = BLPtrOps::offset<CMapTable::Format10>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+  const CMapTable::Format10* subTable = PtrOps::offset<CMapTable::Format10>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
 
   uint32_t* ptr = content;
   uint32_t* end = content + count;
@@ -221,7 +222,7 @@ static BLResult BL_CDECL mapTextToGlyphsFormat10(const BLFontFaceImpl* faceI_, u
   const UInt16* glyphIdArray = subTable->glyphIds.array();
   while (ptr != end) {
     uint32_t uc = ptr[0] - ucFirst;
-    uint32_t glyphId = uc < ucCount ? uint32_t(glyphIdArray[uc].value()) : uint32_t(0);
+    BLGlyphId glyphId = uc < ucCount ? uint32_t(glyphIdArray[uc].value()) : uint32_t(0);
 
     *ptr++ = glyphId;
 
@@ -238,8 +239,8 @@ static BLResult BL_CDECL mapTextToGlyphsFormat10(const BLFontFaceImpl* faceI_, u
   return BL_SUCCESS;
 }
 
-// OpenType::CMapImpl - Format12 & Format13
-// ========================================
+// bl::OpenType::CMapImpl - Format12 & Format13
+// ============================================
 
 static BL_INLINE bool findGroupFormat12_13(
   uint32_t uc,
@@ -271,7 +272,7 @@ static BL_INLINE bool findGroupFormat12_13(
 template<uint32_t FormatId>
 static BLResult mapTextToGlyphsFormat12_13(const BLFontFaceImpl* faceI_, uint32_t* content, size_t count, BLGlyphMappingState* state) noexcept {
   const OTFaceImpl* faceI = static_cast<const OTFaceImpl*>(faceI_);
-  const CMapTable::Format12_13* subTable = BLPtrOps::offset<CMapTable::Format12_13>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+  const CMapTable::Format12_13* subTable = PtrOps::offset<CMapTable::Format12_13>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
 
   uint32_t* ptr = content;
   uint32_t* end = content + count;
@@ -293,8 +294,8 @@ static BLResult mapTextToGlyphsFormat12_13(const BLFontFaceImpl* faceI_, uint32_
 NewMatch:
     if (findGroupFormat12_13(uc, groupArray, groupCount, ucFirst, ucLast, startGlyphId)) {
       for (;;) {
-        uint32_t glyphId = (FormatId == 12) ? uint32_t((startGlyphId + uc - ucFirst) & 0xFFFFu)
-                                            : uint32_t((startGlyphId               ) & 0xFFFFu);
+        BLGlyphId glyphId = (FormatId == 12) ? BLGlyphId((startGlyphId + uc - ucFirst) & 0xFFFFu)
+                                             : BLGlyphId((startGlyphId               ) & 0xFFFFu);
         if (!glyphId)
           goto UndefinedGlyph;
 
@@ -324,25 +325,25 @@ Done:
   return BL_SUCCESS;
 }
 
-// OpenType::CMapImpl - Validate
-// =============================
+// bl::OpenType::CMapImpl - Validate
+// =================================
 
-BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32_t& formatOut, CMapEncoding& encodingOut) noexcept {
+BLResult validateSubTable(RawTable cmapTable, uint32_t subTableOffset, uint32_t& formatOut, CMapEncoding& encodingOut) noexcept {
   if (cmapTable.size < 4u || subTableOffset > cmapTable.size - 4u)
     return blTraceError(BL_ERROR_INVALID_DATA);
 
-  uint32_t format = BLPtrOps::offset<const UInt16>(cmapTable.data, subTableOffset)->value();
+  uint32_t format = PtrOps::offset<const UInt16>(cmapTable.data, subTableOffset)->value();
   switch (format) {
     // Format 0 - Byte Encoding Table
     // ------------------------------
 
     case 0: {
-      BLFontTableT<CMapTable::Format0> subTable = blFontSubTable(cmapTable, subTableOffset);
-      if (!blFontTableFitsT<CMapTable::Format0>(subTable))
+      Table<CMapTable::Format0> subTable(cmapTable.subTableUnchecked(subTableOffset));
+      if (!subTable.fits())
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t length = subTable->length();
-      if (length < CMapTable::Format0::kMinSize || length > subTable.size)
+      if (length < CMapTable::Format0::kBaseSize || length > subTable.size)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       formatOut = format;
@@ -362,12 +363,12 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
     // ------------------------------------------
 
     case 4: {
-      BLFontTableT<CMapTable::Format4> subTable = blFontSubTable(cmapTable, subTableOffset);
-      if (!blFontTableFitsT<CMapTable::Format4>(subTable))
+      Table<CMapTable::Format4> subTable(cmapTable.subTableUnchecked(subTableOffset));
+      if (!subTable.fits())
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t length = subTable->length();
-      if (length < CMapTable::Format4::kMinSize || length > subTable.size)
+      if (length < CMapTable::Format4::kBaseSize || length > subTable.size)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t numSegX2 = subTable->numSegX2();
@@ -432,12 +433,12 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
     // --------------------------------
 
     case 6: {
-      BLFontTableT<CMapTable::Format6> subTable = blFontSubTable(cmapTable, subTableOffset);
-      if (!blFontTableFitsT<CMapTable::Format6>(subTable))
+      Table<CMapTable::Format6> subTable(cmapTable.subTableUnchecked(subTableOffset));
+      if (!subTable.fits())
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t length = subTable->length();
-      if (length < CMapTable::Format6::kMinSize || length > subTable.size)
+      if (length < CMapTable::Format6::kBaseSize || length > subTable.size)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t first = subTable->first();
@@ -466,18 +467,18 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
     // -------------------------
 
     case 10: {
-      BLFontTableT<CMapTable::Format10> subTable = blFontSubTable(cmapTable, subTableOffset);
-      if (!blFontTableFitsT<CMapTable::Format10>(subTable))
+      Table<CMapTable::Format10> subTable(cmapTable.subTableUnchecked(subTableOffset));
+      if (!subTable.fits())
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t length = subTable->length();
-      if (length < CMapTable::Format10::kMinSize || length > subTable.size)
+      if (length < CMapTable::Format10::kBaseSize || length > subTable.size)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t first = subTable->first();
       uint32_t count = subTable->glyphIds.count();
 
-      if (first >= BL_CHAR_MAX || !count || count > BL_CHAR_MAX || first + count > BL_CHAR_MAX)
+      if (first >= Unicode::kCharMax || !count || count > Unicode::kCharMax || first + count > Unicode::kCharMax)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       if (length < sizeof(CMapTable::Format10) + count * 2u)
@@ -494,23 +495,23 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
 
     case 12:
     case 13: {
-      BLFontTableT<CMapTable::Format12_13> subTable = blFontSubTable(cmapTable, subTableOffset);
-      if (!blFontTableFitsT<CMapTable::Format12_13>(subTable))
+      Table<CMapTable::Format12_13> subTable(cmapTable.subTableUnchecked(subTableOffset));
+      if (!subTable.fits())
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t length = subTable->length();
-      if (length < CMapTable::Format12_13::kMinSize || length > subTable.size)
+      if (length < CMapTable::Format12_13::kBaseSize || length > subTable.size)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       uint32_t count = subTable->groups.count();
-      if (count > BL_CHAR_MAX || length < sizeof(CMapTable::Format12_13) + count * sizeof(CMapTable::Group))
+      if (count > Unicode::kCharMax || length < sizeof(CMapTable::Format12_13) + count * sizeof(CMapTable::Group))
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       const CMapTable::Group* groupArray = subTable->groups.array();
       uint32_t first = groupArray[0].first();
       uint32_t last = groupArray[0].last();
 
-      if (first > last || last > BL_CHAR_MAX)
+      if (first > last || last > Unicode::kCharMax)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       for (uint32_t i = 1; i < count; i++) {
@@ -519,7 +520,7 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
           return blTraceError(BL_ERROR_INVALID_DATA);
 
         last = groupArray[i].last();
-        if (first > last || last > BL_CHAR_MAX)
+        if (first > last || last > Unicode::kCharMax)
           return blTraceError(BL_ERROR_INVALID_DATA);
       }
 
@@ -533,8 +534,8 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
     // ---------------------------------------
 
     case 14: {
-      BLFontTableT<CMapTable::Format14> subTable = blFontSubTable(cmapTable, subTableOffset);
-      if (!blFontTableFitsT<CMapTable::Format14>(subTable))
+      Table<CMapTable::Format14> subTable(cmapTable.subTableUnchecked(subTableOffset));
+      if (!subTable.fits())
         return blTraceError(BL_ERROR_INVALID_DATA);
 
       // TODO: [OPENTYPE] CMAP Format14 not implemented.
@@ -550,8 +551,8 @@ BLResult validateSubTable(BLFontTable cmapTable, uint32_t subTableOffset, uint32
   }
 }
 
-// OpenType::CMapImpl - Populate Character Coverage
-// ================================================
+// bl::OpenType::CMapImpl - Populate Character Coverage
+// ====================================================
 
 BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexcept {
   out->clear();
@@ -562,14 +563,14 @@ BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexc
     // ------------------------------
 
     case 0: {
-      const CMapTable::Format0* subTable = BLPtrOps::offset<CMapTable::Format0>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+      const CMapTable::Format0* subTable = PtrOps::offset<CMapTable::Format0>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
       const UInt8* glyphIdArray = subTable->glyphIdArray;
 
-      uint32_t bitArray[256 / BLIntOps::bitSizeOf<uint32_t>()] {};
+      uint32_t bitArray[256 / IntOps::bitSizeOf<uint32_t>()] {};
       for (uint32_t i = 0; i < 256; i++) {
-        uint32_t glyphId = glyphIdArray[i].value();
+        BLGlyphId glyphId = glyphIdArray[i].value();
         if (glyphId != 0)
-          BLBitSetOps::bitArraySetBit(bitArray, i);
+          BitSetOps::bitArraySetBit(bitArray, i);
       }
 
       return out->assignWords(0, bitArray, BL_ARRAY_SIZE(bitArray));
@@ -579,7 +580,7 @@ BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexc
     // ------------------------------------------
 
     case 4: {
-      const CMapTable::Format4* subTable = BLPtrOps::offset<CMapTable::Format4>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+      const CMapTable::Format4* subTable = PtrOps::offset<CMapTable::Format4>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
 
       uint32_t numSegX2 = subTable->numSegX2();
       uint32_t numSeg = numSegX2 / 2;
@@ -624,14 +625,14 @@ BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexc
     // --------------------------------
 
     case 6: {
-      const CMapTable::Format6* subTable = BLPtrOps::offset<CMapTable::Format6>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+      const CMapTable::Format6* subTable = PtrOps::offset<CMapTable::Format6>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
       const UInt16* glyphIdArray = subTable->glyphIdArray();
 
       uint32_t firstChar = subTable->first();
       uint32_t entryCount = faceI->cmap.encoding.entryCount;
 
       for (uint32_t i = 0; i < entryCount; i++) {
-        uint32_t glyphId = glyphIdArray[i].value();
+        BLGlyphId glyphId = glyphIdArray[i].value();
         if (glyphId != 0)
           BL_PROPAGATE(set.addBit(firstChar + i));
       }
@@ -643,14 +644,14 @@ BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexc
     // -------------------------
 
     case 10: {
-      const CMapTable::Format10* subTable = BLPtrOps::offset<CMapTable::Format10>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+      const CMapTable::Format10* subTable = PtrOps::offset<CMapTable::Format10>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
       const UInt16* glyphIdArray = subTable->glyphIds.array();
 
       uint32_t firstChar = subTable->first();
       uint32_t entryCount = faceI->cmap.encoding.entryCount;
 
       for (uint32_t i = 0; i < entryCount; i++) {
-        uint32_t glyphId = glyphIdArray[i].value();
+        BLGlyphId glyphId = glyphIdArray[i].value();
         if (glyphId != 0)
           BL_PROPAGATE(set.addBit(firstChar + i));
       }
@@ -663,7 +664,7 @@ BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexc
 
     case 12:
     case 13: {
-      const CMapTable::Format12_13* subTable = BLPtrOps::offset<CMapTable::Format12_13>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
+      const CMapTable::Format12_13* subTable = PtrOps::offset<CMapTable::Format12_13>(faceI->cmap.cmapTable.data, faceI->cmap.encoding.offset);
       const CMapTable::Group* groupArray = subTable->groups.array();
 
       uint32_t entryCount = faceI->cmap.encoding.entryCount;
@@ -707,8 +708,8 @@ BLResult populateCharacterCoverage(const OTFaceImpl* faceI, BLBitSet* out) noexc
 }
 
 
-// OpenType::CMapImpl - Init
-// =========================
+// bl::OpenType::CMapImpl - Init
+// =============================
 
 static bool isSupportedCMapFormat(uint32_t format) noexcept {
   switch (format) {
@@ -737,12 +738,13 @@ static BLResult initCMapFuncs(OTFaceImpl* faceI) noexcept {
   return BL_SUCCESS;
 }
 
-BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
-  BLFontTableT<CMapTable> cmap;
-  if (!fontData->queryTable(faceI->faceInfo.faceIndex, &cmap, BL_MAKE_TAG('c', 'm', 'a', 'p')))
+BLResult init(OTFaceImpl* faceI, OTFaceTables& tables) noexcept {
+  Table<CMapTable> cmap(tables.cmap);
+
+  if (!cmap)
     return BL_SUCCESS;
 
-  if (!blFontTableFitsT<CMapTable>(cmap)) {
+  if (!cmap.fits()) {
     faceI->faceInfo.diagFlags |= BL_FONT_FACE_DIAG_WRONG_CMAP_DATA;
     return BL_SUCCESS;
   }
@@ -774,7 +776,7 @@ BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
 
     uint32_t platformId = encoding.platformId();
     uint32_t encodingId = encoding.encodingId();
-    uint32_t format = BLPtrOps::offset(cmap.dataAs<UInt16>(), offset)->value();
+    uint32_t format = PtrOps::offset(cmap.dataAs<UInt16>(), offset)->value();
 
     if (!isSupportedCMapFormat(format))
       continue;
@@ -837,4 +839,5 @@ BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
 }
 
 } // {CMapImpl}
-} // {BLOpenType}
+} // {OpenType}
+} // {bl}

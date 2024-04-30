@@ -13,14 +13,15 @@
 //! \addtogroup blend2d_opentype_impl
 //! \{
 
-namespace BLOpenType {
+namespace bl {
+namespace OpenType {
 
 //! OpenType 'SFNT' header.
 //!
 //! External Resources:
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/font-file
 struct SFNTHeader {
-  enum : uint32_t { kMinSize = 12 };
+  enum : uint32_t { kBaseSize = 12 };
 
   enum VersionTag : uint32_t {
     kVersionTagOpenType   = BL_MAKE_TAG('O', 'T', 'T', 'O'),
@@ -42,7 +43,7 @@ struct SFNTHeader {
   UInt16 entrySelector;
   UInt16 rangeShift;
 
-  BL_INLINE const TableRecord* tableRecords() const noexcept { return BLPtrOps::offset<const TableRecord>(this, sizeof(SFNTHeader)); }
+  BL_INLINE const TableRecord* tableRecords() const noexcept { return PtrOps::offset<const TableRecord>(this, sizeof(SFNTHeader)); }
 };
 
 //! OpenType 'TTCF' header.
@@ -50,7 +51,7 @@ struct SFNTHeader {
 //! External Resources:
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/font-file
 struct TTCFHeader {
-  enum : uint32_t { kMinSize = 12 };
+  enum : uint32_t { kBaseSize = 12 };
   enum : uint32_t { kMaxFonts = 65536 };
 
   BL_INLINE size_t calcSize(uint32_t numFonts) const noexcept {
@@ -84,7 +85,7 @@ struct TTCFHeader {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/head
 //!   - https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html
 struct HeadTable {
-  enum : uint32_t { kMinSize = 54 };
+  enum : uint32_t { kBaseSize = 54 };
 
   enum : uint32_t {
     kCheckSumAdjustment      = BL_MAKE_TAG(0xB1, 0xB0, 0xAF, 0xBA),
@@ -149,7 +150,7 @@ struct HeadTable {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/maxp
 //!   - https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6maxp.html
 struct MaxPTable {
-  enum : uint32_t { kMinSize = 6 };
+  enum : uint32_t { kBaseSize = 6 };
 
   // V0.5 - Must be used with CFF Glyphs (OpenType).
   struct V0_5 {
@@ -176,8 +177,8 @@ struct MaxPTable {
 
   V0_5 header;
 
-  BL_INLINE const V0_5* v0_5() const noexcept { return BLPtrOps::offset<const V0_5>(this, 0); }
-  BL_INLINE const V1_0* v1_0() const noexcept { return BLPtrOps::offset<const V1_0>(this, 0); }
+  BL_INLINE const V0_5* v0_5() const noexcept { return PtrOps::offset<const V0_5>(this, 0); }
+  BL_INLINE const V1_0* v1_0() const noexcept { return PtrOps::offset<const V1_0>(this, 0); }
 };
 
 //! OpenType 'OS/2' table.
@@ -185,7 +186,7 @@ struct MaxPTable {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/os2
 //!   - https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
 struct OS2Table {
-  enum : uint32_t { kMinSize = 68 };
+  enum : uint32_t { kBaseSize = 68 };
 
   //! OS/2 selection flags used by `OS2::selectionFlags` field.
   enum SelectionFlags : uint32_t {
@@ -202,7 +203,7 @@ struct OS2Table {
   };
 
   struct V0A {
-    enum : uint32_t { kMinSize = 68 };
+    enum : uint32_t { kBaseSize = 68 };
 
     UInt16 version;
     Int16 xAverateWidth;
@@ -229,7 +230,7 @@ struct OS2Table {
   };
 
   struct V0B : public V0A {
-    enum : uint32_t { kMinSize = 78 };
+    enum : uint32_t { kBaseSize = 78 };
 
     Int16 typoAscender;
     Int16 typoDescender;
@@ -239,13 +240,13 @@ struct OS2Table {
   };
 
   struct V1 : public V0B {
-    enum : uint32_t { kMinSize = 86 };
+    enum : uint32_t { kBaseSize = 86 };
 
     UInt32 codePageRange[2];
   };
 
   struct V2 : public V1 {
-    enum : uint32_t { kMinSize = 96 };
+    enum : uint32_t { kBaseSize = 96 };
 
     Int16 xHeight;
     Int16 capHeight;
@@ -255,7 +256,7 @@ struct OS2Table {
   };
 
   struct V5 : public V2 {
-    enum : uint32_t { kMinSize = 100 };
+    enum : uint32_t { kBaseSize = 100 };
 
     UInt16 lowerOpticalPointSize;
     UInt16 upperOpticalPointSize;
@@ -263,11 +264,11 @@ struct OS2Table {
 
   V0A header;
 
-  BL_INLINE const V0A* v0a() const noexcept { return BLPtrOps::offset<const V0A>(this, 0); }
-  BL_INLINE const V0B* v0b() const noexcept { return BLPtrOps::offset<const V0B>(this, 0); }
-  BL_INLINE const V1* v1() const noexcept { return BLPtrOps::offset<const V1>(this, 0); }
-  BL_INLINE const V2* v2() const noexcept { return BLPtrOps::offset<const V2>(this, 0); }
-  BL_INLINE const V5* v5() const noexcept { return BLPtrOps::offset<const V5>(this, 0); }
+  BL_INLINE const V0A* v0a() const noexcept { return PtrOps::offset<const V0A>(this, 0); }
+  BL_INLINE const V0B* v0b() const noexcept { return PtrOps::offset<const V0B>(this, 0); }
+  BL_INLINE const V1* v1() const noexcept { return PtrOps::offset<const V1>(this, 0); }
+  BL_INLINE const V2* v2() const noexcept { return PtrOps::offset<const V2>(this, 0); }
+  BL_INLINE const V5* v5() const noexcept { return PtrOps::offset<const V5>(this, 0); }
 };
 
 //! OpenType 'post' table.
@@ -275,7 +276,7 @@ struct OS2Table {
 //!   - https://docs.microsoft.com/en-us/typography/opentype/spec/post
 //!   - https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6Post.html
 struct PostTable {
-  enum : uint32_t { kMinSize = 32 };
+  enum : uint32_t { kBaseSize = 32 };
 
   F16x16 version;
   F16x16 italicAngle;
@@ -290,10 +291,11 @@ struct PostTable {
 
 
 namespace CoreImpl {
-BLResult init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept;
+BLResult init(OTFaceImpl* faceI, OTFaceTables& tables) noexcept;
 } // {CoreImpl}
 
-} // {BLOpenType}
+} // {OpenType}
+} // {bl}
 
 //! \}
 //! \endcond
