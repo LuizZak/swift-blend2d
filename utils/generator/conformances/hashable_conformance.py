@@ -70,7 +70,7 @@ class SwiftHashableConformance(SwiftConformanceGenerator):
                 origin=None,
                 original_node=None,
                 c_kind=CDeclKind.NONE,
-                doccomments=[],
+                doccomment=None,
                 arguments=[
                     ("into", "hasher", "inout Hasher"),
                 ],

@@ -76,7 +76,7 @@ class SwiftEquatableConformance(SwiftConformanceGenerator):
                 origin=None,
                 original_node=None,
                 c_kind=CDeclKind.NONE,
-                doccomments=[],
+                doccomment=None,
                 is_static=True,
                 arguments=[
                     (None, "lhs", "Self"),

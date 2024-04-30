@@ -6,10 +6,10 @@ import blend2d
 /// Transformation matrix type that can be obtained by calling `BLMatrix2D.type()`.
 /// 
 /// ```
-/// Identity  Transl.  Scale     Swap    Affine
-/// [1  0]   [1  0]   [.  0]   [0  .]   [.  .]
-/// [0  1]   [0  1]   [0  .]   [.  0]   [.  .]
-/// [0  0]   [.  .]   [.  .]   [.  .]   [.  .]
+///  Identity  Transl.  Scale     Swap    Affine
+///   [1  0]   [1  0]   [.  0]   [0  .]   [.  .]
+///   [0  1]   [0  1]   [0  .]   [.  0]   [.  .]
+///   [0  0]   [.  .]   [.  .]   [.  .]   [.  .]
 /// ```
 public extension BLTransformType {
     /// Identity matrix.

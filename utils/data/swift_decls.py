@@ -5,10 +5,11 @@ from pathlib import Path
 
 from pycparser import c_ast
 from utils.converters.syntax_stream import SyntaxStream
-from utils.data.compound_symbol_name import CompoundSymbolName
 from utils.converters.backticked_term import backticked_term
+from utils.data.compound_symbol_name import CompoundSymbolName
 from utils.data.swift_decl_visit_result import SwiftDeclVisitResult
 from utils.data.swift_decl_visitor import SwiftDeclVisitor
+from utils.doccomment.doccomment_block import DoccommentBlock
 
 
 class CDeclKind(Enum):
@@ -48,12 +49,17 @@ class SwiftDecl(object):
 
     c_kind: CDeclKind
 
-    doccomments: list[str]
-    "A list of documentation comments associated with this element."
+    doccomment: DoccommentBlock | None
+    "A block of doc comments associated with this element."
 
     def write(self, stream: SyntaxStream):
-        for comment in self.doccomments:
-            stream.line(f"/// {comment}")
+        if self.doccomment is None:
+            return
+
+        comment_str = self.doccomment.comment_contents
+
+        for line in comment_str.splitlines():
+            stream.line(f"/// {line}")
 
     def copy(self):
         raise NotImplementedError("Must be implemented by subclasses.")
@@ -122,7 +128,7 @@ class SwiftMemberVarDecl(SwiftMemberDecl):
             original_node=self.original_node,
             origin=self.origin,
             c_kind=self.c_kind,
-            doccomments=self.doccomments,
+            doccomment=self.doccomment,
             is_static=self.is_static,
             var_type=self.var_type,
             initial_value=self.initial_value,
@@ -200,7 +206,7 @@ class SwiftMemberFunctionDecl(SwiftMemberDecl):
             original_node=self.original_node,
             origin=self.origin,
             c_kind=self.c_kind,
-            doccomments=self.doccomments,
+            doccomment=self.doccomment,
             arguments=self.arguments,
             return_type=self.return_type,
             body=list(self.body),
@@ -261,7 +267,7 @@ class SwiftExtensionDecl(SwiftDecl):
             origin=self.origin,
             original_node=self.original_node,
             c_kind=self.c_kind,
-            doccomments=self.doccomments,
+            doccomment=self.doccomment,
             members=list(map(lambda c: c.copy(), self.members)),
             conformances=self.conformances,
         )

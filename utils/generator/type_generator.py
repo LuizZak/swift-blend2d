@@ -115,7 +115,7 @@ class SwiftDeclMerger:
                 origin=decl1.origin,
                 original_node=node,
                 c_kind=decl1.c_kind,
-                doccomments=decl1.doccomments,
+                doccomment=decl1.doccomment,
                 conformances=list(set(decl1.conformances + decl2.conformances)),
             )
 
@@ -252,8 +252,8 @@ class SwiftDoccommentFormatterVisitor(SwiftDeclVisitor):
         self.lookup = lookup
 
     def generic_visit(self, decl: SwiftDecl) -> SwiftDeclVisitResult:
-        decl.doccomments = self.formatter.format_doccomments(
-            decl.doccomments, decl, self.lookup
+        decl.doccomment = self.formatter.format_doccomment(
+            decl.doccomment, decl, self.lookup
         )
 
         return SwiftDeclVisitResult.VISIT_CHILDREN

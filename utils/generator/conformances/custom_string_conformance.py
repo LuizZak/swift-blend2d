@@ -70,7 +70,7 @@ class SwiftCustomStringConvertibleConformance(SwiftConformanceGenerator):
                 origin=None,
                 original_node=None,
                 c_kind=CDeclKind.NONE,
-                doccomments=[],
+                doccomment=None,
                 is_static=False,
                 var_type="String",
                 accessor_block=accessor,

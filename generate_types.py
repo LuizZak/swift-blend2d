@@ -24,6 +24,7 @@ from utils.directory_structure.directory_structure_manager import (
     DirectoryStructureEntry,
     DirectoryStructureManager,
 )
+from utils.doccomment.doccomment_block import DoccommentBlock
 from utils.doccomment.doccomment_formatter import DoccommentFormatter
 from utils.generator.known_conformance_generators import get_conformance_generator
 from utils.generator.swift_decl_generator import SwiftDeclGenerator
@@ -293,22 +294,26 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
 
         return self.backtick_regex.sub(convert_backtick_match, string)
 
-    def format_doccomments(
-        self, comments: list[str], decl: SwiftDecl, lookup: SwiftDeclLookup
-    ) -> list[str] | None:
+    def format_doccomment(
+        self, comment: DoccommentBlock | None, decl: SwiftDecl, lookup: SwiftDeclLookup
+    ) -> DoccommentBlock | None:
+        if comment is None:
+            return super().format_doccomment(comment, decl, lookup)
+        
+        lines = comment.lines()
 
         # Remove '\ingroup*' lines
-        new_comments = filter(lambda c: not c.startswith("\\ingroup"), comments)
+        lines = filter(lambda c: not c.startswith("\\ingroup"), lines)
         # Reword '\note' to '- note'
-        new_comments = map(lambda c: c.replace("\\note", "- note:"), new_comments)
+        lines = map(lambda c: c.replace("\\note", "- note:"), lines)
 
         # Replace "\ref <symbol>" with "`<symbol>`"
-        new_comments = map(self.replace_refs, new_comments)
+        lines = map(self.replace_refs, lines)
 
         # Convert C symbol references to Swift symbols
-        new_comments = map(lambda c: self.convert_refs(c, lookup), new_comments)
+        lines = map(lambda c: self.convert_refs(c, lookup), lines)
 
-        return super().format_doccomments(list(new_comments), decl, lookup)
+        return super().format_doccomment(comment.with_lines(lines), decl, lookup)
 
 
 class Blend2DDirectoryStructureManager(DirectoryStructureManager):

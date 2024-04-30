@@ -49,7 +49,7 @@ class SwiftDeclGenerator:
             self.coord_to_location(node.coord),
             original_node=node,
             c_kind=CDeclKind.ENUM_CASE,
-            doccomments=[],
+            doccomment=None,
             is_static=True,
             initial_value=value
         )
@@ -73,7 +73,7 @@ class SwiftDeclGenerator:
             self.coord_to_location(node.coord),
             original_node=node,
             c_kind=CDeclKind.ENUM,
-            doccomments=[],
+            doccomment=None,
             members=list(members),
             conformances=[],
         )
@@ -89,7 +89,7 @@ class SwiftDeclGenerator:
             self.coord_to_location(node.coord),
             original_node=node,
             c_kind=CDeclKind.STRUCT,
-            doccomments=[],
+            doccomment=None,
             members=[],
             conformances=[],
         )
