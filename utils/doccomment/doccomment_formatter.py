@@ -6,7 +6,7 @@ class DoccommentFormatter:
     def format_doccomments(
         self, comments: list[str], decl: SwiftDecl, decl_lookup: SwiftDeclLookup
     ) -> list[str]:
-        # Trim empty doc comments leading and trailing content doc comments
+        # Trim empty lines leading and trailing doc comments
         has_content = False
         first_index: int | None = None
         last_index: int | None = None

@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Iterable
 
 from pycparser import c_ast
+from utils.cli.console_color import ConsoleColor
 from utils.converters.base_word_capitalizer import PatternCapitalizer
 from utils.converters.default_symbol_name_formatter import DefaultSymbolNameFormatter
 from utils.converters.symbol_name_formatter import SymbolNameFormatter
@@ -50,7 +51,7 @@ List of prefixes from Blend2D declarations to convert
 Will also be used as a list of terms to remove the prefix of in final declaration names.
 """
 
-STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
+STRUCT_CONFORMANCES: list[tuple[str, list[str]]] = [
     #
     ("BLBitSetSegment", ["Equatable"]),
     ("BLRange", ["Equatable", "Hashable", "CustomStringConvertible"]),
@@ -87,7 +88,7 @@ STRUCT_CONFORMANCES: list[tuple[str | re.Pattern, list[str]]] = [
     ("BLGradientStop", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLLinearGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLRadialGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
-    ("BLConicalGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLConicGradientValues", ["Equatable", "Hashable", "CustomStringConvertible"]),
     # Image
     ("BLImageInfo", ["Equatable", "Hashable", "CustomStringConvertible"]),
     # Text
@@ -100,6 +101,9 @@ conformances that should be appended, in case the struct matches the pattern.
 
 
 class Blend2DDeclGenerator(SwiftDeclGenerator):
+    # Lists declarations that where parsed and matched with an entry in STRUCT_CONFORMANCES.
+    foundDecls: list[str] = []
+
     def generate_enum(self, node: c_ast.Enum) -> SwiftExtensionDecl | None:
         decl = super().generate_enum(node)
         if decl is None:
@@ -129,14 +133,11 @@ class Blend2DDeclGenerator(SwiftDeclGenerator):
         # Match required protocols
         for req in STRUCT_CONFORMANCES:
             c_name = decl.original_name.to_string()
-            match req[0]:
-                case re.Pattern():
-                    if not req[0].match(c_name):
-                        continue
-                case str():
-                    if req[0] != c_name:
-                        continue
+            if req[0] != c_name:
+                continue
             
+            self.foundDecls.append(c_name)
+
             result.extend(req[1])
         
         return list(set(result))
@@ -359,7 +360,7 @@ class Blend2DDirectoryStructureManager(DirectoryStructureManager):
                     re.compile(r"^BLGradient.+"),
                     "BLLinearGradientValues+Ext.swift",
                     "BLRadialGradientValues+Ext.swift",
-                    "BLConicalGradientValues+Ext.swift",
+                    "BLConicGradientValues+Ext.swift",
                 ]
             ),
             (
@@ -384,7 +385,13 @@ class Blend2DDirectoryStructureManager(DirectoryStructureManager):
                     "BLTriangle+Ext.swift",
                 ],
             ),
-            (["Geometry", "Matrix"], re.compile(r"^BLMatrix.+")),
+            (
+                ["Geometry", "Matrix"],
+                [
+                    re.compile(r"^BLMatrix.+"),
+                    re.compile(r"^BLTransform.+")
+                ],
+            ),
             (
                 ["Geometry", "Path"],
                 [
@@ -463,17 +470,18 @@ def main() -> int:
 
     symbol_filter = Blend2DSymbolFilter()
     symbol_name_generator = Blend2DNameGenerator()
+    decl_generator = Blend2DDeclGenerator(
+        prefixes=BLEND2D_PREFIXES,
+        symbol_filter=symbol_filter,
+        symbol_name_generator=symbol_name_generator,
+    )
     request = TypeGeneratorRequest(
         header_file=input_path,
         destination=destination_path,
         prefixes=BLEND2D_PREFIXES,
         target=target,
         includes=["blend2d"],
-        swift_decl_generator=Blend2DDeclGenerator(
-            prefixes=BLEND2D_PREFIXES,
-            symbol_filter=symbol_filter,
-            symbol_name_generator=symbol_name_generator,
-        ),
+        swift_decl_generator=decl_generator,
         symbol_filter=symbol_filter,
         symbol_name_generator=symbol_name_generator,
         doccomment_formatter=Blend2DDoccommentFormatter(),
@@ -481,6 +489,13 @@ def main() -> int:
     )
 
     generate_types(request)
+
+    # Warn about entries in STRUCT_CONFORMANCES that where not matched
+    expectedDecls = set(map(lambda t: t[0], STRUCT_CONFORMANCES))
+    missingDecls = expectedDecls.symmetric_difference(decl_generator.foundDecls)
+
+    for decl in missingDecls:
+        print(f"{ConsoleColor.YELLOW('WARNING')}: Declaration {ConsoleColor.CYAN(decl)} listed in {ConsoleColor.CYAN('STRUCT_CONFORMANCES')} was not matched by any generated declaration!")
 
 
 if __name__ == "__main__":

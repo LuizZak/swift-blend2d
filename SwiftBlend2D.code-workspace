@@ -140,7 +140,6 @@
         "C_Cpp.default.cStandard": "c11",
         "C_Cpp.default.cppStandard": "c++17",
         
-        "python.formatting.provider": "black",
         "flake8.args": ["--ignore=E203,E225,E302,E501,W293,W503"],
         
         // Hack to disable mypy from looking into every workspace folder by default.
