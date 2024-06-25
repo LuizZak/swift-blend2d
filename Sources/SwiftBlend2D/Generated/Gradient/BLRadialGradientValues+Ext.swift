@@ -7,11 +7,11 @@ extension BLRadialGradientValues: CustomStringConvertible, Equatable, Hashable {
 
 public extension BLRadialGradientValues {
     var description: String {
-        "BLRadialGradientValues(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1), r0: \(r0))"
+        "BLRadialGradientValues(x0: \(x0), y0: \(y0), x1: \(x1), y1: \(y1), r0: \(r0), r1: \(r1))"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.x0 == rhs.x0 && lhs.y0 == rhs.y0 && lhs.x1 == rhs.x1 && lhs.y1 == rhs.y1 && lhs.r0 == rhs.r0
+        lhs.x0 == rhs.x0 && lhs.y0 == rhs.y0 && lhs.x1 == rhs.x1 && lhs.y1 == rhs.y1 && lhs.r0 == rhs.r0 && lhs.r1 == rhs.r1
     }
     
     func hash(into hasher: inout Hasher) {
@@ -20,5 +20,6 @@ public extension BLRadialGradientValues {
         hasher.combine(x1)
         hasher.combine(y1)
         hasher.combine(r0)
+        hasher.combine(r1)
     }
 }

@@ -6,12 +6,12 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     public var name: String {
         BLString(weakAssign: object.impl.name).toString()
     }
-    
+
     /// Returns the image codec vendor (i.e. "Blend2D" for all built-in codecs).
     public var vendor: String {
         BLString(weakAssign: object.impl.vendor).toString()
     }
-    
+
     /// Returns a mime-type associated with the image codec's format.
     public var mimeType: String {
         BLString(weakAssign: object.impl.mimeType).toString()
@@ -21,28 +21,28 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     public var extensions: [String] {
         BLString(weakAssign: object.impl.extensions).toString().split(separator: "|").map(String.init)
     }
-    
+
     /// Returns image codec flags, see `BLImageCodecFeatures`.
     public var features: BLImageCodecFeatures {
         BLImageCodecFeatures(BLImageCodecFeatures.RawValue(object.impl.features))
     }
-    
+
     public override init() {
         super.init()
     }
-    
+
     public init(builtInCodec: BuiltInImageCodec) {
         let codecCore = BLImageCodec._builtInCodecs.first {
             BLString(weakAssign: $0.impl.name).toString() == builtInCodec.rawValue
         }
-        
+
         if let codecCore = codecCore {
             super.init(weakAssign: codecCore)
         } else {
             fatalError("Expected to find a valid built-in codec named '\(builtInCodec.rawValue)'")
         }
     }
-    
+
     /// Initializes the image codec which is most likely capable of handling the
     /// given image data.
     ///
@@ -54,15 +54,15 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     /// - SeeAlso: `BuiltInImageCodec`
     public init?(bestCandidateFor data: Data) {
         super.init(initializer: blImageCodecInit)
-        
+
         let result: BLResult? = data.withUnsafeBytes { pointer in
             guard let pointer = pointer.baseAddress else {
                 return nil
             }
-            
+
             return blImageCodecFindByData(&object, pointer, data.count, nil)
         }
-        
+
         guard let result = result else {
             return nil
         }
@@ -71,30 +71,30 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
             return nil
         }
     }
-    
+
     override init(weakAssign object: BLImageCodecCore) {
         super.init(weakAssign: object)
     }
-    
+
     public func inspectData(_ data: Data) -> Int {
         data.withUnsafeBytes { pointer in
             inspectData(pointer)
         }
     }
-    
+
     func inspectData(_ pointer: UnsafeRawBufferPointer) -> Int {
         guard let dataAddress = pointer.baseAddress else {
             return 0
         }
-        
+
         return Int(blImageCodecInspectData(&object, dataAddress, pointer.count))
     }
-    
+
     func createDecoder(dst: BLImageDecoderCore) -> BLResult {
         var dst = dst
         return blImageCodecCreateDecoder(&object, &dst)
     }
-    
+
     func createEncoder(dst: BLImageEncoderCore) -> BLResult {
         var dst = dst
         return blImageCodecCreateEncoder(&object, &dst)
@@ -104,9 +104,9 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
 extension BLImageCodec {
     static var _builtInCodecs: [BLImageCodecCore] = {
         let array = BLArray<BLImageCodecCore>()
-        
+
         blImageCodecArrayInitBuiltInCodecs(&array.object)
-        
+
         return array.unsafeAsArray(of: BLImageCodecCore.self)
     }()
 }
@@ -117,11 +117,12 @@ public extension BLImageCodec {
             BLImageCodec(weakAssign: object)
         }
     }()
-    
+
     enum BuiltInImageCodec: String, CaseIterable {
         case bmp = "BMP"
         case jpeg = "JPEG"
         case png = "PNG"
+        case qoi = "QOI"
     }
 }
 

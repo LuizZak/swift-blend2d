@@ -1,3 +1,4 @@
+from utils.converters.backticked_term import backticked_term
 from utils.data.compound_symbol_name import CompoundSymbolName
 from utils.data.swift_decls import (
     CDeclKind,
@@ -52,7 +53,7 @@ class SwiftEquatableConformance(SwiftConformanceGenerator):
             field_comparisons = list(
                 # Create equality expression for field
                 map(
-                    lambda field: f"lhs.{field} == rhs.{field}",
+                    lambda field: f"lhs.{backticked_term(field)} == rhs.{backticked_term(field)}",
                     self.iterate_field_names(
                         node.name,
                         node.decls,

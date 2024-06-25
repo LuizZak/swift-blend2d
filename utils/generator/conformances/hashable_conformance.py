@@ -1,3 +1,4 @@
+from utils.converters.backticked_term import backticked_term
 from utils.data.compound_symbol_name import CompoundSymbolName
 from utils.data.swift_decls import (
     CDeclKind,
@@ -53,7 +54,7 @@ class SwiftHashableConformance(SwiftConformanceGenerator):
             hash_combines = list(
                 # Create combine calls for field
                 map(
-                    lambda field: f"hasher.combine({field})",
+                    lambda field: f"hasher.combine({backticked_term(field)})",
                     self.iterate_field_names(node.name, node.decls, max_tuple_length=0),
                 )
             )

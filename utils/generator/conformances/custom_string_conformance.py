@@ -1,3 +1,4 @@
+from utils.converters.backticked_term import backticked_term
 from utils.data.compound_symbol_name import CompoundSymbolName
 from utils.data.swift_decls import (
     CDeclKind,
@@ -52,7 +53,7 @@ class SwiftCustomStringConvertibleConformance(SwiftConformanceGenerator):
             fields = ", ".join(
                 # Add interpolation for field
                 map(
-                    lambda field: f"{field}: \\({field})",
+                    lambda field: f"{field}: \\({backticked_term(field)})",
                     self.iterate_field_names(
                         node.name,
                         node.decls,

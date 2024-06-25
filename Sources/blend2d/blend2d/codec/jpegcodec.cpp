@@ -8,7 +8,6 @@
 // under Blend2D's ZLIB license or under STB's PUBLIC DOMAIN as well.
 
 #include "../api-build_p.h"
-#include "../imagecodec.h"
 #include "../object_p.h"
 #include "../runtime_p.h"
 #include "../string_p.h"
@@ -172,6 +171,12 @@ static BLResult decoderProcessMarker(BLJpegDecoderImpl* decoderI, uint32_t m, co
       if (sfW == 0 || sfW > 4 || sfH == 0 || sfH > 4)
         return blTraceError(BL_ERROR_INVALID_DATA);
 
+      // Bail to 1 if there is only one component as it contributes to nothing.
+      if (componentCount == 1) {
+        sfW = 1;
+        sfH = 1;
+      }
+
       // Quantization ID.
       uint32_t quantId = p[2];
       if (quantId > 3)
@@ -183,8 +188,7 @@ static BLResult decoderProcessMarker(BLJpegDecoderImpl* decoderI, uint32_t m, co
       comp->sfH     = uint8_t(sfH);
       comp->quantId = uint8_t(quantId);
 
-      // We need to know maximum horizontal and vertical sampling factor to
-      // calculate the correct MCU size (WxH).
+      // We need to know maximum horizontal and vertical sampling factor to calculate the correct MCU size (WxH).
       mcuSfW = blMax(mcuSfW, sfW);
       mcuSfH = blMax(mcuSfH, sfH);
     }
@@ -960,7 +964,7 @@ static BLResult decoderProcessStream(BLJpegDecoderImpl* decoderI, const uint8_t*
   // update the image being decoded.
   bool isBaseline = sofMarker != kMarkerSOF2;
 
-  // If this is a basline stream then the unit-size is 1 byte, because the block of coefficients is immediately
+  // If this is a baseline stream then the unit-size is 1 byte, because the block of coefficients is immediately
   // IDCTed to pixel values after it is decoded. However, progressive decoding cannot use this space optimization
   // as coefficients are updated progressively.
   uint32_t unitSize = isBaseline ? 1 : 2;
@@ -1187,9 +1191,10 @@ static BLResult decoderConvertToRGB(BLJpegDecoderImpl* decoderI, BLImageData& ds
 
   bl::ScopedBufferTmp<1024 * 3 + 16> tmpMem;
 
-  // Allocate a line buffer that's big enough for upsampling off the edges with
-  // upsample factor of 4.
+  // Allocate a line buffer that's big enough for up-sampling off the edges with up-sample factor of 4.
   uint32_t componentCount = decoderI->imageInfo.planeCount;
+  BL_ASSERT(componentCount > 0u && componentCount <= 4u);
+
   uint32_t lineStride = IntOps::alignUp(w + 3, 16);
   uint8_t* lineBuffer = static_cast<uint8_t*>(tmpMem.alloc(lineStride * componentCount));
 
@@ -1197,12 +1202,10 @@ static BLResult decoderConvertToRGB(BLJpegDecoderImpl* decoderI, BLImageData& ds
     return blTraceError(BL_ERROR_OUT_OF_MEMORY);
 
   DecoderUpsample upsample[4];
-  uint32_t y, k;
-
   uint8_t* pPlane[4];
   uint8_t* pBuffer[4];
 
-  for (k = 0; k < componentCount; k++) {
+  for (uint32_t k = 0; k < componentCount; k++) {
     DecoderComponent& comp = decoderI->comp[k];
     DecoderUpsample* r = &upsample[k];
 
@@ -1224,8 +1227,8 @@ static BLResult decoderConvertToRGB(BLJpegDecoderImpl* decoderI, BLImageData& ds
   }
 
   // Now go ahead and resample.
-  for (y = 0; y < h; y++, dstLine += dstStride) {
-    for (k = 0; k < componentCount; k++) {
+  for (uint32_t y = 0; y < h; y++, dstLine += dstStride) {
+    for (uint32_t k = 0; k < componentCount; k++) {
       DecoderComponent& comp = decoderI->comp[k];
       DecoderUpsample* r = &upsample[k];
 
@@ -1381,8 +1384,9 @@ static BLResult decoderReadFrameImplInternal(BLJpegDecoderImpl* decoderI, BLImag
   BL_PROPAGATE(imageOut->makeMutable(&imageData));
   BL_PROPAGATE(decoderConvertToRGB(decoderI, imageData));
 
-  decoderI->frameIndex++;
   decoderI->bufferIndex = (size_t)(p - start);
+  decoderI->frameIndex++;
+
   return BL_SUCCESS;
 }
 
