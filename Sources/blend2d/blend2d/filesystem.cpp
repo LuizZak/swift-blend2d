@@ -11,7 +11,7 @@
 #include "threading/atomic_p.h"
 #include "unicode/unicode_p.h"
 
-#ifndef _WIN32
+#if !defined(_WIN32)
   #include <errno.h>
   #include <fcntl.h>
   #include <unistd.h>
@@ -275,16 +275,26 @@ BL_API_IMPL BLResult blFileOpen(BLFileCore* self, const char* fileName, BLFileOp
   if (isShared(BL_FILE_OPEN_WRITE, BL_FILE_OPEN_WRITE_EXCLUSIVE)) dwShareMode |= FILE_SHARE_WRITE;
   if (isShared(BL_FILE_OPEN_DELETE, BL_FILE_OPEN_DELETE_EXCLUSIVE)) dwShareMode |= FILE_SHARE_DELETE;
 
-  // Other Flags
+  // WinAPI Call
   // -----------
-
-  DWORD dwFlagsAndAttributes = 0;
-  LPSECURITY_ATTRIBUTES lpSecurityAttributes = nullptr;
 
   // NOTE: Do not close the file before calling `CreateFileW()`. We should behave atomically, which means that
   // we won't close the existing file if `CreateFileW()` fails...
   BLUtf16StringTmp<kStaticUTF16StringSize> fileNameW;
   BL_PROPAGATE(fileNameW.fromUtf8(fileName));
+
+#if defined(BL_PLATFORM_UWP)
+  // UWP platform doesn't provide CreateFileW, but we can use CreateFile2 instead.
+  HANDLE handle = CreateFile2(
+    fileNameW.dataAsWCharT(),
+    dwDesiredAccess,
+    dwShareMode,
+    dwCreationDisposition,
+    nullptr
+  );
+#else
+  DWORD dwFlagsAndAttributes = 0;
+  LPSECURITY_ATTRIBUTES lpSecurityAttributes = nullptr;
 
   HANDLE handle = CreateFileW(
     fileNameW.dataAsWCharT(),
@@ -293,7 +303,9 @@ BL_API_IMPL BLResult blFileOpen(BLFileCore* self, const char* fileName, BLFileOp
     lpSecurityAttributes,
     dwCreationDisposition,
     dwFlagsAndAttributes,
-    nullptr);
+    nullptr
+  );
+#endif
 
   if (handle == INVALID_HANDLE_VALUE)
     return blTraceError(blResultFromWinError(GetLastError()));
@@ -850,11 +862,45 @@ BLResult BLFileMapping::map(BLFile& file, size_t size, uint32_t flags) noexcept 
   DWORD dwDesiredAccess = FILE_MAP_READ;
 
   // Create a file mapping handle and map view of file into it.
-  HANDLE hFileMapping = CreateFileMappingW((HANDLE)file.handle, nullptr, dwProtect, 0, 0, nullptr);
+#if defined(BL_PLATFORM_UWP)
+  HANDLE hFileMapping = CreateFileMappingFromApp(
+    (HANDLE)file.handle, // hFile
+    nullptr,             // SecurityAttributes
+    dwProtect,           // PageProtection
+    0,                   // MaximumSize
+    nullptr              // Name
+  );
+#else
+  HANDLE hFileMapping = CreateFileMappingW(
+    (HANDLE)file.handle, // hFile
+    nullptr,             // FileMappingAttributes
+    dwProtect,           // PageProtection
+    0,                   // MaximumSizeHigh
+    0,                   // MaximumSizeLow
+    nullptr              // Name
+  );
+#endif
+
   if (hFileMapping == nullptr)
     return blTraceError(blResultFromWinError(GetLastError()));
 
-  void* data = MapViewOfFile(hFileMapping, dwDesiredAccess, 0, 0, 0);
+#if defined(BL_PLATFORM_UWP)
+  void* data = MapViewOfFileFromApp(
+    hFileMapping,        // hFileMappingObject
+    dwDesiredAccess,     // DesiredAccess
+    0,                   // FileOffset
+    0                    // NumberOfBytesToMap
+  );
+#else
+  void* data = MapViewOfFile(
+    hFileMapping,        // hFileMappingObject
+    dwDesiredAccess,     // DesiredAccess
+    0,                   // FileOffsetHigh
+    0,                   // FileOffsetLow
+    0                    // NumberOfBytesToMap
+  );
+#endif
+
   if (!data) {
     BLResult result = blResultFromWinError(GetLastError());
     CloseHandle(hFileMapping);
@@ -973,7 +1019,7 @@ static BLResult createMemoryMappedFile(BLArray<uint8_t>* dst, BLFile& file, size
   impl->capacity = size;
 
   BLFileMapping* implFileMapping = PtrOps::offset<BLFileMapping>(impl, sizeof(BLArrayImpl));
-  blCallCtor(*implFileMapping, std::move(fileMapping));
+  blCallCtor(*implFileMapping, BLInternal::move(fileMapping));
 
   return bl::ArrayInternal::replaceInstance(dst, &newO);
 }

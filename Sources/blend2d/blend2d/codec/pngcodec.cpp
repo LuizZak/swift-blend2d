@@ -883,6 +883,7 @@ static BLResult decoderReadInfoInternal(BLPngDecoderImpl* decoderI, const uint8_
   decoderI->imageInfo.size.reset(int(w), int(h));
   decoderI->imageInfo.depth = uint16_t(sampleDepth * uint32_t(decoderI->sampleCount));
   decoderI->imageInfo.frameCount = 1;
+  decoderI->imageInfo.flags = progressive ? BL_IMAGE_INFO_FLAG_PROGRESSIVE : BL_IMAGE_INFO_FLAG_NO_FLAGS;
 
   decoderI->bufferIndex = (size_t)(p - start);
   return BL_SUCCESS;
@@ -1167,7 +1168,7 @@ static BLResult decoderReadFrameImplInternal(BLPngDecoderImpl* decoderI, BLImage
     }
 
     if (decoderI->cgbi) {
-      std::swap(pngFmt.rShift, pngFmt.bShift);
+      BLInternal::swap(pngFmt.rShift, pngFmt.bShift);
       if (pngFmt.hasFlag(BL_FORMAT_FLAG_ALPHA))
         pngFmt.addFlags(BL_FORMAT_FLAG_PREMULTIPLIED);
     }

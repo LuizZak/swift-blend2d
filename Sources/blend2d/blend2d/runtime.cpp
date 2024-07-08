@@ -9,6 +9,13 @@
 
 // PTHREAD_STACK_MIN would be defined either by <pthread.h> or <limits.h>.
 #include <limits.h>
+#include <stdio.h>
+
+#if !defined(_WIN32)
+  #include <pthread.h>
+  #include <unistd.h>
+  #include <errno.h>
+#endif
 
 #ifndef BL_BUILD_NO_JIT
   #include <asmjit/asmjit.h>
