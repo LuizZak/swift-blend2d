@@ -31,7 +31,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
         blFontGetDesignMetrics(&object, &metrics)
         return metrics
     }
-    
+
     /// Returns the type of the font's associated font-face, see `BLFontFaceType`.
     public var faceType: BLFontFaceType {
         face.faceType
@@ -77,37 +77,37 @@ public class BLFont: BLBaseClass<BLFontCore> {
     public var style: BLFontStyle {
         BLFontStyle(BLFontStyle.RawValue(object.impl.style))
     }
-    
+
     public init(fromFace face: BLFontFace, size: Float) {
         super.init { pointer -> BLResult in
             blFontInit(pointer)
             return blFontCreateFromFace(pointer, &face.object, size)
         }
     }
-    
+
     public func shape(_ buf: BLGlyphBuffer) {
         blFontShape(&object, &buf.object)
     }
-    
+
     @discardableResult
     public func mapTextToGlyphs(_ buffer: BLGlyphBuffer) -> BLGlyphMappingState {
         var state = BLGlyphMappingState()
         blFontMapTextToGlyphs(&object, &buffer.object, &state)
         return state
     }
-    
+
     public func positionGlyphs(_ buf: BLGlyphBuffer) {
         blFontPositionGlyphs(&object, &buf.object)
     }
-    
+
     public func applyKerning(_ buf: BLGlyphBuffer) {
         blFontApplyKerning(&object, &buf.object)
     }
-    
+
     public func applyGSub(_ buf: BLGlyphBuffer, lookups: BLBitArray) {
         blFontApplyGSub(&object, &buf.object, &lookups.box.object)
     }
-    
+
     public func applyGPos(_ buf: BLGlyphBuffer, lookups: BLBitArray) {
         blFontApplyGPos(&object, &buf.object, &lookups.box.object)
     }
@@ -118,17 +118,17 @@ public class BLFont: BLBaseClass<BLFontCore> {
         buffer.setText(string)
         return getTextMetrics(buffer)
     }
-    
+
     @inlinable
     public func getTextMetrics(_ buf: BLGlyphBuffer) -> BLTextMetrics {
         var value = BLTextMetrics()
         blFontGetTextMetrics(&object, &buf.object, &value)
         return value
     }
-    
+
     public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> [BLBoxI] {
         var out: [BLBoxI] = .init(repeating: .empty, count: glyphRun.size)
-        
+
         blFontGetGlyphBounds(
             &object,
             glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
@@ -136,16 +136,16 @@ public class BLFont: BLBaseClass<BLFontCore> {
             &out,
             glyphRun.size
         )
-        
+
         return out
     }
-    
+
     public func getGlyphAdvances(_ glyphRun: BLGlyphRun) -> [BLGlyphPlacement] {
         var out: [BLGlyphPlacement] = .init(
             repeating: BLGlyphPlacement(),
             count: glyphRun.size
         )
-        
+
         blFontGetGlyphAdvances(
             &object,
             glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
@@ -153,7 +153,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
             &out,
             glyphRun.size
         )
-        
+
         return out
     }
 
@@ -193,7 +193,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
             BLResult(BL_SUCCESS.rawValue)
         }
     }
-    
+
     public func getGlyphRunOutlines(
         _ glyphRun: BLGlyphRun,
         userMatrix: BLMatrix2D? = nil,

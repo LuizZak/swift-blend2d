@@ -23,7 +23,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public var targetHeight: Double {
         targetSize.h
     }
-    
+
     /// Returns the target image or null if there is no target image.
     ///
     /// - note: The rendering context doesn't own the image, but it increases its
@@ -38,7 +38,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
         if let img = blContextGetTargetImage(&object) {
             return BLImage(weakAssign: img.pointee)
         }
-        
+
         return nil
     }
 
@@ -123,21 +123,21 @@ public class BLContext: BLBaseClass<BLContextCore> {
         get { blContextGetGlobalAlpha(&object) }
         set { blContextSetGlobalAlpha(&object, newValue) }
     }
-    
+
     /* TODO: BLContextOpType was removed or refactored; remove fill/strokeStyleType as well?
     @inlinable
     public var fillStyleType: UInt32 {
         assert(BLContextOpType.fill.rawValue == 0)
         return UInt32(_state.styleType.0)
     }
-    
+
     @inlinable
     public var strokeStyleType: UInt32 {
         assert(BLContextOpType.stroke.rawValue == 1)
         return UInt32(_state.styleType.1)
     }
     */
-    
+
     /// Gets an enumeration specifying the fill style and their current associated
     /// values.
     public var fillStyle: OpStyle {
@@ -148,21 +148,23 @@ public class BLContext: BLBaseClass<BLContextCore> {
         switch value.type {
         case .null:
             return .none
+
         case .rgba:
             return .solid(value.typed(as: BLRgba.self).value)
+
         case .gradient:
             let box = BLBaseClass(weakAssign: value.unsafeCast(to: BLGradientCore.self))
-
             return .gradient(BLGradient(box: box))
+
         case .pattern:
             let box = BLBaseClass(weakAssign: value.unsafeCast(to: BLPatternCore.self))
-
             return .pattern(BLPattern(box: box))
+
         default:
             return .none
         }
     }
-    
+
     /// Gets or sets the fill-rule.
     @inlinable
     public var fillRule: BLFillRule {
@@ -173,14 +175,14 @@ public class BLContext: BLBaseClass<BLContextCore> {
             blContextSetFillRule(&object, newValue)
         }
     }
-    
+
     /// Gets or sets fill alpha value.
     @inlinable
     public var fillAlpha: Double {
         get { blContextGetFillAlpha(&object) }
         set { blContextSetFillAlpha(&object, newValue) }
     }
-    
+
     /// Gets an enumeration specifying the stroke style and their current associated
     /// values.
     public var strokeStyle: OpStyle {
@@ -191,21 +193,23 @@ public class BLContext: BLBaseClass<BLContextCore> {
         switch value.type {
         case .null:
             return .none
+
         case .rgba:
             return .solid(value.typed(as: BLRgba.self).value)
+
         case .gradient:
             let box = BLBaseClass(weakAssign: value.unsafeCast(to: BLGradientCore.self))
-
             return .gradient(BLGradient(box: box))
+
         case .pattern:
             let box = BLBaseClass(weakAssign: value.unsafeCast(to: BLPatternCore.self))
-
             return .pattern(BLPattern(box: box))
+
         default:
             return .none
         }
     }
-    
+
     /// Gets or sets stroke alpha value.
     @inlinable
     public var strokeAlpha: Double {
@@ -217,7 +221,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public override init() {
         super.init()
     }
-    
+
     /// Initializes a new context that draws on a given image.
     ///
     /// Returns nil, in case an invalid image state was provided.
@@ -229,7 +233,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public init?(image: BLImage, options: CreateOptions? = nil) {
         let options = options?.toBLContextCreateInfo()
-        
+
         super.init { objectPtr in
             try? resultToError(
                 withUnsafeNullablePointer(to: options) {
@@ -238,7 +242,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
             )
         }
     }
-    
+
     /// Begins rendering to the given `image`.
     ///
     /// If this operation succeeds then the rendering context will have exclusive
@@ -247,12 +251,12 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @discardableResult
     public func begin(image: BLImage, options: CreateOptions? = nil) -> BLResult {
         let options = options?.toBLContextCreateInfo()
-        
+
         return withUnsafeNullablePointer(to: options) {
             blContextBegin(&object, &image.object, $0)
         }
     }
-    
+
     /// Waits for completion of all render commands and detaches the rendering
     /// context from the rendering target. After `end()` completes the rendering
     /// context implementation would be released and replaced by a built-in null
@@ -307,14 +311,17 @@ public class BLContext: BLBaseClass<BLContextCore> {
 
     @discardableResult
     @inlinable
-    public func setFillStyle(_ gradient: BLGradient) -> BLResult {
-        blContextSetFillStyle(&object, &gradient.box.object)
-    }
+    public func setFillStyle(_ style: any BLStyleConvertible) -> BLResult {
+        switch style.asBLStyle {
+        case .gradient(let gradient):
+            return blContextSetFillStyle(&object, &gradient.box.object)
 
-    @discardableResult
-    @inlinable
-    public func setFillStyle(_ pattern: BLPattern) -> BLResult {
-        blContextSetFillStyle(&object, &pattern.box.object)
+        case .pattern(let pattern):
+            return blContextSetFillStyle(&object, &pattern.box.object)
+
+        case .rgba(var rgba):
+            return blContextSetFillStyleRgba(&object, &rgba)
+        }
     }
 
     @discardableResult
@@ -340,34 +347,34 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func setFillStyle(_ value: BLRgba64) -> BLResult {
         blContextSetFillStyleRgba64(&object, value.value)
     }
-    
+
     /// Sets stroke width to `width`.
     @discardableResult
     public func setStrokeWidth(_ width: Double) -> BLResult {
         blContextSetStrokeWidth(&object, width)
     }
-    
+
     /// Sets miter limit to `miterLimit`.
     @discardableResult
     @inlinable
     public func setStrokeMiterLimit(_ miterLimit: Double) -> BLResult {
         blContextSetStrokeMiterLimit(&object, miterLimit)
     }
-    
+
     /// Sets stroke cap of the specified `type` to `strokeCap`.
     @discardableResult
     @inlinable
     public func setStrokeCap(_ position: BLStrokeCapPosition, strokeCap: BLStrokeCap) -> BLResult {
         blContextSetStrokeCap(&object, position, strokeCap)
     }
-    
+
     /// Sets all stroke caps to `strokeCap`.
     @discardableResult
     @inlinable
     public func setStrokeCaps(_ strokeCap: BLStrokeCap) -> BLResult {
         blContextSetStrokeCaps(&object, strokeCap)
     }
-    
+
     /// Sets stroke start cap to `strokeCap`.
     @discardableResult
     @inlinable
@@ -386,33 +393,48 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func setStrokeJoin(_ strokeJoin: BLStrokeJoin) -> BLResult {
         blContextSetStrokeJoin(&object, strokeJoin)
     }
-    
+
     /// Sets stroke dash-offset to `dashOffset`.
     @discardableResult
     @inlinable
     public func setStrokeDashOffset(_ dashOffset: Double) -> BLResult {
         blContextSetStrokeDashOffset(&object, dashOffset)
     }
-    
+
     /// Sets stroke dash-array to `dashArray`.
     @discardableResult
     public func setStrokeDashArray(_ dashArray: [Double]) -> BLResult {
         let array = BLArray(array: dashArray)
         return blContextSetStrokeDashArray(&object, &array.object)
     }
-    
+
     /// Sets stroke transformation order to `transformOrder`.
     @discardableResult
     @inlinable
     public func setStrokeTransformOrder(_ transformOrder: BLStrokeTransformOrder) -> BLResult {
         blContextSetStrokeTransformOrder(&object, transformOrder)
     }
-    
+
     /// Sets all stroke `options`.
     @discardableResult
     @inlinable
     public func setStrokeOptions(_ options: BLStrokeOptions) -> BLResult {
         blContextSetStrokeOptions(&object, &options.box.object)
+    }
+
+    @discardableResult
+    @inlinable
+    public func setStrokeStyle(_ style: any BLStyleConvertible) -> BLResult {
+        switch style.asBLStyle {
+        case .gradient(let gradient):
+            return blContextSetStrokeStyle(&object, &gradient.box.object)
+
+        case .pattern(let pattern):
+            return blContextSetStrokeStyle(&object, &pattern.box.object)
+
+        case .rgba(var rgba):
+            return blContextSetStrokeStyleRgba(&object, &rgba)
+        }
     }
 
     @discardableResult
@@ -429,18 +451,6 @@ public class BLContext: BLBaseClass<BLContextCore> {
 
     @discardableResult
     @inlinable
-    public func setStrokeStyle(_ gradient: BLGradient) -> BLResult {
-        blContextSetStrokeStyle(&object, &gradient.box.object)
-    }
-
-    @discardableResult
-    @inlinable
-    public func setStrokeStyle(_ pattern: BLPattern) -> BLResult {
-        blContextSetStrokeStyle(&object, &pattern.box.object)
-    }
-
-    @discardableResult
-    @inlinable
     public func setStrokeStyleRgba32(_ rgba32: UInt32) -> BLResult {
         blContextSetStrokeStyleRgba32(&object, rgba32)
     }
@@ -453,9 +463,15 @@ public class BLContext: BLBaseClass<BLContextCore> {
 
     @discardableResult
     @inlinable
+    public func disableStrokeStyle() -> BLResult {
+        blContextDisableStrokeStyle(&object)
+    }
+
+    @discardableResult
+    @inlinable
     public func clipToRect(_ rect: BLRectI) -> BLResult {
         var rect = rect
-        
+
         return blContextClipToRectI(&object, &rect)
     }
 
@@ -463,7 +479,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func clipToRect(_ rect: BLRect) -> BLResult {
         var rect = rect
-        
+
         return blContextClipToRectD(&object, &rect)
     }
 
@@ -485,7 +501,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func clearRect(_ rect: BLRectI) -> BLResult {
         var rect = rect
-        
+
         return blContextClearRectI(&object, &rect)
     }
 
@@ -494,15 +510,44 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func clearRect(_ rect: BLRect) -> BLResult {
         var rect = rect
-        
+
         return blContextClearRectD(&object, &rect)
     }
-    
+
     /// Fills everything.
     @discardableResult
     @inlinable
     public func fillAll() -> BLResult {
         blContextFillAll(&object)
+    }
+
+    /// Fills everything with a given color.
+    @discardableResult
+    @inlinable
+    public func fillAll(_ color: BLRgba32) -> BLResult {
+        blContextFillAllRgba32(&object, color.value)
+    }
+
+    /// Fills everything with a given color.
+    @discardableResult
+    @inlinable
+    public func fillAll(_ color: BLRgba64) -> BLResult {
+        blContextFillAllRgba64(&object, color.value)
+    }
+
+    @discardableResult
+    @inlinable
+    public func fillAll(_ style: any BLStyleConvertible) -> BLResult {
+        switch style.asBLStyle {
+        case .gradient(let gradient):
+            return blContextSetStrokeStyle(&object, &gradient.box.object)
+
+        case .pattern(let pattern):
+            return blContextSetStrokeStyle(&object, &pattern.box.object)
+
+        case .rgba(var rgba):
+            return blContextSetStrokeStyleRgba(&object, &rgba)
+        }
     }
 
     /// Fills the passed geometry specified by `geometryType` and `geometryData`
@@ -532,7 +577,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func fillRect(_ rect: BLRectI) -> BLResult {
         var rect = rect
-        
+
         return blContextFillRectI(&object, &rect)
     }
 
@@ -541,7 +586,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     @inlinable
     public func fillRect(_ rect: BLRect) -> BLResult {
         var rect = rect
-        
+
         return blContextFillRectD(&object, &rect)
     }
 
@@ -736,7 +781,7 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) -> BLResult {
         var point = point
         var glyphRun = glyphRun
-        
+
         return blContextFillGlyphRunI(&object, &point, &font.object, &glyphRun)
     }
 
@@ -745,10 +790,10 @@ public class BLContext: BLBaseClass<BLContextCore> {
     public func fillGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) -> BLResult {
         var point = point
         var glyphRun = glyphRun
-        
+
         return blContextFillGlyphRunD(&object, &point, &font.object, &glyphRun)
     }
-    
+
     /// Strokes the passed geometry specified by `geometryType` and `geometryData`
     /// [Internal].
     @inlinable
@@ -766,24 +811,24 @@ public class BLContext: BLBaseClass<BLContextCore> {
             blContextStrokeUtf8TextD(&object, &point, &font.object, cString, text.utf8.count)
         }
     }
-    
+
     /// Strokes the passed `glyphRun` by using the given `font`.
     @discardableResult
     @inlinable
     public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPointI, font: BLFont) -> BLResult {
         var glyphRun = glyphRun
         var point = point
-        
+
         return blContextStrokeGlyphRunI(&object, &point, &font.object, &glyphRun)
     }
-    
+
     /// Strokes the passed `glyphRun` by using the given `font`.
     @discardableResult
     @inlinable
     public func strokeGlyphRun(_ glyphRun: BLGlyphRun, at point: BLPoint, font: BLFont) -> BLResult {
         var glyphRun = glyphRun
         var point = point
-        
+
         return blContextStrokeGlyphRunD(&object, &point, &font.object, &glyphRun)
     }
 }
@@ -816,7 +861,7 @@ public extension BLContext {
     func strokeBox(x0: Int, y0: Int, x1: Int, y1: Int) -> BLResult {
         strokeBox(BLBoxI(x0: Int32(x0), y0: Int32(y0), x1: Int32(x1), y1: Int32(y1)))
     }
-    
+
     /// Strokes a rectangle.
     @discardableResult
     @inlinable
@@ -837,7 +882,7 @@ public extension BLContext {
     func strokeRect(x: Double, y: Double, w: Double, h: Double) -> BLResult {
         strokeRect(BLRect(x: x, y: y, w: w, h: h))
     }
-    
+
     /// Strokes a circle.
     @discardableResult
     @inlinable
@@ -851,7 +896,7 @@ public extension BLContext {
     func strokeCircle(x: Double, y: Double, radius: Double) -> BLResult {
         strokeCircle(BLCircle(cx: x, cy: y, r: radius))
     }
-    
+
     /// Strokes an ellipse.
     @discardableResult
     @inlinable
@@ -865,7 +910,7 @@ public extension BLContext {
     func strokeEllipse(x: Double, y: Double, radiusX: Double, radiusY: Double) -> BLResult {
         strokeEllipse(BLEllipse(cx: x, cy: y, rx: radiusX, ry: radiusY))
     }
-    
+
     /// Strokes an arc.
     @discardableResult
     @inlinable
@@ -885,7 +930,7 @@ public extension BLContext {
     func strokeArc(cx: Double, cy: Double, rx: Double, ry: Double, start: Double, sweep: Double) -> BLResult {
         strokeArc(BLArc(cx: cx, cy: cy, rx: rx, ry: ry, start: start, sweep: sweep))
     }
-    
+
     /// Strokes a chord.
     @discardableResult
     @inlinable
@@ -905,7 +950,7 @@ public extension BLContext {
     func strokeChord(cx: Double, cy: Double, rx: Double, ry: Double, start: Double, sweep: Double) -> BLResult {
         strokeChord(BLArc(cx: cx, cy: cy, rx: rx, ry: ry, start: start, sweep: sweep))
     }
-    
+
     /// Strokes a pie.
     @discardableResult
     @inlinable
@@ -925,7 +970,7 @@ public extension BLContext {
     func strokePie(cx: Double, cy: Double, rx: Double, ry: Double, start: Double, sweep: Double) -> BLResult {
         strokePie(BLArc(cx: cx, cy: cy, rx: rx, ry: ry, start: start, sweep: sweep))
     }
-    
+
     /// Strokes a triangle.
     @discardableResult
     @inlinable
@@ -945,7 +990,7 @@ public extension BLContext {
     func strokeTriangle(x0: Double, y0: Double, x1: Double, y1: Double, x2: Double, y2: Double) -> BLResult {
         strokeTriangle(BLTriangle(x0: x0, y0: y0, x1: x1, y1: y1, x2: x2, y2: y2))
     }
-    
+
     /// Strokes a polyline.
     @discardableResult
     @inlinable
@@ -954,7 +999,7 @@ public extension BLContext {
             strokeGeometry(.polylineD, poly)
         }
     }
-    
+
     /// Strokes a polyline.
     @discardableResult
     @inlinable
@@ -963,7 +1008,7 @@ public extension BLContext {
             strokeGeometry(.polylineI, poly)
         }
     }
-    
+
     /// Strokes a polygon.
     @discardableResult
     @inlinable
@@ -972,7 +1017,7 @@ public extension BLContext {
             strokeGeometry(.polygonD, poly)
         }
     }
-    
+
     /// Strokes a polygon.
     @discardableResult
     @inlinable
@@ -981,7 +1026,7 @@ public extension BLContext {
             strokeGeometry(.polygonI, poly)
         }
     }
-    
+
     /// Strokes an array of boxes.
     @discardableResult
     @inlinable
@@ -990,7 +1035,7 @@ public extension BLContext {
             strokeGeometry(.arrayViewBoxD, array)
         }
     }
-    
+
     /// Strokes an array of boxes.
     @discardableResult
     @inlinable
@@ -999,7 +1044,7 @@ public extension BLContext {
             strokeGeometry(.arrayViewBoxI, array)
         }
     }
-    
+
     /// Strokes an array of rectangles.
     @discardableResult
     @inlinable
@@ -1008,7 +1053,7 @@ public extension BLContext {
             strokeGeometry(.arrayViewRectD, array)
         }
     }
-    
+
     /// Strokes an array of rectangles.
     @discardableResult
     @inlinable
@@ -1017,7 +1062,7 @@ public extension BLContext {
             strokeGeometry(.arrayViewRectI, array)
         }
     }
-    
+
     /// Strokes a path.
     @discardableResult
     @inlinable
@@ -1028,42 +1073,42 @@ public extension BLContext {
 
 // MARK: - Image blitting
 public extension BLContext {
-    
+
     @discardableResult
     @inlinable
     func blitImage(_ image: BLImage, at point: BLPointI, imageArea: BLRectI? = nil) -> BLResult {
         var point = point
-        
+
         return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitImageI(&object, &point, &image.object, $0)
         }
     }
-    
+
     @discardableResult
     @inlinable
     func blitImage(_ image: BLImage, at point: BLPoint, imageArea: BLRectI? = nil) -> BLResult {
         var point = point
-        
+
         return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitImageD(&object, &point, &image.object, $0)
         }
     }
-    
+
     @discardableResult
     @inlinable
     func blitScaledImage(_ image: BLImage, rectangle: BLRectI, imageArea: BLRectI? = nil) -> BLResult {
         var rectangle = rectangle
-        
+
         return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitScaledImageI(&object, &rectangle, &image.object, $0)
         }
     }
-    
+
     @discardableResult
     @inlinable
     func blitScaledImage(_ image: BLImage, rectangle: BLRect, imageArea: BLRectI? = nil) -> BLResult {
         var rectangle = rectangle
-        
+
         return withUnsafeNullablePointer(to: imageArea) {
             blContextBlitScaledImageD(&object, &rectangle, &image.object, $0)
         }
@@ -1071,18 +1116,18 @@ public extension BLContext {
 }
 
 public extension BLContext {
-    
+
     @discardableResult
     @inlinable
     func fillPath(origin: BLPoint = .zero, _ path: BLPath) -> BLResult {
         var origin = origin
         return blContextFillPathD(&object, &origin, &path.object)
     }
-    
+
 }
 
 public extension BLContext {
-    
+
     @inlinable
     func flush(flags: BLContextFlushFlags) {
         blContextFlush(&object, flags)
@@ -1169,7 +1214,7 @@ public extension BLContext {
     func save() {
         blContextSave(&object, nil)
     }
-    
+
     /// Saves the current rendering context state, returning a cookie that must
     /// be provided on the next `restore()` call.
     ///
@@ -1184,7 +1229,7 @@ public extension BLContext {
         blContextSave(&object, &cookie)
         return cookie
     }
-    
+
     /// Restores the top-most saved context-state.
     ///
     /// Possible return conditions:
@@ -1200,7 +1245,7 @@ public extension BLContext {
     func restore() -> BLResult {
         blContextRestore(&object, nil)
     }
-    
+
     /// Restores to the point that matches the given `cookie`.
     ///
     /// More than one state can be restored in case that the `cookie` points to
@@ -1222,10 +1267,18 @@ public extension BLContext {
 }
 
 public extension BLContext {
+    /// Specifies the style for a stroke or fill.
     enum OpStyle {
+        /// No style set.
         case none
+
+        /// A solid color style.
         case solid(BLRgba)
+
+        /// A gradient object style.
         case gradient(BLGradient)
+
+        /// A pattern object style.
         case pattern(BLPattern)
     }
 }
@@ -1371,7 +1424,7 @@ public extension BLContext {
     func postRotate(angle: Double, point: BLPointI) -> BLResult {
         _applyTransformOpV(.postRotatePt, angle, Double(point.x), Double(point.y))
     }
-    
+
     @inlinable
     @discardableResult
     func postTransform(_ matrix: BLMatrix2D) -> BLResult {
@@ -1393,7 +1446,7 @@ internal extension BLContext {
             blContextApplyTransformOp(&object, opType, pointer)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLPoint) -> BLResult {
@@ -1401,7 +1454,7 @@ internal extension BLContext {
             blContextApplyTransformOp(&object, opType, pointer)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     func _applyTransformOp(_ opType: BLTransformOp, _ opData: Double) -> BLResult {
@@ -1409,7 +1462,7 @@ internal extension BLContext {
             blContextApplyTransformOp(&object, opType, pointer)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     func _applyTransformOpV(_ opType: BLTransformOp, _ args: Double...) -> BLResult {
@@ -1417,7 +1470,7 @@ internal extension BLContext {
             blContextApplyTransformOp(&object, opType, pointer.baseAddress)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     func _applyTransformOpV<T: BinaryInteger>(_ opType: BLTransformOp, _ args: T...) -> BLResult {
