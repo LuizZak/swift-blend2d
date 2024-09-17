@@ -74,7 +74,9 @@ let asmjitCXXSettings: [CXXSetting] = [
 testTarget.dependencies.append(
     .product(name: "LibPNG", package: "swift-libpng")
 )
-dependencies.append(.package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master")))
+dependencies.append(
+    .package(url: "https://github.com/LuizZak/swift-libpng.git", .branch("master"))
+)
 
 #endif
 
