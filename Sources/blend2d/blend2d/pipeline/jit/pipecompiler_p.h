@@ -79,7 +79,9 @@ enum class OpcodeRM : uint32_t {
   kLoadI64,
   kLoadU64,
   kLoadMergeU8,
-  kLoadMergeU16
+  kLoadShiftU8,
+  kLoadMergeU16,
+  kLoadShiftU16
 };
 
 enum class OpcodeMR : uint32_t {
@@ -711,8 +713,11 @@ enum class OpcodeVVV : uint32_t {
 #elif defined(BL_JIT_ARCH_X86)
 
   kPermuteU8,
+  kPermuteU16,
+  kPermuteU32,
+  kPermuteU64,
 
-  kMaxValue = kPermuteU8
+  kMaxValue = kPermuteU64
 
 #else
 
@@ -1755,7 +1760,9 @@ public:
   BL_INLINE void load_u64(const Gp& dst, const Mem& src) noexcept { return emit_rm(OpcodeRM::kLoadU64, dst, src); }
 
   BL_INLINE void load_merge_u8(const Gp& dst, const Mem& src) noexcept { return emit_rm(OpcodeRM::kLoadMergeU8, dst, src); }
+  BL_INLINE void load_shift_u8(const Gp& dst, const Mem& src) noexcept { return emit_rm(OpcodeRM::kLoadShiftU8, dst, src); }
   BL_INLINE void load_merge_u16(const Gp& dst, const Mem& src) noexcept { return emit_rm(OpcodeRM::kLoadMergeU16, dst, src); }
+  BL_INLINE void load_shift_u16(const Gp& dst, const Mem& src) noexcept { return emit_rm(OpcodeRM::kLoadShiftU16, dst, src); }
 
   BL_INLINE void store(const Mem& dst, const Gp& src) noexcept { return emit_mr(OpcodeMR::kStoreReg, dst, src); }
   BL_INLINE void store_u8(const Mem& dst, const Gp& src) noexcept { return emit_mr(OpcodeMR::kStoreU8, dst, src); }
@@ -2647,6 +2654,9 @@ public:
 
 #if defined(BL_JIT_ARCH_X86)
   DEFINE_OP_3V(v_permute_u8, OpcodeVVV::kPermuteU8)
+  DEFINE_OP_3V(v_permute_u16, OpcodeVVV::kPermuteU16)
+  DEFINE_OP_3V(v_permute_u32, OpcodeVVV::kPermuteU32)
+  DEFINE_OP_3V(v_permute_u64, OpcodeVVV::kPermuteU64)
 #endif // BL_JIT_ARCH_X86
 
   DEFINE_OP_3VI(v_alignr_u128, OpcodeVVVI::kAlignr_U128)

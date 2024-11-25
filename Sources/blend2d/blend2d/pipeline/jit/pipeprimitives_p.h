@@ -41,6 +41,8 @@ class FillPart;
 class FillBoxAPart;
 class FillAnalyticPart;
 
+class GlobalAlpha;
+
 //! Pipeline generator loop-type, used by fillers & compositors.
 enum class CMaskLoopType : uint8_t {
   //! Not in a cmask loop mode.
@@ -127,169 +129,7 @@ enum class GatherMode : uint32_t {
   kNeverFull = 1
 };
 
-//! Represents either Alpha or RGBA pixel.
-//!
-//! Convention used to define and process pixel components:
-//!
-//!   - Prefixes:
-//!     - "p"  - packed pixel(s) or component(s).
-//!     - "u"  - unpacked pixel(s) or component(s).
-//!
-//!   - Components:
-//!     - "c"  - Pixel components (ARGB).
-//!     - "a"  - Pixel alpha values (A).
-//!     - "i"  - Inverted pixel alpha values (IA).
-//!     - "m"  - Mask (not part of the pixel itself, comes from a FillPart).
-//!     - "im" - Mask (not part of the pixel itself, comes from a FillPart).
-class Pixel {
-public:
-  PixelType _type;
-  char _name[15];
-
-  PixelFlags _flags;
-  PixelCount _count;
-
-  //! Scalar alpha component (single value only, no packing/unpacking here).
-  Gp sa;
-  //! Packed alpha components.
-  VecArray pa;
-  //! Packed inverted alpha components.
-  VecArray pi;
-  //! Unpacked alpha components.
-  VecArray ua;
-  //! Unpacked and inverted alpha components.
-  VecArray ui;
-  //! Packed ARGB32 pixel(s), maximum 8, 16, or 32, depending on SIMD width.
-  VecArray pc;
-  //! Unpacked ARGB32 pixel(s), maximum 8, 16, or 32, depending on SIMD width.
-  VecArray uc;
-
-  BL_NOINLINE Pixel(PixelType type = PixelType::kNone) noexcept
-    : _type(type),
-      _name {},
-      _flags(PixelFlags::kNone),
-      _count(0) {}
-
-  BL_NOINLINE Pixel(const char* name, PixelType type = PixelType::kNone) noexcept
-    : _type(type),
-      _name {},
-      _flags(PixelFlags::kNone),
-      _count(0) { setName(name); }
-
-  BL_INLINE void reset(PixelType type = PixelType::kNone) noexcept {
-    _type = type;
-    memset(_name, 0, BL_ARRAY_SIZE(_name));
-    resetAllExceptTypeAndName();
-  }
-
-  BL_NOINLINE void resetAllExceptTypeAndName() noexcept {
-    _flags = PixelFlags::kNone;
-    _count = 0;
-    sa.reset();
-    pa.reset();
-    ua.reset();
-    ui.reset();
-    pc.reset();
-    uc.reset();
-  }
-
-  BL_INLINE PixelType type() const noexcept { return _type; }
-  BL_INLINE void setType(PixelType type) noexcept { _type = type; }
-
-  BL_INLINE bool isA8() const noexcept { return _type == PixelType::kA8; }
-  BL_INLINE bool isRGBA32() const noexcept { return _type == PixelType::kRGBA32; }
-  BL_INLINE bool isRGBA64() const noexcept { return _type == PixelType::kRGBA64; }
-
-  BL_INLINE const char* name() const noexcept { return _name; }
-
-  BL_NOINLINE void setName(const char* name) noexcept {
-    size_t len = strnlen(name, BL_ARRAY_SIZE(_name) - 2);
-    _name[0] = '\0';
-
-    if (len) {
-      memcpy(_name, name, len);
-      _name[len + 0] = '.';
-      _name[len + 1] = '\0';
-    }
-  }
-
-  BL_INLINE PixelFlags flags() const noexcept { return _flags; }
-  //! Tests whether all members are immutable (solid fills).
-  BL_INLINE bool isImmutable() const noexcept { return blTestFlag(_flags, PixelFlags::kImmutable); }
-  //! Tests whether this pixel was a partial fetch (the last pixel could be missing).
-  BL_INLINE bool isLastPartial() const noexcept { return blTestFlag(_flags, PixelFlags::kLastPartial); }
-
-  BL_INLINE void makeImmutable() noexcept { _flags |= PixelFlags::kImmutable; }
-
-  BL_INLINE void setImmutable(bool immutable) noexcept {
-    _flags = (_flags & ~PixelFlags::kImmutable) | (immutable ? PixelFlags::kImmutable : PixelFlags::kNone);
-  }
-
-  BL_INLINE PixelCount count() const noexcept { return _count; }
-  BL_INLINE void setCount(PixelCount count) noexcept { _count = count; }
-};
-
-//! Optimized pixel representation used by solid fills.
-//!
-//! Used by both Alpha and RGBA pixel pipelines.
-class SolidPixel {
-public:
-  BL_INLINE SolidPixel() noexcept { reset(); }
-
-  //! Scalar alpha or stencil value (A8 pipeline).
-  Gp sa;
-  //! Scalar pre-processed component, shown as "X" in equations.
-  Gp sx;
-  //! Scalar pre-processed component, shown as "Y" in equations.
-  Gp sy;
-
-  //! Packed pre-processed components, shown as "X" in equations.
-  Vec px;
-  //! Packed pre-processed components, shown as "Y" in equations.
-  Vec py;
-  //! Unpacked pre-processed components, shown as "X" in equations.
-  Vec ux;
-  //! Unpacked pre-processed components, shown as "Y" in equations.
-  Vec uy;
-
-  //! Mask vector.
-  Vec vm;
-  //! Inverted mask vector.
-  Vec vn;
-
-  BL_INLINE void reset() noexcept {
-    sa.reset();
-    sx.reset();
-    sy.reset();
-
-    px.reset();
-    ux.reset();
-
-    py.reset();
-    uy.reset();
-
-    vm.reset();
-    vn.reset();
-  }
-};
-
-//! A constant mask (CMASK) stored in either GP or XMM register.
-struct PipeCMask {
-  //! Mask scalar.
-  Gp sm;
-  //! Inverted mask scalar.
-  Gp sn;
-
-  //! Mask vector.
-  Vec vm;
-  //! Inverted mask vector.
-  Vec vn;
-
-  BL_INLINE void reset() noexcept {
-    JitUtils::resetVarStruct<PipeCMask>(this);
-  }
-};
-
+//! Flags used by predicated load and store operations.
 enum class PredicateFlags : uint32_t {
   //! No flags specified.
   kNone = 0x00000000u,
@@ -300,6 +140,87 @@ enum class PredicateFlags : uint32_t {
   kNeverFull = 0x00000001u
 };
 BL_DEFINE_ENUM_FLAGS(PredicateFlags)
+
+//! Options used by pixel fetchers.
+struct PixelFetchInfo {
+  //! \name Members
+  //! \{
+
+  //! Pixel format.
+  FormatExt _format {};
+
+  //! Pixel components, compatible with \ref BL_FORMAT_FLAG.
+  uint8_t _components {};
+
+  //! A byte offset (memory) where the alpha can be accessed.
+  //!
+  //! This offset can be added to a memory operand on architectures that provide addressing modes with offsets.
+  uint8_t _alphaOffset {};
+
+  //! A byte offset already applied to a pointer
+  //!
+  //! This is used in cases in which the pipeline loads pixels in a scalar way (for example extend modes are applied).
+  uint8_t _appliedOffset {};
+
+  //! \}
+
+  //! \name Construction & Destruction
+  //! \{
+
+  BL_INLINE_NODEBUG PixelFetchInfo() noexcept = default;
+  BL_INLINE_NODEBUG PixelFetchInfo(const PixelFetchInfo& other) noexcept = default;
+  BL_INLINE_NODEBUG explicit PixelFetchInfo(FormatExt format) noexcept { init(format); }
+
+  //! \}
+
+  //! \name Initialization
+  //! \{
+
+  BL_INLINE void init(FormatExt format) noexcept {
+    _format = format;
+    _components = uint8_t(blFormatInfo[size_t(format)].flags & 0xFFu);
+    _alphaOffset = uint8_t(blFormatInfo[size_t(format)].aShift / 8u);
+    _appliedOffset = 0;
+  }
+
+  //! Makes the current `byteOffset` applies, which means that ALL source pointers have `byteOffset` incremented.
+  BL_INLINE void applyAlphaOffset() noexcept { _appliedOffset = _alphaOffset; }
+
+  //! \}
+
+  //! \name Interface
+  //! \{
+
+  //! Returns pixel format.
+  BL_INLINE_NODEBUG FormatExt format() const noexcept { return _format; }
+  //! Returns source pixel format information.
+  BL_INLINE_NODEBUG BLFormatInfo formatInfo() const noexcept { return blFormatInfo[size_t(_format)]; }
+  //! Returns bytes per pixel.
+  BL_INLINE_NODEBUG uint32_t bpp() const noexcept { return blFormatInfo[size_t(_format)].depth / 8u; }
+
+  //! Returns a byte offset of the alpha component that can be applied when loading alpha component from memory.
+  BL_INLINE_NODEBUG int alphaOffset() const noexcept { return _alphaOffset; }
+
+  //! Returns a byte offset that has been already applied to source pointer(s).
+  BL_INLINE_NODEBUG int appliedOffset() const noexcept { return _appliedOffset; }
+
+  //! Calculates the offset that must be used to fetch a full pixel and not just the alpha.
+  BL_INLINE_NODEBUG int fetchPixelOffset() const noexcept { return -int(_appliedOffset); }
+
+  //! Calculates the offset that must be used when fetching alpha component from a possibly adjusted source pointer.
+  //!
+  //! \note When the offset has been applied the return value should be 0 as that's the purpose of applying it,
+  //! however, when the offset hasn't been applied, the returned value would be the same as `byteOffset`.
+  BL_INLINE_NODEBUG int fetchAlphaOffset() const noexcept { return int(_alphaOffset) - int(_appliedOffset); }
+
+  // Returns whether the pixel format has RGB components.
+  BL_INLINE_NODEBUG bool hasRGB() const noexcept { return (_components & BL_FORMAT_FLAG_RGB) != 0; }
+
+  // Returns whether the pixel format has Alpha component.
+  BL_INLINE_NODEBUG bool hasAlpha() const noexcept { return (_components & BL_FORMAT_FLAG_ALPHA) != 0; }
+
+  //! \}
+};
 
 //! Provides an abstraction regarding predicated loads and stores.
 //!
@@ -401,6 +322,169 @@ struct PixelPredicate {
     _materializedEndPtrData[i].adjusted1 = adjusted1;
     _materializedEndPtrData[i].adjusted2 = adjusted2;
     _materializedEndPtrCount++;
+  }
+};
+
+//! Represents either Alpha or RGBA pixel.
+//!
+//! Convention used to define and process pixel components:
+//!
+//!   - Prefixes:
+//!     - "p"  - packed pixel(s) or component(s).
+//!     - "u"  - unpacked pixel(s) or component(s).
+//!
+//!   - Components:
+//!     - "c"  - Pixel components (ARGB).
+//!     - "a"  - Pixel alpha values (A).
+//!     - "i"  - Inverted pixel alpha values (IA).
+//!     - "m"  - Mask (not part of the pixel itself, comes from a FillPart).
+//!     - "im" - Mask (not part of the pixel itself, comes from a FillPart).
+class Pixel {
+public:
+  PixelType _type;
+  char _name[15];
+
+  PixelFlags _flags;
+  PixelCount _count;
+
+  //! Scalar alpha component (single value only, no packing/unpacking here).
+  Gp sa;
+  //! Packed alpha components.
+  VecArray pa;
+  //! Packed inverted alpha components.
+  VecArray pi;
+  //! Unpacked alpha components.
+  VecArray ua;
+  //! Unpacked and inverted alpha components.
+  VecArray ui;
+  //! Packed ARGB32 pixel(s), maximum 8, 16, or 32, depending on SIMD width.
+  VecArray pc;
+  //! Unpacked ARGB32 pixel(s), maximum 8, 16, or 32, depending on SIMD width.
+  VecArray uc;
+
+  BL_NOINLINE Pixel(PixelType type = PixelType::kNone) noexcept
+    : _type(type),
+      _name {},
+      _flags(PixelFlags::kNone),
+      _count(0) {}
+
+  BL_NOINLINE Pixel(const char* name, PixelType type = PixelType::kNone) noexcept
+    : _type(type),
+      _name {},
+      _flags(PixelFlags::kNone),
+      _count(0) { setName(name); }
+
+  BL_INLINE void reset(PixelType type = PixelType::kNone) noexcept {
+    _type = type;
+    memset(_name, 0, BL_ARRAY_SIZE(_name));
+    resetAllExceptTypeAndName();
+  }
+
+  BL_NOINLINE void resetAllExceptTypeAndName() noexcept {
+    _flags = PixelFlags::kNone;
+    _count = 0;
+    sa.reset();
+    pa.reset();
+    ua.reset();
+    ui.reset();
+    pc.reset();
+    uc.reset();
+  }
+
+  BL_INLINE_NODEBUG PixelType type() const noexcept { return _type; }
+  BL_INLINE void setType(PixelType type) noexcept { _type = type; }
+
+  BL_INLINE_NODEBUG bool isA8() const noexcept { return _type == PixelType::kA8; }
+  BL_INLINE_NODEBUG bool isRGBA32() const noexcept { return _type == PixelType::kRGBA32; }
+  BL_INLINE_NODEBUG bool isRGBA64() const noexcept { return _type == PixelType::kRGBA64; }
+
+  BL_INLINE_NODEBUG const char* name() const noexcept { return _name; }
+
+  BL_NOINLINE void setName(const char* name) noexcept {
+    size_t len = strnlen(name, BL_ARRAY_SIZE(_name) - 2);
+    _name[0] = '\0';
+
+    if (len) {
+      memcpy(_name, name, len);
+      _name[len + 0] = '.';
+      _name[len + 1] = '\0';
+    }
+  }
+
+  BL_INLINE_NODEBUG PixelFlags flags() const noexcept { return _flags; }
+  //! Tests whether all members are immutable (solid fills).
+  BL_INLINE_NODEBUG bool isImmutable() const noexcept { return blTestFlag(_flags, PixelFlags::kImmutable); }
+  //! Tests whether this pixel was a partial fetch (the last pixel could be missing).
+  BL_INLINE_NODEBUG bool isLastPartial() const noexcept { return blTestFlag(_flags, PixelFlags::kLastPartial); }
+
+  BL_INLINE void makeImmutable() noexcept { _flags |= PixelFlags::kImmutable; }
+
+  BL_INLINE void setImmutable(bool immutable) noexcept {
+    _flags = (_flags & ~PixelFlags::kImmutable) | (immutable ? PixelFlags::kImmutable : PixelFlags::kNone);
+  }
+
+  BL_INLINE_NODEBUG PixelCount count() const noexcept { return _count; }
+  BL_INLINE void setCount(PixelCount count) noexcept { _count = count; }
+};
+
+//! Optimized pixel representation used by solid fills.
+//!
+//! Used by both Alpha and RGBA pixel pipelines.
+class SolidPixel {
+public:
+  BL_INLINE SolidPixel() noexcept { reset(); }
+
+  //! Scalar alpha or stencil value (A8 pipeline).
+  Gp sa;
+  //! Scalar pre-processed component, shown as "X" in equations.
+  Gp sx;
+  //! Scalar pre-processed component, shown as "Y" in equations.
+  Gp sy;
+
+  //! Packed pre-processed components, shown as "X" in equations.
+  Vec px;
+  //! Packed pre-processed components, shown as "Y" in equations.
+  Vec py;
+  //! Unpacked pre-processed components, shown as "X" in equations.
+  Vec ux;
+  //! Unpacked pre-processed components, shown as "Y" in equations.
+  Vec uy;
+
+  //! Mask vector.
+  Vec vm;
+  //! Inverted mask vector.
+  Vec vn;
+
+  BL_INLINE void reset() noexcept {
+    sa.reset();
+    sx.reset();
+    sy.reset();
+
+    px.reset();
+    ux.reset();
+
+    py.reset();
+    uy.reset();
+
+    vm.reset();
+    vn.reset();
+  }
+};
+
+//! A constant mask (CMASK) stored in either GP or XMM register.
+struct PipeCMask {
+  //! Mask scalar.
+  Gp sm;
+  //! Inverted mask scalar.
+  Gp sn;
+
+  //! Mask vector.
+  Vec vm;
+  //! Inverted mask vector.
+  Vec vn;
+
+  BL_INLINE void reset() noexcept {
+    JitUtils::resetVarStruct<PipeCMask>(this);
   }
 };
 

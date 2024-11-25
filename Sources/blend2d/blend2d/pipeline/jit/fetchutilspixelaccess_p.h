@@ -51,18 +51,25 @@ void storePredicatedVec32(PipeCompiler* pc, const Gp& dPtr, const VecArray& sVec
 // bl::Pipeline::Jit::FetchUtils - Fetch Mask
 // ==========================================
 
-void fetchMaskA8AndAdvance(PipeCompiler* pc, VecArray& vm, const Gp& mPtr, PixelCount n, PixelType pixelType, PixelCoverageFormat coverageFormat, const Vec& globalAlpha, PixelPredicate& predicate) noexcept;
+void fetchMaskA8(PipeCompiler* pc, VecArray& vm, const Gp& mPtr, PixelCount n, PixelType pixelType, PixelCoverageFormat coverageFormat, AdvanceMode advance, PixelPredicate& predicate, GlobalAlpha* ga = nullptr) noexcept;
 
 // bl::Pipeline::Jit::FetchUtils - Fetch Pixel(s)
 // ==============================================
 
-//! Fetches 1 pixel to a vector or scalar register in `p` from memory location `src_`.
-void fetchPixel(PipeCompiler* pc, Pixel& p, PixelFlags flags, FormatExt format, Mem sMem) noexcept;
+// Functions with `Info` suffix fetch into an already preallocated destination.
+void fetchMaskA8IntoPA(PipeCompiler* pc, VecArray& dVec, const Gp& sPtr, PixelCount n, AdvanceMode advanceMode, PixelPredicate& predicate, GlobalAlpha* ga = nullptr) noexcept;
+void fetchMaskA8IntoUA(PipeCompiler* pc, VecArray& dVec, const Gp& sPtr, PixelCount n, AdvanceMode advanceMode, PixelPredicate& predicate, GlobalAlpha* ga = nullptr) noexcept;
+void fetchMaskA8IntoPC(PipeCompiler* pc, VecArray dVec, const Gp& sPtr, PixelCount n, AdvanceMode advanceMode, PixelPredicate& predicate, GlobalAlpha* ga = nullptr) noexcept;
+void fetchMaskA8IntoUC(PipeCompiler* pc, VecArray& dVec, const Gp& sPtr, PixelCount n, AdvanceMode advanceMode, PixelPredicate& predicate, GlobalAlpha* ga = nullptr) noexcept;
+void fetchPRGB32IntoPA(PipeCompiler* pc, VecArray& dVec, const Gp& sPtr, PixelCount n, AdvanceMode advanceMode, PixelPredicate& predicate) noexcept;
+void fetchPRGB32IntoUA(PipeCompiler* pc, VecArray& dVec, const Gp& sPtr, PixelCount n, AdvanceMode advanceMode, PixelPredicate& predicate) noexcept;
 
-//! Fetches `n` pixels to vector register(s) in `p` from memory location `src_`.
-void fetchPixels(PipeCompiler* pc, Pixel& p, PixelCount n, PixelFlags flags, FormatExt format, const Mem& sMem, Alignment alignment) noexcept;
-void fetchPixels(PipeCompiler* pc, Pixel& p, PixelCount n, PixelFlags flags, FormatExt format, const Gp& sPtr, Alignment alignment, AdvanceMode advanceMode) noexcept;
-void fetchPixels(PipeCompiler* pc, Pixel& p, PixelCount n, PixelFlags flags, FormatExt format, const Gp& sPtr, Alignment alignment, AdvanceMode advanceMode, PixelPredicate& predicate) noexcept;
+//! Fetches `1` pixel to a vector or scalar register in `p` from memory location `sMem`.
+void fetchPixel(PipeCompiler* pc, Pixel& p, PixelFlags flags, PixelFetchInfo fInfo, Mem sMem) noexcept;
+
+//! Fetches `n` pixels to vector register(s) in `p` from memory location `sPtr`.
+void fetchPixels(PipeCompiler* pc, Pixel& p, PixelCount n, PixelFlags flags, PixelFetchInfo fInfo, const Gp& sPtr, Alignment alignment, AdvanceMode advanceMode) noexcept;
+void fetchPixels(PipeCompiler* pc, Pixel& p, PixelCount n, PixelFlags flags, PixelFetchInfo fInfo, const Gp& sPtr, Alignment alignment, AdvanceMode advanceMode, PixelPredicate& predicate) noexcept;
 
 // bl::Pipeline::Jit::FetchUtils - Satisfy Pixel(s)
 // ================================================
@@ -79,7 +86,7 @@ void satisfySolidPixels(PipeCompiler* pc, Pixel& p, PixelFlags flags) noexcept;
 void _x_pack_pixel(PipeCompiler* pc, VecArray& px, VecArray& ux, uint32_t n, const char* prefix, const char* pxName) noexcept;
 void _x_unpack_pixel(PipeCompiler* pc, VecArray& ux, VecArray& px, uint32_t n, const char* prefix, const char* uxName) noexcept;
 
-void x_fetch_unpacked_a8_2x(PipeCompiler* pc, const Vec& dst, FormatExt format, const Mem& src1, const Mem& src0) noexcept;
+void x_fetch_unpacked_a8_2x(PipeCompiler* pc, const Vec& dst, PixelFetchInfo fInfo, const Mem& src1, const Mem& src0) noexcept;
 
 void x_assign_unpacked_alpha_values(PipeCompiler* pc, Pixel& p, PixelFlags flags, const Vec& vec) noexcept;
 
