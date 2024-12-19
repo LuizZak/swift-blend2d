@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLFontQueryProperties: CustomStringConvertible, Equatable { }
+extension BLFontQueryProperties: @retroactive CustomStringConvertible, @retroactive Equatable { }
 
 public extension BLFontQueryProperties {
     var description: String {

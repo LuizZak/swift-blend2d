@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLFontFaceInfo: CustomStringConvertible, Equatable { }
+extension BLFontFaceInfo: @retroactive CustomStringConvertible, @retroactive Equatable { }
 
 public extension BLFontFaceInfo {
     var description: String {

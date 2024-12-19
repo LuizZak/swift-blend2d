@@ -4,7 +4,7 @@
 import blend2d
 
 /// CPU features Blend2D supports.
-extension BLRuntimeCpuFeatures: OptionSet { }
+extension BLRuntimeCpuFeatures: @retroactive OptionSet { }
 
 public extension BLRuntimeCpuFeatures {
     static let x86_sse2 = BL_RUNTIME_CPU_FEATURE_X86_SSE2

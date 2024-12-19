@@ -4,7 +4,7 @@
 import blend2d
 
 /// Flags used by `BLGlyphRun`.
-extension BLGlyphRunFlags: OptionSet { }
+extension BLGlyphRunFlags: @retroactive OptionSet { }
 
 public extension BLGlyphRunFlags {
     /// No flags.

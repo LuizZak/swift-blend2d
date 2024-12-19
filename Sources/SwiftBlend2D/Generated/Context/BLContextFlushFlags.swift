@@ -4,7 +4,7 @@
 import blend2d
 
 /// Rendering context flush flags, used by `BLContext.flush()`.
-extension BLContextFlushFlags: OptionSet { }
+extension BLContextFlushFlags: @retroactive OptionSet { }
 
 public extension BLContextFlushFlags {
     static let noFlags = BL_CONTEXT_FLUSH_NO_FLAGS

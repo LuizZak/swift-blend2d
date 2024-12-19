@@ -4,7 +4,7 @@
 import blend2d
 
 /// File information flags, used by `BLFileInfo`.
-extension BLFileInfoFlags: OptionSet { }
+extension BLFileInfoFlags: @retroactive OptionSet { }
 
 public extension BLFileInfoFlags {
     /// File owner has read permission (compatible with 0400 octal notation).

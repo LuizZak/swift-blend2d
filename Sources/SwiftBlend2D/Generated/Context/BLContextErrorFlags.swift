@@ -6,7 +6,7 @@ import blend2d
 /// Error flags that are accumulated during the rendering context lifetime and that can be queried through
 /// `BLContext.accumulatedErrorFlags()`. The reason why these flags exist is that errors can happen during
 /// asynchronous rendering, and there is no way the user can catch these errors.
-extension BLContextErrorFlags: OptionSet { }
+extension BLContextErrorFlags: @retroactive OptionSet { }
 
 public extension BLContextErrorFlags {
     /// No flags.

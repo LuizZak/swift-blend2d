@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLPoint: CustomStringConvertible, Equatable, Hashable { }
+extension BLPoint: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLPoint {
     var description: String {

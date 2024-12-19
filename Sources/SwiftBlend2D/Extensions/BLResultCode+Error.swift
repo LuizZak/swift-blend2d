@@ -1,5 +1,5 @@
 import blend2d
 
-extension BLResultCode: Error {
-    
+extension BLResultCode: @retroactive Error {
+
 }

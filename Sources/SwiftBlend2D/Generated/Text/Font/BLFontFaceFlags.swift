@@ -4,7 +4,7 @@
 import blend2d
 
 /// Flags used by `BLFontFace` (or `BLFontFaceCore`)
-extension BLFontFaceFlags: OptionSet { }
+extension BLFontFaceFlags: @retroactive OptionSet { }
 
 public extension BLFontFaceFlags {
     /// No flags.

@@ -4,7 +4,7 @@
 import blend2d
 
 /// Rendering context creation flags.
-extension BLContextCreateFlags: OptionSet { }
+extension BLContextCreateFlags: @retroactive OptionSet { }
 
 public extension BLContextCreateFlags {
     /// No flags.

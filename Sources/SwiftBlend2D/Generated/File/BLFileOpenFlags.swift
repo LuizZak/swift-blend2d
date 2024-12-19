@@ -4,7 +4,7 @@
 import blend2d
 
 /// File open flags, see `BLFile.open()`.
-extension BLFileOpenFlags: OptionSet { }
+extension BLFileOpenFlags: @retroactive OptionSet { }
 
 public extension BLFileOpenFlags {
     /// No flags.

@@ -4,7 +4,7 @@
 import blend2d
 
 /// Diagnostic flags offered by `BLFontFace` (or `BLFontFaceCore`).
-extension BLFontFaceDiagFlags: OptionSet { }
+extension BLFontFaceDiagFlags: @retroactive OptionSet { }
 
 public extension BLFontFaceDiagFlags {
     /// No flags.

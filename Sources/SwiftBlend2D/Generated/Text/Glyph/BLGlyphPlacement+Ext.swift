@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLGlyphPlacement: CustomStringConvertible, Equatable, Hashable { }
+extension BLGlyphPlacement: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLGlyphPlacement {
     var description: String {

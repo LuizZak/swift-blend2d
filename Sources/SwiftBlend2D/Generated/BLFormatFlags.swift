@@ -4,7 +4,7 @@
 import blend2d
 
 /// Pixel format flags.
-extension BLFormatFlags: OptionSet { }
+extension BLFormatFlags: @retroactive OptionSet { }
 
 public extension BLFormatFlags {
     /// No flags.

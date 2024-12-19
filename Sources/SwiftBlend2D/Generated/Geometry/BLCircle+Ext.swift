@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLCircle: CustomStringConvertible, Equatable, Hashable { }
+extension BLCircle: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLCircle {
     var description: String {

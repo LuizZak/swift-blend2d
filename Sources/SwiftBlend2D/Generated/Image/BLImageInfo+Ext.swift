@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLImageInfo: CustomStringConvertible, Equatable, Hashable { }
+extension BLImageInfo: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLImageInfo {
     var description: String {

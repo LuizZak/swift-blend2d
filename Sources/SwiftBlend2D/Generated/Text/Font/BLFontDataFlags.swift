@@ -4,7 +4,7 @@
 import blend2d
 
 /// Flags used by `BLFontData` (or `BLFontDataCore`).
-extension BLFontDataFlags: OptionSet { }
+extension BLFontDataFlags: @retroactive OptionSet { }
 
 public extension BLFontDataFlags {
     /// No flags.

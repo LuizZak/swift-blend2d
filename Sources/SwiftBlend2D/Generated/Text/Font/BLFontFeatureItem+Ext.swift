@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLFontFeatureItem: CustomStringConvertible, Equatable, Hashable { }
+extension BLFontFeatureItem: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLFontFeatureItem {
     var description: String {

@@ -240,7 +240,7 @@ class SwiftExtensionDecl(SwiftDecl):
         # Emit conformances, with no access control specifier so the code compiles
         # properly
         if len(self.conformances) > 0:
-            conformance_str = ", ".join(sorted(self.conformances))
+            conformance_str = ", ".join(sorted(map(lambda c: f"@retroactive {c}", self.conformances)))
 
             stream.line(f"extension {name}: {conformance_str} {{ }}")
             stream.line()

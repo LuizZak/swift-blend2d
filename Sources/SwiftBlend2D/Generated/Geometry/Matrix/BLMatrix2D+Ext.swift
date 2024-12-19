@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLMatrix2D: Equatable, Hashable { }
+extension BLMatrix2D: @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLMatrix2D {
     static func == (lhs: Self, rhs: Self) -> Bool {

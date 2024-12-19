@@ -4,7 +4,7 @@
 import blend2d
 
 /// Runtime cleanup flags that can be used through `BLRuntime.cleanup()`.
-extension BLRuntimeCleanupFlags: OptionSet { }
+extension BLRuntimeCleanupFlags: @retroactive OptionSet { }
 
 public extension BLRuntimeCleanupFlags {
     /// No flags.

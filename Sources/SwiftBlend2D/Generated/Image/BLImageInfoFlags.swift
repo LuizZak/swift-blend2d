@@ -4,7 +4,7 @@
 import blend2d
 
 /// Flags used by `BLImageInfo`.
-extension BLImageInfoFlags: OptionSet { }
+extension BLImageInfoFlags: @retroactive OptionSet { }
 
 public extension BLImageInfoFlags {
     /// No flags.

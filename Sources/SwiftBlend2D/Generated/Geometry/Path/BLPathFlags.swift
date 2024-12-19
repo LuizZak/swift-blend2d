@@ -4,7 +4,7 @@
 import blend2d
 
 /// Path flags.
-extension BLPathFlags: OptionSet { }
+extension BLPathFlags: @retroactive OptionSet { }
 
 public extension BLPathFlags {
     /// No flags.

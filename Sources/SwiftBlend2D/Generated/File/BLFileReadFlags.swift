@@ -4,7 +4,7 @@
 import blend2d
 
 /// File read flags used by `BLFileSystem.readFile()`.
-extension BLFileReadFlags: OptionSet { }
+extension BLFileReadFlags: @retroactive OptionSet { }
 
 public extension BLFileReadFlags {
     /// No flags.

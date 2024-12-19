@@ -4,7 +4,7 @@
 import blend2d
 
 /// Image codec feature bits.
-extension BLImageCodecFeatures: OptionSet { }
+extension BLImageCodecFeatures: @retroactive OptionSet { }
 
 public extension BLImageCodecFeatures {
     /// No features.

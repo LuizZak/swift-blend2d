@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLBitSetSegment: Equatable { }
+extension BLBitSetSegment: @retroactive Equatable { }
 
 public extension BLBitSetSegment {
     static func == (lhs: Self, rhs: Self) -> Bool {

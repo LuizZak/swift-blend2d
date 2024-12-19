@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLTextMetrics: CustomStringConvertible, Equatable, Hashable { }
+extension BLTextMetrics: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLTextMetrics {
     var description: String {

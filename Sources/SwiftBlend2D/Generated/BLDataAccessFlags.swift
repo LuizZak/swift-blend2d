@@ -4,7 +4,7 @@
 import blend2d
 
 /// Data access flags.
-extension BLDataAccessFlags: OptionSet { }
+extension BLDataAccessFlags: @retroactive OptionSet { }
 
 public extension BLDataAccessFlags {
     /// No data access flags.

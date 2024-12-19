@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLLinearGradientValues: CustomStringConvertible, Equatable, Hashable { }
+extension BLLinearGradientValues: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLLinearGradientValues {
     var description: String {

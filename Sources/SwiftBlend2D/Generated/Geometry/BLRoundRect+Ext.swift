@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLRoundRect: CustomStringConvertible, Equatable, Hashable { }
+extension BLRoundRect: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLRoundRect {
     var description: String {

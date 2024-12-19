@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLLine: CustomStringConvertible, Equatable, Hashable { }
+extension BLLine: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLLine {
     var description: String {

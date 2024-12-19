@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLGradientStop: CustomStringConvertible, Equatable, Hashable { }
+extension BLGradientStop: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLGradientStop {
     var description: String {

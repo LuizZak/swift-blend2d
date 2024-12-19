@@ -16,14 +16,14 @@ public extension BLFormatInfo {
         blFormatInfo.3
     }
     */
-    
+
     init?(query format: BLFormat) {
         self.init()
         if blFormatInfoQuery(&self, format) != BL_SUCCESS.rawValue {
             return nil
         }
     }
-    
+
     /// Sanitize this `BLFormatInfo`.
     ///
     /// Sanitizer verifies whether the format is valid and updates the format
@@ -36,7 +36,7 @@ public extension BLFormatInfo {
     }
 }
 
-extension BLFormatInfo: Equatable {
+extension BLFormatInfo: @retroactive Equatable {
     public static func == (lhs: BLFormatInfo, rhs: BLFormatInfo) -> Bool {
         withUnsafePointer(to: lhs) { lhs_p in
             withUnsafePointer(to: rhs) { rhs_p in

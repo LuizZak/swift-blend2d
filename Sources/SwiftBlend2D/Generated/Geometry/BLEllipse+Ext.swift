@@ -3,7 +3,7 @@
 
 import blend2d
 
-extension BLEllipse: CustomStringConvertible, Equatable, Hashable { }
+extension BLEllipse: @retroactive CustomStringConvertible, @retroactive Equatable, @retroactive Hashable { }
 
 public extension BLEllipse {
     var description: String {

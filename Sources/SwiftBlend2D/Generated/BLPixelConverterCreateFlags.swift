@@ -4,7 +4,7 @@
 import blend2d
 
 /// Flags used by `BLPixelConverter.create()` function.
-extension BLPixelConverterCreateFlags: OptionSet { }
+extension BLPixelConverterCreateFlags: @retroactive OptionSet { }
 
 public extension BLPixelConverterCreateFlags {
     /// No flags.
