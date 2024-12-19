@@ -266,7 +266,7 @@ class Blend2DDoccommentFormatter(DoccommentFormatter):
     """
 
     def __init__(self):
-        self.ref_regex = re.compile(r"\\ref (\w+(?:\(\))?)", re.IGNORECASE)
+        self.ref_regex = re.compile(r"\\ref (\w+(?:\<[^>]*\>)?(?:\(\))?)", re.IGNORECASE)
         self.backtick_regex = re.compile(r"`([^`]+)`")
         self.backtick_word_regex = re.compile(r"\w+")
         self.backtick_cpp_member_regex = re.compile(r"(\w+)::(\w+)")
