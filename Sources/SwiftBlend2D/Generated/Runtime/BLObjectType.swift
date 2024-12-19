@@ -5,13 +5,13 @@ import blend2d
 
 /// Object type identifier.
 public extension BLObjectType {
-    /// Object represents a RGBA value stored as four 32-bit floating point components (can be used as Style).
+    /// Object represents a `BLRgba` value stored as four 32-bit floating point components (can be used as Style).
     static let rgba = BL_OBJECT_TYPE_RGBA
     
-    /// Object represents a RGBA32 value stored as 32-bit integer in `0xAARRGGBB` form.
+    /// Object represents a `BLRgba32` value stored as 32-bit integer in `0xAARRGGBB` form.
     static let rgba32 = BL_OBJECT_TYPE_RGBA32
     
-    /// Object represents a RGBA64 value stored as 64-bit integer in `0xAAAARRRRGGGGBBBB` form.
+    /// Object represents a `BLRgba64` value stored as 64-bit integer in `0xAAAARRRRGGGGBBBB` form.
     static let rgba64 = BL_OBJECT_TYPE_RGBA64
     
     /// Object is `Null` (can be used as style).

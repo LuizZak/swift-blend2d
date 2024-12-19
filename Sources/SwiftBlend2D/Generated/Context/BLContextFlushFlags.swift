@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// Rendering context flush flags, used by `BLContext`::flush().
+/// Rendering context flush flags, used by `BLContext.flush()`.
 extension BLContextFlushFlags: OptionSet { }
 
 public extension BLContextFlushFlags {

@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// Specifies the behavior of `BLContext`::swapStyles() operation.
+/// Specifies the behavior of `BLContext.swapStyles()` operation.
 public extension BLContextStyleSwapMode {
     /// Swap only fill and stroke styles without affecting fill and stroke alpha.
     static let styles = BL_CONTEXT_STYLE_SWAP_MODE_STYLES

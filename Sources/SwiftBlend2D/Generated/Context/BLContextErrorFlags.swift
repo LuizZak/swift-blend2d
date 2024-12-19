@@ -4,7 +4,7 @@
 import blend2d
 
 /// Error flags that are accumulated during the rendering context lifetime and that can be queried through
-/// `BLContext.queryAccumulatedErrorFlags()`. The reason why these flags exist is that errors can happen during
+/// `BLContext.accumulatedErrorFlags()`. The reason why these flags exist is that errors can happen during
 /// asynchronous rendering, and there is no way the user can catch these errors.
 extension BLContextErrorFlags: OptionSet { }
 
@@ -12,8 +12,8 @@ public extension BLContextErrorFlags {
     /// No flags.
     static let noFlags = BL_CONTEXT_ERROR_NO_FLAGS
     
-    /// The rendering context returned or encountered `BLResultCode.errorInvalidValue`, which is mostly related to the function
-    /// argument handling. It's very likely some argument was wrong when calling `BLContext` API.
+    /// The rendering context returned or encountered `BLResultCode.errorInvalidValue`, which is mostly related to
+    /// the function argument handling. It's very likely some argument was wrong when calling `BLContext` API.
     static let invalidValue = BL_CONTEXT_ERROR_FLAG_INVALID_VALUE
     
     /// Invalid state describes something wrong, for example a pipeline compilation error.
