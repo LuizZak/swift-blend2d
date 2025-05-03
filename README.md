@@ -12,7 +12,7 @@ For a brief report of what APIs are available in Swift, please check the [status
 
 ### Requirements
 
-Xcode 13.0 / Swift 5.4.3
+Swift 5.10
 
 #### Sample usage
 
