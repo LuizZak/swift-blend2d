@@ -52,7 +52,7 @@ var blend2DCXXSettings: [CXXSetting] = [
     .headerSearchPath("../asmjit"),
     .define("NDEBUG", .when(configuration: .release)),
     .define("BL_BUILD_OPT_SSE2", .when(platforms: x86Platforms)),
-    .define("BL_BUILD_OPT_SSE4_2", .when(platforms: x86Platforms)),
+    //.define("BL_BUILD_OPT_SSE4_2", .when(platforms: x86Platforms)),
     .define("BL_BUILD_NO_STDCXX"),
     .define("BL_EMBED"),
     .define("BL_STATIC"),
