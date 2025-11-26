@@ -6,22 +6,21 @@
 #ifndef BLEND2D_OPENTYPE_OTFACE_P_H_INCLUDED
 #define BLEND2D_OPENTYPE_OTFACE_P_H_INCLUDED
 
-#include "../fonttagdataids_p.h"
-#include "../opentype/otcff_p.h"
-#include "../opentype/otcmap_p.h"
-#include "../opentype/otdefs_p.h"
-#include "../opentype/otglyf_p.h"
-#include "../opentype/otkern_p.h"
-#include "../opentype/otlayout_p.h"
-#include "../opentype/otmetrics_p.h"
-#include "../opentype/otname_p.h"
+#include "../core/fonttagdataids_p.h"
+#include "otcff_p.h"
+#include "otcmap_p.h"
+#include "otdefs_p.h"
+#include "otglyf_p.h"
+#include "otkern_p.h"
+#include "otlayout_p.h"
+#include "otmetrics_p.h"
+#include "otname_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_opentype_impl
 //! \{
 
-namespace bl {
-namespace OpenType {
+namespace bl::OpenType {
 
 enum class OTFaceFlags : uint32_t {
   // Flags related to 'loca' table
@@ -31,6 +30,11 @@ enum class OTFaceFlags : uint32_t {
   kLocaOffset16        = 0x00000002u,
   //! Glyph offsets in 'loca' table use 32-bit offsets [must be 0x4].
   kLocaOffset32        = 0x00000004u,
+
+  // Flags related to 'kern' table
+  // -----------------------------
+
+  kLegacyKernAvailable = 0x00000010u,
 
   // Flags related to 'GDEF' table
   // -----------------------------
@@ -56,8 +60,10 @@ enum class OTFaceFlags : uint32_t {
   kGPosScriptList      = 0x00100000u,
   kGPosFeatureList     = 0x00200000u,
   kGPosLookupList      = 0x00400000u,
-  kGPosFVar            = 0x00800000u
+  kGPosFVar            = 0x00800000u,
+  kGPosKernAvailable   = 0x01000000u
 };
+
 BL_DEFINE_ENUM_FLAGS(OTFaceFlags)
 
 //! OpenType & TrueType font face.
@@ -67,13 +73,13 @@ BL_DEFINE_ENUM_FLAGS(OTFaceFlags)
 //! implementation as OpenType provides enough features required to render text in general.
 struct OTFaceImpl : public BLFontFacePrivateImpl {
   //! OpenType flags, see OTFlags.
-  OTFaceFlags otFlags;
+  OTFaceFlags ot_flags;
 
   //! Character mapping format (stored here so we won't misalign `CMapData`.
-  uint8_t cmapFormat;
+  uint8_t cmap_format;
 
   //! Reserved for future use.
-  uint8_t reservedOpenType[3];
+  uint8_t reserved_open_type[3];
 
   //! Character to glyph mapping data.
   CMapData cmap;
@@ -92,10 +98,10 @@ struct OTFaceImpl : public BLFontFacePrivateImpl {
     GlyfData glyf;
   };
   //! Array of LSubR indexes used by CID fonts (CFF/CFF2).
-  BLArray<CFFData::IndexData> cffFDSubrIndexes;
+  BLArray<CFFData::IndexData> cff_fd_subr_indexes;
 
-  BL_INLINE uint32_t locaOffsetSize() const noexcept {
-    return uint32_t(otFlags & (OTFaceFlags::kLocaOffset16 | OTFaceFlags::kLocaOffset32));
+  BL_INLINE uint32_t loca_offset_size() const noexcept {
+    return uint32_t(ot_flags & (OTFaceFlags::kLocaOffset16 | OTFaceFlags::kLocaOffset32));
   }
 };
 
@@ -132,7 +138,7 @@ union OTFaceTables {
     BLFontTable cff2;
   };
 
-  BL_INLINE void init(OTFaceImpl* faceI, const BLFontData* fontData) noexcept {
+  BL_INLINE void init(OTFaceImpl* ot_face_impl, const BLFontData* font_data) noexcept {
     static const BLTag tags[kTableCount] = {
       BL_MAKE_TAG('h', 'e', 'a', 'd'),
       BL_MAKE_TAG('m', 'a', 'x', 'p'),
@@ -160,14 +166,13 @@ union OTFaceTables {
       BL_MAKE_TAG('C', 'F', 'F', '2')
     };
 
-    fontData->getTables(faceI->faceInfo.faceIndex, tables, tags, kTableCount);
+    font_data->get_tables(ot_face_impl->face_info.face_index, tables, tags, kTableCount);
   }
 };
 
-BL_HIDDEN BLResult createOpenTypeFace(BLFontFaceCore* self, const BLFontData* fontData, uint32_t faceIndex) noexcept;
+BL_HIDDEN BLResult create_open_type_face(BLFontFaceCore* self, const BLFontData* font_data, uint32_t face_index) noexcept;
 
-} // {OpenType}
-} // {bl}
+} // {bl::OpenType}
 
 //! \}
 //! \endcond

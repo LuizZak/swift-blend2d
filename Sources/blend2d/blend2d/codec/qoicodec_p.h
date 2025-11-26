@@ -6,28 +6,26 @@
 #ifndef BLEND2D_CODEC_QOICODEC_P_H_INCLUDED
 #define BLEND2D_CODEC_QOICODEC_P_H_INCLUDED
 
-#include "../api-internal_p.h"
-#include "../image_p.h"
-#include "../imagecodec.h"
-#include "../imagedecoder.h"
-#include "../imageencoder.h"
-#include "../runtime_p.h"
+#include "../core/api-internal_p.h"
+#include "../core/image_p.h"
+#include "../core/imagecodec.h"
+#include "../core/imagedecoder.h"
+#include "../core/imageencoder.h"
+#include "../core/runtime_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_codec_impl
 //! \{
 
-namespace bl {
-namespace Qoi {
+namespace bl::Qoi {
 
-BL_HIDDEN void qoiCodecOnInit(BLRuntimeContext* rt, BLArray<BLImageCodec>* codecs) noexcept;
+BL_HIDDEN void qoi_codec_on_init(BLRuntimeContext* rt, BLArray<BLImageCodec>* codecs) noexcept;
 
-} // {Qoi}
-} // {bl}
+} // {bl::Qoi}
 
 struct BLQoiDecoderImpl : public BLImageDecoderImpl {
   //! Decoder image information.
-  BLImageInfo imageInfo;
+  BLImageInfo image_info;
 };
 
 struct BLQoiEncoderImpl : public BLImageEncoderImpl {

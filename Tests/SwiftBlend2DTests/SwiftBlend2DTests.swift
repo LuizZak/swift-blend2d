@@ -227,9 +227,9 @@ class SwiftBlend2DTests: XCTestCase {
             font.shape(gb)
             tm = font.getTextMetrics(gb)
 
-            p.x = (480.0 - (tm.boundingBox.x1 - tm.boundingBox.x0)) / 2.0
+            p.x = (480.0 - (tm.bounding_box.x1 - tm.bounding_box.x0)) / 2.0
             ctx.fillGlyphRun(gb.glyphRun, at: p, font: font)
-            p.y += Double(fm.ascent + fm.descent + fm.lineGap)
+            p.y += Double(fm.ascent + fm.descent + fm.line_gap)
         }
 
         ctx.end()
@@ -432,7 +432,7 @@ func pngFileFromImage(_ image: BLImage) -> PNGFile {
 
     let bytes =
         UnsafeBufferPointer<UInt32>(
-            start: data.pixelData.assumingMemoryBound(to: UInt32.self),
+            start: data.pixel_data.assumingMemoryBound(to: UInt32.self),
             count: data.stride * Int(data.size.h)
         )
 

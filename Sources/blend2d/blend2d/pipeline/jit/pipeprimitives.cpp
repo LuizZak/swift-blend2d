@@ -3,17 +3,13 @@
 // See blend2d.h or LICENSE.md for license and copyright information
 // SPDX-License-Identifier: Zlib
 
-#include "../../api-build_p.h"
+#include <blend2d/core/api-build_p.h>
 #if !defined(BL_BUILD_NO_JIT)
 
-#include "../../pipeline/jit/pipeprimitives_p.h"
+#include <blend2d/pipeline/jit/pipeprimitives_p.h>
 
-namespace bl {
-namespace Pipeline {
-namespace JIT {
+namespace bl::Pipeline::JIT {
 
-} // {JIT}
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline::JIT}
 
 #endif // !BL_BUILD_NO_JIT

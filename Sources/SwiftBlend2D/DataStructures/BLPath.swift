@@ -4,9 +4,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     /// Returns path capacity (count of allocated vertices).
     @inlinable
     public var capacity: Int {
-        return blPathGetCapacity(&object)
+        return bl_path_get_capacity(&object)
     }
-    
+
     /// Returns a bounding box of all vertices and control points.
     ///
     /// Control box is simply bounds of all vertices the path has without further
@@ -15,10 +15,10 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public var controlBox: BLBox {
         var box = BLBox()
-        blPathGetControlBox(&object, &box)
+        bl_path_get_control_box(&object, &box)
         return box
     }
-    
+
     /// Returns a bounding box of all on-path vertices and curve extremas.
     ///
     /// The bounding box returned could be smaller than a bounding box
@@ -28,22 +28,22 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public var boundingBox: BLBox {
         var box = BLBox()
-        blPathGetBoundingBox(&object, &box)
+        bl_path_get_bounding_box(&object, &box)
         return box
     }
-    
+
     /// Returns the geometric center of this path's bounding box
     @inlinable
     public var center: BLPoint {
         return boundingBox.center
     }
-    
+
     /// Returns path size (count of vertices used).
     @inlinable
     public var size: Int {
-        return blPathGetSize(&object)
+        return bl_path_get_size(&object)
     }
-    
+
     /// Gets the last vertex of this path.
     /// Returns the last vertex of the path. If the very last command of the path
     /// is `BLPathCmd.close` then the path will be iterated in reverse order to
@@ -52,7 +52,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public var lastVertex: BLPoint? {
         var point = BLPoint()
-        if blPathGetLastVertex(&object, &point) != BL_SUCCESS.rawValue {
+        if bl_path_get_last_vertex(&object, &point) != BL_SUCCESS.rawValue {
             return nil
         }
         return point
@@ -71,15 +71,15 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         }
         return ranges
     }
-    
+
     internal init(pointer: UnsafeMutablePointer<BLPathCore>) {
         super.init(weakAssign: pointer.pointee)
     }
-    
+
     public override init() {
         super.init()
     }
-    
+
     /// Gets a new list of paths that each represent a figure within this
     /// path.
     @inlinable
@@ -95,7 +95,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func clear() -> BLResult {
-        return blPathClear(&object)
+        return bl_path_clear(&object)
     }
 
     /// Closes the current figure.
@@ -107,21 +107,21 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func close() -> BLResult {
-        return blPathClose(&object)
+        return bl_path_close(&object)
     }
 
     /// Shrinks the capacity of the path to fit the current usage.
     @discardableResult
     @inlinable
     public func shrink() -> BLResult {
-        return blPathShrink(&object)
+        return bl_path_shrink(&object)
     }
-    
+
     /// Reserves the capacity of the path for at least `minimumCapacity` vertices and commands.
     @discardableResult
     @inlinable
     public func reserveCapacity(_ minimumCapacity: Int) -> BLResult {
-        return blPathReserve(&object, minimumCapacity)
+        return bl_path_reserve(&object, minimumCapacity)
     }
 
     /// Tests whether this path and the `other` path are equal.
@@ -131,72 +131,72 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     /// check to fail).
     @inlinable
     public func equals(to other: BLPath) -> Bool {
-        return blPathEquals(&object, &other.object)
+        return bl_path_equals(&object, &other.object)
     }
-    
+
     /// Sets vertex at `index` to `cmd` and `[pt]`.
     ///
     /// Pass `BLPathCmdExtra.preserve` in `cmd` to preserve the current command.
     @discardableResult
     @inlinable
     public func setVertexAt(index: Int, cmd: UInt32, _ point: BLPoint) -> BLResult {
-        return blPathSetVertexAt(&object, index, cmd, point.x, point.y)
+        return bl_path_set_vertex_at(&object, index, cmd, point.x, point.y)
     }
-    
+
     /// Sets vertex at `index` to `cmd` and `[x, y]`.
     ///
     /// Pass `BLPathCmdExtra.preserve` in `cmd` to preserve the current command.
     @discardableResult
     @inlinable
     public func setVertexAt(index: Int, cmd: UInt32, x: Double, y: Double) -> BLResult {
-        return blPathSetVertexAt(&object, index, cmd, x, y)
+        return bl_path_set_vertex_at(&object, index, cmd, x, y)
     }
-    
+
     /// Moves to `[point]`.
     ///
     /// Appends `BLPathCmd.move[point]` command to the path.
     @discardableResult
     @inlinable
     public func moveTo(_ point: BLPoint) -> BLResult {
-        return blPathMoveTo(&object, point.x, point.y)
+        return bl_path_move_to(&object, point.x, point.y)
     }
-    
+
     /// Moves to `[x0, y0]`.
     ///
     /// Appends `BLPathCmd.move[x0, y0]` command to the path.
     @discardableResult
     @inlinable
     public func moveTo(x: Double, y: Double) -> BLResult {
-        return blPathMoveTo(&object, x, y)
+        return bl_path_move_to(&object, x, y)
     }
-    
+
     /// Adds line to `p1`.
     ///
     /// Appends `BLPathCmd.on[point]` command to the path.
     @discardableResult
     @inlinable
     public func lineTo(_ point: BLPoint) -> BLResult {
-        return blPathLineTo(&object, point.x, point.y)
+        return bl_path_line_to(&object, point.x, point.y)
     }
-    
+
     /// Adds line to `[x1, y1]`.
     ///
     /// Appends `BLPathCmd.on[x1, y1]` command to the path.
     @discardableResult
     @inlinable
     public func lineTo(x: Double, y: Double) -> BLResult {
-        return blPathLineTo(&object, x, y)
+        return bl_path_line_to(&object, x, y)
     }
-    
+
     /// Adds a polyline (LineTo) of the given `poly` array.
     ///
     /// Appends multiple `BLPathCmd.on[x[i], y[i]]` commands to the path matching the length of `poly`.
     @discardableResult
     @inlinable
     public func polyTo(poly: [BLPoint]) -> BLResult {
-        return blPathPolyTo(&object, poly, poly.count)
+        return bl_path_poly_to(&object, poly, poly.count)
     }
-    
+
     /// Adds a quadratic curve to `p1` and `p2`.
     ///
     /// Appends the following commands to the path:
@@ -208,9 +208,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func quadTo(_ p1: BLPoint, _ p2: BLPoint) -> BLResult {
-        return blPathQuadTo(&object, p1.x, p1.y, p2.x, p2.y)
+        return bl_path_quad_to(&object, p1.x, p1.y, p2.x, p2.y)
     }
-    
+
     /// Adds a quadratic curve to `[x1, y1]` and `[x2, y2]`.
     ///
     /// Appends the following commands to the path:
@@ -222,9 +222,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func quadTo(x1: Double, y1: Double, x2: Double, y2: Double) -> BLResult {
-        return blPathQuadTo(&object, x1, y1, x2, y2)
+        return bl_path_quad_to(&object, x1, y1, x2, y2)
     }
-    
+
     /// Adds a cubic curve to `p1`, `p2`, `p3`.
     ///
     /// Appends the following commands to the path:
@@ -237,9 +237,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func cubicTo(_ p1: BLPoint, _ p2: BLPoint, _ p3: BLPoint) -> BLResult {
-        return blPathCubicTo(&object, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+        return bl_path_cubic_to(&object, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
     }
-    
+
     /// Adds a cubic curve to `[x1, y1]`, `[x2, y2]`, and `[x3, y3]`.
     ///
     /// Appends the following commands to the path:
@@ -259,10 +259,10 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         x3: Double,
         y3: Double
     ) -> BLResult {
-        
-        return blPathCubicTo(&object, x1, y1, x2, y2, x3, y3)
+
+        return bl_path_cubic_to(&object, x1, y1, x2, y2, x3, y3)
     }
-    
+
     /// Adds a smooth quadratic curve to `p2`, calculating `p1` from last points.
     ///
     /// Appends the following commands to the path:
@@ -274,9 +274,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func smoothQuadTo(_ p2: BLPoint) -> BLResult {
-        return blPathSmoothQuadTo(&object, p2.x, p2.y)
+        return bl_path_smooth_quad_to(&object, p2.x, p2.y)
     }
-    
+
     /// Adds a smooth quadratic curve to `[x2, y2]`, calculating `[x1, y1]` from last points.
     ///
     /// Appends the following commands to the path:
@@ -288,9 +288,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func smoothQuadTo(x2: Double, y2: Double) -> BLResult {
-        return blPathSmoothQuadTo(&object, x2, y2)
+        return bl_path_smooth_quad_to(&object, x2, y2)
     }
-    
+
     /// Adds a smooth cubic curve to `p2` and `p3`, calculating `p1` from last points.
     ///
     /// Appends the following commands to the path:
@@ -303,9 +303,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func smoothCubicTo(_ p2: BLPoint, _ p3: BLPoint) -> BLResult {
-        return blPathSmoothCubicTo(&object, p2.x, p2.y, p3.x, p3.y)
+        return bl_path_smooth_cubic_to(&object, p2.x, p2.y, p3.x, p3.y)
     }
-    
+
     /// Adds a smooth cubic curve to `[x2, y2]` and `[x3, y3]`, calculating `[x1, y1]` from last points.
     ///
     /// Appends the following commands to the path:
@@ -318,9 +318,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @discardableResult
     @inlinable
     public func smoothCubicTo(x2: Double, y2: Double, x3: Double, y3: Double) -> BLResult {
-        return blPathSmoothCubicTo(&object, x2, y2, x3, y3)
+        return bl_path_smooth_cubic_to(&object, x2, y2, x3, y3)
     }
-    
+
     /// Adds an arc to the path.
     ///
     /// The center of the arc is specified by `center` and by `radius`. Both `start`
@@ -338,7 +338,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         forceMoveTo: Bool
     ) -> BLResult {
 
-        return blPathArcTo(&object, center.x, center.y, radius.x, radius.y, start, sweep, forceMoveTo)
+        return bl_path_arc_to(&object, center.x, center.y, radius.x, radius.y, start, sweep, forceMoveTo)
     }
 
     /// Adds an arc to the path.
@@ -360,25 +360,25 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         forceMoveTo: Bool
     ) -> BLResult {
 
-        return blPathArcTo(&object, x, y, rx, ry, start, sweep, forceMoveTo)
+        return bl_path_arc_to(&object, x, y, rx, ry, start, sweep, forceMoveTo)
     }
-    
+
     /// Adds an arc quadrant (90deg) to the path. The first point `p1` specifies
     /// the quadrant corner and the last point `p2` specifies the end point.
     @discardableResult
     @inlinable
     public func arcQuadrantTo(_ p1: BLPoint, _ p2: BLPoint) -> BLResult {
-        return blPathArcQuadrantTo(&object, p1.x, p1.y, p2.x, p2.y)
+        return bl_path_arc_quadrant_to(&object, p1.x, p1.y, p2.x, p2.y)
     }
-    
+
     /// Adds an arc quadrant (90deg) to the path. The first point `[x1, y1]` specifies
     /// the quadrant corner and the last point `[x2, y2]` specifies the end point.
     @discardableResult
     @inlinable
     public func arcQuadrantTo(x1: Double, y1: Double, x2: Double, y2: Double) -> BLResult {
-        return blPathArcQuadrantTo(&object, x1, y1, x2, y2)
+        return bl_path_arc_quadrant_to(&object, x1, y1, x2, y2)
     }
-    
+
     /// Adds an elliptic arc to the path that follows the SVG specification.
     ///
     /// Matches SVG 'A' path command:
@@ -393,7 +393,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         p1: BLPoint
     ) -> BLResult {
 
-        return blPathEllipticArcTo(
+        return bl_path_elliptic_arc_to(
             &object,
             r.x,
             r.y,
@@ -404,7 +404,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             p1.y
         )
     }
-    
+
     /// Adds an elliptic arc to the path that follows the SVG specification.
     ///
     /// Matches SVG 'A' path command:
@@ -420,8 +420,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         x1: Double,
         y1: Double
     ) -> BLResult {
-        
-        return blPathEllipticArcTo(
+
+        return bl_path_elliptic_arc_to(
             &object,
             rx,
             ry,
@@ -432,7 +432,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
             y1
         )
     }
-    
+
     /// Adds a geometry to the path.
     @discardableResult
     @inlinable
@@ -444,10 +444,10 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     ) -> BLResult {
 
         return withUnsafeNullablePointer(to: matrix) { matrix in
-            blPathAddGeometry(&object, geometryType, data, matrix, direction)
+            bl_path_add_geometry(&object, geometryType, data, matrix, direction)
         }
     }
-    
+
     /// Adds a geometry to the path.
     @discardableResult
     @inlinable
@@ -460,7 +460,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
 
         withUnsafePointer(to: data) { pointer in
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blPathAddGeometry(&object, geometryType, pointer, matrix, direction)
+                bl_path_add_geometry(&object, geometryType, pointer, matrix, direction)
             }
         }
     }
@@ -488,43 +488,43 @@ public final class BLPath: BLBaseClass<BLPathCore> {
 
         return addGeometry(.ellipse, ellipse, m, direction)
     }
-    
+
     /// Adds a closed rectangle to the path specified by `box`.
     @discardableResult
     @inlinable
     public func addBox(_ box: BLBox, direction: BLGeometryDirection = .cw) -> BLResult {
         var box = box
 
-        return blPathAddBoxD(&object, &box, direction)
+        return bl_path_add_box_d(&object, &box, direction)
     }
-    
+
     /// Adds a closed rectangle to the path specified by `box`.
     @discardableResult
     @inlinable
     public func addBox(_ box: BLBoxI, direction: BLGeometryDirection = .cw) -> BLResult {
         var box = box
 
-        return blPathAddBoxI(&object, &box, direction)
+        return bl_path_add_box_i(&object, &box, direction)
     }
-    
+
     /// Adds a closed rectangle to the path specified by `rect`.
     @discardableResult
     @inlinable
     public func addRect(_ rect: BLRect, direction: BLGeometryDirection = .cw) -> BLResult {
         var rect = rect
 
-        return blPathAddRectD(&object, &rect, direction)
+        return bl_path_add_rect_d(&object, &rect, direction)
     }
-    
+
     /// Adds a closed rectangle to the path specified by `rect`.
     @discardableResult
     @inlinable
     public func addRect(_ rect: BLRectI, direction: BLGeometryDirection = .cw) -> BLResult {
         var rect = rect
 
-        return blPathAddRectI(&object, &rect, direction)
+        return bl_path_add_rect_i(&object, &rect, direction)
     }
-    
+
     /// Adds a closed rounded rectangle to the path.
     @discardableResult
     @inlinable
@@ -543,7 +543,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public func addPath(_ other: BLPath, range: BLRange? = nil) -> BLResult {
         return withUnsafeNullablePointer(to: range) {
-            blPathAddPath(&object, &other.object, $0)
+            bl_path_add_path(&object, &other.object, $0)
         }
     }
 
@@ -558,9 +558,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     ) -> BLResult {
 
         var offset = offset
-        
+
         return withUnsafeNullablePointer(to: range) {
-            blPathAddTranslatedPath(&object, &other.object, $0, &offset)
+            bl_path_add_translated_path(&object, &other.object, $0, &offset)
         }
     }
 
@@ -575,9 +575,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     ) -> BLResult {
 
         var matrix = matrix
-        
+
         return withUnsafeNullablePointer(to: range) {
-            blPathAddTransformedPath(&object, &other.object, $0, &matrix)
+            bl_path_add_transformed_path(&object, &other.object, $0, &matrix)
         }
     }
 
@@ -590,9 +590,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         range: BLRange? = nil,
         reverseMode: BLPathReverseMode = .complete
     ) -> BLResult {
-        
+
         return withUnsafeNullablePointer(to: range) {
-            blPathAddReversedPath(&object, &other.object, $0, reverseMode)
+            bl_path_add_reversed_path(&object, &other.object, $0, reverseMode)
         }
     }
 
@@ -606,10 +606,10 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         options: BLStrokeOptions = BLStrokeOptions(),
         approximationOptions: BLApproximationOptions? = nil
     ) -> BLResult {
-        
+
         return withUnsafeNullablePointer(to: range) { range in
             withUnsafeNullablePointer(to: approximationOptions) { approx in
-                blPathAddStrokedPath(&object, &other.object, range, &options.box.object, approx)
+                bl_path_add_stroked_path(&object, &other.object, range, &options.box.object, approx)
             }
         }
     }
@@ -619,9 +619,9 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public func translate(by offset: BLPoint, range: BLRange? = nil) -> BLResult {
         var offset = offset
-        
+
         return withUnsafeNullablePointer(to: range) {
-            blPathTranslate(&object, $0, &offset)
+            bl_path_translate(&object, $0, &offset)
         }
     }
 
@@ -630,24 +630,24 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public func transform(_ matrix: BLMatrix2D, range: BLRange? = nil) -> BLResult {
         var matrix = matrix
-        
+
         return withUnsafeNullablePointer(to: range) {
-            blPathTransform(&object, $0, &matrix)
+            bl_path_transform(&object, $0, &matrix)
         }
     }
-    
+
     /// Fits a part of the path specified by the given `range` into the given
     /// `rect` by taking into account fit flags passed by `fitFlags`.
     @discardableResult
     @inlinable
     func fitTo(rectangle: BLRect, range: BLRange? = nil) -> BLResult {
         var rectangle = rectangle
-        
+
         return withUnsafeNullablePointer(to: range) {
-            blPathFitTo(&object, $0, &rectangle, 0)
+            bl_path_fit_to(&object, $0, &rectangle, 0)
         }
     }
-    
+
     /// Gets the range of a figure at a given index on this path.
     ///
     /// - precondition: index >= 0 && index < size
@@ -656,13 +656,13 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     public func getFigureRange(index: Int) -> BLRange {
         precondition(index >= 0)
         precondition(index < size)
-        
+
         var range = BLRange()
-        blPathGetFigureRange(&object, index, &range)
-        
+        bl_path_get_figure_range(&object, index, &range)
+
         return range
     }
-    
+
     /// Gets the vertex index on this path that is the closest to a given point.
     @inlinable
     public func getClosestVertex(
@@ -673,8 +673,8 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         var point = point
         var indexOut = 0
         var distanceOut = 0.0
-        
-        let result = blPathGetClosestVertex(
+
+        let result = bl_path_get_closest_vertex(
             &object,
             &point,
             maximumDistance,
@@ -684,11 +684,11 @@ public final class BLPath: BLBaseClass<BLPathCore> {
         if result == BL_SUCCESS.rawValue {
             return nil
         }
-        
+
         if indexOut == SIZE_MAX {
             return nil
         }
-        
+
         return (indexOut, distanceOut)
     }
 
@@ -696,7 +696,7 @@ public final class BLPath: BLBaseClass<BLPathCore> {
     @inlinable
     public func hitTest(point: BLPoint, fillRule: BLFillRule) -> BLHitTest {
         var point = point
-        return blPathHitTest(&object, &point, fillRule)
+        return bl_path_hit_test(&object, &point, fillRule)
     }
 }
 
@@ -817,7 +817,7 @@ public extension BLPath {
     func addPath(_ path: BLPath, translatedBy p: BLPoint, _ range: BLRange? = nil) -> BLResult {
         var p = p
         return withUnsafeNullablePointer(to: range) {
-            return blPathAddTranslatedPath(&object, &path.object, $0, &p)
+            return bl_path_add_translated_path(&object, &path.object, $0, &p)
         }
     }
 
@@ -829,7 +829,7 @@ public extension BLPath {
     func addPath(_ path: BLPath, transformedBy m: BLMatrix2D, _ range: BLRange? = nil) -> BLResult {
         var m = m
         return withUnsafeNullablePointer(to: range) {
-            return blPathAddTransformedPath(&object, &path.object, $0, &m)
+            return bl_path_add_transformed_path(&object, &path.object, $0, &m)
         }
     }
 }
@@ -837,12 +837,12 @@ public extension BLPath {
 extension BLPath: Equatable {
     public static func == (lhs: BLPath, rhs: BLPath) -> Bool {
         var rhsObject = rhs.object
-        return blPathEquals(&lhs.object, &rhsObject)
+        return bl_path_equals(&lhs.object, &rhsObject)
     }
 }
 
 extension BLPathCore: CoreStructure {
-    public static let initializer = blPathInit
-    public static let deinitializer = blPathReset
-    public static let assignWeak = blPathAssignWeak
+    public static let initializer = bl_path_init
+    public static let deinitializer = bl_path_reset
+    public static let assignWeak = bl_path_assign_weak
 }

@@ -6,8 +6,8 @@
 #ifndef BLEND2D_THREADING_TSANUTILS_P_H_INCLUDED
 #define BLEND2D_THREADING_TSANUTILS_P_H_INCLUDED
 
-#include "../api-internal_p.h"
-#include "../threading/atomic_p.h"
+#include "../core/api-internal_p.h"
+#include "atomic_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_internal
@@ -22,8 +22,8 @@ namespace Threading {
 struct Barrier {
   uint32_t barrier;
 
-  BL_INLINE void release() const noexcept { blAtomicStoreStrong(&barrier, uint32_t(0)); }
-  BL_INLINE void acquire() const noexcept { (void)blAtomicFetchStrong(&barrier); }
+  BL_INLINE void release() const noexcept { bl_atomic_store_strong(&barrier, uint32_t(0)); }
+  BL_INLINE void acquire() const noexcept { (void)bl_atomic_fetch_strong(&barrier); }
 };
 
 //! TSAN barrier implements \ref Barrier only when TSAN is running, otherwise it does nothing.

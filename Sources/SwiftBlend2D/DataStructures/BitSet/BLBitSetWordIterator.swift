@@ -31,7 +31,7 @@ public struct BLBitSetWordIterator {
         _bitSet.data
     }
     private var _segmentPtr: UnsafePointer<BLBitSetSegment> {
-        _data.segmentData.advanced(by: _segmentOffset)
+        _data.segment_data.advanced(by: _segmentOffset)
     }
     private var _segment: BLBitSetSegment {
         _segmentPtr.pointee
@@ -42,7 +42,7 @@ public struct BLBitSetWordIterator {
     /// - note: The `bitSet` cannot change or be destroyed during iteration.
     public init(_ bitSet: BLBitSet) {
         _bitSet = bitSet
-        _segmentCount = Int(_data.segmentCount)
+        _segmentCount = Int(_data.segment_count)
         _wordIndex = _segmentCount > 0 ? _segmentPtr.pointee.startWord() &- 1 : 0xFFFFFFFF
     }
 
@@ -72,7 +72,7 @@ public struct BLBitSetWordIterator {
                     if bits != 0 {
                         return bits
                     }
-                    
+
                     _wordIndex &+= 1
                 }
             }

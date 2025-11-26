@@ -11,29 +11,29 @@ public final class BLFile: BLBaseClass<BLFileCore> {
         if !isOpen() {
             return 0
         }
-        
+
         var size: UInt64 = 0
-        blFileGetSize(&object, &size)
-        
+        bl_file_get_size(&object, &size)
+
         return size
     }
 
     var currentFilePath: String?
-    
+
     public override init() {
         super.init()
-        
+
         object.handle = -1
     }
-    
+
     public func isOpen() -> Bool {
         return object.handle != -1
     }
-    
+
     public func open(fileAt path: String, flags: BLFileOpenFlags) throws {
         try path.withCString { pointer -> Void in
             try mapError {
-                blFileOpen(&self.object, pointer, flags)
+                bl_file_open(&self.object, pointer, flags)
             }
             .addFileErrorMappings(filePath: path)
             .execute()
@@ -41,43 +41,43 @@ public final class BLFile: BLBaseClass<BLFileCore> {
 
         currentFilePath = path
     }
-    
+
     @discardableResult
     public func seek(offset: Int64, type: BLFileSeekType) throws -> Int64 {
         var positionOut: Int64 = 0
         try mapError {
-            blFileSeek(&self.object, offset, type, &positionOut)
+            bl_file_seek(&self.object, offset, type, &positionOut)
         }
         .addFileErrorMappings(filePath: currentFilePath)
         .execute()
-        
+
         return positionOut
     }
-    
+
     @discardableResult
     public func write<T: ContiguousBytes>(data: T) throws -> Int {
         return try data.withUnsafeBytes { pointer in
             try write(buffer: pointer)
         }
     }
-    
+
     func write(buffer: UnsafeRawBufferPointer) throws -> Int {
         var bytesWritten = 0
-        
+
         if let rawPointer = buffer.baseAddress {
             try mapError {
-                blFileWrite(&self.object, rawPointer, buffer.count, &bytesWritten)
+                bl_file_write(&self.object, rawPointer, buffer.count, &bytesWritten)
             }
             .addFileErrorMappings(filePath: currentFilePath)
             .execute()
         }
-        
+
         return bytesWritten
     }
-    
+
     public func truncate(maxSize: Int64) throws {
         try mapError {
-            blFileTruncate(&self.object, maxSize)
+            bl_file_truncate(&self.object, maxSize)
         }
         .addFileErrorMappings(filePath: currentFilePath)
         .execute()
@@ -85,7 +85,7 @@ public final class BLFile: BLBaseClass<BLFileCore> {
 }
 
 extension BLFileCore: CoreStructure {
-    public static let initializer = blFileInit
-    public static let deinitializer = blFileReset
+    public static let initializer = bl_file_init
+    public static let deinitializer = bl_file_reset
     public static let assignWeak = emptyAssignWeak(type: BLFileCore.self)
 }

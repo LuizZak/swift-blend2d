@@ -3,103 +3,99 @@
 // See blend2d.h or LICENSE.md for license and copyright information
 // SPDX-License-Identifier: Zlib
 
-#include "../../api-build_p.h"
+#include <blend2d/core/api-build_p.h>
 #if !defined(BL_BUILD_NO_JIT)
 
-#include "../../pipeline/jit/fetchpart_p.h"
-#include "../../pipeline/jit/pipecompiler_p.h"
+#include <blend2d/pipeline/jit/fetchpart_p.h>
+#include <blend2d/pipeline/jit/pipecompiler_p.h>
 
-namespace bl {
-namespace Pipeline {
-namespace JIT {
+namespace bl::Pipeline::JIT {
 
 // bl::Pipeline::JIT::FetchPart - Construction & Destruction
 // =========================================================
 
-FetchPart::FetchPart(PipeCompiler* pc, FetchType fetchType, FormatExt format) noexcept
+FetchPart::FetchPart(PipeCompiler* pc, FetchType fetch_type, FormatExt format) noexcept
   : PipePart(pc, PipePartType::kFetch),
-    _fetchType(fetchType),
-    _fetchInfo(format),
-    _bpp(uint8_t(blFormatInfo[size_t(format)].depth / 8u)) {}
+    _fetch_type(fetch_type),
+    _fetch_info(format),
+    _bpp(uint8_t(bl_format_info[size_t(format)].depth / 8u)) {}
 
 // bl::Pipeline::JIT::FetchPart - Init & Fini
 // ==========================================
 
-void FetchPart::init(const PipeFunction& fn, Gp& x, Gp& y, PixelType pixelType, uint32_t pixelGranularity) noexcept {
-  addPartFlags(x.isValid() ? PipePartFlags::kRectFill : PipePartFlags::kNone);
+void FetchPart::init(const PipeFunction& fn, Gp& x, Gp& y, PixelType pixel_type, uint32_t pixel_granularity) noexcept {
+  add_part_flags(x.is_valid() ? PipePartFlags::kRectFill : PipePartFlags::kNone);
 
-  _pixelType = pixelType;
-  _pixelGranularity = uint8_t(pixelGranularity);
+  _pixel_type = pixel_type;
+  _pixel_granularity = uint8_t(pixel_granularity);
 
   // Initialize alpha fetch information. The fetch would be A8 if either the requested
   // pixel is alpha-only or the source pixel format is alpha-only (or both).
-  _alphaFetch = _pixelType == PixelType::kA8 || format() == FormatExt::kA8;
+  _alpha_fetch = _pixel_type == PixelType::kA8 || format() == FormatExt::kA8;
 
-  _initPart(fn, x, y);
-  _initGlobalHook(cc->cursor());
+  _init_part(fn, x, y);
+  _init_global_hook(cc->cursor());
 }
 
 void FetchPart::fini() noexcept {
-  removePartFlags(PipePartFlags::kRectFill);
+  remove_part_flags(PipePartFlags::kRectFill);
 
-  _finiPart();
-  _finiGlobalHook();
+  _fini_part();
+  _fini_global_hook();
 
-  _pixelType = PixelType::kNone;
-  _pixelGranularity = 0;
+  _pixel_type = PixelType::kNone;
+  _pixel_granularity = 0;
 }
 
-void FetchPart::_initPart(const PipeFunction& fn, Gp& x, Gp& y) noexcept {
-  blUnused(fn, x, y);
+void FetchPart::_init_part(const PipeFunction& fn, Gp& x, Gp& y) noexcept {
+  bl_unused(fn, x, y);
 }
 
-void FetchPart::_finiPart() noexcept {}
+void FetchPart::_fini_part() noexcept {}
 
 // bl::Pipeline::JIT::FetchPart - Advance
 // ======================================
 
 // By default these do nothing, only used by `SolidFetch()` this way.
-void FetchPart::advanceY() noexcept {
+void FetchPart::advance_y() noexcept {
   // Nothing by default.
 }
 
-void FetchPart::startAtX(const Gp& x) noexcept {
+void FetchPart::start_at_x(const Gp& x) noexcept {
   // Nothing by default.
-  blUnused(x);
+  bl_unused(x);
 }
 
-void FetchPart::advanceX(const Gp& x, const Gp& diff) noexcept {
+void FetchPart::advance_x(const Gp& x, const Gp& diff) noexcept {
   // Nothing by default.
-  blUnused(x, diff);
+  bl_unused(x, diff);
 }
 
 // bl::Pipeline::JIT::FetchPart - Fetch
 // ====================================
 
-void FetchPart::enterN() noexcept {
+void FetchPart::enter_n() noexcept {
   // Nothing by default.
 }
 
-void FetchPart::leaveN() noexcept {
+void FetchPart::leave_n() noexcept {
   // Nothing by default.
 }
 
-void FetchPart::prefetchN() noexcept {
+void FetchPart::prefetch_n() noexcept {
   // Nothing by default.
 }
 
-void FetchPart::postfetchN() noexcept {
+void FetchPart::postfetch_n() noexcept {
   // Nothing by default.
 }
 
 // [[pure virtual]]
 void FetchPart::fetch(Pixel& p, PixelCount n, PixelFlags flags, PixelPredicate& predicate) noexcept {
-  blUnused(p, n, flags, predicate);
+  bl_unused(p, n, flags, predicate);
   BL_NOT_REACHED();
 }
 
-} // {JIT}
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline::JIT}
 
 #endif // !BL_BUILD_NO_JIT

@@ -18,7 +18,7 @@ class BLTypedVar<T: BLTypedVarElement>: BLVar {
             T.initializeVar(pointer, value)
         }
     }
-    
+
     @usableFromInline
     override init(weakAssign object: BLVarCore) {
         super.init(weakAssign: object)
@@ -46,41 +46,41 @@ protocol BLTypedVarElement {
 extension Bool: BLTypedVarElement {
     static var objectType: BLObjectType { .bool }
 
-    static let getFromVar = blVarToBool
-    static let initializeVar = blVarInitBool
-    static let assignToVar = blVarAssignBool
+    static let getFromVar = bl_var_to_bool
+    static let initializeVar = bl_var_init_bool
+    static let assignToVar = bl_var_assign_bool
 }
 
 extension Int32: BLTypedVarElement {
     static var objectType: BLObjectType { .int64 }
 
-    static let getFromVar = blVarToInt32
-    static let initializeVar = blVarInitInt32
-    static let assignToVar = blVarAssignInt32
+    static let getFromVar = bl_var_to_int32
+    static let initializeVar = bl_var_init_int32
+    static let assignToVar = bl_var_assign_int32
 }
 
 extension Int64: BLTypedVarElement {
     static var objectType: BLObjectType { .int64 }
 
-    static let getFromVar = blVarToInt64
-    static let initializeVar = blVarInitInt64
-    static let assignToVar = blVarAssignInt64
+    static let getFromVar = bl_var_to_int64
+    static let initializeVar = bl_var_init_int64
+    static let assignToVar = bl_var_assign_int64
 }
 
 extension UInt32: BLTypedVarElement {
     static var objectType: BLObjectType { .uint64 }
 
-    static let getFromVar = blVarToUInt32
-    static let initializeVar = blVarInitUInt32
-    static let assignToVar = blVarAssignUInt32
+    static let getFromVar = bl_var_to_uint32
+    static let initializeVar = bl_var_init_uint32
+    static let assignToVar = bl_var_assign_uint32
 }
 
 extension UInt64: BLTypedVarElement {
     static var objectType: BLObjectType { .uint64 }
 
-    static let getFromVar = blVarToUInt64
-    static let initializeVar = blVarInitUInt64
-    static let assignToVar = blVarAssignUInt64
+    static let getFromVar = bl_var_to_uint64
+    static let initializeVar = bl_var_init_uint64
+    static let assignToVar = bl_var_assign_uint64
 }
 
 extension BLRgba32: BLTypedVarElement {
@@ -91,13 +91,13 @@ extension BLRgba32: BLTypedVarElement {
         defer {
             rgba32?.pointee.value = value
         }
-        return blVarToRgba32(pointer, &value)
+        return bl_var_to_rgba32(pointer, &value)
     }
     static let initializeVar: InitializerFunc = { (pointer, rgba32) in
-        blVarInitRgba32(pointer, rgba32.value)
+        bl_var_init_rgba32(pointer, rgba32.value)
     }
     static let assignToVar: AssignFunc = { (pointer, rgba32) in
-        blVarAssignRgba32(pointer, rgba32.value)
+        bl_var_assign_rgba32(pointer, rgba32.value)
     }
 }
 
@@ -109,28 +109,28 @@ extension BLRgba64: BLTypedVarElement {
         defer {
             rgba64?.pointee.value = value
         }
-        return blVarToRgba64(pointer, &value)
+        return bl_var_to_rgba64(pointer, &value)
     }
     static let initializeVar: InitializerFunc = { (pointer, rgba64) in
-        blVarInitRgba64(pointer, rgba64.value)
+        bl_var_init_rgba64(pointer, rgba64.value)
     }
     static let assignToVar: AssignFunc = { (pointer, rgba64) in
-        blVarAssignRgba64(pointer, rgba64.value)
+        bl_var_assign_rgba64(pointer, rgba64.value)
     }
 }
 
 extension BLRgba: BLTypedVarElement {
     static var objectType: BLObjectType { .rgba }
 
-    static let getFromVar: GetterFunc = blVarToRgba
+    static let getFromVar: GetterFunc = bl_var_to_rgba
     static let initializeVar: InitializerFunc = { (pointer, rgba) in
         withUnsafePointer(to: rgba) {
-            blVarInitRgba(pointer, $0)
+            bl_var_init_rgba(pointer, $0)
         }
     }
     static let assignToVar: AssignFunc = { (pointer, rgba) in
         withUnsafePointer(to: rgba) {
-            blVarAssignRgba(pointer, $0)
+            bl_var_assign_rgba(pointer, $0)
         }
     }
 }

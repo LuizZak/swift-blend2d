@@ -6,15 +6,15 @@
 #ifndef BLEND2D_RASTER_RASTERDEFS_P_H_INCLUDED
 #define BLEND2D_RASTER_RASTERDEFS_P_H_INCLUDED
 
-#include "../api-internal_p.h"
-#include "../compop_p.h"
-#include "../context_p.h"
-#include "../gradient_p.h"
-#include "../image_p.h"
-#include "../matrix_p.h"
-#include "../object_p.h"
-#include "../pattern_p.h"
-#include "../path_p.h"
+#include "../core/api-internal_p.h"
+#include "../core/compop_p.h"
+#include "../core/context_p.h"
+#include "../core/gradient_p.h"
+#include "../core/image_p.h"
+#include "../core/matrix_p.h"
+#include "../core/object_p.h"
+#include "../core/pattern_p.h"
+#include "../core/path_p.h"
 #include "../pipeline/pipedefs_p.h"
 
 //! \cond INTERNAL
@@ -23,8 +23,7 @@
 
 class BLRasterContextImpl;
 
-namespace bl {
-namespace RasterEngine {
+namespace bl::RasterEngine {
 
 struct RenderFetchData;
 struct StyleData;
@@ -168,7 +167,7 @@ enum class ContextFlags : uint32_t {
   //! All states' flags.
   kWeakStateAllFlags = 0x0FF00000u,
 
-  //! Final translation matrix is just a scale of `fpScaleD()` and integral translation.
+  //! Final translation matrix is just a scale of `fp_scale_d()` and integral translation.
   kInfoIntegralTranslation = 0x10000000u,
 
   //! Shared fill-state has valid data.
@@ -194,19 +193,18 @@ enum class ContextFlags : uint32_t {
 BL_DEFINE_ENUM_FLAGS(ContextFlags)
 
 template<typename ShiftT>
-static BL_INLINE_NODEBUG constexpr ContextFlags operator<<(ContextFlags a, const ShiftT& n) noexcept {
-  return ContextFlags((std::underlying_type<ContextFlags>::type)(a) << n);
+static BL_INLINE_CONSTEXPR ContextFlags operator<<(ContextFlags a, const ShiftT& n) noexcept {
+  return ContextFlags(std::underlying_type_t<ContextFlags>(a) << n);
 }
 
 template<typename ShiftT>
-static BL_INLINE_NODEBUG constexpr ContextFlags operator>>(ContextFlags a, const ShiftT& n) noexcept {
-  return ContextFlags((std::underlying_type<ContextFlags>::type)(a) >> n);
+static BL_INLINE_CONSTEXPR ContextFlags operator>>(ContextFlags a, const ShiftT& n) noexcept {
+  return ContextFlags(std::underlying_type_t<ContextFlags>(a) >> n);
 }
 
-} // {RasterEngine}
-} // {bl}
+} // {bl::RasterEngine}
 
-//! Indexes to a `BLRasterContextImpl::solidFormatTable`, which describes pixel
+//! Indexes to a `BLRasterContextImpl::solid_format_table`, which describes pixel
 //! formats used by solid fills. There are in total 3 choices that are selected
 //! based on properties of the solid color.
 enum BLRasterContextSolidFormatId : uint32_t {

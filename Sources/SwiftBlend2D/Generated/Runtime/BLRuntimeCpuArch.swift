@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// CPU architecture that can be queried by `BLRuntime.querySystemInfo()`.
+/// CPU architecture that can be queried by `BLRuntime.query_system_info()`.
 public extension BLRuntimeCpuArch {
     /// Unknown architecture.
     static let unknown = BL_RUNTIME_CPU_ARCH_UNKNOWN

@@ -6,14 +6,13 @@
 #ifndef BLEND2D_RASTER_RENDERFETCHDATA_P_H_INCLUDED
 #define BLEND2D_RASTER_RENDERFETCHDATA_P_H_INCLUDED
 
-#include "../raster/rasterdefs_p.h"
+#include "rasterdefs_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_raster_engine_impl
 //! \{
 
-namespace bl {
-namespace RasterEngine {
+namespace bl::RasterEngine {
 
 //! A small struct that precedes `Pipeline::FetchData` in `RenderFetchData` struct.
 //!
@@ -39,9 +38,9 @@ struct RenderFetchDataHeader {
   //! Signature if the fetch data is initialized, otherwise a Signature with PendingFlag bit set (last MSB).
   Pipeline::Signature signature;
   //! Batch id.
-  uint32_t batchId;
+  uint32_t batch_id;
   //! Non-atomic reference count (never manipulated concurrently by multiple threads, usually the user thread only).
-  uint32_t refCount;
+  uint32_t ref_count;
 
   union {
     uint32_t packed;
@@ -61,10 +60,10 @@ struct RenderFetchDataHeader {
   //! \{
 
   //! Initializes the fetch data header by resetting all header members and initializing the reference count to `rc`.
-  BL_INLINE void initHeader(uint32_t rc, FormatExt format = FormatExt::kNone) noexcept {
+  BL_INLINE void init_header(uint32_t rc, FormatExt format = FormatExt::kNone) noexcept {
     signature.reset();
-    batchId = 0;
-    refCount = rc;
+    batch_id = 0;
+    ref_count = rc;
     extra.packed = 0;
     extra.format = uint8_t(format);
   }
@@ -74,11 +73,11 @@ struct RenderFetchDataHeader {
   //! \name Accessors
   //! \{
 
-  BL_INLINE_NODEBUG bool isSolid() const noexcept { return signature.isSolid(); }
+  BL_INLINE_NODEBUG bool is_solid() const noexcept { return signature.is_solid(); }
 
-  BL_INLINE void retain(uint32_t n = 1) noexcept { refCount += n; }
+  BL_INLINE void retain(uint32_t n = 1) noexcept { ref_count += n; }
 
-  BL_INLINE_NODEBUG const void* getPipelineData() const noexcept {
+  BL_INLINE_NODEBUG const void* get_pipeline_data() const noexcept {
     return reinterpret_cast<const uint8_t*>(this) + sizeof(RenderFetchDataHeader);
   }
 
@@ -89,7 +88,7 @@ BL_STATIC_ASSERT(sizeof(RenderFetchDataHeader) == 16);
 
 //! FetchData that can only hold a solid color.
 struct RenderFetchDataSolid : public RenderFetchDataHeader {
-  Pipeline::FetchData::Solid pipelineData;
+  Pipeline::FetchData::Solid pipeline_data;
 };
 
 //! Raster context fetch data.
@@ -100,7 +99,7 @@ struct alignas(16) RenderFetchData : public RenderFetchDataHeader {
   //! \name Types
   //! \{
 
-  typedef void (BL_CDECL* DestroyFunc)(BLRasterContextImpl* ctxI, RenderFetchData* fetchData) BL_NOEXCEPT;
+  typedef void (BL_CDECL* DestroyFunc)(BLRasterContextImpl* ctx_impl, RenderFetchData* fetch_data) noexcept;
 
   //! \}
 
@@ -108,25 +107,25 @@ struct alignas(16) RenderFetchData : public RenderFetchDataHeader {
   //! \{
 
   //! Fetch data part, which is used by pipelines.
-  Pipeline::FetchData pipelineData;
+  Pipeline::FetchData pipeline_data;
 
   //! Link to the external object holding the style data (BLImage or BLGradient).
   BLObjectCore style;
 
-  //! Releases this fetchData to the rendering context, can only be called if the reference count is decreased
+  //! Releases this fetch_data to the rendering context, can only be called if the reference count is decreased
   //! to zero. Don't use manually.
-  DestroyFunc destroyFunc;
+  DestroyFunc destroy_func;
 
   //! \}
 
   //! \name Accessors
   //! \{
 
-  BL_INLINE_NODEBUG bool isPending() const noexcept { return signature.hasPendingFlag(); }
-  BL_INLINE_NODEBUG Pipeline::FetchType fetchType() const noexcept { return signature.fetchType(); }
+  BL_INLINE_NODEBUG bool is_pending() const noexcept { return signature.has_pending_flag(); }
+  BL_INLINE_NODEBUG Pipeline::FetchType fetch_type() const noexcept { return signature.fetch_type(); }
 
   template<typename T>
-  BL_INLINE_NODEBUG const T& styleAs() const noexcept { return static_cast<const T&>(style); }
+  BL_INLINE_NODEBUG const T& style_as() const noexcept { return static_cast<const T&>(style); }
 
   BL_INLINE_NODEBUG const BLImage& image() const noexcept { return static_cast<const BLImage&>(style); }
   BL_INLINE_NODEBUG const BLPattern& pattern() const noexcept { return static_cast<const BLPattern&>(style); }
@@ -137,40 +136,41 @@ struct alignas(16) RenderFetchData : public RenderFetchDataHeader {
   //! \name Initialization
   //! \{
 
-  BL_INLINE void initStyleObject(const BLObjectCore* src) noexcept { style._d = src->_d; }
-  BL_INLINE void initDestroyFunc(DestroyFunc fn) noexcept { destroyFunc = fn; }
+  BL_INLINE void init_style_object(const BLObjectCore* src) noexcept { style._d = src->_d; }
+  BL_INLINE void init_destroy_func(DestroyFunc fn) noexcept { destroy_func = fn; }
 
-  BL_INLINE void initStyleObjectAndDestroyFunc(const BLObjectCore* src, DestroyFunc fn) noexcept {
-    initStyleObject(src);
-    initDestroyFunc(fn);
+  BL_INLINE void init_style_object_and_destroy_func(const BLObjectCore* src, DestroyFunc fn) noexcept {
+    init_style_object(src);
+    init_destroy_func(fn);
   }
 
-  BL_INLINE void initImageSource(const BLImageImpl* imageI, const BLRectI& area) noexcept {
+  BL_INLINE void init_image_source(const BLImageImpl* image_impl, const BLRectI& area) noexcept {
     BL_ASSERT(area.x >= 0);
     BL_ASSERT(area.y >= 0);
     BL_ASSERT(area.w >= 0);
     BL_ASSERT(area.h >= 0);
 
-    const uint8_t* srcPixelData = static_cast<const uint8_t*>(imageI->pixelData);
-    intptr_t srcStride = imageI->stride;
-    uint32_t srcBytesPerPixel = imageI->depth / 8u;
-    Pipeline::FetchUtils::initImageSource(pipelineData.pattern, srcPixelData + uint32_t(area.y) * srcStride + uint32_t(area.x) * srcBytesPerPixel, imageI->stride, area.w, area.h);
+    const uint8_t* src_pixel_data = static_cast<const uint8_t*>(image_impl->pixel_data);
+    intptr_t src_stride = image_impl->stride;
+    uint32_t src_bytes_per_pixel = image_impl->depth / 8u;
+    Pipeline::FetchUtils::init_image_source(pipeline_data.pattern,
+      (src_pixel_data + intptr_t(uint32_t(area.y)) * src_stride) + uint32_t(area.x) * src_bytes_per_pixel, image_impl->stride, area.w, area.h);
   }
 
-  // Initializes `fetchData` for a blit. Blits are never repeating and are always 1:1 (no scaling, no fractional translation).
-  BL_INLINE bool setupPatternBlit(int tx, int ty) noexcept {
-    signature = Pipeline::FetchUtils::initPatternBlit(pipelineData.pattern, tx, ty);
+  // Initializes `fetch_data` for a blit. Blits are never repeating and are always 1:1 (no scaling, no fractional translation).
+  BL_INLINE bool setup_pattern_blit(int tx, int ty) noexcept {
+    signature = Pipeline::FetchUtils::init_pattern_blit(pipeline_data.pattern, tx, ty);
     return true;
   }
 
-  BL_INLINE bool setupPatternFxFy(BLExtendMode extendMode, BLPatternQuality quality, uint32_t bytesPerPixel, int64_t txFixed, int64_t tyFixed) noexcept {
-    signature = Pipeline::FetchUtils::initPatternFxFy(pipelineData.pattern, extendMode, quality, bytesPerPixel, txFixed, tyFixed);
+  BL_INLINE bool setup_pattern_fx_fy(BLExtendMode extend_mode, BLPatternQuality quality, uint32_t bytes_per_pixel, int64_t tx_fixed, int64_t ty_fixed) noexcept {
+    signature = Pipeline::FetchUtils::init_pattern_fx_fy(pipeline_data.pattern, extend_mode, quality, bytes_per_pixel, tx_fixed, ty_fixed);
     return true;
   }
 
-  BL_INLINE bool setupPatternAffine(BLExtendMode extendMode, BLPatternQuality quality, uint32_t bytesPerPixel, const BLMatrix2D& transform) noexcept {
-    signature = Pipeline::FetchUtils::initPatternAffine(pipelineData.pattern, extendMode, quality, bytesPerPixel, transform);
-    return !signature.hasPendingFlag();
+  BL_INLINE bool setup_pattern_affine(BLExtendMode extend_mode, BLPatternQuality quality, uint32_t bytes_per_pixel, const BLMatrix2D& transform) noexcept {
+    signature = Pipeline::FetchUtils::init_pattern_affine(pipeline_data.pattern, extend_mode, quality, bytes_per_pixel, transform);
+    return !signature.has_pending_flag();
   }
 
   //! \}
@@ -178,18 +178,17 @@ struct alignas(16) RenderFetchData : public RenderFetchDataHeader {
   //! \name Reference Counting
   //! \{
 
-  BL_INLINE void release(BLRasterContextImpl* ctxI) noexcept {
-    if (--refCount == 0)
-      destroyFunc(ctxI, this);
+  BL_INLINE void release(BLRasterContextImpl* ctx_impl) noexcept {
+    if (--ref_count == 0)
+      destroy_func(ctx_impl, this);
   }
 
   //! \}
 };
 
-BL_HIDDEN BLResult computePendingFetchData(RenderFetchData* fetchData) noexcept;
+BL_HIDDEN BLResult compute_pending_fetch_data(RenderFetchData* fetch_data) noexcept;
 
-} // {RasterEngine}
-} // {bl}
+} // {bl::RasterEngine}
 
 //! \}
 //! \endcond

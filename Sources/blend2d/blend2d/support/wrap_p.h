@@ -6,7 +6,7 @@
 #ifndef BLEND2D_SUPPORT_WRAP_P_H_INCLUDED
 #define BLEND2D_SUPPORT_WRAP_P_H_INCLUDED
 
-#include "../api-internal_p.h"
+#include "../core/api-internal_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_internal
@@ -27,14 +27,14 @@ struct alignas(alignof(T)) Wrap {
   template<typename... Args>
   BL_INLINE T* init(Args&&... args) noexcept {
     T* instance = static_cast<T*>(static_cast<void*>(_data));
-    blCallCtor(*instance, BLInternal::forward<Args>(args)...);
+    bl_call_ctor(*instance, BLInternal::forward<Args>(args)...);
     return instance;
   }
 
   //! Placement delete destructor.
   BL_INLINE void destroy() noexcept {
     T* instance = static_cast<T*>(static_cast<void*>(_data));
-    blCallDtor(*instance);
+    bl_call_dtor(*instance);
   }
 
   //! \}

@@ -4,7 +4,7 @@
 import blend2d
 
 /// Specifies how style transformation matrix is combined with the rendering context transformation matrix, used by
-/// `BLContext.setStyle()` function.
+/// `BLContext.set_style()` function.
 public extension BLContextStyleTransformMode {
     /// Style transformation matrix should be transformed with the rendering context user and meta matrix (default).
     /// 

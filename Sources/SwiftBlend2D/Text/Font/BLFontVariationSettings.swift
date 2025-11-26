@@ -32,26 +32,26 @@ public class BLFontVariationSettings: BLBaseClass<BLFontVariationSettingsCore> {
     /// and also during iteration the view the container cannot be modified as
     /// that could invalidate the entire view.
     public func getView(_ view: inout BLFontVariationSettingsView) {
-        blFontVariationSettingsGetView(&object, &view)
+        bl_font_variation_settings_get_view(&object, &view)
     }
 
     /// Tests whether the settings contains the given `variationTag`.
     public func hasValue(_ variationTag: BLTag) -> Bool {
-        blFontVariationSettingsHasValue(&object, variationTag)
+        bl_font_variation_settings_has_value(&object, variationTag)
     }
 
     /// Returns the value associated with the given `variationTag`.
     ///
     /// If the `variationTag` doesn't exist or is invalid `NaN` is returned.
     public func getValue(_ variationTag: BLTag) -> Float {
-        blFontVariationSettingsGetValue(&object, variationTag)
+        bl_font_variation_settings_get_value(&object, variationTag)
     }
 
     /// Sets or inserts the given `variationTag` to the settings, associating the `variationTag`
     /// with `value`.
     @discardableResult
     public func setValue(_ variationTag: BLTag, value: Float) -> BLResult {
-        blFontVariationSettingsSetValue(&object, variationTag, value)
+        bl_font_variation_settings_set_value(&object, variationTag, value)
     }
 
     /// Removes the given `variationTag` from the settings.
@@ -60,20 +60,20 @@ public class BLFontVariationSettings: BLBaseClass<BLFontVariationSettingsCore> {
     /// returned).
     @discardableResult
     public func removeValue(_ variationTag: BLTag) -> BLResult {
-        blFontVariationSettingsRemoveValue(&object, variationTag)
+        bl_font_variation_settings_remove_value(&object, variationTag)
     }
 }
 
 extension BLFontVariationSettings {
     public static func == (lhs: BLFontVariationSettings, rhs: BLFontVariationSettings) -> Bool {
-        blFontVariationSettingsEquals(&lhs.object, &rhs.object)
+        bl_font_variation_settings_equals(&lhs.object, &rhs.object)
     }
 }
 
 extension BLFontVariationSettingsCore: CoreStructure {
-    public static let initializer = blFontVariationSettingsInit
-    public static let deinitializer = blFontVariationSettingsReset
-    public static let assignWeak = blFontVariationSettingsAssignWeak
+    public static let initializer = bl_font_variation_settings_init
+    public static let deinitializer = bl_font_variation_settings_reset
+    public static let assignWeak = bl_font_variation_settings_assign_weak
 
     @usableFromInline
     var impl: BLFontVariationSettingsImpl {

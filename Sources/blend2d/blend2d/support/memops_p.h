@@ -6,8 +6,8 @@
 #ifndef BLEND2D_SUPPORT_MEMOPS_P_H_INCLUDED
 #define BLEND2D_SUPPORT_MEMOPS_P_H_INCLUDED
 
-#include "../api-internal_p.h"
-#include "../support/intops_p.h"
+#include "../core/api-internal_p.h"
+#include "intops_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_internal
@@ -20,10 +20,10 @@ namespace {
 //! \name Unaligned Constants
 //! \{
 
-static const constexpr bool kUnalignedMem   = BL_TARGET_ARCH_X86 != 0;
-static const constexpr bool kUnalignedMem16 = BL_TARGET_ARCH_X86 != 0;
-static const constexpr bool kUnalignedMem32 = BL_TARGET_ARCH_X86 != 0;
-static const constexpr bool kUnalignedMem64 = BL_TARGET_ARCH_X86 != 0;
+static const constexpr bool kUnalignedMemIO = (BL_TARGET_ARCH_X86 != 0) || (BL_TARGET_ARCH_ARM == 64) || (BL_TARGET_ARCH_WASM != 0);
+static const constexpr bool kUnalignedMem16 = (BL_TARGET_ARCH_X86 != 0) || (BL_TARGET_ARCH_ARM == 64) || (BL_TARGET_ARCH_WASM != 0);
+static const constexpr bool kUnalignedMem32 = (BL_TARGET_ARCH_X86 != 0) || (BL_TARGET_ARCH_ARM == 64) || (BL_TARGET_ARCH_WASM != 0);
+static const constexpr bool kUnalignedMem64 = (BL_TARGET_ARCH_X86 != 0) || (BL_TARGET_ARCH_ARM == 64) || (BL_TARGET_ARCH_WASM != 0);
 
 //! \}
 
@@ -61,14 +61,14 @@ template<> struct UnalignedInt<uint64_t, 8> { typedef BL_MAY_ALIAS uint64_t T; }
 //! \name Memory Read
 //! \{
 
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG uint32_t readU8(const void* p) noexcept { return uint32_t(static_cast<const uint8_t*>(p)[0]); }
 
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG int32_t readI8(const void* p) noexcept { return int32_t(static_cast<const int8_t*>(p)[0]); }
 
 template<uint32_t ByteOrder, size_t Alignment>
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG uint32_t readU16(const void* p) noexcept {
   if (ByteOrder == BL_BYTE_ORDER_NATIVE && (kUnalignedMem16 || Alignment >= 2)) {
     typedef typename UnalignedInt<uint16_t, Alignment>::T U16AlignedToN;
@@ -82,7 +82,7 @@ static BL_INLINE_NODEBUG uint32_t readU16(const void* p) noexcept {
 }
 
 template<uint32_t ByteOrder, size_t Alignment>
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG int32_t readI16(const void* p) noexcept {
   if (ByteOrder == BL_BYTE_ORDER_NATIVE && (kUnalignedMem16 || Alignment >= 2)) {
     typedef typename UnalignedInt<uint16_t, Alignment>::T U16AlignedToN;
@@ -96,7 +96,7 @@ static BL_INLINE_NODEBUG int32_t readI16(const void* p) noexcept {
 }
 
 template<uint32_t ByteOrder = BL_BYTE_ORDER_NATIVE>
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG uint32_t readU24u(const void* p) noexcept {
   uint32_t b0 = readU8(static_cast<const uint8_t*>(p) + (ByteOrder == BL_BYTE_ORDER_LE ? 2 : 0));
   uint32_t b1 = readU8(static_cast<const uint8_t*>(p) + 1);
@@ -105,7 +105,7 @@ static BL_INLINE_NODEBUG uint32_t readU24u(const void* p) noexcept {
 }
 
 template<uint32_t ByteOrder, size_t Alignment>
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG uint32_t readU32(const void* p) noexcept {
   if (kUnalignedMem32 || Alignment >= 4) {
     typedef typename UnalignedInt<uint32_t, Alignment>::T U32AlignedToN;
@@ -120,7 +120,7 @@ static BL_INLINE_NODEBUG uint32_t readU32(const void* p) noexcept {
 }
 
 template<uint32_t ByteOrder, size_t Alignment>
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG uint64_t readU64(const void* p) noexcept {
   if (ByteOrder == BL_BYTE_ORDER_NATIVE && (kUnalignedMem64 || Alignment >= 8)) {
     typedef typename UnalignedInt<uint64_t, Alignment>::T U64AlignedToN;
@@ -134,60 +134,79 @@ static BL_INLINE_NODEBUG uint64_t readU64(const void* p) noexcept {
 }
 
 template<uint32_t ByteOrder, size_t Alignment>
-BL_NODISCARD
+[[nodiscard]]
 static  BL_INLINE_NODEBUG int32_t readI32(const void* p) noexcept { return int32_t(readU32<ByteOrder, Alignment>(p)); }
 
 template<uint32_t ByteOrder, size_t Alignment>
-BL_NODISCARD
+[[nodiscard]]
 static BL_INLINE_NODEBUG int64_t readI64(const void* p) noexcept { return int64_t(readU64<ByteOrder, Alignment>(p)); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI16a(const void* p) noexcept { return readI16<BL_BYTE_ORDER_NATIVE, 2>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI16u(const void* p) noexcept { return readI16<BL_BYTE_ORDER_NATIVE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU16a(const void* p) noexcept { return readU16<BL_BYTE_ORDER_NATIVE, 2>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU16u(const void* p) noexcept { return readU16<BL_BYTE_ORDER_NATIVE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI16a(const void* p) noexcept { return readI16<BL_BYTE_ORDER_NATIVE, 2>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI16u(const void* p) noexcept { return readI16<BL_BYTE_ORDER_NATIVE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU16a(const void* p) noexcept { return readU16<BL_BYTE_ORDER_NATIVE, 2>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU16u(const void* p) noexcept { return readU16<BL_BYTE_ORDER_NATIVE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI16aLE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_LE, 2>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI16uLE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_LE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU16aLE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_LE, 2>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU16uLE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_LE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI16aLE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_LE, 2>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI16uLE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_LE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU16aLE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_LE, 2>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU16uLE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_LE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI16aBE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_BE, 2>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI16uBE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_BE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU16aBE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_BE, 2>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU16uBE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_BE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI16aBE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_BE, 2>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI16uBE(const void* p) noexcept { return readI16<BL_BYTE_ORDER_BE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU16aBE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_BE, 2>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU16uBE(const void* p) noexcept { return readU16<BL_BYTE_ORDER_BE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU24uLE(const void* p) noexcept { return readU24u<BL_BYTE_ORDER_LE>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU24uBE(const void* p) noexcept { return readU24u<BL_BYTE_ORDER_BE>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU24uLE(const void* p) noexcept { return readU24u<BL_BYTE_ORDER_LE>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU24uBE(const void* p) noexcept { return readU24u<BL_BYTE_ORDER_BE>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI32a(const void* p) noexcept { return readI32<BL_BYTE_ORDER_NATIVE, 4>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI32u(const void* p) noexcept { return readI32<BL_BYTE_ORDER_NATIVE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU32a(const void* p) noexcept { return readU32<BL_BYTE_ORDER_NATIVE, 4>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU32u(const void* p) noexcept { return readU32<BL_BYTE_ORDER_NATIVE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI32a(const void* p) noexcept { return readI32<BL_BYTE_ORDER_NATIVE, 4>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI32u(const void* p) noexcept { return readI32<BL_BYTE_ORDER_NATIVE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU32a(const void* p) noexcept { return readU32<BL_BYTE_ORDER_NATIVE, 4>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU32u(const void* p) noexcept { return readU32<BL_BYTE_ORDER_NATIVE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI32aLE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_LE, 4>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI32uLE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_LE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU32aLE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_LE, 4>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU32uLE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_LE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI32aLE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_LE, 4>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI32uLE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_LE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU32aLE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_LE, 4>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU32uLE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_LE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI32aBE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_BE, 4>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int32_t readI32uBE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_BE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU32aBE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_BE, 4>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint32_t readU32uBE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_BE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI32aBE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_BE, 4>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int32_t readI32uBE(const void* p) noexcept { return readI32<BL_BYTE_ORDER_BE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU32aBE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_BE, 4>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint32_t readU32uBE(const void* p) noexcept { return readU32<BL_BYTE_ORDER_BE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int64_t readI64a(const void* p) noexcept { return readI64<BL_BYTE_ORDER_NATIVE, 8>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int64_t readI64u(const void* p) noexcept { return readI64<BL_BYTE_ORDER_NATIVE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint64_t readU64a(const void* p) noexcept { return readU64<BL_BYTE_ORDER_NATIVE, 8>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint64_t readU64u(const void* p) noexcept { return readU64<BL_BYTE_ORDER_NATIVE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int64_t readI64a(const void* p) noexcept { return readI64<BL_BYTE_ORDER_NATIVE, 8>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int64_t readI64u(const void* p) noexcept { return readI64<BL_BYTE_ORDER_NATIVE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint64_t readU64a(const void* p) noexcept { return readU64<BL_BYTE_ORDER_NATIVE, 8>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint64_t readU64u(const void* p) noexcept { return readU64<BL_BYTE_ORDER_NATIVE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int64_t readI64aLE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_LE, 8>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int64_t readI64uLE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_LE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint64_t readU64aLE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_LE, 8>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint64_t readU64uLE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_LE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int64_t readI64aLE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_LE, 8>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int64_t readI64uLE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_LE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint64_t readU64aLE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_LE, 8>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint64_t readU64uLE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_LE, 1>(p); }
 
-BL_NODISCARD static BL_INLINE_NODEBUG int64_t readI64aBE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_BE, 8>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG int64_t readI64uBE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_BE, 1>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint64_t readU64aBE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_BE, 8>(p); }
-BL_NODISCARD static BL_INLINE_NODEBUG uint64_t readU64uBE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_BE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int64_t readI64aBE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_BE, 8>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG int64_t readI64uBE(const void* p) noexcept { return readI64<BL_BYTE_ORDER_BE, 1>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint64_t readU64aBE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_BE, 8>(p); }
+[[nodiscard]] static BL_INLINE_NODEBUG uint64_t readU64uBE(const void* p) noexcept { return readU64<BL_BYTE_ORDER_BE, 1>(p); }
+
+template<typename T>
+[[nodiscard]] static BL_INLINE_NODEBUG T loadu(const void* p) noexcept {
+  T tmp;
+  memcpy(&tmp, p, sizeof(T));
+  return tmp;
+}
+
+template<typename T>
+[[nodiscard]] static BL_INLINE_NODEBUG T loadu_le(const void* p) noexcept {
+  T tmp;
+  memcpy(&tmp, p, sizeof(T));
+
+  if (BL_BYTE_ORDER_NATIVE != BL_BYTE_ORDER_LE) {
+    tmp = IntOps::byte_swap(tmp);
+  }
+
+  return tmp;
+}
 
 //! \}
 
@@ -297,23 +316,39 @@ static BL_INLINE_NODEBUG void writeI64uBE(void* p, int64_t x) noexcept { writeI6
 static BL_INLINE_NODEBUG void writeU64aBE(void* p, uint64_t x) noexcept { writeU64<BL_BYTE_ORDER_BE, 8>(p, x); }
 static BL_INLINE_NODEBUG void writeU64uBE(void* p, uint64_t x) noexcept { writeU64<BL_BYTE_ORDER_BE, 1>(p, x); }
 
+template<typename T>
+static BL_INLINE_NODEBUG void storeu(void* p, const T& v) noexcept {
+  memcpy(p, &v, sizeof(T));
+}
+
+template<typename T>
+static BL_INLINE_NODEBUG void storeu_le(void* p, const T& v) noexcept {
+  T tmp = v;
+
+  if constexpr (BL_BYTE_ORDER_NATIVE != BL_BYTE_ORDER_LE) {
+    tmp = IntOps::byte_swap(tmp);
+  }
+
+  memcpy(p, &tmp, sizeof(T));
+}
+
 //! \}
 
 //! \name Memory Fill
 //! \{
 
 template<typename T>
-static BL_INLINE void fillInlineT(T* dst, const T& pattern, size_t count) noexcept {
+static BL_INLINE void fill_inline_t(T* dst, const T& pattern, size_t count) noexcept {
   for (size_t i = 0; i < count; i++)
     dst[i] = pattern;
 }
 
 template<typename T>
-static BL_INLINE void fillSmallT(T* dst, const T& pattern, size_t count) noexcept {
-  fillInlineT(dst, pattern, count);
+static BL_INLINE void fill_small_t(T* dst, const T& pattern, size_t count) noexcept {
+  fill_inline_t(dst, pattern, count);
 }
 
-static BL_INLINE void fillSmall(void* dst, uint8_t pattern, size_t count) noexcept {
+static BL_INLINE void fill_small(void* dst, uint8_t pattern, size_t count) noexcept {
 #if defined(__GNUC__) && BL_TARGET_ARCH_X86 && !defined(BL_SANITIZE_MEMORY)
   size_t unused0, unused1;
   __asm__ __volatile__(
@@ -323,7 +358,7 @@ static BL_INLINE void fillSmall(void* dst, uint8_t pattern, size_t count) noexce
 #elif defined(_MSC_VER) && BL_TARGET_ARCH_X86
   __stosb(static_cast<unsigned char *>(dst), static_cast<unsigned char>(pattern), count);
 #else
-  fillSmallT(static_cast<uint8_t*>(dst), pattern, count);
+  fill_small_t(static_cast<uint8_t*>(dst), pattern, count);
 #endif
 }
 
@@ -333,13 +368,13 @@ static BL_INLINE void fillSmall(void* dst, uint8_t pattern, size_t count) noexce
 //! \{
 
 template<typename T>
-static BL_INLINE void copyForwardInlineT(T* dst, const T* src, size_t count) noexcept {
+static BL_INLINE void copy_forward_inline_t(T* dst, const T* src, size_t count) noexcept {
   for (size_t i = 0; i < count; i++)
     dst[i] = src[i];
 }
 
 template<typename T>
-static BL_INLINE void copyBackwardInlineT(T* dst, const T* src, size_t count) noexcept {
+static BL_INLINE void copy_backward_inline_t(T* dst, const T* src, size_t count) noexcept {
   size_t i = count;
   while (i) {
     i--;
@@ -348,7 +383,7 @@ static BL_INLINE void copyBackwardInlineT(T* dst, const T* src, size_t count) no
 }
 
 template<typename T>
-static BL_INLINE void copyForwardAndZeroT(T* dst, T* src, size_t count) noexcept {
+static BL_INLINE void copy_forward_and_zero_t(T* dst, T* src, size_t count) noexcept {
   for (size_t i = 0; i < count; i++) {
     T item = src[i];
     src[i] = T(0);
@@ -357,7 +392,7 @@ static BL_INLINE void copyForwardAndZeroT(T* dst, T* src, size_t count) noexcept
 }
 
 //! Copies `n` bytes from `src` to `dst` - optimized for small buffers.
-static BL_INLINE void copySmall(void* dst, const void* src, size_t n) noexcept {
+static BL_INLINE void copy_small(void* dst, const void* src, size_t n) noexcept {
 #if defined(__GNUC__) && BL_TARGET_ARCH_X86 && !defined(BL_SANITIZE_MEMORY)
   size_t unused;
   __asm__ __volatile__(
@@ -368,7 +403,7 @@ static BL_INLINE void copySmall(void* dst, const void* src, size_t n) noexcept {
 #elif defined(_MSC_VER) && BL_TARGET_ARCH_X86
   __movsb(static_cast<unsigned char *>(dst), static_cast<const unsigned char *>(src), n);
 #else
-  copyForwardInlineT<uint8_t>(static_cast<uint8_t*>(dst), static_cast<const uint8_t*>(src), n);
+  copy_forward_inline_t<uint8_t>(static_cast<uint8_t*>(dst), static_cast<const uint8_t*>(src), n);
 #endif
 }
 
@@ -384,7 +419,7 @@ static BL_INLINE void combine(T* dst, const T* src, size_t count) noexcept {
 }
 
 template<class CombineOp, typename T>
-static BL_INLINE void combineSmall(T* dst, const T* src, size_t count) noexcept {
+static BL_INLINE void combine_small(T* dst, const T* src, size_t count) noexcept {
   BL_NOUNROLL
   for (size_t i = 0; i < count; i++)
     dst[i] = CombineOp::op(dst[i], src[i]);
@@ -396,7 +431,7 @@ static BL_INLINE void combineSmall(T* dst, const T* src, size_t count) noexcept 
 //! \{
 
 template<typename T>
-static BL_INLINE bool testSmallT(const T* p, size_t count, const T& value) noexcept {
+static BL_INLINE bool test_small_t(const T* p, size_t count, const T& value) noexcept {
   BL_NOUNROLL
   for (size_t i = 0; i < count; i++)
     if (p[i] != value)

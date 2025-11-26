@@ -56,6 +56,7 @@ STRUCT_CONFORMANCES: list[tuple[str, list[str]]] = [
     #
     ("BLBitSetSegment", ["Equatable"]),
     ("BLRange", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLContextCookie", ["Equatable", "Hashable", "CustomStringConvertible"]),
     # Color
     ("BLRgba", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLRgba32", ["Equatable", "Hashable", "CustomStringConvertible"]),
@@ -66,6 +67,7 @@ STRUCT_CONFORMANCES: list[tuple[str, list[str]]] = [
     ("BLFontMatrix", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLFontQueryProperties", ["Equatable", "CustomStringConvertible"]),
     ("BLFontVariationItem", ["Equatable", "Hashable", "CustomStringConvertible"]),
+    ("BLFontCoverageInfo", ["Equatable", "Hashable", "CustomStringConvertible"]),
     # Geometry
     ("BLArc", ["Equatable", "Hashable", "CustomStringConvertible"]),
     ("BLBox", ["Equatable", "Hashable", "CustomStringConvertible"]),

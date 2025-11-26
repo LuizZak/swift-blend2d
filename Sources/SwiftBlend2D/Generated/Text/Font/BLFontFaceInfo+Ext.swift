@@ -7,10 +7,10 @@ extension BLFontFaceInfo: @retroactive CustomStringConvertible, @retroactive Equ
 
 public extension BLFontFaceInfo {
     var description: String {
-        "BLFontFaceInfo(faceType: \(faceType), outlineType: \(outlineType), reserved8: \(reserved8), glyphCount: \(glyphCount), revision: \(revision), faceIndex: \(faceIndex), faceFlags: \(faceFlags), diagFlags: \(diagFlags), reserved: \(reserved))"
+        "BLFontFaceInfo(face_type: \(face_type), outline_type: \(outline_type), reserved8: \(reserved8), glyph_count: \(glyph_count), revision: \(revision), face_index: \(face_index), face_flags: \(face_flags), diag_flags: \(diag_flags), reserved: \(reserved))"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.faceType == rhs.faceType && lhs.outlineType == rhs.outlineType && lhs.reserved8 == rhs.reserved8 && lhs.glyphCount == rhs.glyphCount && lhs.revision == rhs.revision && lhs.faceIndex == rhs.faceIndex && lhs.faceFlags == rhs.faceFlags && lhs.diagFlags == rhs.diagFlags && lhs.reserved == rhs.reserved
+        lhs.face_type == rhs.face_type && lhs.outline_type == rhs.outline_type && lhs.reserved8 == rhs.reserved8 && lhs.glyph_count == rhs.glyph_count && lhs.revision == rhs.revision && lhs.face_index == rhs.face_index && lhs.face_flags == rhs.face_flags && lhs.diag_flags == rhs.diag_flags && lhs.reserved == rhs.reserved
     }
 }

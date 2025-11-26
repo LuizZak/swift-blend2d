@@ -6,7 +6,7 @@
 #ifndef BLEND2D_SIMD_SIMDBASE_P_H_INCLUDED
 #define BLEND2D_SIMD_SIMDBASE_P_H_INCLUDED
 
-#include "../api-internal_p.h"
+#include "../core/api-internal_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_simd
@@ -24,8 +24,8 @@ template<typename V, size_t N>
 struct VecArray {
   typedef typename V::ElementType ElementType;
 
-  static constexpr uint32_t kW = V::kW;
-  static constexpr uint32_t kN = N;
+  static inline constexpr uint32_t kW = V::kW;
+  static inline constexpr uint32_t kN = N;
 
   V data[N];
 
@@ -49,11 +49,11 @@ namespace {
 namespace Internal {
 
 BL_INLINE_NODEBUG uint16_t scalar_u16_from_2x_u8(uint8_t hi, uint8_t lo) noexcept {
-  return (uint16_t(hi) << 8) | uint16_t(lo);
+  return uint16_t((uint16_t(hi) << 8) | uint16_t(lo));
 }
 
 BL_INLINE_NODEBUG uint32_t scalar_u32_from_2x_u16(uint16_t hi, uint16_t lo) noexcept {
-  return (uint32_t(hi) << 16) | uint32_t(lo);
+  return uint32_t((uint32_t(hi) << 16) | uint32_t(lo));
 }
 
 BL_INLINE_NODEBUG uint32_t scalar_u32_from_4x_u8(uint8_t x3, uint8_t x2, uint8_t x1, uint8_t x0) noexcept {
@@ -82,34 +82,34 @@ BL_INLINE_NODEBUG uint64_t scalar_u64_from_8x_u8(uint8_t x7, uint8_t x6, uint8_t
 
 //! Define a blit that processes 4 (32-bit) pixels at a time in main loop.
 #define BL_SIMD_LOOP_32x4_INIT()                                              \
-  size_t miniLoopCnt;                                                         \
-  size_t mainLoopCnt;
+  size_t mini_loop_cnt;                                                         \
+  size_t main_loop_cnt;
 
 #define BL_SIMD_LOOP_32x4_MINI_BEGIN(LOOP, DST, COUNT)                        \
-  miniLoopCnt = blMin(size_t((uintptr_t(0) - ((uintptr_t)(DST) / 4)) & 0x3),  \
+  mini_loop_cnt = bl_min(size_t((uintptr_t(0) - ((uintptr_t)(DST) / 4)) & 0x3),  \
                       size_t(COUNT));                                         \
-  mainLoopCnt = size_t(COUNT) - miniLoopCnt;                                  \
-  if (!miniLoopCnt) goto On##LOOP##_MiniSkip;                                 \
+  main_loop_cnt = size_t(COUNT) - mini_loop_cnt;                                  \
+  if (!mini_loop_cnt) goto On##LOOP##_MiniSkip;                                 \
                                                                               \
 On##LOOP##_MiniBegin:                                                         \
   do {
 
 #define BL_SIMD_LOOP_32x4_MINI_END(LOOP)                                      \
-  } while (--miniLoopCnt);                                                    \
+  } while (--mini_loop_cnt);                                                    \
                                                                               \
 On##LOOP##_MiniSkip:                                                          \
-  miniLoopCnt = mainLoopCnt & 3;                                              \
-  mainLoopCnt /= 4;                                                           \
-  if (!mainLoopCnt) goto On##LOOP##_MainSkip;
+  mini_loop_cnt = main_loop_cnt & 3;                                              \
+  main_loop_cnt /= 4;                                                           \
+  if (!main_loop_cnt) goto On##LOOP##_MainSkip;
 
 #define BL_SIMD_LOOP_32x4_MAIN_BEGIN(LOOP)                                    \
   do {
 
 #define BL_SIMD_LOOP_32x4_MAIN_END(LOOP)                                      \
-  } while (--mainLoopCnt);                                                    \
+  } while (--main_loop_cnt);                                                    \
                                                                               \
 On##LOOP##_MainSkip:                                                          \
-  if (miniLoopCnt) goto On##LOOP##_MiniBegin;
+  if (mini_loop_cnt) goto On##LOOP##_MiniBegin;
 
 } // {SIMD}
 

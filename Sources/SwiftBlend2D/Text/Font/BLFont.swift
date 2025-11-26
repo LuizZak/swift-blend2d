@@ -8,7 +8,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     /// fonts use a different coordinate system than Blend2D.
     public var matrix: BLFontMatrix {
         var fontMatrix = BLFontMatrix()
-        blFontGetMatrix(&object, &fontMatrix)
+        bl_font_get_matrix(&object, &fontMatrix)
         return fontMatrix
     }
 
@@ -18,7 +18,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     /// size and its options.
     public var metrics: BLFontMetrics {
         var metrics = BLFontMetrics()
-        blFontGetMetrics(&object, &metrics)
+        bl_font_get_metrics(&object, &metrics)
         return metrics
     }
 
@@ -28,7 +28,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
     /// associated with this font.
     public var designMetrics: BLFontDesignMetrics {
         var metrics = BLFontDesignMetrics()
-        blFontGetDesignMetrics(&object, &metrics)
+        bl_font_get_design_metrics(&object, &metrics)
         return metrics
     }
 
@@ -58,11 +58,11 @@ public class BLFont: BLBaseClass<BLFontCore> {
 
     /// Gets font-features of the font.
     public var features: BLFontFeatureSettings {
-        BLFontFeatureSettings(weakAssign: object.impl.featureSettings)
+        BLFontFeatureSettings(weakAssign: object.impl.feature_settings)
     }
     /// Gets font-variations used by this font.
     public var variations: BLFontVariationSettings {
-        BLFontVariationSettings(weakAssign: object.impl.variationSettings)
+        BLFontVariationSettings(weakAssign: object.impl.variation_settings)
     }
 
     /// Gets the weight of the font.
@@ -80,36 +80,36 @@ public class BLFont: BLBaseClass<BLFontCore> {
 
     public init(fromFace face: BLFontFace, size: Float) {
         super.init { pointer -> BLResult in
-            blFontInit(pointer)
-            return blFontCreateFromFace(pointer, &face.object, size)
+            bl_font_init(pointer)
+            return bl_font_create_from_face(pointer, &face.object, size)
         }
     }
 
     public func shape(_ buf: BLGlyphBuffer) {
-        blFontShape(&object, &buf.object)
+        bl_font_shape(&object, &buf.object)
     }
 
     @discardableResult
     public func mapTextToGlyphs(_ buffer: BLGlyphBuffer) -> BLGlyphMappingState {
         var state = BLGlyphMappingState()
-        blFontMapTextToGlyphs(&object, &buffer.object, &state)
+        bl_font_map_text_to_glyphs(&object, &buffer.object, &state)
         return state
     }
 
     public func positionGlyphs(_ buf: BLGlyphBuffer) {
-        blFontPositionGlyphs(&object, &buf.object)
+        bl_font_position_glyphs(&object, &buf.object)
     }
 
     public func applyKerning(_ buf: BLGlyphBuffer) {
-        blFontApplyKerning(&object, &buf.object)
+        bl_font_apply_kerning(&object, &buf.object)
     }
 
     public func applyGSub(_ buf: BLGlyphBuffer, lookups: BLBitArray) {
-        blFontApplyGSub(&object, &buf.object, &lookups.box.object)
+        bl_font_apply_gsub(&object, &buf.object, &lookups.box.object)
     }
 
     public func applyGPos(_ buf: BLGlyphBuffer, lookups: BLBitArray) {
-        blFontApplyGPos(&object, &buf.object, &lookups.box.object)
+        bl_font_apply_gpos(&object, &buf.object, &lookups.box.object)
     }
 
     @inlinable
@@ -122,17 +122,17 @@ public class BLFont: BLBaseClass<BLFontCore> {
     @inlinable
     public func getTextMetrics(_ buf: BLGlyphBuffer) -> BLTextMetrics {
         var value = BLTextMetrics()
-        blFontGetTextMetrics(&object, &buf.object, &value)
+        bl_font_get_text_metrics(&object, &buf.object, &value)
         return value
     }
 
     public func getGlyphBounds(_ glyphRun: BLGlyphRun) -> [BLBoxI] {
         var out: [BLBoxI] = .init(repeating: .empty, count: glyphRun.size)
 
-        blFontGetGlyphBounds(
+        bl_font_get_glyph_bounds(
             &object,
-            glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
-            Int(glyphRun.glyphAdvance),
+            glyphRun.glyph_data?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
+            Int(glyphRun.glyph_advance),
             &out,
             glyphRun.size
         )
@@ -146,10 +146,10 @@ public class BLFont: BLBaseClass<BLFontCore> {
             count: glyphRun.size
         )
 
-        blFontGetGlyphAdvances(
+        bl_font_get_glyph_advances(
             &object,
-            glyphRun.glyphData?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
-            Int(glyphRun.glyphAdvance),
+            glyphRun.glyph_data?.bindMemory(to: UInt32.self, capacity: glyphRun.size),
+            Int(glyphRun.glyph_advance),
             &out,
             glyphRun.size
         )
@@ -177,7 +177,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
             let path = BLPath()
 
             withUnsafeNullablePointer(to: userMatrix) { userMatrix in
-                blFontGetGlyphOutlines(&object, glyphId, userMatrix, &path.object, sink, closure)
+                bl_font_get_glyph_outlines(&object, glyphId, userMatrix, &path.object, sink, closure)
             }
 
             return path
@@ -205,7 +205,7 @@ public class BLFont: BLBaseClass<BLFontCore> {
             let path = BLPath()
 
             withUnsafeNullablePointer(to: userMatrix) { userMatrix in
-                blFontGetGlyphRunOutlines(&object, &glyphRun, userMatrix, &path.object, sink, closure)
+                bl_font_get_glyph_run_outlines(&object, &glyphRun, userMatrix, &path.object, sink, closure)
             }
 
             return path
@@ -237,9 +237,9 @@ extension BLFont: Equatable {
 }
 
 extension BLFontCore: CoreStructure {
-    public static let initializer = blFontInit
-    public static let deinitializer = blFontReset
-    public static let assignWeak = blFontAssignWeak
+    public static let initializer = bl_font_init
+    public static let deinitializer = bl_font_reset
+    public static let assignWeak = bl_font_assign_weak
 
     @usableFromInline
     var impl: BLFontImpl {

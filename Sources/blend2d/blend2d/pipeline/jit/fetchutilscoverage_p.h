@@ -6,16 +6,14 @@
 #ifndef BLEND2D_PIPELINE_JIT_FETCHUTILSCOVERAGE_P_H_INCLUDED
 #define BLEND2D_PIPELINE_JIT_FETCHUTILSCOVERAGE_P_H_INCLUDED
 
-#include "../../pipeline/jit/pipecompiler_p.h"
-#include "../../pipeline/jit/pipeprimitives_p.h"
+#include "pipecompiler_p.h"
+#include "pipeprimitives_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace bl {
-namespace Pipeline {
-namespace JIT {
+namespace bl::Pipeline::JIT {
 
 // bl::Pipeline::JIT - GlobalAlpha
 // ===============================
@@ -34,7 +32,7 @@ public:
   //! Node where to emit additional code in case `sm` is not initialized, but required.
   asmjit::BaseNode* _hook = nullptr;
 
-  //! Memory location from which to fetch the mask. This is only used when `initFromMem()` is used. It's retained
+  //! Memory location from which to fetch the mask. This is only used when `init_from_mem()` is used. It's retained
   //! and then when wither \ref sa(), \ref pa(), or \ref ua() is used the respective members would be initialized
   //! on demand.
   Mem _mem {};
@@ -52,13 +50,13 @@ public:
   //! \{
 
 private:
-  void _initInternal(PipeCompiler* pc) noexcept;
+  void _init_internal(PipeCompiler* pc) noexcept;
 
 public:
-  void initFromMem(PipeCompiler* pc, const Mem& mem) noexcept;
-  void initFromScalar(PipeCompiler* pc, const Gp& sa) noexcept;
-  void initFromPacked(PipeCompiler* pc, const Vec& pa) noexcept;
-  void initFromUnpacked(PipeCompiler* pc, const Vec& ua) noexcept;
+  void init_from_mem(PipeCompiler* pc, const Mem& mem) noexcept;
+  void init_from_scalar(PipeCompiler* pc, const Gp& sa) noexcept;
+  void init_from_packed(PipeCompiler* pc, const Vec& pa) noexcept;
+  void init_from_unpacked(PipeCompiler* pc, const Vec& ua) noexcept;
 
   //! \}
 
@@ -66,7 +64,7 @@ public:
   //! \{
 
   //! Returns whether global alpha is initialized and should be applied
-  BL_INLINE_NODEBUG bool isInitialized() const noexcept { return _hook != nullptr; }
+  BL_INLINE_NODEBUG bool is_initialized() const noexcept { return _hook != nullptr; }
 
   //! Returns scalar alpha (in a GP register).
   const Gp& sa() noexcept;
@@ -78,9 +76,7 @@ public:
   //! \}
 };
 
-} // {JIT}
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline::JIT}
 
 //! \}
 //! \endcond

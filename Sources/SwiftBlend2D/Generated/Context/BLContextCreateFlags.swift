@@ -14,11 +14,11 @@ public extension BLContextCreateFlags {
     static let disableJit = BL_CONTEXT_CREATE_FLAG_DISABLE_JIT
     
     /// Fallbacks to a synchronous rendering in case that the rendering engine wasn't able to acquire threads. This
-    /// flag only makes sense when the asynchronous mode was specified by having `threadCount` greater than 0. If the
+    /// flag only makes sense when the asynchronous mode was specified by having `thread_count` greater than 0. If the
     /// rendering context fails to acquire at least one thread it would fallback to synchronous mode with no worker
     /// threads.
     /// 
-    /// - note: If this flag is specified with `threadCount == 1` it means to immediately fallback to synchronous
+    /// - note: If this flag is specified with `thread_count == 1` it means to immediately fallback to synchronous
     /// rendering. It's only practical to use this flag with 2 or more requested threads.
     static let fallbackToSync = BL_CONTEXT_CREATE_FLAG_FALLBACK_TO_SYNC
     

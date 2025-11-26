@@ -7,6 +7,6 @@ extension BLBitSetSegment: @retroactive Equatable { }
 
 public extension BLBitSetSegment {
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs._startWord == rhs._startWord && lhs._data == rhs._data
+        lhs._start_word == rhs._start_word && lhs._data == rhs._data
     }
 }

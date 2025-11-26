@@ -14,7 +14,7 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
 
     /// Returns a mime-type associated with the image codec's format.
     public var mimeType: String {
-        BLString(weakAssign: object.impl.mimeType).toString()
+        BLString(weakAssign: object.impl.mime_type).toString()
     }
 
     /// Known file extensions used by this image codec separated by "|".
@@ -53,14 +53,14 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
     /// - Parameter data: A data blob containing a binary image format.
     /// - SeeAlso: `BuiltInImageCodec`
     public init?(bestCandidateFor data: Data) {
-        super.init(initializer: blImageCodecInit)
+        super.init(initializer: bl_image_codec_init)
 
         let result: BLResult? = data.withUnsafeBytes { pointer in
             guard let pointer = pointer.baseAddress else {
                 return nil
             }
 
-            return blImageCodecFindByData(&object, pointer, data.count, nil)
+            return bl_image_codec_find_by_data(&object, pointer, data.count, nil)
         }
 
         guard let result = result else {
@@ -87,17 +87,17 @@ public final class BLImageCodec: BLBaseClass<BLImageCodecCore> {
             return 0
         }
 
-        return Int(blImageCodecInspectData(&object, dataAddress, pointer.count))
+        return Int(bl_image_codec_inspect_data(&object, dataAddress, pointer.count))
     }
 
     func createDecoder(dst: BLImageDecoderCore) -> BLResult {
         var dst = dst
-        return blImageCodecCreateDecoder(&object, &dst)
+        return bl_image_codec_create_decoder(&object, &dst)
     }
 
     func createEncoder(dst: BLImageEncoderCore) -> BLResult {
         var dst = dst
-        return blImageCodecCreateEncoder(&object, &dst)
+        return bl_image_codec_create_encoder(&object, &dst)
     }
 }
 
@@ -105,7 +105,7 @@ extension BLImageCodec {
     static var _builtInCodecs: [BLImageCodecCore] = {
         let array = BLArray<BLImageCodecCore>()
 
-        blImageCodecArrayInitBuiltInCodecs(&array.object)
+        bl_image_codec_array_init_built_in_codecs(&array.object)
 
         return array.unsafeAsArray(of: BLImageCodecCore.self)
     }()
@@ -133,9 +133,9 @@ extension BLImageCodec: Equatable {
 }
 
 extension BLImageCodecCore: CoreStructure {
-    public static let initializer = blImageCodecInit
-    public static let deinitializer = blImageCodecReset
-    public static let assignWeak = blImageCodecAssignWeak
+    public static let initializer = bl_image_codec_init
+    public static let deinitializer = bl_image_codec_reset
+    public static let assignWeak = bl_image_codec_assign_weak
 
     @usableFromInline
     var impl: BLImageCodecImpl {

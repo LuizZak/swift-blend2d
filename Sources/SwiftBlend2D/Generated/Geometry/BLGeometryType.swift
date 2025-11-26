@@ -7,14 +7,14 @@ import blend2d
 /// 
 /// Geometry describes a shape or path that can be either rendered or added to a BLPath container. Both `BLPath`
 /// and `BLContext` provide functionality to work with all geometry types. Please note that each type provided
-/// here requires to pass a matching struct or class to the function that consumes a `geometryType` and `geometryData`
+/// here requires to pass a matching struct or class to the function that consumes a `geometry_type` and `geometry_data`
 /// arguments.
 /// 
 /// \cond INTERNAL
 /// - note: Always modify `BLGeometryType.simpleLast` and related functions when adding a new type to `BLGeometryType`
 /// enum. Some functions just pass the geometry type and data to another function, but the rendering context must copy
 /// simple types to a render job, which means that it must know which type is simple and also sizes of all simple
-/// types, see `geometry_p.h` for more details about handling simple types.
+/// types.
 /// \endcond
 public extension BLGeometryType {
     /// No geometry provided.

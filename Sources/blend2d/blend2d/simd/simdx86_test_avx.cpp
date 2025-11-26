@@ -3,10 +3,10 @@
 // See blend2d.h or LICENSE.md for license and copyright information
 // SPDX-License-Identifier: Zlib
 
-#include "../api-build_test_p.h"
+#include <blend2d/core/api-build_test_p.h>
 #if defined(BL_TEST) && defined(BL_TARGET_OPT_AVX)
 
-#include "../simd/simd_test_p.h"
+#include <blend2d/simd/simd_test_p.h>
 
 // SIMD - Tests - X86 - AVX
 // ========================

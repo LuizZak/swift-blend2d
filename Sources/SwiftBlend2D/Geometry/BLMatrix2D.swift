@@ -23,7 +23,7 @@ public extension BLMatrix2D {
     /// Gets transform type
     var type: BLTransformType {
         var matrix = self
-        return blMatrix2DGetType(&matrix)
+        return bl_matrix2d_get_type(&matrix)
     }
 
     /// Creates a new matrix initialized to identity.
@@ -200,12 +200,12 @@ public extension BLMatrix2D {
     /// Resets matrix to skewing.
     @inlinable
     mutating func resetToSkewing(x: Double, y: Double) {
-        blMatrix2DSetSkewing(&self, x, y)
+        bl_matrix2d_set_skewing(&self, x, y)
     }
     /// Resets matrix to skewing.
     @inlinable
     mutating func resetToSkewing(_ p: BLPoint) {
-        blMatrix2DSetSkewing(&self, p.x, p.y)
+        bl_matrix2d_set_skewing(&self, p.x, p.y)
     }
 
     /// Resets matrix to rotation specified by `sin` and `cos` and optional
@@ -224,17 +224,17 @@ public extension BLMatrix2D {
     /// Resets matrix to rotation.
     @inlinable
     mutating func resetToRotation(angle: Double) {
-        blMatrix2DSetRotation(&self, angle, 0.0, 0.0)
+        bl_matrix2d_set_rotation(&self, angle, 0.0, 0.0)
     }
     /// Resets matrix to rotation around a point `[x, y]`.
     @inlinable
     mutating func resetToRotation(angle: Double, x: Double, y: Double) {
-        blMatrix2DSetRotation(&self, angle, x, y)
+        bl_matrix2d_set_rotation(&self, angle, x, y)
     }
     /// Resets matrix to rotation around a given `point`.
     @inlinable
     mutating func resetToRotation(angle: Double, point: BLPoint) {
-        blMatrix2DSetRotation(&self, angle, point.x, point.y)
+        bl_matrix2d_set_rotation(&self, angle, point.x, point.y)
     }
 
     /// Gets matrix determinant.
@@ -249,7 +249,7 @@ public extension BLMatrix2D {
         var point = [
             x, y
         ]
-        return blMatrix2DApplyOp(&self, BLTransformOp.translate, &point)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.translate, &point)
     }
 
     @inlinable
@@ -274,7 +274,7 @@ public extension BLMatrix2D {
         var point = [
             x, y
         ]
-        return blMatrix2DApplyOp(&self, BLTransformOp.scale, &point)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.scale, &point)
     }
 
     @inlinable
@@ -297,14 +297,14 @@ public extension BLMatrix2D {
     @discardableResult
     mutating func skew(_ p: BLPoint) -> BLResult {
         var p = p
-        return blMatrix2DApplyOp(&self, BLTransformOp.skew, &p)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.skew, &p)
     }
 
     @inlinable
     @discardableResult
     mutating func rotate(angle: Double) -> BLResult {
         var angle = angle
-        return blMatrix2DApplyOp(&self, BLTransformOp.rotate, &angle)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.rotate, &angle)
     }
     @inlinable
     @discardableResult
@@ -312,7 +312,7 @@ public extension BLMatrix2D {
         let opData = [
             angle, x, y
         ]
-        return blMatrix2DApplyOp(&self, BLTransformOp.rotatePt, opData)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.rotatePt, opData)
     }
 
     @inlinable
@@ -330,7 +330,7 @@ public extension BLMatrix2D {
     @discardableResult
     mutating func transform(_ m: BLMatrix2D) -> BLResult {
         var m = m
-        return blMatrix2DApplyOp(&self, BLTransformOp.transform, &m)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.transform, &m)
     }
 
     @inlinable
@@ -390,14 +390,14 @@ public extension BLMatrix2D {
     @discardableResult
     mutating func postSkew(_ p: BLPoint) -> BLResult {
         var p = p
-        return blMatrix2DApplyOp(&self, BLTransformOp.postSkew, &p)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.postSkew, &p)
     }
 
     @inlinable
     @discardableResult
     mutating func postRotate(angle: Double) -> BLResult {
         var angle = angle
-        return blMatrix2DApplyOp(&self, BLTransformOp.postRotate, &angle)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.postRotate, &angle)
     }
     @inlinable
     @discardableResult
@@ -405,7 +405,7 @@ public extension BLMatrix2D {
         let params = [
             angle, x, y
         ]
-        return blMatrix2DApplyOp(&self, BLTransformOp.postRotatePt, params)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.postRotatePt, params)
     }
 
     @inlinable
@@ -423,7 +423,7 @@ public extension BLMatrix2D {
     @discardableResult
     mutating func postTransform(_ m: BLMatrix2D) -> BLResult {
         var m = m
-        return blMatrix2DApplyOp(&self, BLTransformOp.postTransform, &m)
+        return bl_matrix2d_apply_op(&self, BLTransformOp.postTransform, &m)
     }
 
     /// Inverts the matrix, returns `BL_SUCCESS` if the matrix has been inverted
@@ -493,7 +493,7 @@ public extension BLMatrix2D {
     @discardableResult
     static func invert(destination: inout BLMatrix2D, source: BLMatrix2D) -> BLResult {
         withUnsafePointer(to: source) { point in
-            blMatrix2DInvert(&destination, point)
+            bl_matrix2d_invert(&destination, point)
         }
     }
 }

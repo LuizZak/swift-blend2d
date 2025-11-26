@@ -6,7 +6,7 @@
 #ifndef BLEND2D_CODEC_PNGOPSSIMDIMPL_P_H_INCLUDED
 #define BLEND2D_CODEC_PNGOPSSIMDIMPL_P_H_INCLUDED
 
-#include "../codec/pngops_p.h"
+#include "pngops_p.h"
 #include "../simd/simd_p.h"
 #include "../support/intops_p.h"
 #include "../support/memops_p.h"
@@ -15,14 +15,11 @@
 //! \addtogroup blend2d_codec_impl
 //! \{
 
-namespace bl {
-namespace Png {
-namespace Ops {
-
-// bl::Png::Opts::SimdImpl
-// =======================
-
+namespace bl::Png::Ops {
 namespace {
+
+// bl::Png::Opt - SimdImpl
+// =======================
 
 // Precalculates D == 3C - B. This is a constant that only relies on the scanline above, thus it's fully vectorized.
 static BL_INLINE SIMD::Vec8xU16 v_precalc_d(const SIMD::Vec8xU16& b, const SIMD::Vec8xU16& c) noexcept {
@@ -56,11 +53,11 @@ static BL_INLINE SIMD::Vec16xU8 v_sllb_addb(const SIMD::Vec16xU8& a) noexcept {
 }
 
 template<uint32_t BPP>
-BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, uint32_t h) noexcept {
+BLResult BL_CDECL inverse_filter_simd_impl(uint8_t* p, uint32_t bpp, uint32_t bpl, uint32_t h) noexcept {
   using namespace SIMD;
 
   // Only used by asserts, unused in release mode.
-  blUnused(bpp);
+  bl_unused(bpp);
 
   BL_ASSERT(bpp == BPP);
   BL_ASSERT(bpl > 1u);
@@ -74,15 +71,15 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
 
   // First row uses a special filter that doesn't access the previous row,
   // which is assumed to contain all zeros.
-  uint32_t filterType = *p++;
+  uint32_t filter_type = *p++;
 
-  if (filterType >= kFilterTypeCount)
-    filterType = kFilterTypeNone;
+  if (filter_type >= kFilterTypeCount)
+    filter_type = kFilterTypeNone;
 
-  filterType = simplifyFilterOfFirstRow(filterType);
+  filter_type = simplify_filter_of_first_row(filter_type);
 
   for (;;) {
-    switch (filterType) {
+    switch (filter_type) {
       // This is one of the easiest filters to parallelize. Although it looks like the data dependency
       // is too high, it's simply additions, which are really easy to parallelize. The following formula:
       //
@@ -106,11 +103,11 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
 
         if (i >= 32) {
           // Align to 16-BYTE boundary.
-          uint32_t j = uint32_t(IntOps::alignUpDiff(uintptr_t(p + BPP), 16));
+          uint32_t j = uint32_t(IntOps::align_up_diff(uintptr_t(p + BPP), 16));
           for (i -= j; j != 0; j--, p++)
-            p[BPP] = applySumFilter(p[BPP], p[0]);
+            p[BPP] = apply_sum_filter(p[BPP], p[0]);
 
-          if BL_CONSTEXPR (BPP == 1) {
+          if constexpr (BPP == 1) {
             Vec16xU8 p0, p1, p2, p3;
             Vec16xU8 t2;
 
@@ -177,7 +174,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 2) {
+          else if constexpr (BPP == 2) {
             Vec16xU8 p0, p1, p2, p3;
             Vec16xU8 t2;
 
@@ -238,7 +235,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 3) {
+          else if constexpr (BPP == 3) {
             Vec16xU8 p0, p1, p2, p3;
             Vec16xU8 t0, t2;
 
@@ -318,7 +315,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 4) {
+          else if constexpr (BPP == 4) {
             Vec16xU8 p0, p1, p2, p3;
             Vec16xU8 t2;
 
@@ -374,7 +371,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 6) {
+          else if constexpr (BPP == 6) {
             Vec16xU8 p0, p1, p2, p3;
             Vec16xU8 t2;
 
@@ -439,7 +436,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 8) {
+          else if constexpr (BPP == 8) {
             Vec16xU8 p0, p1, p2, p3;
             Vec16xU8 t2;
 
@@ -491,7 +488,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
         }
 
         for (; i != 0; i--, p++)
-          p[BPP] = applySumFilter(p[BPP], p[0]);
+          p[BPP] = apply_sum_filter(p[BPP], p[0]);
 
         p += BPP;
         break;
@@ -505,9 +502,9 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
 
         if (i >= 24) {
           // Align to 16-BYTE boundary.
-          uint32_t j = uint32_t(IntOps::alignUpDiff(uintptr_t(p), 16));
+          uint32_t j = uint32_t(IntOps::align_up_diff(uintptr_t(p), 16));
           for (i -= j; j != 0; j--, p++, u++)
-            p[0] = applySumFilter(p[0], u[0]);
+            p[0] = apply_sum_filter(p[0], u[0]);
 
           // Process 64 BYTEs at a time.
           while (i >= 64) {
@@ -545,7 +542,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
         }
 
         for (; i != 0; i--, p++, u++)
-          p[0] = applySumFilter(p[0], u[0]);
+          p[0] = apply_sum_filter(p[0], u[0]);
         break;
       }
 
@@ -573,20 +570,19 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
         BL_ASSERT(u != nullptr);
 
         for (uint32_t i = 0; i < BPP; i++)
-          p[i] = applySumFilter(p[i], u[i] >> 1);
+          p[i] = apply_sum_filter(p[i], u[i] >> 1);
 
         u += BPP;
 
         uint32_t i = bpl - BPP;
         if (i >= 32) {
           // Align to 16-BYTE boundary.
-          uint32_t j = uint32_t(IntOps::alignUpDiff(uintptr_t(p + BPP), 16));
-          Vec16xU8 zero = make_zero<Vec16xU8>();
+          uint32_t j = uint32_t(IntOps::align_up_diff(uintptr_t(p + BPP), 16));
 
           for (i -= j; j != 0; j--, p++, u++)
-            p[BPP] = applySumFilter(p[BPP], applyAvgFilter(p[0], u[0]));
+            p[BPP] = apply_sum_filter(p[BPP], apply_avg_filter(p[0], u[0]));
 
-          if BL_CONSTEXPR (BPP == 1) {
+          if constexpr (BPP == 1) {
             // This is one of the most difficult AVG filters. 1-BPP has a huge sequential dependency, which is
             // nearly impossible to parallelize. The code below is the best I could have written, it's a mixture
             // of C++ and SIMD. Maybe using a pure C would be even better than this code, but, I tried to take
@@ -640,38 +636,35 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
           }
           // TODO: [PNG] Not complete / Not working.
           /*
-          else if BL_CONSTEXPR (BPP == 2) {
+          else if constexpr (BPP == 2) {
           }
-          else if BL_CONSTEXPR (BPP == 3) {
+          else if constexpr (BPP == 3) {
           }
           */
-          else if BL_CONSTEXPR (BPP == 4) {
+          else if constexpr (BPP == 4) {
             Vec16xU8 m00FF = make128_u32<Vec16xU8>(0x00FF00FFu);
             Vec16xU8 m01FF = make128_u32<Vec16xU8>(0x01FF01FFu);
-            Vec16xU8 t1 = interleave_lo_u8(loada_32<Vec16xU8>(p), zero);
+            Vec16xU8 t1 = unpack_lo64_u8_u16(loada_32<Vec16xU8>(p));
 
             // Process 16 BYTEs at a time.
             while (i >= 16) {
               Vec16xU8 p0, p1;
               Vec16xU8 u0, u1;
 
-              p0 = loada<Vec16xU8>(p + 4);
-              u0 = loadu<Vec16xU8>(u);
+              p1 = loada<Vec16xU8>(p + 4);
+              u1 = loadu<Vec16xU8>(u);
 
-              p1 = p0;                             // HI | Move Ln
-              p0 = interleave_lo_u8(p0, zero);     // LO | Unpack Ln
-
-              u1 = u0;                             // HI | Move Up
+              p0 = unpack_lo64_u8_u16(p1);         // LO | Unpack Ln
+              p1 = unpack_hi64_u8_u16(p1);         // HI | Unpack Ln
               p0 = slli_i16<1>(p0);                // LO | << 1
 
-              u0 = interleave_lo_u8(u0, zero);     // LO | Unpack Up
+              u0 = unpack_lo64_u8_u16(u1);         // LO | Unpack Up
               p0 = add_i16(p0, t1);                // LO | Add Last
 
-              p1 = interleave_hi_u8(p1, zero);     // HI | Unpack Ln
               p0 = add_i16(p0, u0);                // LO | Add Up
               p0 = p0 & m01FF;                     // LO | & 0x01FE
 
-              u1 = interleave_hi_u8(u1, zero);     // HI | Unpack Up
+              u1 = unpack_hi64_u8_u16(u1);         // HI | Unpack Up
               t1 = sllb_u128<8>(p0);               // LO | Get Last
               p0 = slli_i16<1>(p0);                // LO | << 1
 
@@ -702,7 +695,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 6) {
+          else if constexpr (BPP == 6) {
             Vec16xU8 t1 = loadu_64<Vec16xU8>(p);
 
             // Process 16 BYTEs at a time.
@@ -711,7 +704,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               Vec16xU8 u0, u1, u2;
 
               u0 = loadu<Vec16xU8>(u);
-              t1 = interleave_lo_u8(t1, zero);
+              t1 = unpack_lo64_u8_u16(t1);
               p0 = loada<Vec16xU8>(p + 6);
 
               p1 = srlb_u128<6>(p0);               // P1 | Extract
@@ -720,14 +713,14 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               p2 = srlb_u128<12>(p0);              // P2 | Extract
               u2 = srlb_u128<12>(u0);              // P2 | Extract
 
-              p0 = interleave_lo_u8(p0, zero);     // P0 | Unpack
-              u0 = interleave_lo_u8(u0, zero);     // P0 | Unpack
+              p0 = unpack_lo64_u8_u16(p0);         // P0 | Unpack
+              u0 = unpack_lo64_u8_u16(u0);         // P0 | Unpack
 
-              p1 = interleave_lo_u8(p1, zero);     // P1 | Unpack
-              u1 = interleave_lo_u8(u1, zero);     // P1 | Unpack
+              p1 = unpack_lo64_u8_u16(p1);         // P1 | Unpack
+              u1 = unpack_lo64_u8_u16(u1);         // P1 | Unpack
 
-              p2 = interleave_lo_u8(p2, zero);     // P2 | Unpack
-              u2 = interleave_lo_u8(u2, zero);     // P2 | Unpack
+              p2 = unpack_lo64_u8_u16(p2);         // P2 | Unpack
+              u2 = unpack_lo64_u8_u16(u2);         // P2 | Unpack
 
               u0 = add_i16(u0, t1);                // P0 | Add Last
               u0 = srli_u16<1>(u0);                // P0 | >> 1
@@ -758,26 +751,24 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
               i -= 16;
             }
           }
-          else if BL_CONSTEXPR (BPP == 8) {
+          else if constexpr (BPP == 8) {
             // Process 16 BYTEs at a time.
-            Vec16xU8 t1 = interleave_lo_u8(loadu_64<Vec16xU8>(p), zero);
+            Vec16xU8 t1 = unpack_lo64_u8_u16(loadu_64<Vec16xU8>(p));
 
             while (i >= 16) {
               Vec16xU8 p0, p1;
               Vec16xU8 u0, u1;
 
-              u0 = loadu<Vec16xU8>(u);
-              p0 = loada<Vec16xU8>(p + 8);
+              u1 = loadu<Vec16xU8>(u);
+              p1 = loada<Vec16xU8>(p + 8);
 
-              u1 = u0;                             // HI | Move Up
-              p1 = p0;                             // HI | Move Ln
-              u0 = interleave_lo_u8(u0, zero);     // LO | Unpack Up
-              p0 = interleave_lo_u8(p0, zero);     // LO | Unpack Ln
+              u0 = unpack_lo64_u8_u16(u1);         // LO | Unpack Up
+              p0 = unpack_lo64_u8_u16(p1);         // LO | Unpack Ln
 
               u0 = add_i16(u0, t1);                // LO | Add Last
-              p1 = interleave_hi_u8(p1, zero);     // HI | Unpack Ln
+              p1 = unpack_hi64_u8_u16(p1);         // HI | Unpack Ln
               u0 = srli_u16<1>(u0);                // LO | >> 1
-              u1 = interleave_hi_u8(u1, zero);     // HI | Unpack Up
+              u1 = unpack_hi64_u8_u16(u1);         // HI | Unpack Up
 
               p0 = add_i8(p0, u0);                 // LO | Add (Up+Last)/2
               u1 = add_i16(u1, p0);                // HI | Add LO
@@ -796,7 +787,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
         }
 
         for (; i != 0; i--, p++, u++)
-          p[BPP] = applySumFilter(p[BPP], applyAvgFilter(p[0], u[0]));
+          p[BPP] = apply_sum_filter(p[BPP], apply_avg_filter(p[0], u[0]));
 
         p += BPP;
         break;
@@ -814,20 +805,20 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
         //
         //   Q = (P + Paeth(A, B, C)) & 0xFF
 
-        if BL_CONSTEXPR (BPP == 1) {
+        if constexpr (BPP == 1) {
           uint32_t sa0 = 0;
           uint32_t sc0 = 0;
 
           for (uint32_t i = 0; i < bpl; i++) {
             uint32_t sb0 = u[i];
-            sa0 = (uint32_t(p[i]) + applyPaethFilter(sa0, sb0, sc0)) & 0xFFu;
+            sa0 = (uint32_t(p[i]) + apply_paeth_filter(sa0, sb0, sc0)) & 0xFFu;
             sc0 = sb0;
             p[i] = uint8_t(sa0);
           }
 
           p += bpl;
         }
-        else if BL_CONSTEXPR (BPP == 2) {
+        else if constexpr (BPP == 2) {
           uint32_t sa0 = 0;
           uint32_t sa1 = 0;
           uint32_t sc0 = 0;
@@ -841,8 +832,8 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
             uint32_t sb0 = u[0];
             uint32_t sb1 = u[1];
 
-            sa0 = (uint32_t(p[0]) + applyPaethFilter(sa0, sb0, sc0)) & 0xFFu;
-            sa1 = (uint32_t(p[1]) + applyPaethFilter(sa1, sb1, sc1)) & 0xFFu;
+            sa0 = (uint32_t(p[0]) + apply_paeth_filter(sa0, sb0, sc0)) & 0xFFu;
+            sa1 = (uint32_t(p[1]) + apply_paeth_filter(sa1, sb1, sc1)) & 0xFFu;
 
             sc0 = sb0;
             sc1 = sb1;
@@ -855,7 +846,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
             i -= 2;
           }
         }
-        else if BL_CONSTEXPR (BPP == 3) {
+        else if constexpr (BPP == 3) {
           Vec8xU16 va0 = make_zero<Vec8xU16>();
           Vec8xU16 vc0 = make_zero<Vec8xU16>();
           Vec8xU16 vmask = make128_u64<Vec8xU16>(0x0000000000000000u, 0x0000FFFFFFFFFFFFu);
@@ -926,7 +917,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
             i -= 3;
           }
         }
-        else if BL_CONSTEXPR (BPP == 4) {
+        else if constexpr (BPP == 4) {
           Vec8xU16 va0 = make_zero<Vec8xU16>();
           Vec8xU16 vc0 = make_zero<Vec8xU16>();
 
@@ -987,7 +978,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
             i -= 4;
           }
         }
-        else if BL_CONSTEXPR (BPP == 6) {
+        else if constexpr (BPP == 6) {
           Vec8xU16 va0 = make_zero<Vec8xU16>();
           Vec8xU16 vc0 = make_zero<Vec8xU16>();
 
@@ -1032,7 +1023,7 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
             p += 6;
           }
         }
-        else if BL_CONSTEXPR (BPP == 8) {
+        else if constexpr (BPP == 8) {
           Vec8xU16 va0 = make_zero<Vec8xU16>();
           Vec8xU16 vc0 = make_zero<Vec8xU16>();
 
@@ -1079,10 +1070,10 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
         break;
       }
 
-      // This filter is artificial and only possible for the very first row, there is no need to have it optimized.
+      // This filter is artificial and only possible for the very first row, so there is no need to have it optimized.
       case kFilterTypeAvg0: {
         for (uint32_t i = bpl - BPP; i != 0; i--, p++)
-          p[BPP] = applySumFilter(p[BPP], p[0] >> 1);
+          p[BPP] = apply_sum_filter(p[BPP], p[0] >> 1);
 
         p += BPP;
         break;
@@ -1098,29 +1089,26 @@ BLResult BL_CDECL inverseFilterSimdImpl(uint8_t* p, uint32_t bpp, uint32_t bpl, 
       break;
 
     u = p - bpl;
-    filterType = *p++;
+    filter_type = *p++;
 
-    if (filterType >= kFilterTypeCount)
-      filterType = kFilterTypeNone;
+    if (filter_type >= kFilterTypeCount)
+      filter_type = kFilterTypeNone;
   }
 
   return BL_SUCCESS;
 }
 
-void initSimdFunctions(FunctionTable& ft) noexcept {
-  ft.inverseFilter[1] = inverseFilterSimdImpl<1>;
-  ft.inverseFilter[2] = inverseFilterSimdImpl<2>;
-  ft.inverseFilter[3] = inverseFilterSimdImpl<3>;
-  ft.inverseFilter[4] = inverseFilterSimdImpl<4>;
-  ft.inverseFilter[6] = inverseFilterSimdImpl<6>;
-  ft.inverseFilter[8] = inverseFilterSimdImpl<8>;
+void init_simd_functions(FunctionTable& ft) noexcept {
+  ft.inverse_filter[1] = inverse_filter_simd_impl<1>;
+  ft.inverse_filter[2] = inverse_filter_simd_impl<2>;
+  ft.inverse_filter[3] = inverse_filter_simd_impl<3>;
+  ft.inverse_filter[4] = inverse_filter_simd_impl<4>;
+  ft.inverse_filter[6] = inverse_filter_simd_impl<6>;
+  ft.inverse_filter[8] = inverse_filter_simd_impl<8>;
 }
 
 } // {anonymous}
-
-} // {Ops}
-} // {Png}
-} // {bl}
+} // {bl::Png::Ops}
 
 //! \}
 //! \endcond

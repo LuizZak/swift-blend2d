@@ -6,15 +6,13 @@
 #ifndef BLEND2D_PIPELINE_REFERENCE_PIXELGENERIC_P_H_INCLUDED
 #define BLEND2D_PIPELINE_REFERENCE_PIXELGENERIC_P_H_INCLUDED
 
-#include "../../pipeline/pipedefs_p.h"
+#include "../pipedefs_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_pipeline_reference
 //! \{
 
-namespace bl {
-namespace Pipeline {
-namespace Reference {
+namespace bl::Pipeline::Reference {
 namespace Pixel {
 
 enum class Type : uint32_t {
@@ -35,19 +33,19 @@ enum class Component : uint32_t {
 struct Repeat {
   uint32_t v;
 
-  BL_INLINE_NODEBUG constexpr uint32_t u16x2() const noexcept { return v | (v << 16); }
-  BL_INLINE_NODEBUG constexpr uint64_t u16x4() const noexcept { return uint64_t(u16x2()) | (uint64_t(u16x2()) << 32); }
+  BL_INLINE_CONSTEXPR uint32_t u16x2() const noexcept { return v | (v << 16); }
+  BL_INLINE_CONSTEXPR uint64_t u16x4() const noexcept { return uint64_t(u16x2()) | (uint64_t(u16x2()) << 32); }
 };
 
 template<typename Format> struct P32_8888;
 template<typename Format> struct U32_8888;
 
 struct FormatA8 {
-  static constexpr Type kType = Type::kAlpha;
-  static constexpr uint32_t kBPP = 1;
+  static inline constexpr Type kType = Type::kAlpha;
+  static inline constexpr uint32_t kBPP = 1;
 };
 
-template<uint32_t rShift, uint32_t gShift, uint32_t bShift, uint32_t aShift>
+template<uint32_t r_shift, uint32_t g_shift, uint32_t b_shift, uint32_t a_shift>
 struct Format8888 {
   static constexpr Type kType = Type::kRGBA_Premultiplied;
 
@@ -59,24 +57,24 @@ struct Format8888 {
   };
 
   enum Shifts : uint32_t {
-    kRShift = rShift,
-    kGShift = gShift,
-    kBShift = bShift,
-    kAShift = aShift
+    kRShift = r_shift,
+    kGShift = g_shift,
+    kBShift = b_shift,
+    kAShift = a_shift
   };
 
-  static BL_INLINE constexpr Component componentFromShift(uint32_t shift) noexcept {
+  static BL_INLINE constexpr Component component_from_shift(uint32_t shift) noexcept {
     return (shift == kRShift) ? Component::kR :
            (shift == kGShift) ? Component::kG :
            (shift == kBShift) ? Component::kB :
            (shift == kAShift) ? Component::kA : Component::kX;
   }
 
-  static BL_INLINE constexpr Component componentFromIndex(uint32_t index) noexcept {
-    return componentFromShift(index * 8u);
+  static BL_INLINE constexpr Component component_from_index(uint32_t index) noexcept {
+    return component_from_shift(index * 8u);
   }
 
-  static BL_INLINE constexpr uint32_t shiftFromComponent(Component component) noexcept {
+  static BL_INLINE constexpr uint32_t shift_from_component(Component component) noexcept {
     return (component == Component::kR) ? kRShift :
            (component == Component::kG) ? kGShift :
            (component == Component::kB) ? kBShift :
@@ -102,7 +100,7 @@ struct P8_Alpha {
   //! Type of an unpacked compatible pixel.
   typedef U8_Alpha Unpacked;
 
-  static BL_INLINE_NODEBUG Packed fromValue(uint32_t value) noexcept { return Packed { uint8_t(value) }; }
+  static BL_INLINE_NODEBUG Packed from_value(uint32_t value) noexcept { return Packed { uint8_t(value) }; }
 
   BL_INLINE_NODEBUG uint32_t a() const noexcept { return p; }
   BL_INLINE_NODEBUG uint32_t value() noexcept { return p; }
@@ -110,21 +108,21 @@ struct P8_Alpha {
   BL_INLINE_NODEBUG Packed pack() const noexcept { return *this; }
   BL_INLINE_NODEBUG Unpacked unpack() const noexcept;
 
-  BL_INLINE_NODEBUG Packed operator&(uint32_t x) const noexcept { return Packed { uint8_t((p & x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator|(uint32_t x) const noexcept { return Packed { uint8_t((p | x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator^(uint32_t x) const noexcept { return Packed { uint8_t((p ^ x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator+(uint32_t x) const noexcept { return Packed { uint8_t((p + x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator-(uint32_t x) const noexcept { return Packed { uint8_t((p - x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator*(uint32_t x) const noexcept { return Packed { uint8_t((p * x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator>>(uint32_t x) const noexcept { return Packed { uint8_t((p >> x) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator<<(uint32_t x) const noexcept { return Packed { uint8_t((p << x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator&(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p & x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator|(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p | x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator^(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p ^ x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator+(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p + x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator-(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p - x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator*(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p * x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator>>(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p >> x) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator<<(uint32_t x) const noexcept { return Packed { uint8_t(uint8_t(p << x) & 0xFFu) }; }
 
-  BL_INLINE_NODEBUG Packed operator&(const Packed& x) const noexcept { return Packed { uint8_t((p & x.p) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator|(const Packed& x) const noexcept { return Packed { uint8_t((p | x.p) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator^(const Packed& x) const noexcept { return Packed { uint8_t((p ^ x.p) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator+(const Packed& x) const noexcept { return Packed { uint8_t((p + x.p) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator-(const Packed& x) const noexcept { return Packed { uint8_t((p - x.p) & 0xFFu) }; }
-  BL_INLINE_NODEBUG Packed operator*(const Packed& x) const noexcept { return Packed { uint8_t((p * x.p) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator&(const Packed& x) const noexcept { return Packed { uint8_t(uint8_t(p & x.p) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator|(const Packed& x) const noexcept { return Packed { uint8_t(uint8_t(p | x.p) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator^(const Packed& x) const noexcept { return Packed { uint8_t(uint8_t(p ^ x.p) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator+(const Packed& x) const noexcept { return Packed { uint8_t(uint8_t(p + x.p) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator-(const Packed& x) const noexcept { return Packed { uint8_t(uint8_t(p - x.p) & 0xFFu) }; }
+  BL_INLINE_NODEBUG Packed operator*(const Packed& x) const noexcept { return Packed { uint8_t(uint8_t(p * x.p) & 0xFFu) }; }
 
   BL_INLINE_NODEBUG Packed& operator&=(uint32_t x) noexcept { *this = *this & x; return *this; }
   BL_INLINE_NODEBUG Packed& operator|=(uint32_t x) noexcept { *this = *this | x; return *this; }
@@ -157,7 +155,7 @@ struct U8_Alpha {
   //! Type of an unpacked compatible pixel.
   typedef U8_Alpha Unpacked;
 
-  static BL_INLINE_NODEBUG Unpacked fromValue(uint32_t value) noexcept { return Unpacked{uint16_t(value)}; }
+  static BL_INLINE_NODEBUG Unpacked from_value(uint32_t value) noexcept { return Unpacked{uint16_t(value)}; }
 
   BL_INLINE_NODEBUG uint32_t a() const noexcept { return u; }
   BL_INLINE_NODEBUG uint32_t value() noexcept { return u; }
@@ -246,7 +244,7 @@ struct P32_8888 {
   //! Type of an unpacked compatible pixel.
   typedef U32_8888<Format> Unpacked;
 
-  static BL_INLINE_NODEBUG Packed fromValue(uint32_t value) noexcept { return Packed { value }; }
+  static BL_INLINE_NODEBUG Packed from_value(uint32_t value) noexcept { return Packed { value }; }
 
   BL_INLINE_NODEBUG uint32_t r() const noexcept { return (p >> Format::kRShift) & 0xFF; }
   BL_INLINE_NODEBUG uint32_t g() const noexcept { return (p >> Format::kGShift) & 0xFF; }
@@ -306,7 +304,7 @@ struct U32_8888 {
   typedef U32_8888<Format> Unpacked;
 
   template<uint32_t shift>
-  BL_INLINE uint32_t valueByShiftT() const noexcept {
+  BL_INLINE uint32_t value_by_shift_t() const noexcept {
     BL_STATIC_ASSERT(shift == 0 || shift == 8 || shift == 16 || shift == 24);
 
     if (shift == 0)
@@ -320,19 +318,19 @@ struct U32_8888 {
   }
 
   template<uint32_t index>
-  BL_INLINE uint32_t valueByIndexT() const noexcept {
-    return valueByShiftT<index * 8>();
+  BL_INLINE uint32_t value_by_index_t() const noexcept {
+    return value_by_shift_t<index * 8>();
   }
 
   template<Component component>
-  BL_INLINE uint32_t valueByComponentT() const noexcept {
-    return valueByShiftT<Format::shiftFromComponent(component)>();
+  BL_INLINE uint32_t value_by_component_t() const noexcept {
+    return value_by_shift_t<Format::shift_from_component(component)>();
   }
 
-  BL_INLINE_NODEBUG uint32_t r() const noexcept { return valueByComponentT<Component::kR>(); }
-  BL_INLINE_NODEBUG uint32_t g() const noexcept { return valueByComponentT<Component::kG>(); }
-  BL_INLINE_NODEBUG uint32_t b() const noexcept { return valueByComponentT<Component::kB>(); }
-  BL_INLINE_NODEBUG uint32_t a() const noexcept { return valueByComponentT<Component::kA>(); }
+  BL_INLINE_NODEBUG uint32_t r() const noexcept { return value_by_component_t<Component::kR>(); }
+  BL_INLINE_NODEBUG uint32_t g() const noexcept { return value_by_component_t<Component::kG>(); }
+  BL_INLINE_NODEBUG uint32_t b() const noexcept { return value_by_component_t<Component::kB>(); }
+  BL_INLINE_NODEBUG uint32_t a() const noexcept { return value_by_component_t<Component::kA>(); }
 
   BL_INLINE_NODEBUG Packed pack() const noexcept { return Packed { (uint32_t)(((u3120 >> 24) | u3120) & 0xFFFFFFFFu) }; }
   BL_INLINE_NODEBUG Unpacked unpack() const noexcept { return *this; }
@@ -377,10 +375,10 @@ struct U32_8888 {
 
   template<typename XFormat>
   BL_INLINE Unpacked cmul(const U32_8888<XFormat>& x) const noexcept {
-    uint32_t u0 = valueByIndexT<0>() * x.template valueByComponentT<Format::componentFromIndex(0)>();
-    uint32_t u1 = valueByIndexT<1>() * x.template valueByComponentT<Format::componentFromIndex(1)>();
-    uint32_t u2 = valueByIndexT<2>() * x.template valueByComponentT<Format::componentFromIndex(2)>();
-    uint32_t u3 = valueByIndexT<3>() * x.template valueByComponentT<Format::componentFromIndex(3)>();
+    uint32_t u0 = value_by_index_t<0>() * x.template value_by_component_t<Format::component_from_index(0)>();
+    uint32_t u1 = value_by_index_t<1>() * x.template value_by_component_t<Format::component_from_index(1)>();
+    uint32_t u2 = value_by_index_t<2>() * x.template value_by_component_t<Format::component_from_index(2)>();
+    uint32_t u3 = value_by_index_t<3>() * x.template value_by_component_t<Format::component_from_index(3)>();
 
     return Unpacked { uint64_t(u0) | (uint64_t(u1) << 32) | (uint64_t(u2) << 16) | (uint64_t(u3) << 48) };
   }
@@ -426,7 +424,7 @@ struct U32_8888 {
   typedef U32_8888<Format> Unpacked;
 
   template<uint32_t shift>
-  BL_INLINE uint32_t valueByShiftT() const noexcept {
+  BL_INLINE uint32_t value_by_shift_t() const noexcept {
     BL_STATIC_ASSERT(shift == 0 || shift == 8 || shift == 16 || shift == 24);
 
     if (shift == 0)
@@ -440,19 +438,19 @@ struct U32_8888 {
   }
 
   template<uint32_t index>
-  BL_INLINE_NODEBUG uint32_t valueByIndexT() const noexcept {
-    return valueByShiftT<index * 8>();
+  BL_INLINE_NODEBUG uint32_t value_by_index_t() const noexcept {
+    return value_by_shift_t<index * 8>();
   }
 
   template<Component component>
-  BL_INLINE_NODEBUG uint32_t valueByComponentT() const noexcept {
-    return valueByShiftT<Format::shiftFromComponent(component)>();
+  BL_INLINE_NODEBUG uint32_t value_by_component_t() const noexcept {
+    return value_by_shift_t<Format::shift_from_component(component)>();
   }
 
-  BL_INLINE_NODEBUG uint32_t r() const noexcept { return valueByComponentT<Component::kR>(); }
-  BL_INLINE_NODEBUG uint32_t g() const noexcept { return valueByComponentT<Component::kG>(); }
-  BL_INLINE_NODEBUG uint32_t b() const noexcept { return valueByComponentT<Component::kB>(); }
-  BL_INLINE_NODEBUG uint32_t a() const noexcept { return valueByComponentT<Component::kA>(); }
+  BL_INLINE_NODEBUG uint32_t r() const noexcept { return value_by_component_t<Component::kR>(); }
+  BL_INLINE_NODEBUG uint32_t g() const noexcept { return value_by_component_t<Component::kG>(); }
+  BL_INLINE_NODEBUG uint32_t b() const noexcept { return value_by_component_t<Component::kB>(); }
+  BL_INLINE_NODEBUG uint32_t a() const noexcept { return value_by_component_t<Component::kA>(); }
 
   BL_INLINE_NODEBUG Packed pack() const noexcept { return Packed { u20 | (u31 << 8) }; }
   BL_INLINE_NODEBUG Unpacked unpack() const noexcept { return *this; }
@@ -498,11 +496,11 @@ struct U32_8888 {
   template<typename XFormat>
   BL_INLINE Unpacked cmul(const U32_8888<XFormat>& x) const noexcept {
     return Unpacked {
-      ((u20 & 0xFFFF0000u) * x.template valueByComponentT<Format::componentFromIndex(2)>()) |
-      ((u20 & 0x0000FFFFu) * x.template valueByComponentT<Format::componentFromIndex(0)>())
+      ((u20 & 0xFFFF0000u) * x.template value_by_component_t<Format::component_from_index(2)>()) |
+      ((u20 & 0x0000FFFFu) * x.template value_by_component_t<Format::component_from_index(0)>())
       ,
-      ((u31 & 0xFFFF0000u) * x.template valueByComponentT<Format::componentFromIndex(3)>()) |
-      ((u31 & 0x0000FFFFu) * x.template valueByComponentT<Format::componentFromIndex(1)>())
+      ((u31 & 0xFFFF0000u) * x.template value_by_component_t<Format::component_from_index(3)>()) |
+      ((u31 & 0x0000FFFFu) * x.template value_by_component_t<Format::component_from_index(1)>())
     };
   }
 
@@ -539,42 +537,42 @@ struct FormatMetadata {};
 
 template<>
 struct FormatMetadata<FormatExt::kPRGB32> {
-  static constexpr bool kHasAlpha = true;
-  static constexpr bool kHasRGB = true;
-  static constexpr bool kIsPremultiplied = true;
-  static constexpr uint32_t kBPP = 4;
+  static inline constexpr bool kHasAlpha = true;
+  static inline constexpr bool kHasRGB = true;
+  static inline constexpr bool kIsPremultiplied = true;
+  static inline constexpr uint32_t kBPP = 4;
 };
 
 template<>
 struct FormatMetadata<FormatExt::kXRGB32> {
-  static constexpr bool kHasAlpha = false;
-  static constexpr bool kHasRGB = true;
-  static constexpr bool kIsPremultiplied = false;
-  static constexpr uint32_t kBPP = 4;
+  static inline constexpr bool kHasAlpha = false;
+  static inline constexpr bool kHasRGB = true;
+  static inline constexpr bool kIsPremultiplied = false;
+  static inline constexpr uint32_t kBPP = 4;
 };
 
 template<>
 struct FormatMetadata<FormatExt::kA8> {
-  static constexpr bool kHasAlpha = true;
-  static constexpr bool kHasRGB = false;
-  static constexpr bool kIsPremultiplied = false;
-  static constexpr uint32_t kBPP = 1;
+  static inline constexpr bool kHasAlpha = true;
+  static inline constexpr bool kHasRGB = false;
+  static inline constexpr bool kIsPremultiplied = false;
+  static inline constexpr uint32_t kBPP = 1;
 };
 
 template<>
 struct FormatMetadata<FormatExt::kFRGB32> {
-  static constexpr bool kHasAlpha = true;
-  static constexpr bool kHasRGB = true;
-  static constexpr bool kIsPremultiplied = true;
-  static constexpr uint32_t kBPP = 4;
+  static inline constexpr bool kHasAlpha = true;
+  static inline constexpr bool kHasRGB = true;
+  static inline constexpr bool kIsPremultiplied = true;
+  static inline constexpr uint32_t kBPP = 4;
 };
 
 template<>
 struct FormatMetadata<FormatExt::kZERO32> {
-  static constexpr bool kHasAlpha = true;
-  static constexpr bool kHasRGB = true;
-  static constexpr bool kIsPremultiplied = true;
-  static constexpr uint32_t kBPP = 4;
+  static inline constexpr bool kHasAlpha = true;
+  static inline constexpr bool kHasRGB = true;
+  static inline constexpr bool kIsPremultiplied = true;
+  static inline constexpr uint32_t kBPP = 4;
 };
 
 template<typename PixelT>
@@ -598,8 +596,8 @@ struct PixelIO<Pixel::P8_Alpha, FormatExt::kPRGB32> {
   typedef Pixel::P8_Alpha PixelType;
 
   static BL_INLINE_NODEBUG PixelType make(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFFu) noexcept {
-    blUnused(r, g, b);
-    return PixelType::fromValue(a);
+    bl_unused(r, g, b);
+    return PixelType::from_value(a);
   }
 
   static BL_INLINE_NODEBUG PixelType fetch(const void* src) noexcept { return PixelType{uint8_t(*static_cast<const uint32_t*>(src) >> 24)}; }
@@ -610,12 +608,12 @@ struct PixelIO<Pixel::P8_Alpha, FormatExt::kXRGB32> {
   typedef Pixel::P8_Alpha PixelType;
 
   static BL_INLINE_NODEBUG PixelType make(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFFu) noexcept {
-    blUnused(r, g, b);
-    return PixelType::fromValue(a);
+    bl_unused(r, g, b);
+    return PixelType::from_value(a);
   }
 
   static BL_INLINE_NODEBUG PixelType fetch(const void* src) noexcept {
-    blUnused(src);
+    bl_unused(src);
     return PixelType{uint8_t(0xFFu)};
   }
 };
@@ -628,8 +626,8 @@ struct PixelIO<Pixel::P8_Alpha, FormatExt::kA8> {
   typedef Pixel::P8_Alpha PixelType;
 
   static BL_INLINE_NODEBUG PixelType make(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFFu) noexcept {
-    blUnused(r, g, b);
-    return PixelType::fromValue(a);
+    bl_unused(r, g, b);
+    return PixelType::from_value(a);
   }
 
   static BL_INLINE_NODEBUG PixelType fetch(const void* src) noexcept { return PixelType{*static_cast<const uint8_t*>(src)}; }
@@ -641,7 +639,7 @@ struct PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kPRGB32> {
   typedef Pixel::P32_A8R8G8B8 PixelType;
 
   static BL_INLINE_NODEBUG PixelType make(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFFu) noexcept {
-    return PixelType::fromValue((a << 24) | (r << 16) | (g << 8) | b);
+    return PixelType::from_value((a << 24) | (r << 16) | (g << 8) | b);
   }
 
   static BL_INLINE_NODEBUG PixelType fetch(const void* src) noexcept { return PixelType{*static_cast<const uint32_t*>(src)}; }
@@ -653,8 +651,8 @@ struct PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kXRGB32> {
   typedef Pixel::P32_A8R8G8B8 PixelType;
 
   static BL_INLINE_NODEBUG PixelType make(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFFu) noexcept {
-    blUnused(a);
-    return PixelType::fromValue((0xFFu << 24) | (r << 16) | (g << 8) | b);
+    bl_unused(a);
+    return PixelType::from_value((0xFFu << 24) | (r << 16) | (g << 8) | b);
   }
 
   static BL_INLINE_NODEBUG PixelType fetch(const void* src) noexcept { return PixelType{*static_cast<const uint32_t*>(src) | uint32_t(0xFF000000u)}; }
@@ -666,8 +664,8 @@ struct PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kA8> {
   typedef Pixel::P32_A8R8G8B8 PixelType;
 
   static BL_INLINE_NODEBUG PixelType make(uint32_t r, uint32_t g, uint32_t b, uint32_t a = 0xFFu) noexcept {
-    blUnused(r, g, b);
-    return PixelType::fromValue(a * 0x01010101u);
+    bl_unused(r, g, b);
+    return PixelType::from_value(a * 0x01010101u);
   }
 
   static BL_INLINE_NODEBUG PixelType fetch(const void* src) noexcept { return PixelType{uint32_t(*static_cast<const uint8_t*>(src)) * uint32_t(0x01010101u)}; }
@@ -677,9 +675,7 @@ struct PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kA8> {
 template<> struct PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kFRGB32> : public PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kPRGB32> {};
 template<> struct PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kZERO32> : public PixelIO<Pixel::P32_A8R8G8B8, FormatExt::kPRGB32> {};
 
-} // {Reference}
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline::Reference}
 
 //! \}
 //! \endcond

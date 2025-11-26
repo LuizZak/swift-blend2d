@@ -6,17 +6,15 @@
 #ifndef BLEND2D_PIPELINE_JIT_PIPECOMPOSER_P_H_INCLUDED
 #define BLEND2D_PIPELINE_JIT_PIPECOMPOSER_P_H_INCLUDED
 
-#include "../../pipeline/jit/jitbase_p.h"
-#include "../../pipeline/jit/pipeprimitives_p.h"
-#include "../../pipeline/jit/pipepart_p.h"
+#include "jitbase_p.h"
+#include "pipeprimitives_p.h"
+#include "pipepart_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace bl {
-namespace Pipeline {
-namespace JIT {
+namespace bl::Pipeline::JIT {
 
 //! Pipeline composer.
 //!
@@ -31,7 +29,7 @@ public:
   //! \{
 
   PipeCompiler& _pc;
-  asmjit::Zone& _zone;
+  asmjit::Arena& _arena;
 
   //! \}
 
@@ -46,31 +44,29 @@ public:
   //! \{
 
   template<typename T>
-  BL_INLINE T* newPartT() noexcept {
-    void* p = _zone.alloc(sizeof(T), 8);
+  BL_INLINE T* new_part_t() noexcept {
+    void* p = _arena.alloc_oneshot(asmjit::Arena::aligned_size_of<T>());
     if (BL_UNLIKELY(!p))
       return nullptr;
     return new(BLInternal::PlacementNew{p}) T(&_pc);
   }
 
   template<typename T, typename... Args>
-  BL_INLINE T* newPartT(Args&&... args) noexcept {
-    void* p = _zone.alloc(sizeof(T), 8);
+  BL_INLINE T* new_part_t(Args&&... args) noexcept {
+    void* p = _arena.alloc_oneshot(asmjit::Arena::aligned_size_of<T>());
     if (BL_UNLIKELY(!p))
       return nullptr;
     return new(BLInternal::PlacementNew{p}) T(&_pc, BLInternal::forward<Args>(args)...);
   }
 
-  FillPart* newFillPart(FillType fillType, FetchPart* dstPart, CompOpPart* compOpPart) noexcept;
-  FetchPart* newFetchPart(FetchType fetchType, FormatExt format) noexcept;
-  CompOpPart* newCompOpPart(CompOpExt compOp, FetchPart* dstPart, FetchPart* srcPart) noexcept;
+  FillPart* new_fill_part(FillType fill_type, FetchPart* dst_part, CompOpPart* comp_op_part) noexcept;
+  FetchPart* new_fetch_part(FetchType fetch_type, FormatExt format) noexcept;
+  CompOpPart* new_comp_op_part(CompOpExt comp_op, FetchPart* dst_part, FetchPart* src_part) noexcept;
 
   //! \}
 };
 
-} // {JIT}
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline::JIT}
 
 //! \}
 //! \endcond

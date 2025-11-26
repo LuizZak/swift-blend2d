@@ -6,14 +6,13 @@
 #ifndef BLEND2D_RASTER_RENDERTARGETINFO_P_H_INCLUDED
 #define BLEND2D_RASTER_RENDERTARGETINFO_P_H_INCLUDED
 
-#include "../raster/rasterdefs_p.h"
+#include "rasterdefs_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_raster_engine_impl
 //! \{
 
-namespace bl {
-namespace RasterEngine {
+namespace bl::RasterEngine {
 
 //! Rendering target information
 //! Describes precision used for pixel blending and fixed point calculations of
@@ -28,12 +27,12 @@ struct RenderTargetInfo {
   };
 
   //! Pixel component type, see \ref PixelComponentType.
-  uint8_t pixelComponentType;
+  uint8_t pixel_component_type;
   //! Reserved for future use.
   uint8_t reserved;
   //! Full alpha value (255 or 65535).
   uint16_t fullAlphaI;
-  //! Fixed point shift (able to multiply / divide by fpScale).
+  //! Fixed point shift (able to multiply / divide by fp_scale).
   int fpShiftI;
   //! Fixed point scale as int (either 256 or 65536).
   int fpScaleI;
@@ -41,15 +40,14 @@ struct RenderTargetInfo {
   int fpMaskI;
 
   //! Full alpha (255 or 65535) stored as `double`.
-  double fullAlphaD;
+  double full_alpha_d;
   //! Fixed point scale as double (either 256.0 or 65536.0).
-  double fpScaleD;
+  double fp_scale_d;
 };
 
-extern const RenderTargetInfo renderTargetInfoByComponentType[RenderTargetInfo::kPixelComponentCount];
+extern const RenderTargetInfo render_target_info_by_component_type[RenderTargetInfo::kPixelComponentCount];
 
-} // {RasterEngine}
-} // {bl}
+} // {bl::RasterEngine}
 
 //! \}
 //! \endcond

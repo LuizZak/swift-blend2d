@@ -19,7 +19,7 @@ public extension BLFormatInfo {
 
     init?(query format: BLFormat) {
         self.init()
-        if blFormatInfoQuery(&self, format) != BL_SUCCESS.rawValue {
+        if bl_format_info_query(&self, format) != BL_SUCCESS.rawValue {
             return nil
         }
     }
@@ -32,7 +32,7 @@ public extension BLFormatInfo {
     /// is implicitly performed for formats where a single component matches one
     /// byte, etc...
     mutating func sanitize() throws {
-        try resultToError(blFormatInfoSanitize(&self))
+        try resultToError(bl_format_info_sanitize(&self))
     }
 }
 

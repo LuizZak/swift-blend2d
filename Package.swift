@@ -48,8 +48,11 @@ var testTarget = Target.testTarget(
 )
 
 var blend2DCXXSettings: [CXXSetting] = [
+    .headerSearchPath("."),
+    .headerSearchPath("../asmjit"),
     .define("NDEBUG", .when(configuration: .release)),
     .define("BL_BUILD_OPT_SSE2", .when(platforms: x86Platforms)),
+    .define("BL_BUILD_OPT_SSE4_2", .when(platforms: x86Platforms)),
     .define("BL_BUILD_NO_STDCXX"),
     .define("BL_EMBED"),
     .define("BL_STATIC"),
@@ -58,6 +61,7 @@ var blend2DCXXSettings: [CXXSetting] = [
 blend2DCXXSettings.append(contentsOf: extraBlend2DFlags.map { .define($0) })
 
 let asmjitCXXSettings: [CXXSetting] = [
+    .headerSearchPath("."),
     .define("NDEBUG", .when(configuration: .release)),
     .define("ASMJIT_NO_FOREIGN"),
     .define("ASMJIT_BUILD_NO_STDCXX"),
@@ -107,6 +111,10 @@ let package = Package(
         .target(
             name: "asmjit",
             dependencies: [],
+            publicHeadersPath: "include",
+            cSettings: [
+                .headerSearchPath("."),
+            ],
             cxxSettings: asmjitCXXSettings,
             linkerSettings: [
                 .linkedLibrary("rt", .when(platforms: [.linux])),
@@ -116,6 +124,8 @@ let package = Package(
             name: "blend2d",
             dependencies: ["asmjit"],
             cSettings: [
+                .headerSearchPath("."),
+                .headerSearchPath("../asmjit"),
                 .define("NDEBUG", .when(configuration: .release)),
                 .define("BL_EMBED"),
                 .define("BL_STATIC")

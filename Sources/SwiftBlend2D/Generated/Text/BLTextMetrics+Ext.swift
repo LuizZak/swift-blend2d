@@ -7,17 +7,17 @@ extension BLTextMetrics: @retroactive CustomStringConvertible, @retroactive Equa
 
 public extension BLTextMetrics {
     var description: String {
-        "BLTextMetrics(advance: \(advance), leadingBearing: \(leadingBearing), trailingBearing: \(trailingBearing), boundingBox: \(boundingBox))"
+        "BLTextMetrics(advance: \(advance), leading_bearing: \(leading_bearing), trailing_bearing: \(trailing_bearing), bounding_box: \(bounding_box))"
     }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.advance == rhs.advance && lhs.leadingBearing == rhs.leadingBearing && lhs.trailingBearing == rhs.trailingBearing && lhs.boundingBox == rhs.boundingBox
+        lhs.advance == rhs.advance && lhs.leading_bearing == rhs.leading_bearing && lhs.trailing_bearing == rhs.trailing_bearing && lhs.bounding_box == rhs.bounding_box
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(advance)
-        hasher.combine(leadingBearing)
-        hasher.combine(trailingBearing)
-        hasher.combine(boundingBox)
+        hasher.combine(leading_bearing)
+        hasher.combine(trailing_bearing)
+        hasher.combine(bounding_box)
     }
 }

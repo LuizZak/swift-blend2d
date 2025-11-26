@@ -8,7 +8,7 @@ public extension BLRandom {
 
     /// Resets the random number generator to the given `seed`.
     mutating func reset(seed: UInt64 = 0) {
-        blRandomReset(&self, seed)
+        bl_random_reset(&self, seed)
     }
 
     /// Tests whether the random number generator is equivalent to `other`.
@@ -18,17 +18,17 @@ public extension BLRandom {
 
     /// Returns the next `UInt64` value.
     mutating func nextUInt64() -> UInt64 {
-        blRandomNextUInt64(&self)
+        bl_random_next_uint64(&self)
     }
 
     /// Returns the next `UInt32` value.
     mutating func nextUInt32() -> UInt32 {
-        blRandomNextUInt32(&self)
+        bl_random_next_uint32(&self)
     }
 
     /// Returns the next `Double` precision floating point in [0..1) range.
     mutating func nextDouble() -> Double {
-        blRandomNextDouble(&self)
+        bl_random_next_double(&self)
     }
 }
 

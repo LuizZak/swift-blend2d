@@ -4,8 +4,8 @@ public extension BLRuntimeBuildInfo {
     /// Gets the runtime build info for the underlying Blend2D build
     static var current: BLRuntimeBuildInfo = {
         var info = BLRuntimeBuildInfo()
-        blRuntimeQueryInfo(BLRuntimeInfoType.build, &info)
-        
+        bl_runtime_query_info(BLRuntimeInfoType.build, &info)
+
         return info
     }()
 }

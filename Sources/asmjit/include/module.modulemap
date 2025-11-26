@@ -1,4 +1,0 @@
-module asmjit {
-    header "asmjit/asmjit.h"
-    export *
-}

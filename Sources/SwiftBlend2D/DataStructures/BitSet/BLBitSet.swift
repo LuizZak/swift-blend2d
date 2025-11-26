@@ -22,7 +22,7 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
     ///
     /// Returns `true` if the BitSet's size is zero.
     public var isEmpty: Bool {
-        blBitSetIsEmpty(&object)
+        bl_bit_set_is_empty(&object)
     }
 
     /// Stores a normalized `BitSet` data represented as segments.
@@ -39,7 +39,7 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
     /// aware of how SSO data is represented and used.
     public var data: BLBitSetData {
         var data = BLBitSetData()
-        blBitSetGetData(&object, &data)
+        bl_bit_set_get_data(&object, &data)
         return data
     }
 
@@ -49,18 +49,18 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
     /// number of segments the BitSet would occupy when the BitSet was converted
     /// to dynamic.
     public var segmentCount: Int {
-        Int(blBitSetGetSegmentCount(&object))
+        Int(bl_bit_set_get_segment_count(&object))
     }
 
     /// Returns the number of segments this BitSet has allocated.
     ///
     /// - note: If the BitSet is in SSO mode the returned value is always zero.
     public var segmentCapacity: Int {
-        Int(blBitSetGetSegmentCapacity(&object))
+        Int(bl_bit_set_get_segment_capacity(&object))
     }
 
     public var cardinality: Int {
-        Int(blBitSetGetCardinality(&object))
+        Int(bl_bit_set_get_cardinality(&object))
     }
 
     /// Returns the range of the BitSet as `[startOut, endOut)`.
@@ -70,7 +70,7 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
         var start: UInt32 = 0
         var end: UInt32 = 0
 
-        if !blBitSetGetRange(&object, &start, &end) {
+        if !bl_bit_set_get_range(&object, &start, &end) {
             return nil
         }
 
@@ -83,50 +83,50 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
 
     /// Returns a bit-value at the given `bitIndex`.
     public func hasBit(_ bitIndex: Int) -> Bool {
-        blBitSetHasBit(&object, UInt32(bitIndex))
+        bl_bit_set_has_bit(&object, UInt32(bitIndex))
     }
 
     /// Returns whether the bit-set has at least on bit in the given range
     /// `[startBit:endBit)`.
     public func hasBitsInRange(startBit: Int, endBit: Int) -> Bool {
-        blBitSetHasBitsInRange(&object, UInt32(startBit), UInt32(endBit))
+        bl_bit_set_has_bits_in_range(&object, UInt32(startBit), UInt32(endBit))
     }
 
     /// Returns whether this BitSet subsumes `other`.
     public func subsumes(_ other: BLBitSet) -> Bool {
-        blBitSetSubsumes(&object, &other.object)
+        bl_bit_set_subsumes(&object, &other.object)
     }
 
     /// Returns whether this BitSet intersects with `other`.
     public func intersects(_ other: BLBitSet) -> Bool {
-        blBitSetIntersects(&object, &other.object)
+        bl_bit_set_intersects(&object, &other.object)
     }
 
     /// Returns the number of bits set in the given `[startBit, endBit)` range.
     public func cardinalityInRange(startBit: Int, endBit: Int) -> Int {
-        Int(blBitSetGetCardinalityInRange(&object, UInt32(startBit), UInt32(endBit)))
+        Int(bl_bit_set_get_cardinality_in_range(&object, UInt32(startBit), UInt32(endBit)))
     }
 
     /// Clears the content of the BitSet without releasing its dynamically
     /// allocated data, if possible.
     public func clear() {
-        blBitSetClear(&object)
+        bl_bit_set_clear(&object)
     }
 
     /// Shrinks the capacity of the BitSet to match the actual content.
     public func shrink() {
-        blBitSetShrink(&object)
+        bl_bit_set_shrink(&object)
     }
 
     /// Optimizes the BitSet by clearing unused pages and by merging continuous
     /// pages, without reallocating the BitSet.
     public func optimize() {
-        blBitSetOptimize(&object)
+        bl_bit_set_optimize(&object)
     }
 
     /// Bounds the BitSet to the given interval `[startBit:endBit)`.
     public func chop(startBit: Int, endBit: Int) {
-        blBitSetChop(&object, UInt32(startBit), UInt32(endBit))
+        bl_bit_set_chop(&object, UInt32(startBit), UInt32(endBit))
     }
 
     /// Truncates the BitSet so it's maximum bit set is less than `n`.
@@ -136,48 +136,48 @@ public class BLBitSet: BLBaseClass<BLBitSetCore> {
 
     /// Adds a bit to the BitSet at the given `index`.
     public func addBit(index: Int) {
-        blBitSetAddBit(&object, UInt32(index))
+        bl_bit_set_add_bit(&object, UInt32(index))
     }
 
     /// Adds a range of bits `[startBit:endBit)` to the BitSet.
     public func addRange(startBit: Int, endBit: Int) {
-        blBitSetAddRange(&object, UInt32(startBit), UInt32(endBit))
+        bl_bit_set_add_range(&object, UInt32(startBit), UInt32(endBit))
     }
 
     /// Adds a dense data to the BitSet starting a bit index `startWord`.
     public func addWords(startWord: Int, wordData: [Int]) {
         var words: [UInt32] = wordData.map(UInt32.init)
-        blBitSetAddWords(&object, UInt32(startWord), &words, UInt32(words.count))
+        bl_bit_set_add_words(&object, UInt32(startWord), &words, UInt32(words.count))
     }
 
     /// Clears a bit in the BitSet at the given `index`.
     public func clearBit(index: Int) {
-        blBitSetClearBit(&object, UInt32(index))
+        bl_bit_set_clear_bit(&object, UInt32(index))
     }
 
     /// Clears a range of bits `[startBit:endBit)` in the BitSet.
     public func clearRange(startBit: Int, endBit: Int) {
-        blBitSetClearRange(&object, UInt32(startBit), UInt32(endBit))
+        bl_bit_set_clear_range(&object, UInt32(startBit), UInt32(endBit))
     }
 }
 
 extension BLBitSetCore: CoreStructure {
-    public static let initializer = blBitSetInit
-    public static let deinitializer = blBitSetReset
-    public static let assignWeak = blBitSetAssignWeak
+    public static let initializer = bl_bit_set_init
+    public static let deinitializer = bl_bit_set_reset
+    public static let assignWeak = bl_bit_set_assign_weak
 }
 
 extension BLBitSet: Equatable {
     /// Returns whether two BitSets are bitwise equal.
     public static func == (lhs: BLBitSet, rhs: BLBitSet) -> Bool {
-        blBitSetEquals(&lhs.object, &rhs.object)
+        bl_bit_set_equals(&lhs.object, &rhs.object)
     }
 }
 
 extension BLBitSet: Comparable {
     /// Compares two BitSets and returns `true` if `lhs` compares lower than `rhs`
     public static func < (lhs: BLBitSet, rhs: BLBitSet) -> Bool {
-        blBitSetCompare(&lhs.object, &rhs.object) < 0
+        bl_bit_set_compare(&lhs.object, &rhs.object) < 0
     }
 }
 

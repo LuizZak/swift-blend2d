@@ -6,9 +6,9 @@
 #ifndef BLEND2D_OPENTYPE_OTDEFS_P_H_INCLUDED
 #define BLEND2D_OPENTYPE_OTDEFS_P_H_INCLUDED
 
-#include "../api-internal_p.h"
-#include "../fontdata_p.h"
-#include "../fontface_p.h"
+#include "../core/api-internal_p.h"
+#include "../core/fontdata_p.h"
+#include "../core/fontface_p.h"
 #include "../support/memops_p.h"
 #include "../support/ptrops_p.h"
 
@@ -24,19 +24,18 @@
 //! \namespace bl::OpenType
 //! Low-level OpenType functionality, not exposed to users directly.
 
-namespace bl {
-namespace OpenType {
+namespace bl::OpenType {
 
 struct OTFaceImpl;
 union OTFaceTables;
 
 //! Provides minimum and maximum glyph id - used by the API.
 struct GlyphRange {
-  uint32_t glyphMin;
-  uint32_t glyphMax;
+  uint32_t glyph_min;
+  uint32_t glyph_max;
 
-  BL_INLINE_NODEBUG bool contains(BLGlyphId glyphId) const noexcept {
-    return bool(unsigned(glyphId >= glyphMin) & unsigned(glyphId <= glyphMax));
+  BL_INLINE_NODEBUG bool contains(BLGlyphId glyph_id) const noexcept {
+    return BLInternal::bool_and(glyph_id >= glyph_min, glyph_id <= glyph_max);
   }
 };
 
@@ -46,7 +45,7 @@ struct OffsetRange {
 
   template<typename T>
   BL_INLINE_NODEBUG bool contains(const T& offset) const noexcept {
-    return bool(unsigned(offset >= start) & unsigned(offset < end));
+    return BLInternal::bool_and(offset >= start, offset < end);
   }
 };
 
@@ -102,7 +101,7 @@ struct RawTable {
 
   //! Tests whether the table has a content.
   //!
-  //! \note This is essentially the opposite of `empty()`.
+  //! \note This is essentially the opposite of `is_empty()`.
   BL_INLINE_NODEBUG explicit operator bool() const noexcept { return size != 0; }
 
   BL_INLINE_NODEBUG RawTable& operator=(const RawTable& other) noexcept = default;
@@ -113,7 +112,7 @@ struct RawTable {
   //! \{
 
   //! Tests whether the table is empty (has no content).
-  BL_INLINE_NODEBUG bool empty() const noexcept { return !size; }
+  BL_INLINE_NODEBUG bool is_empty() const noexcept { return !size; }
 
   BL_INLINE_NODEBUG void reset() noexcept {
     data = nullptr;
@@ -126,7 +125,7 @@ struct RawTable {
   }
 
   template<typename SizeT>
-  BL_INLINE_NODEBUG bool fits(const SizeT& nBytes) const noexcept { return nBytes <= size; }
+  BL_INLINE_NODEBUG bool fits(const SizeT& n_bytes) const noexcept { return n_bytes <= size; }
 
   //! \}
 
@@ -134,7 +133,7 @@ struct RawTable {
   //! \{
 
   template<typename T>
-  BL_INLINE const T* dataAs(size_t offset = 0u) const noexcept {
+  BL_INLINE const T* data_as(size_t offset = 0u) const noexcept {
     BL_ASSERT(offset <= size);
     return reinterpret_cast<const T*>(data + offset);
   }
@@ -149,24 +148,24 @@ struct RawTable {
     return MemOps::readU16aBE(data + offset);
   }
 
-  BL_INLINE RawTable subTable(uint32_t offset) const noexcept {
-    offset = blMin(offset, size);
+  BL_INLINE RawTable sub_table(uint32_t offset) const noexcept {
+    offset = bl_min(offset, size);
     return RawTable(data + offset, size - offset);
   }
 
   template<typename T>
-  BL_INLINE Table<T> subTable(uint32_t offset) const noexcept {
-    offset = blMin(offset, size);
+  BL_INLINE Table<T> sub_table(uint32_t offset) const noexcept {
+    offset = bl_min(offset, size);
     return Table<T>(data + offset, size - offset);
   }
 
-  BL_INLINE RawTable subTableUnchecked(uint32_t offset) const noexcept {
+  BL_INLINE RawTable sub_table_unchecked(uint32_t offset) const noexcept {
     BL_ASSERT(offset <= size);
     return RawTable(data + offset, size - offset);
   }
 
   template<typename T>
-  BL_INLINE Table<T> subTableUnchecked(uint32_t offset) const noexcept {
+  BL_INLINE Table<T> sub_table_unchecked(uint32_t offset) const noexcept {
     BL_ASSERT(offset <= size);
     return Table<T>(data + offset, size - offset);
   }
@@ -198,7 +197,7 @@ struct Table : public RawTable {
   //! \{
 
   BL_INLINE_NODEBUG Table& operator=(const Table& other) noexcept = default;
-  BL_INLINE_NODEBUG const T* operator->() const noexcept { return dataAs<T>(); }
+  BL_INLINE_NODEBUG const T* operator->() const noexcept { return data_as<T>(); }
 
   //! \}
 
@@ -213,23 +212,23 @@ struct Table : public RawTable {
 };
 
 template<typename SizeT>
-static BL_INLINE bool blFontTableFitsN(const RawTable& table, const SizeT& requiredSize, const SizeT& offset = 0) noexcept {
-  return (table.size - offset) >= requiredSize;
+static BL_INLINE bool bl_font_table_fits_n(const RawTable& table, const SizeT& required_size, const SizeT& offset = 0) noexcept {
+  return (table.size - offset) >= required_size;
 }
 
 template<typename T, typename SizeT = uint32_t>
 static BL_INLINE bool blFontTableFitsT(const RawTable& table, const SizeT& offset = 0) noexcept {
-  return blFontTableFitsN(table, SizeT(T::kBaseSize), offset);
+  return bl_font_table_fits_n(table, SizeT(T::kBaseSize), offset);
 }
 
 /*
-static BL_INLINE RawTable blFontSubTable(const RawTable& table, uint32_t offset) noexcept {
+static BL_INLINE RawTable bl_font_sub_table(const RawTable& table, uint32_t offset) noexcept {
   BL_ASSERT(offset <= table.size);
   return RawTable(table.data + offset, table.size - offset);
 }
 
-static BL_INLINE RawTable blFontSubTableChecked(const RawTable& table, uint32_t offset) noexcept {
-  return RawTable(table.data, blMin(table.size, offset));
+static BL_INLINE RawTable bl_font_sub_table_checked(const RawTable& table, uint32_t offset) noexcept {
+  return RawTable(table.data, bl_min(table.size, offset));
 }
 
 template<typename T>
@@ -240,7 +239,7 @@ static BL_INLINE Table<T> blFontSubTableT(const RawTable& table, uint32_t offset
 
 template<typename T>
 static BL_INLINE Table<T> blFontSubTableCheckedT(const RawTable& table, uint32_t offset) noexcept {
-  return blFontSubTableT<T>(table, blMin(table.size, offset));
+  return blFontSubTableT<T>(table, bl_min(table.size, offset));
 }
 */
 
@@ -250,46 +249,46 @@ struct DataAccess {};
 template<>
 struct DataAccess<1> {
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE_NODEBUG uint32_t readValue(const uint8_t* data) noexcept { return MemOps::readU8(data); }
+  static BL_INLINE_NODEBUG uint32_t read_value(const uint8_t* data) noexcept { return MemOps::readU8(data); }
 
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE void writeValue(uint8_t* data, uint32_t value) noexcept { MemOps::writeU8(data, value); }
+  static BL_INLINE void write_value(uint8_t* data, uint32_t value) noexcept { MemOps::writeU8(data, value); }
 };
 
 template<>
 struct DataAccess<2> {
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE_NODEBUG uint32_t readValue(const uint8_t* data) noexcept { return MemOps::readU16<ByteOrder, Alignment>(data); }
+  static BL_INLINE_NODEBUG uint32_t read_value(const uint8_t* data) noexcept { return MemOps::readU16<ByteOrder, Alignment>(data); }
 
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE void writeValue(uint8_t* data, uint32_t value) noexcept { MemOps::writeU16<ByteOrder, Alignment>(data, value); }
+  static BL_INLINE void write_value(uint8_t* data, uint32_t value) noexcept { MemOps::writeU16<ByteOrder, Alignment>(data, value); }
 };
 
 template<>
 struct DataAccess<3> {
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE_NODEBUG uint32_t readValue(const uint8_t* data) noexcept { return MemOps::readU24u<ByteOrder>(data); }
+  static BL_INLINE_NODEBUG uint32_t read_value(const uint8_t* data) noexcept { return MemOps::readU24u<ByteOrder>(data); }
 
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE void writeValue(uint8_t* data, uint32_t value) noexcept { MemOps::writeU24u<ByteOrder>(data, value); }
+  static BL_INLINE void write_value(uint8_t* data, uint32_t value) noexcept { MemOps::writeU24u<ByteOrder>(data, value); }
 };
 
 template<>
 struct DataAccess<4> {
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE_NODEBUG uint32_t readValue(const uint8_t* data) noexcept { return MemOps::readU32<ByteOrder, Alignment>(data); }
+  static BL_INLINE_NODEBUG uint32_t read_value(const uint8_t* data) noexcept { return MemOps::readU32<ByteOrder, Alignment>(data); }
 
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE void writeValue(uint8_t* data, uint32_t value) noexcept { MemOps::writeU32<ByteOrder, Alignment>(data, value); }
+  static BL_INLINE void write_value(uint8_t* data, uint32_t value) noexcept { MemOps::writeU32<ByteOrder, Alignment>(data, value); }
 };
 
 template<>
 struct DataAccess<8> {
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE_NODEBUG uint64_t readValue(const uint8_t* data) noexcept { return MemOps::readU64<ByteOrder, Alignment>(data); }
+  static BL_INLINE_NODEBUG uint64_t read_value(const uint8_t* data) noexcept { return MemOps::readU64<ByteOrder, Alignment>(data); }
 
   template<uint32_t ByteOrder, size_t Alignment>
-  static BL_INLINE void writeValue(uint8_t* data, uint64_t value) noexcept { MemOps::writeU64<ByteOrder, Alignment>(data, value); }
+  static BL_INLINE void write_value(uint8_t* data, uint64_t value) noexcept { MemOps::writeU64<ByteOrder, Alignment>(data, value); }
 };
 
 #pragma pack(push, 1)
@@ -300,27 +299,27 @@ struct DataType {
   BL_INLINE_NODEBUG DataType(const DataType& other) noexcept = default;
 
   template<size_t Alignment = 1>
-  BL_INLINE_NODEBUG T value() const noexcept { return T(DataAccess<Size>::template readValue<ByteOrder, Alignment>(data));  }
+  BL_INLINE_NODEBUG T value() const noexcept { return T(DataAccess<Size>::template read_value<ByteOrder, Alignment>(data));  }
 
   template<size_t Alignment = 1>
-  BL_INLINE_NODEBUG T rawValue() const noexcept { return T(DataAccess<Size>::template readValue<BL_BYTE_ORDER_NATIVE, Alignment>(data)); }
+  BL_INLINE_NODEBUG T raw_value() const noexcept { return T(DataAccess<Size>::template read_value<BL_BYTE_ORDER_NATIVE, Alignment>(data)); }
 
   template<size_t Alignment = 1>
-  BL_INLINE void setValue(T value) noexcept {
-    typedef typename std::make_unsigned<T>::type U;
-    DataAccess<Size>::template writeValue<ByteOrder, Alignment>(data, U(value));
+  BL_INLINE void set_value(T value) noexcept {
+    using U = std::make_unsigned_t<T>;
+    DataAccess<Size>::template write_value<ByteOrder, Alignment>(data, U(value));
   }
 
   template<size_t Alignment = 1>
-  BL_INLINE void setRawValue(T value) noexcept {
-    typedef typename std::make_unsigned<T>::type U;
-    DataAccess<Size>::template writeValue<BL_BYTE_ORDER_NATIVE, Alignment>(data, U(value));
+  BL_INLINE void set_raw_value(T value) noexcept {
+    using U = std::make_unsigned_t<T>;
+    DataAccess<Size>::template write_value<BL_BYTE_ORDER_NATIVE, Alignment>(data, U(value));
   }
 
   BL_INLINE_NODEBUG T operator()() const noexcept { return value(); }
 
   BL_INLINE_NODEBUG DataType& operator=(const DataType& other) noexcept = default;
-  BL_INLINE_NODEBUG DataType& operator=(T other) noexcept { setValue(other); return *this; }
+  BL_INLINE_NODEBUG DataType& operator=(T other) noexcept { set_value(other); return *this; }
 };
 #pragma pack(pop)
 
@@ -370,8 +369,7 @@ struct TagRef16 {
   Offset16 offset;
 };
 
-} // {OpenType}
-} // {bl}
+} // {bl::OpenType}
 
 //! \}
 //! \endcond

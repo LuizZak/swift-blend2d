@@ -3,7 +3,7 @@
 
 import blend2d
 
-/// Type of runtime information that can be queried through `blRuntimeQueryInfo()`.
+/// Type of runtime information that can be queried through `bl_runtime_query_info()`.
 public extension BLRuntimeInfoType {
     /// Blend2D build information.
     static let build = BL_RUNTIME_INFO_TYPE_BUILD

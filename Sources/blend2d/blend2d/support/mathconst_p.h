@@ -6,7 +6,7 @@
 #ifndef BLEND2D_SUPPORT_MATHCONST_P_H_INCLUDED
 #define BLEND2D_SUPPORT_MATHCONST_P_H_INCLUDED
 
-#include "../api-internal_p.h"
+#include "../core/api-internal_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_support

@@ -42,13 +42,13 @@ public struct BLGlyphRunIterator {
     var placementDataPointer: UnsafeMutableRawPointer?
     var glyphAdvance: Int
     var placementAdvance: Int
-    
+
     var glyphRun: BLGlyphRun
-    
+
     public var atEnd: Bool {
         index >= size
     }
-    
+
     public var hasPlacement: Bool {
         placementDataPointer != nil
     }
@@ -59,8 +59,8 @@ public struct BLGlyphRunIterator {
         guard let pointer = placementDataPointer else {
             return .none
         }
-        
-        switch BLGlyphPlacementType(BLGlyphPlacementType.RawValue(glyphRun.placementType)) {
+
+        switch BLGlyphPlacementType(BLGlyphPlacementType.RawValue(glyphRun.placement_type)) {
         case .none:
             return .none
         case .advanceOffset:
@@ -75,31 +75,31 @@ public struct BLGlyphRunIterator {
             return .none
         }
     }
-    
+
     public init(glyphRun: BLGlyphRun) {
         index = 0
         size = glyphRun.size
-        glyphData = glyphRun.glyphData
-        placementDataPointer = glyphRun.placementData
-        glyphAdvance = Int(glyphRun.glyphAdvance)
-        placementAdvance = Int(glyphRun.placementAdvance)
-        
+        glyphData = glyphRun.glyph_data
+        placementDataPointer = glyphRun.placement_data
+        glyphAdvance = Int(glyphRun.glyph_advance)
+        placementAdvance = Int(glyphRun.placement_advance)
+
         self.glyphRun = glyphRun
     }
-    
+
     public func glyphId() -> UInt32? {
         glyphData?.load(as: UInt32.self)
     }
-    
+
     public func placement<T>(as type: T.Type) -> T? {
         placementDataPointer?.load(as: type)
     }
-    
+
     public mutating func advance() {
         if atEnd {
             return
         }
-        
+
         index += 1
         glyphData = glyphData.map { $0 + glyphAdvance }
         placementDataPointer = placementDataPointer.map { $0 + placementAdvance }

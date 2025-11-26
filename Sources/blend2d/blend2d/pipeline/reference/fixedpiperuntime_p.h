@@ -6,16 +6,15 @@
 #ifndef BLEND2D_PIPELINE_REFERENCE_FIXEDPIPERUNTIME_P_H_INCLUDED
 #define BLEND2D_PIPELINE_REFERENCE_FIXEDPIPERUNTIME_P_H_INCLUDED
 
-#include "../../pipeline/pipedefs_p.h"
-#include "../../pipeline/piperuntime_p.h"
+#include "../pipedefs_p.h"
+#include "../piperuntime_p.h"
 #include "../../support/wrap_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_pipeline_reference
 //! \{
 
-namespace bl {
-namespace Pipeline {
+namespace bl::Pipeline {
 
 //! Static pipline runtime.
 //!
@@ -28,8 +27,7 @@ public:
   static Wrap<PipeStaticRuntime> _global;
 };
 
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline}
 
 //! \}
 //! \endcond

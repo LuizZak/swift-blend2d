@@ -20,7 +20,7 @@ public extension BLFontFaceFlags {
     static let charToGlyphMapping = BL_FONT_FACE_FLAG_CHAR_TO_GLYPH_MAPPING
     
     /// Horizontal glyph metrics (advances, side bearings) is available.
-    static let horizontalMetircs = BL_FONT_FACE_FLAG_HORIZONTAL_METIRCS
+    static let horizontalMetrics = BL_FONT_FACE_FLAG_HORIZONTAL_METRICS
     
     /// Vertical glyph metrics (advances, side bearings) is available.
     static let verticalMetrics = BL_FONT_FACE_FLAG_VERTICAL_METRICS
@@ -35,10 +35,10 @@ public extension BLFontFaceFlags {
     static let opentypeFeatures = BL_FONT_FACE_FLAG_OPENTYPE_FEATURES
     
     /// Panose classification is available.
-    static let panoseData = BL_FONT_FACE_FLAG_PANOSE_DATA
+    static let panoseInfo = BL_FONT_FACE_FLAG_PANOSE_INFO
     
     /// Unicode coverage information is available.
-    static let unicodeCoverage = BL_FONT_FACE_FLAG_UNICODE_COVERAGE
+    static let coverageInfo = BL_FONT_FACE_FLAG_COVERAGE_INFO
     
     /// Baseline for font at `y` equals 0.
     static let baselineYEquals0 = BL_FONT_FACE_FLAG_BASELINE_Y_EQUALS_0

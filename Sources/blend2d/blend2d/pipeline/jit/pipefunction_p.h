@@ -6,15 +6,13 @@
 #ifndef BLEND2D_PIPELINE_JIT_PIPEFUNCTION_P_H_INCLUDED
 #define BLEND2D_PIPELINE_JIT_PIPEFUNCTION_P_H_INCLUDED
 
-#include "../../pipeline/jit/jitbase_p.h"
+#include "jitbase_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_pipeline_jit
 //! \{
 
-namespace bl {
-namespace Pipeline {
-namespace JIT {
+namespace bl::Pipeline::JIT {
 
 class PipeCompiler;
 class PipePart;
@@ -26,12 +24,12 @@ public:
   //! \name Members
   //! \{
 
-  //! Holds `ctxData` argument.
-  Gp _ctxData;
-  //! Holds `fillData` argument.
-  Gp _fillData;
-  //! Holds `fetchData` argument.
-  Gp _fetchData;
+  //! Holds `ctx_data` argument.
+  Gp _ctx_data;
+  //! Holds `fill_data` argument.
+  Gp _fill_data;
+  //! Holds `fetch_data` argument.
+  Gp _fetch_data;
 
   //! \}
 
@@ -45,12 +43,12 @@ public:
   //! \name Accessors
   //! \{
 
-  //! Returns `ctxData` arguments of the pipeline function.
-  BL_INLINE_NODEBUG const Gp& ctxData() const noexcept { return _ctxData; }
-  //! Returns `fillData` arguments of the pipeline function.
-  BL_INLINE_NODEBUG const Gp& fillData() const noexcept { return _fillData; }
-  //! Returns `fetchData` arguments of the pipeline function.
-  BL_INLINE_NODEBUG const Gp& fetchData() const noexcept { return _fetchData; }
+  //! Returns `ctx_data` arguments of the pipeline function.
+  BL_INLINE_NODEBUG const Gp& ctx_data() const noexcept { return _ctx_data; }
+  //! Returns `fill_data` arguments of the pipeline function.
+  BL_INLINE_NODEBUG const Gp& fill_data() const noexcept { return _fill_data; }
+  //! Returns `fetch_data` arguments of the pipeline function.
+  BL_INLINE_NODEBUG const Gp& fetch_data() const noexcept { return _fetch_data; }
 
   //! \}
 
@@ -60,15 +58,13 @@ public:
   //! Prepares all parts of the pipeline and configures the pipeline compiler for agreed simd width.
   void prepare(PipeCompiler& pc, PipePart* root) noexcept;
 
-  void beginFunction(PipeCompiler& pc) noexcept;
-  void endFunction(PipeCompiler& pc) noexcept;
+  void begin_function(PipeCompiler& pc) noexcept;
+  void end_function(PipeCompiler& pc) noexcept;
 
   //! \}
 };
 
-} // {JIT}
-} // {Pipeline}
-} // {bl}
+} // {bl::Pipeline::JIT}
 
 //! \}
 //! \endcond

@@ -3,7 +3,7 @@ import blend2d
 public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     @inlinable
     public var glyphRun: BLGlyphRun {
-        return blGlyphBufferGetGlyphRun(&object).pointee
+        return bl_glyph_buffer_get_glyph_run(&object).pointee
     }
 
     /// Gets the glyph ids from this buffer.
@@ -22,11 +22,11 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
 
         return glyphs
     }
-    
+
     public override init() {
         super.init()
     }
-    
+
     public init<S: StringProtocol>(text: S) {
         super.init()
         setText(text)
@@ -36,9 +36,9 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
         super.init()
         setGlyphs(glyphs)
     }
-    
+
     public func clear() {
-        blGlyphBufferClear(&object)
+        bl_glyph_buffer_clear(&object)
     }
 
     /// Sets a text in this glyph buffer.
@@ -48,7 +48,7 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
     /// Passing `nil` to indicate the entire text string should be used.
     public func setText<S: StringProtocol>(_ text: S, length: Int? = nil) {
         text.withCString { pointer -> Void in
-            blGlyphBufferSetText(
+            bl_glyph_buffer_set_text(
                 &object,
                 pointer,
                 length ?? text.utf8.count,
@@ -56,14 +56,14 @@ public class BLGlyphBuffer: BLBaseClass<BLGlyphBufferCore> {
             )
         }
     }
-    
+
     public func setGlyphs(_ glyphs: [UInt32]) {
-        blGlyphBufferSetGlyphs(&object, glyphs, glyphs.count)
+        bl_glyph_buffer_set_glyphs(&object, glyphs, glyphs.count)
     }
 }
 
 extension BLGlyphBufferCore: CoreStructure {
-    public static let initializer = blGlyphBufferInit
-    public static let deinitializer = blGlyphBufferReset
+    public static let initializer = bl_glyph_buffer_init
+    public static let deinitializer = bl_glyph_buffer_reset
     public static let assignWeak = emptyAssignWeak(type: BLGlyphBufferCore.self)
 }

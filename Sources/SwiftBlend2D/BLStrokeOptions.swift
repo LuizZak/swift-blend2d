@@ -14,34 +14,34 @@ public struct BLStrokeOptions {
     }
     @inlinable
     public var miterLimit: Double {
-        get { box.object.miterLimit }
+        get { box.object.miter_limit }
         set {
             ensureUnique()
-            box.object.miterLimit = newValue
+            box.object.miter_limit = newValue
         }
     }
     @inlinable
     public var dashOffset: Double {
-        get { box.object.dashOffset }
+        get { box.object.dash_offset }
         set {
             ensureUnique()
-            box.object.dashOffset = newValue
+            box.object.dash_offset = newValue
         }
     }
     @inlinable
     public var startCap: BLStrokeCap {
-        get { BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.startCap)) }
+        get { BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.start_cap)) }
         set {
             ensureUnique()
-            box.object.startCap = UInt8(newValue.rawValue)
+            box.object.start_cap = UInt8(newValue.rawValue)
         }
     }
     @inlinable
     public var endCap: BLStrokeCap {
-        get { BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.endCap)) }
+        get { BLStrokeCap(rawValue: BLStrokeCap.RawValue(box.object.end_cap)) }
         set {
             ensureUnique()
-            box.object.endCap = UInt8(newValue.rawValue)
+            box.object.end_cap = UInt8(newValue.rawValue)
         }
     }
     @inlinable
@@ -53,40 +53,40 @@ public struct BLStrokeOptions {
         }
     }
     public var transformOrder: BLStrokeTransformOrder {
-        get { BLStrokeTransformOrder(rawValue: BLStrokeTransformOrder.RawValue(box.object.transformOrder)) }
+        get { BLStrokeTransformOrder(rawValue: BLStrokeTransformOrder.RawValue(box.object.transform_order)) }
         set {
             ensureUnique()
-            box.object.transformOrder = UInt8(newValue.rawValue)
+            box.object.transform_order = UInt8(newValue.rawValue)
         }
     }
 
     @inlinable
     public var dashArray: [Double] {
-        get { BLArray<Double>(weakAssign: box.object.dashArray).asArray() }
+        get { BLArray<Double>(weakAssign: box.object.dash_array).asArray() }
         set {
             ensureUnique()
-            
-            blArrayClear(&box.object.dashArray)
-            
+
+            bl_array_clear(&box.object.dash_array)
+
             newValue.withTemporaryView { view in
                 guard let pointer = view.pointee.data else {
                     return
                 }
-                
-                blArrayAppendData(&box.object.dashArray, pointer, newValue.count)
+
+                bl_array_append_data(&box.object.dash_array, pointer, newValue.count)
             }
         }
     }
-    
+
     public init() {
         box = BLBaseClass()
     }
-    
+
     public mutating func setCaps(_ cap: BLStrokeCap) {
         startCap = cap
         endCap = cap
     }
-    
+
     @inlinable
     mutating func ensureUnique() {
         if isKnownUniquelyReferenced(&box) {
@@ -96,7 +96,7 @@ public struct BLStrokeOptions {
 }
 
 extension BLStrokeOptionsCore: CoreStructure {
-    public static let initializer = blStrokeOptionsInit
-    public static let deinitializer = blStrokeOptionsReset
-    public static let assignWeak = blStrokeOptionsAssignWeak
+    public static let initializer = bl_stroke_options_init
+    public static let deinitializer = bl_stroke_options_reset
+    public static let assignWeak = bl_stroke_options_assign_weak
 }

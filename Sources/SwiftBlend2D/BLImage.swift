@@ -4,13 +4,13 @@ import blend2d
 public final class BLImage: BLBaseClass<BLImageCore> {
     /// Maximum width of an image.
     public static var maximumWidth: Int {
-        Int(BLRuntimeBuildInfo.current.maxImageSize)
+        Int(BLRuntimeBuildInfo.current.max_image_size)
     }
     /// Maximum height of an image.
     public static var maximumHeight: Int {
-        Int(BLRuntimeBuildInfo.current.maxImageSize)
+        Int(BLRuntimeBuildInfo.current.max_image_size)
     }
-    
+
     public var width: Int {
         Int(getImageData().size.w)
     }
@@ -20,16 +20,16 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     public var size: BLSizeI {
         getImageData().size
     }
-    
+
     /// The image format.
     public var format: BLFormat {
         BLFormat(rawValue: BLFormat.RawValue(getImageData().format))
     }
-    
+
     public override init() {
         super.init()
     }
-    
+
     /// Initializes a new image with the given dimensions and format.
     ///
     /// - Parameters:
@@ -44,22 +44,22 @@ public final class BLImage: BLBaseClass<BLImageCore> {
             format: format
         )
     }
-    
+
     /// Initializes a new image with the given dimensions and format.
     ///
     /// - Parameters:
-    ///   - size: Size of the image. Both width and height must be greater than 
+    ///   - size: Size of the image. Both width and height must be greater than
     /// zero and less than or equal to (BLImage.maximumWidth, BLImage.maximumHeight).
     ///   - format: A valid image format to use for the image.
     public init(size: BLSizeI, format: BLFormat) {
         precondition(size.w > 0 && size.w <= Int32(BLImage.maximumWidth))
         precondition(size.h > 0 && size.h <= Int32(BLImage.maximumHeight))
-        
+
         super.init {
-            blImageInitAs($0, size.w, size.h, format)
+            bl_image_init_as($0, size.w, size.h, format)
         }
     }
-    
+
     /// Initializes a new image from a file on disk.
     ///
     /// Optionally allows specifying codecs to try to use when decoding the image
@@ -72,11 +72,11 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// file. If `nil`, the default image codecs are used, instead.
     public init(fromFile filePath: String, codecs: [BLImageCodec]? = nil) throws {
         try super.init { pointer -> BLResult in
-            blImageInit(pointer)
-            
+            bl_image_init(pointer)
+
             return try mapError {
                 withCodecArray(codecs) { codecs in
-                    blImageReadFromFile(pointer, filePath, codecs)
+                    bl_image_read_from_file(pointer, filePath, codecs)
                 }
             }
             .addFileErrorMappings(filePath: filePath)
@@ -84,7 +84,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         }
     }
 
-    /// Initializes a new image from a section of memory containing the 
+    /// Initializes a new image from a section of memory containing the
     /// appropriately formatted pixel data.
     ///
     /// This type of initialization does not handle deallocation of image data
@@ -114,7 +114,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         )
     }
 
-    /// Initializes a new image from a section of memory containing the 
+    /// Initializes a new image from a section of memory containing the
     /// appropriately formatted pixel data.
     ///
     /// This type of initialization does not handle deallocation of image data
@@ -123,7 +123,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     /// - Parameters:
     ///   - pixelData: A pointer to raw pixel data on memory.
     ///   - stride: The stride, or number of bytes per row of pixels.
-    ///   - size: Size of the image. Both width and height must be greater than 
+    ///   - size: Size of the image. Both width and height must be greater than
     /// zero and less than or equal to (BLImage.maximumWidth, BLImage.maximumHeight).
     ///   - format: A valid image format to use for the image.
     ///   - dataAccessFlags: Sets of flags for accessing data from `pixelData`.
@@ -136,7 +136,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
     ) {
 
         super.init {
-            blImageInitAsFromData(
+            bl_image_init_as_from_data(
                 $0,
                 size.w,
                 size.h,
@@ -149,15 +149,15 @@ public final class BLImage: BLBaseClass<BLImageCore> {
             )
         }
     }
-    
+
     override init(weakAssign object: BLImageCore) {
         super.init(weakAssign: object)
     }
-    
+
     public func equals(to other: BLImage) -> Bool {
-        return blImageEquals(&object, &other.object)
+        return bl_image_equals(&object, &other.object)
     }
-    
+
     /// Scales this image to a given size, with a given scale filter.
     ///
     /// Throws in case one of the input values is invalid.
@@ -168,26 +168,26 @@ public final class BLImage: BLBaseClass<BLImageCore> {
 
         var size = size
         var objectCopy = object
-        
+
         try resultToError(
-            blImageScale(&object, &objectCopy, &size, filter)
+            bl_image_scale(&object, &objectCopy, &size, filter)
         )
     }
-    
+
     public func writeToFile(_ path: String, codec: BLImageCodec) throws {
         try mapError {
-            blImageWriteToFile(&self.object, path, &codec.object)
+            bl_image_write_to_file(&self.object, path, &codec.object)
         }
         .addFileErrorMappings(filePath: path)
         .execute()
     }
-    
+
     public func getImageData() -> BLImageData {
         var data = BLImageData()
-        blImageGetData(&object, &data)
+        bl_image_get_data(&object, &data)
         return data
     }
-    
+
     public func toData(codec: BLImageCodec) throws -> Data {
         var data = Data()
         try writeToData(data: &data, codec: codec)
@@ -199,36 +199,36 @@ public final class BLImage: BLBaseClass<BLImageCore> {
         try writeToData(buffer, codec: codec)
         data.append(buffer.unsafePointer())
     }
-    
+
     func writeToData<T>(_ buffer: BLArray<T>, codec: BLImageCodec) throws {
         try resultToError(
-            blImageWriteToData(&object, &buffer.object, &codec.object)
+            bl_image_write_to_data(&object, &buffer.object, &codec.object)
         )
     }
-    
+
     public func readFromFile(_ fileName: String, codecs: [BLImageCodec]? = nil) throws {
         try mapError {
             withCodecArray(codecs) {
-                blImageReadFromFile(&self.object, fileName, $0)
+                bl_image_read_from_file(&self.object, fileName, $0)
             }
         }
         .addFileErrorMappings(filePath: fileName)
         .execute()
     }
-    
+
     public func readFromData(_ data: [UInt8], codecs: [BLImageCodec]? = nil) throws {
         let array = BLArray<UInt8>()
         for item in data {
             array.append(item)
         }
-        
+
         try readFromData(array, codecs: codecs)
     }
-    
+
     func readFromData(_ buffer: BLArray<UInt8>, codecs: [BLImageCodec]? = nil) throws {
         try resultToError(
             withCodecArray(codecs) {
-                blImageReadFromData(&object, buffer.unsafePointer().baseAddress, buffer.count, $0)
+                bl_image_read_from_data(&object, buffer.unsafePointer().baseAddress, buffer.count, $0)
             }
         )
     }
@@ -236,7 +236,7 @@ public final class BLImage: BLBaseClass<BLImageCore> {
 
 extension BLImage: Equatable {
     public static func == (lhs: BLImage, rhs: BLImage) -> Bool {
-        blImageEquals(&lhs.object, &rhs.object)
+        bl_image_equals(&lhs.object, &rhs.object)
     }
 }
 
@@ -246,7 +246,7 @@ private func withCodecArray<T>(_ codecs: [BLImageCodec]?, _ closure: (UnsafePoin
         for codec in codecs {
             codecsArray.append(codec.object)
         }
-        
+
         return try closure(&codecsArray.object)
     } else {
         return try closure(nil)
@@ -254,9 +254,9 @@ private func withCodecArray<T>(_ codecs: [BLImageCodec]?, _ closure: (UnsafePoin
 }
 
 extension BLImageCore: CoreStructure {
-    public static let initializer = blImageInit
-    public static let deinitializer = blImageReset
-    public static let assignWeak = blImageAssignWeak
+    public static let initializer = bl_image_init
+    public static let deinitializer = bl_image_reset
+    public static let assignWeak = bl_image_assign_weak
 
     @usableFromInline
     var impl: BLImageImpl {

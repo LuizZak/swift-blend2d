@@ -4,9 +4,9 @@
 // [License]
 // Zlib - See LICENSE.md file in the package.
 
-#include "../api-build_p.h"
-#include "../runtime_p.h"
-#include "../threading/futex_p.h"
+#include <blend2d/core/api-build_p.h>
+#include <blend2d/core/runtime_p.h>
+#include <blend2d/threading/futex_p.h>
 
 #if !defined(BL_BUILD_NO_FUTEX)
   #ifdef _WIN32
@@ -19,31 +19,25 @@
 
 #if !defined(BL_BUILD_NO_FUTEX) && defined(__linux__)
 
-void blFuxexRtInit(BLRuntimeContext* rt) noexcept {
+void bl_fuxex_rt_init(BLRuntimeContext* rt) noexcept {
   // Initially in Linux 2.6.0, improved at 2.6.7, which is the minimum for FUTEX_WAIT_PRIVATE / FUTEX_WAKE_PRIVATE.
-  rt->featuresInfo.futexEnabled = 1;
+  rt->features_info.futex_enabled = 1;
 }
 
 #elif !defined(BL_BUILD_NO_FUTEX) && defined(__OpenBSD__)
 
-void blFuxexRtInit(BLRuntimeContext* rt) noexcept {
+void bl_fuxex_rt_init(BLRuntimeContext* rt) noexcept {
   // TODO: How to detect support on OpenBSD?
-  rt->featuresInfo.futexEnabled = 0;
+  rt->features_info.futex_enabled = 0;
 }
 
 #elif !defined(BL_BUILD_NO_FUTEX) && defined(_WIN32)
 
-namespace bl {
-namespace Futex {
-namespace Native {
-
+namespace bl::Futex::Native {
 FutexSyncAPI futexSyncAPI;
+} // {bl::Futex::Native}
 
-} // {Native}
-} // {Futex}
-} // {bl}
-
-void blFuxexRtInit(BLRuntimeContext* rt) noexcept {
+void bl_fuxex_rt_init(BLRuntimeContext* rt) noexcept {
   HMODULE hModule = GetModuleHandleA("api-ms-win-core-synch-l1-2-0.dll");
 
   if (!hModule)
@@ -57,12 +51,12 @@ void blFuxexRtInit(BLRuntimeContext* rt) noexcept {
   fn.WakeByAddressAll    = (FutexSyncAPI::WakeByAddressAllFunc   )GetProcAddress(hModule, "WakeByAddressAll");
 
   bool ok = fn.WaitOnAddress != nullptr && fn.WakeByAddressSingle != nullptr && fn.WakeByAddressAll != nullptr;
-  rt->featuresInfo.futexEnabled = ok;
+  rt->features_info.futex_enabled = ok;
 }
 
 #else
 
 // Futex not supported.
-void blFuxexRtInit(BLRuntimeContext* rt) noexcept { blUnused(rt); }
+void bl_fuxex_rt_init(BLRuntimeContext* rt) noexcept { bl_unused(rt); }
 
 #endif

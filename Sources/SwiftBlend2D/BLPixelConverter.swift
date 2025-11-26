@@ -6,14 +6,14 @@ public class BLPixelConverter: BLBaseClass<BLPixelConverterCore> {
         destination: BLFormatInfo,
         flags: BLPixelConverterCreateFlags
     ) {
-        
+
         super.init()
-        
+
         var source = source
         var destination = destination
-        blPixelConverterCreate(&object, &destination, &source, flags)
+        bl_pixel_converter_create(&object, &destination, &source, flags)
     }
-    
+
     @discardableResult
     public func convert(
         dstData: UnsafeMutableRawPointer,
@@ -24,9 +24,9 @@ public class BLPixelConverter: BLBaseClass<BLPixelConverterCore> {
         height: UInt32,
         options: BLPixelConverterOptions? = nil
     ) -> BLResult {
-        
+
         withUnsafeNullablePointer(to: options) { options in
-            blPixelConverterConvert(
+            bl_pixel_converter_convert(
                 &object,
                 dstData,
                 dstStride,
@@ -41,7 +41,7 @@ public class BLPixelConverter: BLBaseClass<BLPixelConverterCore> {
 }
 
 extension BLPixelConverterCore: CoreStructure {
-    public static let initializer = blPixelConverterInit
-    public static let deinitializer = blPixelConverterReset
-    public static let assignWeak = blPixelConverterAssign
+    public static let initializer = bl_pixel_converter_init
+    public static let deinitializer = bl_pixel_converter_reset
+    public static let assignWeak = bl_pixel_converter_assign
 }

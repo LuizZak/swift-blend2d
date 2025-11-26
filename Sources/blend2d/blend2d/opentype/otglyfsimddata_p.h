@@ -6,14 +6,13 @@
 #ifndef BLEND2D_OPENTYPE_OTGLYFSIMDDATA_P_H_INCLUDED
 #define BLEND2D_OPENTYPE_OTGLYFSIMDDATA_P_H_INCLUDED
 
-#include "../opentype/otglyf_p.h"
+#include "otglyf_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_opentype_impl
 //! \{
 
-namespace bl {
-namespace OpenType {
+namespace bl::OpenType {
 namespace GlyfImpl {
 
 //! Flags that are used by the vectorized outline decoder implementation.
@@ -44,14 +43,14 @@ enum VecFlags : uint8_t {
   kVecFlagRepeat = 0x80
 };
 
-static constexpr uint32_t kVecFlagOnCurveShift = IntOps::ctzStatic(kVecFlagOnCurve);
+static constexpr uint32_t kVecFlagOnCurveShift = IntOps::ctz_static(kVecFlagOnCurve);
 
 // The first 16 bytes are used as a predicate for PSHUFB.
-alignas(16) extern const uint8_t convertFlagsPredicate[64];
+alignas(16) extern const uint8_t convert_flags_predicate[64];
 
-alignas(8) extern const uint8_t overflowFlagsPredicate[32];
+alignas(8) extern const uint8_t overflow_flags_predicate[32];
 
-// Vertex size for each ySame|xSame|yByte|xByte combination.
+// Vertex size for each y_same|x_same|y_byte|x_byte combination.
 alignas(16) extern const uint8_t sizesPerXYPredicate[16];
 
 // These tables provide PSHUFB predicate (and additional payload) for decoding X/Y coordinates based on flags.
@@ -68,8 +67,7 @@ alignas(16) extern const uint8_t decodeOpXTable[16];
 alignas(16) extern const uint8_t decodeOpYTable[16];
 
 } // {GlyfImpl}
-} // {OpenType}
-} // {bl}
+} // {bl::OpenType}
 
 //! \}
 //! \endcond

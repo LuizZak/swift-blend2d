@@ -3,11 +3,11 @@ import blend2d
 public extension BLContext {
     struct CreateOptions {
         public var flags: BLContextCreateFlags
-        
+
         // CPU features to use in isolated JIT runtime (if supported), only used
         // when `flags` contains `.overrideCpuFeatures`.
         public var cpuFeatures: BLRuntimeCpuFeatures
-        
+
         /// Number of threads to acquire from thread-pool and use for rendering.
         ///
         /// If `threadCount` is zero it means to initialize the context for
@@ -17,7 +17,7 @@ public extension BLContext {
         /// for asynchronous rendering - in this case `threadCount` specifies
         /// how many threads can execute in parallel.
         public var threadCount: UInt32
-        
+
         // TODO: To be documented, has no effect at the moment.
         /// Maximum number of commands to be queued.
         ///
@@ -40,7 +40,7 @@ public extension BLContext {
         /// calculation. One example of using pixel origin is dithering, where
         /// it's used to shift the dithering matrix.
         public var pixelOrigin: BLPointI
-        
+
         public init(
             flags: BLContextCreateFlags = [],
             cpuFeatures: BLRuntimeCpuFeatures = [],
@@ -49,7 +49,7 @@ public extension BLContext {
             savedStateLimit: UInt32 = 0,
             pixelOrigin: BLPointI = .zero
         ) {
-            
+
             self.flags = flags
             self.cpuFeatures = cpuFeatures
             self.threadCount = threadCount
@@ -65,11 +65,11 @@ extension BLContext.CreateOptions {
     func toBLContextCreateInfo() -> BLContextCreateInfo {
         return BLContextCreateInfo(
             flags: UInt32(flags.rawValue),
-            threadCount: threadCount,
-            cpuFeatures: UInt32(cpuFeatures.rawValue),
-            commandQueueLimit: commandQueueLimit,
-            savedStateLimit: savedStateLimit,
-            pixelOrigin: pixelOrigin,
+            thread_count: threadCount,
+            cpu_features: UInt32(cpuFeatures.rawValue),
+            command_queue_limit: commandQueueLimit,
+            saved_state_limit: savedStateLimit,
+            pixel_origin: pixelOrigin,
             reserved: 0
         )
     }

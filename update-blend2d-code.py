@@ -7,8 +7,9 @@ import shutil
 import subprocess
 import sys
 import stat
+import re as re
 
-from typing import Callable
+from typing import Callable, List
 from pathlib import Path
 from os import PathLike
 
@@ -159,26 +160,67 @@ def backup_includes(from_path: Path, to_path: Path):
 
 
 def copy_repo_files(source_files: Path, target_path: Path):
-    # Backup includes
-    include_target_path = target_path.joinpath("include")
-    include_backup_path = source_files.joinpath("include")
-    backup_includes(include_target_path, include_backup_path)
-
     # Erase files and copy over
     shutil.rmtree(target_path)
     shutil.copytree(source_files, target_path)
 
+def adjust_blend2d_include_paths(source_files: Path, base_path: Path):
+    files = source_files.glob("**/*.h")
+
+    for file in files:
+        rel_file = file.relative_to(base_path)
+        print(rel_file, end=" ")
+
+        contents = file.read_text()
+
+        regex = re.compile(r"#include <blend2d/(.+)>")
+
+        modified_contents = regex.sub(
+            lambda x:
+                f'#include "{base_path.joinpath(x.group(1)).relative_to(file.parent, walk_up=True)}"',
+            contents
+        )
+
+        file.write_text(modified_contents)
+
+        print(ConsoleColor.GREEN("ok"))
 
 def copy_blend2d_files(clone_path: Path, target_path: Path):
     print_stage_name("Copying over Blend2D files...")
 
-    copy_repo_files(clone_path.joinpath("src"), target_path)
+    if target_path.is_dir():
+        shutil.rmtree(target_path)
+    os.mkdir(target_path)
+    os.mkdir(target_path.joinpath("blend2d"))
+
+    copy_repo_files(clone_path.joinpath("blend2d"), target_path.joinpath("blend2d"))
+
+    print_stage_name("Adjusting #include declarations in Blend2D files...")
+
+    adjust_blend2d_include_paths(target_path.joinpath("blend2d"), target_path.joinpath("blend2d"))
+
+    # Emit include folder
+    os.mkdir(target_path.joinpath("include"))
+    include_file = target_path.joinpath("include").joinpath("blend2d.h")
+    include_file.write_text('#include "../blend2d/blend2d.h"')
+    modulemap_file = target_path.joinpath("include").joinpath("module.modulemap")
+    modulemap_file.write_text(
+"""module blend2d {
+    header "../blend2d.h"
+    export *
+}
+""")
 
 
 def copy_asmjit_files(clone_path: Path, target_path: Path):
     print_stage_name("Copying over asmjit files...")
 
-    copy_repo_files(clone_path.joinpath("src").joinpath("asmjit"), target_path)
+    if target_path.is_dir():
+        shutil.rmtree(target_path)
+    os.mkdir(target_path)
+    os.mkdir(target_path.joinpath("asmjit"))
+
+    copy_repo_files(clone_path.joinpath("asmjit"), target_path.joinpath("asmjit"))
 
 
 def update_code(

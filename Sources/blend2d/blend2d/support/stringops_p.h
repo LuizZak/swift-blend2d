@@ -6,7 +6,7 @@
 #ifndef BLEND2D_SUPPORT_STRINGOPS_P_H_INCLUDED
 #define BLEND2D_SUPPORT_STRINGOPS_P_H_INCLUDED
 
-#include "../api-internal_p.h"
+#include "../core/api-internal_p.h"
 #include "../unicode/unicode_p.h"
 
 //! \cond INTERNAL
@@ -32,7 +32,7 @@ static BL_INLINE size_t length(const T* data) noexcept {
   }
 }
 
-static size_t lengthWithEncoding(const void* text, BLTextEncoding encoding) noexcept {
+static size_t length_with_encoding(const void* text, BLTextEncoding encoding) noexcept {
   switch (encoding) {
     case BL_TEXT_ENCODING_LATIN1:
     case BL_TEXT_ENCODING_UTF8:
@@ -49,11 +49,13 @@ static size_t lengthWithEncoding(const void* text, BLTextEncoding encoding) noex
   }
 }
 
-static BL_INLINE bool memeqCI(const char* a, const char* b, size_t size) noexcept {
+static BL_INLINE bool memeq_ci(const char* a, const char* b, size_t size) noexcept {
   size_t i;
-  for (i = 0; i < size; i++)
-    if (bl::Unicode::asciiToLower(a[i]) != bl::Unicode::asciiToLower(b[i]))
+  for (i = 0; i < size; i++) {
+    if (bl::Unicode::ascii_to_lower(a[i]) != bl::Unicode::ascii_to_lower(b[i])) {
       return false;
+    }
+  }
   return true;
 }
 

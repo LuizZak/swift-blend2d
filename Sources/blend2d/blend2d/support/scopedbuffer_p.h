@@ -6,7 +6,7 @@
 #ifndef BLEND2D_SUPPORT_P_H_INCLUDED
 #define BLEND2D_SUPPORT_P_H_INCLUDED
 
-#include "../api-internal_p.h"
+#include "../core/api-internal_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_internal
@@ -45,12 +45,13 @@ protected:
       _capacity(capacity) {}
 
 public:
-  BL_NODISCARD
+  [[nodiscard]]
   BL_INLINE void* get() const noexcept { return _mem; }
 
-  BL_NODISCARD
+  [[nodiscard]]
   BL_INLINE size_t capacity() const noexcept { return _capacity; }
 
+  [[nodiscard]]
   BL_INLINE void* alloc(size_t size) noexcept {
     if (size <= _capacity)
       return _mem;
@@ -64,7 +65,8 @@ public:
     return _mem;
   }
 
-  BL_NOINLINE void* allocZeroed(size_t size) noexcept {
+  [[nodiscard]]
+  BL_NOINLINE void* alloc_zeroed(size_t size) noexcept {
     void* p = alloc(size);
     if (p)
       memset(p, 0, size);

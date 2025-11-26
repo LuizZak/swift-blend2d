@@ -7,13 +7,13 @@ public extension BLContextHints {
         gradientQuality: BLGradientQuality,
         patternQuality: BLPatternQuality
     ) {
-        
+
         self.init(
             .init(
                 .init(
-                    renderingQuality: UInt8(renderingQuality.rawValue),
-                    gradientQuality: UInt8(gradientQuality.rawValue),
-                    patternQuality: UInt8(patternQuality.rawValue)
+                    rendering_quality: UInt8(renderingQuality.rawValue),
+                    gradient_quality: UInt8(gradientQuality.rawValue),
+                    pattern_quality: UInt8(patternQuality.rawValue)
                 )
             )
         )

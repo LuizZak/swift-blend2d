@@ -3,38 +3,38 @@ import blend2d
 public final class BLArray<Element: BLArrayElement> {
     @usableFromInline
     var object = BLArrayCore()
-    
+
     /// Returns the size of the array (number of items).
     public var count: Int {
-        blArrayGetSize(&object)
+        bl_array_get_size(&object)
     }
-    
+
     /// Returns the capacity of the array (number of items).
     public var capacity: Int {
-        blArrayGetCapacity(&object)
+        bl_array_get_capacity(&object)
     }
-    
+
     /// Returns whether the array is empty.
     public var isEmpty: Bool {
         count == 0
     }
-    
+
     public subscript(index: Int) -> Element {
         precondition(index >= 0 && index < count)
-        
+
         return unsafePointer()[index]
     }
-    
+
     /// Initializes a new array object.
     @inlinable
     public init() {
-        blArrayInit(&object, Element.arrayImplementationType.arrayType)
+        bl_array_init(&object, Element.arrayImplementationType.arrayType)
     }
-    
+
     @inlinable
     public convenience init(array: [Element]) {
         self.init()
-        
+
         array.withUnsafeBufferPointer { pointer in
             append(contentsOf: pointer)
         }
@@ -42,16 +42,16 @@ public final class BLArray<Element: BLArrayElement> {
 
     @inlinable
     init(weakAssign object: BLArrayCore) {
-        blArrayInit(&self.object, Element.arrayImplementationType.arrayType)
+        bl_array_init(&self.object, Element.arrayImplementationType.arrayType)
 
         var object = object
         withUnsafeMutablePointer(to: &object) { pointer in
             assert(
-                blArrayGetItemSize(pointer) == blArrayGetItemSize(&self.object),
+                bl_array_get_item_size(pointer) == bl_array_get_item_size(&self.object),
                 "Cannot weak assign arrays of different item sizes"
             )
 
-            blArrayAssignWeak(&self.object, pointer)
+            bl_array_assign_weak(&self.object, pointer)
         }
     }
 
@@ -62,30 +62,30 @@ public final class BLArray<Element: BLArrayElement> {
         var object = object
         withUnsafeMutablePointer(to: &object) { pointer in
             assert(
-                blArrayGetItemSize(pointer) == blArrayGetItemSize(&check.object),
+                bl_array_get_item_size(pointer) == bl_array_get_item_size(&check.object),
                 "Cannot assign arrays of different item sizes"
             )
         }
-        
+
         self.object = object
     }
-    
+
     deinit {
-        blArrayReset(&object)
+        bl_array_reset(&object)
     }
-    
+
     @usableFromInline
     func unsafePointer() -> UnsafeBufferPointer<Element> {
-        let pointer = blArrayGetData(&object)?
+        let pointer = bl_array_get_data(&object)?
             .bindMemory(to: Element.self, capacity: count)
-        
+
         return UnsafeBufferPointer(start: pointer, count: count)
     }
-    
+
     public func asArray() -> [Element] {
         Array(unsafePointer())
     }
-    
+
     /// Returns an array of `T`-typed elements extracted from the raw buffer of
     /// this array.
     ///
@@ -101,16 +101,16 @@ public final class BLArray<Element: BLArrayElement> {
                 return Array(buffer)
             } ?? []
     }
-    
+
     /// Clears the content of the array.
     ///
     /// - note: If the array used dynamically allocated memory and the instance
     /// is mutable the memory won't be released, instead, it will be ready for
     /// reuse.
     public func clear() {
-        blArrayClear(&object)
+        bl_array_clear(&object)
     }
-    
+
     /// Shrinks the capacity of the array to fit its length.
     ///
     /// Some array operations like `append()` may grow the array more than necessary
@@ -120,45 +120,45 @@ public final class BLArray<Element: BLArrayElement> {
     /// number of items it stores, which could optimize the application's memory
     /// requirements.
     public func shrink() {
-        blArrayShrink(&object)
+        bl_array_shrink(&object)
     }
-    
+
     /// Reserves the array capacity to hold at least `capacity` items.
     public func reserveCapacity(_ capacity: Int) {
-        blArrayReserve(&object, capacity)
+        bl_array_reserve(&object, capacity)
     }
-    
+
     /// Removes an item at the given `index`.
     public func remove(at index: Int) {
-        blArrayRemoveIndex(&object, index)
+        bl_array_remove_index(&object, index)
     }
-    
+
     /// Returns whether the content of this array and `other` matches.
     public func equals(to other: BLArray) -> Bool {
-        return blArrayEquals(&object, &other.object)
+        return bl_array_equals(&object, &other.object)
     }
-    
+
     @inlinable
     public func append(_ element: Element) {
         _ = withUnsafePointer(to: element) { pointer in
-            blArrayAppendItem(&object, pointer)
+            bl_array_append_item(&object, pointer)
         }
     }
-    
+
     func append(contentsOf pointer: UnsafePointer<Element>, count: Int) {
-        blArrayAppendData(&object, pointer, count)
+        bl_array_append_data(&object, pointer, count)
     }
-    
+
     @inlinable
     func append(contentsOf pointer: UnsafeBufferPointer<Element>) {
         if let base = pointer.baseAddress {
-            blArrayAppendData(&object, base, pointer.count)
+            bl_array_append_data(&object, base, pointer.count)
         }
     }
-    
+
     public func replaceContents(_ array: [Element]) {
         clear()
-        
+
         array.withTemporaryView { view in
             if let pointer = view.pointee.data {
                 append(contentsOf: pointer, count: array.count)
@@ -207,7 +207,7 @@ public protocol BLArrayElement {
 public struct BLArrayType {
     @usableFromInline
     var arrayType: BLObjectType
-    
+
     @usableFromInline
     init(arrayType: BLObjectType) {
         self.arrayType = arrayType

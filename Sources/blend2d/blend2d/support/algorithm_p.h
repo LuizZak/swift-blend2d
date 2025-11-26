@@ -6,7 +6,7 @@
 #ifndef BLEND2D_SUPPORT_ALGORITHM_P_H_INCLUDED
 #define BLEND2D_SUPPORT_ALGORITHM_P_H_INCLUDED
 
-#include "../api-internal_p.h"
+#include "../core/api-internal_p.h"
 
 //! \cond INTERNAL
 //! \addtogroup blend2d_internal
@@ -18,8 +18,8 @@ namespace bl {
 //! \{
 
 template<typename T, typename Value, typename Predicate>
-BL_NODISCARD
-static BL_INLINE size_t lowerBound(const T* data, size_t size, const Value& value, Predicate&& pred) noexcept {
+[[nodiscard]]
+static BL_INLINE size_t lower_bound(const T* data, size_t size, const Value& value, Predicate&& pred) noexcept {
   size_t index = 0;
 
   while (size) {
@@ -40,9 +40,9 @@ static BL_INLINE size_t lowerBound(const T* data, size_t size, const Value& valu
 }
 
 template<typename T, typename Value>
-BL_NODISCARD
-static BL_INLINE size_t lowerBound(const T* data, size_t size, const Value& value) noexcept {
-  return lowerBound(data, size, value, [](const T& a, const Value& b) -> bool { return a < b; });
+[[nodiscard]]
+static BL_INLINE size_t lower_bound(const T* data, size_t size, const Value& value) noexcept {
+  return lower_bound(data, size, value, [](const T& a, const Value& b) noexcept -> bool { return a < b; });
 }
 
 //! \}
@@ -51,8 +51,8 @@ static BL_INLINE size_t lowerBound(const T* data, size_t size, const Value& valu
 //! \{
 
 template<typename T, typename V>
-BL_NODISCARD
-static BL_INLINE size_t binarySearch(const T* array, size_t size, const V& value) noexcept {
+[[nodiscard]]
+static BL_INLINE size_t binary_search(const T* array, size_t size, const V& value) noexcept {
   if (!size)
     return SIZE_MAX;
 
@@ -71,8 +71,8 @@ static BL_INLINE size_t binarySearch(const T* array, size_t size, const V& value
 }
 
 template<typename T, typename V>
-BL_NODISCARD
-static BL_INLINE size_t binarySearchClosestFirst(const T* array, size_t size, const V& value) noexcept {
+[[nodiscard]]
+static BL_INLINE size_t binary_search_closest_first(const T* array, size_t size, const V& value) noexcept {
   if (!size)
     return 0;
 
@@ -91,8 +91,8 @@ static BL_INLINE size_t binarySearchClosestFirst(const T* array, size_t size, co
 }
 
 template<typename T, typename V>
-BL_NODISCARD
-static BL_INLINE size_t binarySearchClosestLast(const T* array, size_t size, const V& value) noexcept {
+[[nodiscard]]
+static BL_INLINE size_t binary_search_closest_last(const T* array, size_t size, const V& value) noexcept {
   if (!size)
     return 0;
 
@@ -130,7 +130,7 @@ struct CompareOp {
 
 //! Insertion sort.
 template<typename T, typename Compare = CompareOp<SortOrder::kAscending>>
-static BL_INLINE void insertionSort(T* base, size_t size, const Compare& cmp = Compare()) noexcept {
+static BL_INLINE void insertion_sort(T* base, size_t size, const Compare& cmp = Compare()) noexcept {
   for (T* pm = base + 1; pm < base + size; pm++)
     for (T* pl = pm; pl > base && cmp(pl[-1], pl[0]) > 0; pl--)
       BLInternal::swap(pl[-1], pl[0]);
@@ -191,7 +191,7 @@ struct QuickSortImpl {
         BL_ASSERT(stackptr <= stack + kStackSize);
       }
       else {
-        insertionSort(base, (size_t)(end - base), cmp);
+        insertion_sort(base, (size_t)(end - base), cmp);
         if (stackptr == stack)
           break;
         end = *--stackptr;
@@ -205,7 +205,7 @@ struct QuickSortImpl {
 
 //! Quick sort.
 template<typename T, class Compare = CompareOp<SortOrder::kAscending>>
-static BL_INLINE void quickSort(T* base, size_t size, const Compare& cmp = Compare()) noexcept {
+static BL_INLINE void quick_sort(T* base, size_t size, const Compare& cmp = Compare()) noexcept {
   Internal::QuickSortImpl<T, Compare>::sort(base, size, cmp);
 }
 

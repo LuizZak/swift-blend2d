@@ -5,13 +5,13 @@ import blend2d
 
 /// Stroke join type.
 public extension BLStrokeJoin {
-    /// Miter-join possibly clipped at `miterLimit` [default].
+    /// Miter-join possibly clipped at `miter_limit` [default].
     static let miterClip = BL_STROKE_JOIN_MITER_CLIP
     
-    /// Miter-join or bevel-join depending on miterLimit condition.
+    /// Miter-join or bevel-join depending on miter_limit condition.
     static let miterBevel = BL_STROKE_JOIN_MITER_BEVEL
     
-    /// Miter-join or round-join depending on miterLimit condition.
+    /// Miter-join or round-join depending on miter_limit condition.
     static let miterRound = BL_STROKE_JOIN_MITER_ROUND
     
     /// Bevel-join.

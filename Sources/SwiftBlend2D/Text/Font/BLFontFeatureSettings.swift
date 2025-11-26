@@ -32,12 +32,12 @@ public class BLFontFeatureSettings: BLBaseClass<BLFontFeatureSettingsCore> {
     /// and also during iteration the view the container cannot be modified as
     /// that could invalidate the entire view.
     public func getView(_ view: inout BLFontFeatureSettingsView) {
-        blFontFeatureSettingsGetView(&object, &view)
+        bl_font_feature_settings_get_view(&object, &view)
     }
 
     /// Tests whether the settings contains the given `featureTag`.
     public func hasValue(_ featureTag: BLTag) -> Bool {
-        blFontFeatureSettingsHasValue(&object, featureTag)
+        bl_font_feature_settings_has_value(&object, featureTag)
     }
 
     /// Returns the value associated with the given `featureTag`.
@@ -45,14 +45,14 @@ public class BLFontFeatureSettings: BLBaseClass<BLFontFeatureSettingsCore> {
     /// If the `featureTag` doesn't exist or is invalid `BL_FONT_FEATURE_INVALID_VALUE`
     /// is returned.
     public func getValue(_ featureTag: BLTag) -> UInt32 {
-        blFontFeatureSettingsGetValue(&object, featureTag)
+        bl_font_feature_settings_get_value(&object, featureTag)
     }
 
     /// Sets or inserts the given `featureTag` to the settings, associating the
     /// `featureTag` with `value`.
     @discardableResult
     public func setValue(_ featureTag: BLTag, value: UInt32) -> BLResult {
-        blFontFeatureSettingsSetValue(&object, featureTag, value)
+        bl_font_feature_settings_set_value(&object, featureTag, value)
     }
 
     /// Removes the given `featureTag` from the settings.
@@ -61,20 +61,20 @@ public class BLFontFeatureSettings: BLBaseClass<BLFontFeatureSettingsCore> {
     /// is returned).
     @discardableResult
     public func removeValue(_ featureTag: BLTag) -> BLResult {
-        blFontFeatureSettingsRemoveValue(&object, featureTag)
+        bl_font_feature_settings_remove_value(&object, featureTag)
     }
 }
 
 extension BLFontFeatureSettings {
     public static func == (lhs: BLFontFeatureSettings, rhs: BLFontFeatureSettings) -> Bool {
-        blFontFeatureSettingsEquals(&lhs.object, &rhs.object)
+        bl_font_feature_settings_equals(&lhs.object, &rhs.object)
     }
 }
 
 extension BLFontFeatureSettingsCore: CoreStructure {
-    public static let initializer = blFontFeatureSettingsInit
-    public static let deinitializer = blFontFeatureSettingsReset
-    public static let assignWeak = blFontFeatureSettingsAssignWeak
+    public static let initializer = bl_font_feature_settings_init
+    public static let deinitializer = bl_font_feature_settings_reset
+    public static let assignWeak = bl_font_feature_settings_assign_weak
 
     @usableFromInline
     var impl: BLFontFeatureSettingsImpl {

@@ -7,28 +7,26 @@
 // which is available from SSE4.2 (Intel) and SSE4a (AMD). So we require SSE4.2 to make sure both SSSE3 and POPCNT
 // are present.
 
-#include "../api-build_p.h"
-#ifdef BL_BUILD_OPT_SSE4_2
+#include <blend2d/core/api-build_p.h>
+#ifdef BL_TARGET_OPT_SSE4_2
 
-#include "../opentype/otglyfsimdimpl_p.h"
+#include <blend2d/opentype/otglyfsimdimpl_p.h>
 
-namespace bl {
-namespace OpenType {
+namespace bl::OpenType {
 namespace GlyfImpl {
 
-BLResult BL_CDECL getGlyphOutlines_SSE4_2(
-  const BLFontFaceImpl* faceI_,
-  BLGlyphId glyphId,
+BLResult BL_CDECL get_glyph_outlines_sse4_2(
+  const BLFontFaceImpl* face_impl,
+  BLGlyphId glyph_id,
   const BLMatrix2D* transform,
   BLPath* out,
-  size_t* contourCountOut,
-  ScopedBuffer* tmpBuffer) noexcept {
+  size_t* contour_count_out,
+  ScopedBuffer* tmp_buffer) noexcept {
 
-  return getGlyphOutlinesSimdImpl(faceI_, glyphId, transform, out, contourCountOut, tmpBuffer);
+  return get_glyph_outlines_simd_impl(face_impl, glyph_id, transform, out, contour_count_out, tmp_buffer);
 }
 
 } // {GlyfImpl}
-} // {OpenType}
-} // {bl}
+} // {bl::OpenType}
 
 #endif // BL_BUILD_OPT_SSE4_2

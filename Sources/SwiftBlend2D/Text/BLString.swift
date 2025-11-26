@@ -10,28 +10,28 @@ public struct BLString: ExpressibleByStringLiteral {
     var box: BLBaseClass<BLStringCore>
 
     var data: UnsafePointer<CChar> {
-        blStringGetData(&box.object)
+        bl_string_get_data(&box.object)
     }
-    
+
     /// Size, in bytes, of the data of this BLString instance, minus trailing
     /// null-terminator character.
     public var size: Int {
-        blStringGetSize(&box.object) - 1
+        bl_string_get_size(&box.object) - 1
     }
-    
+
     public init() {
         box = BLBaseClass { object -> BLResult in
-            blStringInit(object)
-            
+            bl_string_init(object)
+
             // Insert a starting null-terminator by default
-            return blStringInsertChar(object, 0, 0, 1)
+            return bl_string_insert_char(object, 0, 0, 1)
         }
     }
-    
+
     public init(string: String) {
         box = BLBaseClass { object -> BLResult in
-            blStringInit(object)
-            
+            bl_string_init(object)
+
             return string.withCString { pointer in
                 // Here, we don't subtract the null-terminator to allow it to be
                 // naturally inserted into the initial string data.
@@ -39,41 +39,41 @@ public struct BLString: ExpressibleByStringLiteral {
                 // On subsequent operations this null-terminator is manually
                 // pushed to the end of the string data every time a mutating
                 // operation occurs
-                blStringAssignData(object, pointer, string.utf8CString.count)
+                bl_string_assign_data(object, pointer, string.utf8CString.count)
             }
         }
     }
-    
+
     public init(stringLiteral value: String) {
         self.init(string: value)
     }
-    
+
     internal init(weakAssign: BLStringCore) {
         box = BLBaseClass(weakAssign: weakAssign)
     }
-    
+
     @inlinable
     mutating func ensureUnique() {
         if !isKnownUniquelyReferenced(&box) {
             box = box.copy()
         }
     }
-    
+
     public func toString() -> String {
-        guard let data = blStringGetData(&box.object) else {
+        guard let data = bl_string_get_data(&box.object) else {
             return ""
         }
-        
+
         return String(cString: data)
     }
-    
+
     public static func += (lhs: inout BLString, rhs: String) {
         lhs.ensureUnique()
-        
+
         rhs.withCString { pointer in
             let rhsSizeMinusNullTerminator = rhs.utf8CString.count - 1
-            
-            blStringInsertData(
+
+            bl_string_insert_data(
                 &lhs.box.object,
                 lhs.size,
                 pointer,
@@ -81,20 +81,20 @@ public struct BLString: ExpressibleByStringLiteral {
             )
         }
     }
-    
+
     public static func += (lhs: inout BLString, rhs: BLString) {
-        guard let data = blStringGetData(&rhs.box.object) else {
+        guard let data = bl_string_get_data(&rhs.box.object) else {
             return
         }
-        
+
         lhs.ensureUnique()
-        blStringInsertData(&lhs.box.object, lhs.size, data, rhs.size)
+        bl_string_insert_data(&lhs.box.object, lhs.size, data, rhs.size)
     }
 }
 
 extension BLString: Equatable {
     public static func == (lhs: BLString, rhs: BLString) -> Bool {
-        blStringEquals(&lhs.box.object, &rhs.box.object)
+        bl_string_equals(&lhs.box.object, &rhs.box.object)
     }
 }
 
@@ -108,18 +108,18 @@ extension BLString: Sequence {
     public func makeIterator() -> Iterator {
         Iterator(string: self, index: 0)
     }
-    
+
     public struct Iterator: IteratorProtocol {
         let string: BLString
         var index: Int
-        
+
         public mutating func next() -> Int8? {
             if index == string.size {
                 return nil
             }
-            
+
             defer { index += 1 }
-            
+
             return string[index]
         }
     }
@@ -127,13 +127,13 @@ extension BLString: Sequence {
 
 extension BLString: Collection {
     public var startIndex: Int { 0 }
-    
+
     public var endIndex: Int { size }
-    
+
     public func index(after i: Int) -> Int {
         i + 1
     }
-    
+
     /// Returns the character at a given index on this string.
     ///
     /// - precondition: index >= 0 && index < size
@@ -144,9 +144,9 @@ extension BLString: Collection {
 }
 
 extension BLStringCore: CoreStructure {
-    public static let initializer = blStringInit
-    public static let deinitializer = blStringReset
-    public static let assignWeak = blStringAssignWeak
+    public static let initializer = bl_string_init
+    public static let deinitializer = bl_string_reset
+    public static let assignWeak = bl_string_assign_weak
 
     @usableFromInline
     var impl: BLStringImpl {
@@ -159,11 +159,11 @@ internal extension BLStringCore {
     var asBLString: BLString {
         BLString(weakAssign: self)
     }
-    
+
     var asString: String {
         asBLString.toString()
     }
-    
+
     var size: Int {
         impl.size
     }

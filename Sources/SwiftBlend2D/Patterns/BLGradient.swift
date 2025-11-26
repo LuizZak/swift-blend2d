@@ -4,13 +4,13 @@ import blend2d
 public struct BLGradient: Equatable {
     @usableFromInline
     var box: BLBaseClass<BLGradientCore>
-    
+
     // MARK: Gradient Stops
     @inlinable
     public var stops: [BLGradientStop] {
         get {
             let buffer = UnsafeBufferPointer(
-                start: blGradientGetStops(&box.object),
+                start: bl_gradient_get_stops(&box.object),
                 count: size
             )
 
@@ -25,40 +25,40 @@ public struct BLGradient: Equatable {
 
     @inlinable
     public var size: Int {
-        blGradientGetSize(&box.object)
+        bl_gradient_get_size(&box.object)
     }
 
     @inlinable
     public var capacity: Int {
-        blGradientGetCapacity(&box.object)
+        bl_gradient_get_capacity(&box.object)
     }
-    
+
     // MARK: Gradient Options
-    
+
     /// Gradient type.
     @inlinable
     public var type: BLGradientType {
         get {
-            blGradientGetType(&box.object)
+            bl_gradient_get_type(&box.object)
         }
         set {
             ensureUnique()
-            blGradientSetType(&box.object, newValue)
+            bl_gradient_set_type(&box.object, newValue)
         }
     }
-    
+
     /// Gradient extend mode.
     @inlinable
     public var extendMode: BLExtendMode {
         get {
-            blGradientGetExtendMode(&box.object)
+            bl_gradient_get_extend_mode(&box.object)
         }
         set {
             ensureUnique()
-            blGradientSetExtendMode(&box.object, newValue)
+            bl_gradient_set_extend_mode(&box.object, newValue)
         }
     }
-    
+
     /// Gradient values.
     @inlinable
     public var gradientValues: GradientValues {
@@ -88,7 +88,7 @@ public struct BLGradient: Equatable {
             }
         }
     }
-    
+
     /// Linear parameters.
     @inlinable
     public var linear: BLLinearGradientValues {
@@ -98,7 +98,7 @@ public struct BLGradient: Equatable {
             box.object.impl.linear = newValue
         }
     }
-    
+
     /// Radial parameters.
     @inlinable
     public var radial: BLRadialGradientValues {
@@ -108,7 +108,7 @@ public struct BLGradient: Equatable {
             box.object.impl.radial = newValue
         }
     }
-    
+
     /// Conical parameters.
     @inlinable
     public var conical: BLConicGradientValues {
@@ -118,79 +118,79 @@ public struct BLGradient: Equatable {
             box.object.impl.conic = newValue
         }
     }
-    
+
     /// x0 - start 'x' for Linear/Radial and center 'x' for Conical.
     @inlinable
     public var x0: Double {
         get { getValue(atIndex: .commonX0) }
         set { setValue(.commonX0, newValue) }
     }
-    
+
     /// y0 - start 'y' for Linear/Radial and center 'y' for Conical.
     @inlinable
     public var y0: Double {
         get { getValue(atIndex: .commonY0) }
         set { setValue(.commonY0, newValue) }
     }
-    
+
     /// x1 - end 'x' for Linear/Radial.
     @inlinable
     public var x1: Double {
         get { getValue(atIndex: .commonX1) }
         set { setValue(.commonX1, newValue) }
     }
-    
+
     /// y1 - end 'y' for Linear/Radial.
     @inlinable
     public var y1: Double {
         get { getValue(atIndex: .commonY1) }
         set { setValue(.commonY1, newValue) }
     }
-    
+
     /// Radial gradient r0 radius.
     @inlinable
     public var r0: Double {
         get { getValue(atIndex: .radialR0) }
         set { setValue(.radialR0, newValue) }
     }
-    
+
     /// Conic gradient angle.
     @inlinable
     public var angle: Double {
         get { getValue(atIndex: .conicAngle) }
         set { setValue(.conicAngle, newValue) }
     }
-    
+
     // MARK: Transformations
-    
+
     /// Whether this gradient has a transformation matrix different than
     /// `BLMatrix2D.identity`.
     @inlinable
     public var hasTransform: Bool {
         transformType != .identity
     }
-    
+
     /// Type of the transformation matrix.
     @inlinable
     public var transformType: BLTransformType {
-        blGradientGetTransformType(&box.object)
+        bl_gradient_get_transform_type(&box.object)
     }
-    
+
     /// Gradient transformation matrix.
     @inlinable
     public var matrix: BLMatrix2D {
         get {
             var matrix = BLMatrix2D()
-            blGradientGetTransform(&box.object, &matrix)
+            bl_gradient_get_transform(&box.object, &matrix)
             return matrix
         }
         set {
             ensureUnique()
-            
+
             _=_applyTransformOp(.assign, newValue)
         }
     }
-    
+
     /// Gets the gradient values for this gradient.
     @inlinable
     public var values: [Double] {
@@ -205,14 +205,14 @@ public struct BLGradient: Equatable {
             values.5,
         ]
     }
-    
+
     @inlinable
     public init() {
         box = BLBaseClass()
     }
-    
+
     // TODO: Handle error results for init and create methods bellow
-    
+
     @inlinable
     public init(
         linear: BLLinearGradientValues,
@@ -220,12 +220,12 @@ public struct BLGradient: Equatable {
         stops: [BLGradientStop]? = nil,
         matrix: BLMatrix2D? = nil
     ) {
-        
+
         box = BLBaseClass { pointer in
             var linear = linear
-            
+
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blGradientInitAs(
+                bl_gradient_init_as(
                     pointer,
                     BLGradientType.linear,
                     &linear,
@@ -237,7 +237,7 @@ public struct BLGradient: Equatable {
             }
         }
     }
-    
+
     @inlinable
     public init(
         radial: BLRadialGradientValues,
@@ -245,12 +245,12 @@ public struct BLGradient: Equatable {
         stops: [BLGradientStop]? = nil,
         matrix: BLMatrix2D? = nil
     ) {
-        
+
         box = BLBaseClass { pointer in
             var radial = radial
-            
+
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blGradientInitAs(
+                bl_gradient_init_as(
                     pointer,
                     BLGradientType.radial,
                     &radial,
@@ -262,7 +262,7 @@ public struct BLGradient: Equatable {
             }
         }
     }
-    
+
     @inlinable
     public init(
         conic: BLConicGradientValues,
@@ -270,12 +270,12 @@ public struct BLGradient: Equatable {
         stops: [BLGradientStop]? = nil,
         matrix: BLMatrix2D? = nil
     ) {
-        
+
         box = BLBaseClass { pointer -> BLResult in
             var conic = conic
-            
+
             return withUnsafeNullablePointer(to: matrix) { matrix in
-                blGradientInitAs(
+                bl_gradient_init_as(
                     pointer,
                     BLGradientType.conic,
                     &conic,
@@ -287,12 +287,12 @@ public struct BLGradient: Equatable {
             }
         }
     }
-    
+
     @inlinable
     init(box: BLBaseClass<BLGradientCore>) {
         self.box = box
     }
-    
+
     @inlinable
     mutating func ensureUnique() {
         if !isKnownUniquelyReferenced(&box) {
@@ -302,7 +302,7 @@ public struct BLGradient: Equatable {
 
     @inlinable
     public static func == (lhs: BLGradient, rhs: BLGradient) -> Bool {
-        blGradientEquals(&lhs.box.object, &rhs.box.object)
+        bl_gradient_equals(&lhs.box.object, &rhs.box.object)
     }
 }
 
@@ -315,35 +315,35 @@ public extension BLGradient {
 
     @inlinable
     func getValue(atIndex index: BLGradientValue) -> Double {
-        blGradientGetValue(&box.object, Int(index.rawValue))
+        bl_gradient_get_value(&box.object, Int(index.rawValue))
     }
 
     @inlinable
     mutating func setValue(_ index: BLGradientValue, _ value: Double) {
         ensureUnique()
-        blGradientSetValue(&box.object, Int(index.rawValue), value)
+        bl_gradient_set_value(&box.object, Int(index.rawValue), value)
     }
 
     @inlinable
     mutating func setValues(from index: BLGradientValue, _ values: [Double]) {
         ensureUnique()
         var values = values
-        blGradientSetValues(&box.object, Int(index.rawValue), &values, values.count)
+        bl_gradient_set_values(&box.object, Int(index.rawValue), &values, values.count)
     }
-    
+
     // MARK: Gradient Stops
 
     @inlinable
     mutating func resetStops() {
         ensureUnique()
-        blGradientResetStops(&box.object)
+        bl_gradient_reset_stops(&box.object)
     }
 
     @discardableResult
     @inlinable
     mutating func assignStops(_ stops: [BLGradientStop]) -> BLResult {
         ensureUnique()
-        return blGradientAssignStops(&box.object, stops, stops.count)
+        return bl_gradient_assign_stops(&box.object, stops, stops.count)
     }
 
     @inlinable
@@ -364,70 +364,70 @@ public extension BLGradient {
     @inlinable
     mutating func addStop(_ offset: Double, rgba32: UInt32) -> BLResult {
         ensureUnique()
-        return blGradientAddStopRgba32(&box.object, offset, rgba32)
+        return bl_gradient_add_stop_rgba32(&box.object, offset, rgba32)
     }
 
     @discardableResult
     @inlinable
     mutating func addStop(_ offset: Double, rgba64: UInt64) -> BLResult {
         ensureUnique()
-        return blGradientAddStopRgba64(&box.object, offset, rgba64)
+        return bl_gradient_add_stop_rgba64(&box.object, offset, rgba64)
     }
 
     @discardableResult
     @inlinable
     mutating func addStop(_ offset: Double, _ rgba: BLRgba32) -> BLResult {
         ensureUnique()
-        return blGradientAddStopRgba32(&box.object, offset, rgba.value)
+        return bl_gradient_add_stop_rgba32(&box.object, offset, rgba.value)
     }
 
     @discardableResult
     @inlinable
     mutating func addStop(_ offset: Double, _ rgba: BLRgba64) -> BLResult {
         ensureUnique()
-        return blGradientAddStopRgba64(&box.object, offset, rgba.value)
+        return bl_gradient_add_stop_rgba64(&box.object, offset, rgba.value)
     }
 
     @discardableResult
     @inlinable
     mutating func removeStop(index: Int) -> BLResult {
         ensureUnique()
-        return blGradientRemoveStop(&box.object, index)
+        return bl_gradient_remove_stop(&box.object, index)
     }
 
     @discardableResult
     @inlinable
     mutating func removeStopByOffset(offset: Double, all: UInt32) -> BLResult {
         ensureUnique()
-        return blGradientRemoveStopByOffset(&box.object, offset, all)
+        return bl_gradient_remove_stop_by_offset(&box.object, offset, all)
     }
 
     @discardableResult
     @inlinable
     mutating func removeStops(inRange range: BLRange) -> BLResult {
         ensureUnique()
-        return blGradientRemoveStopsByIndex(&box.object, range.start, range.end)
+        return bl_gradient_remove_stops_by_index(&box.object, range.start, range.end)
     }
 
     @discardableResult
     @inlinable
     mutating func removeStopsFromTo(offsetMin: Double, offsetMax: Double) -> BLResult {
         ensureUnique()
-        return blGradientRemoveStopsByOffset(&box.object, offsetMin, offsetMax)
+        return bl_gradient_remove_stops_by_offset(&box.object, offsetMin, offsetMax)
     }
 
     @discardableResult
     @inlinable
     mutating func replaceStopRgba32(index: Int, offset: Double, rgba32: UInt32) -> BLResult {
         ensureUnique()
-        return blGradientReplaceStopRgba32(&box.object, index, offset, rgba32)
+        return bl_gradient_replace_stop_rgba32(&box.object, index, offset, rgba32)
     }
 
     @discardableResult
     @inlinable
     mutating func replaceStopRgba64(index: Int, offset: Double, rgba64: UInt64) -> BLResult {
         ensureUnique()
-        return blGradientReplaceStopRgba64(&box.object, index, offset, rgba64)
+        return bl_gradient_replace_stop_rgba64(&box.object, index, offset, rgba64)
     }
 
     @inlinable
@@ -435,7 +435,7 @@ public extension BLGradient {
         if index < 0 || index >= size {
             fatalError("Index out of bounds: \(index) in bounds [0 - \(size)]")
         }
-        if let stops = blGradientGetStops(&box.object) {
+        if let stops = bl_gradient_get_stops(&box.object) {
             ensureUnique()
             return replaceStopRgba32(index: index, offset: stops[index].offset, rgba32: rgba32.value)
         }
@@ -445,7 +445,7 @@ public extension BLGradient {
 
     @inlinable
     func indexOfStop(withOffset offset: Double) -> Int {
-        blGradientIndexOfStop(&box.object, offset)
+        bl_gradient_index_of_stop(&box.object, offset)
     }
 }
 
@@ -454,7 +454,7 @@ public extension BLGradient {
     @inlinable
     mutating func resetMatrix() -> BLResult {
         ensureUnique()
-        return blGradientApplyTransformOp(&box.object, BLTransformOp.reset, nil)
+        return bl_gradient_apply_transform_op(&box.object, BLTransformOp.reset, nil)
     }
     @discardableResult
     @inlinable
@@ -604,43 +604,43 @@ internal extension BLGradient {
     mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLMatrix2D) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blGradientApplyTransformOp(&box.object, opType, pointer)
+            bl_gradient_apply_transform_op(&box.object, opType, pointer)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: BLPoint) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blGradientApplyTransformOp(&box.object, opType, pointer)
+            bl_gradient_apply_transform_op(&box.object, opType, pointer)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     mutating func _applyTransformOp(_ opType: BLTransformOp, _ opData: Double) -> BLResult {
         ensureUnique()
         return withUnsafePointer(to: opData) { pointer in
-            blGradientApplyTransformOp(&box.object, opType, pointer)
+            bl_gradient_apply_transform_op(&box.object, opType, pointer)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     mutating func _applyTransformOpV(_ opType: BLTransformOp, _ args: Double...) -> BLResult {
         ensureUnique()
         return args.withUnsafeBytes { pointer in
-            blGradientApplyTransformOp(&box.object, opType, pointer.baseAddress)
+            bl_gradient_apply_transform_op(&box.object, opType, pointer.baseAddress)
         }
     }
-    
+
     /// Applies a matrix operation to the current transformation matrix (internal).
     @inlinable
     mutating func _applyTransformOpV<T: BinaryInteger>(_ opType: BLTransformOp, _ args: T...) -> BLResult {
         ensureUnique()
         return args.map { Double($0) }.withUnsafeBytes { pointer in
-            blGradientApplyTransformOp(&box.object, opType, pointer.baseAddress)
+            bl_gradient_apply_transform_op(&box.object, opType, pointer.baseAddress)
         }
     }
 }
@@ -654,10 +654,10 @@ public extension BLGradient {
 }
 
 extension BLGradientCore: CoreStructure {
-    public static let initializer = blGradientInit
-    public static let deinitializer = blGradientReset
-    public static let assignWeak = blGradientAssignWeak
-    
+    public static let initializer = bl_gradient_init
+    public static let deinitializer = bl_gradient_reset
+    public static let assignWeak = bl_gradient_assign_weak
+
     @usableFromInline
     var impl: BLGradientImpl {
         get { UnsafeMutablePointer(_d.impl)!.pointee }
