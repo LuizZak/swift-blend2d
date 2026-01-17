@@ -69,7 +69,7 @@ let asmjitCXXSettings: [CXXSetting] = [
 
 // LibPNG for snapshot testing
 
-#if os(Linux) || os(macOS)
+#if os(Linux)
 
 testTarget.dependencies.append(
     .product(name: "LibPNG", package: "swift-libpng")
